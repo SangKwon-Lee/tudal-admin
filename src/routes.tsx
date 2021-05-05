@@ -55,6 +55,7 @@ const Chat = Loadable(lazy(() => import('./pages/dashboard/Chat')));
 const CustomerDetails = Loadable(lazy(() => import('./pages/dashboard/CustomerDetails')));
 const CustomerEdit = Loadable(lazy(() => import('./pages/dashboard/CustomerEdit')));
 const CustomerList = Loadable(lazy(() => import('./pages/dashboard/CustomerList')));
+const HiddenboxList = Loadable(lazy(() => import('./pages/dashboard/HiddenboxList')));
 const Finance = Loadable(lazy(() => import('./pages/dashboard/Finance')));
 const InvoiceDetails = Loadable(lazy(() => import('./pages/dashboard/InvoiceDetails')));
 const InvoiceList = Loadable(lazy(() => import('./pages/dashboard/InvoiceList')));
@@ -196,6 +197,23 @@ const routes: PartialRouteObject[] = [
           {
             path: ':threadKey',
             element: <Chat />
+          }
+        ]
+      },
+      {
+        path: 'hiddenboxes',
+        children: [
+          {
+            path: '/',
+            element: <HiddenboxList />
+          },
+          {
+            path: ':customerId',
+            element: <CustomerDetails />
+          },
+          {
+            path: ':customerId/edit',
+            element: <CustomerEdit />
           }
         ]
       },
@@ -350,7 +368,10 @@ const routes: PartialRouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Home />
+        element: <Navigate
+          to="/dashboard"
+          replace
+        />
       },
       {
         path: 'browse',

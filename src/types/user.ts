@@ -3,6 +3,6 @@ export interface User {
   avatar: string;
   email: string;
   name: string;
-
+  username?: string;
   [key: string]: any;
 }

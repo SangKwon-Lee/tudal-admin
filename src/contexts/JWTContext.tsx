@@ -126,7 +126,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     const initialize = async (): Promise<void> => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-
         if (accessToken && verify(accessToken, JWT_SECRET)) {
           setSession(accessToken);
 
@@ -165,10 +164,13 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    const response = await axios.post<{ accessToken: string; user: User }>('/api/authentication/login', {
-      email,
+    console.log("[JWTContext] trying login");
+    const response = await axios.post('/auth/local', {
+      identifier: email,
       password
     });
+    console.log("[JWTContext] response", response);
+
     const { accessToken, user } = response.data;
 
     setSession(accessToken);

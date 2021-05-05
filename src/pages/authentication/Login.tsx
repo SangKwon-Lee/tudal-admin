@@ -11,7 +11,6 @@ import {
   Link,
   Typography
 } from '@material-ui/core';
-import AuthBanner from '../../components/authentication/AuthBanner';
 import {
   LoginAmplify,
   LoginAuth0,
@@ -29,6 +28,8 @@ const platformIcons = {
   JWT: '/static/icons/jwt.svg'
 };
 
+const logoImage = '/static/logo.png';
+
 const Login: FC = () => {
   const { platform } = useAuth() as any;
 
@@ -39,7 +40,7 @@ const Login: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Login | Material Kit Pro</title>
+        <title>Login | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -49,7 +50,6 @@ const Login: FC = () => {
           minHeight: '100vh'
         }}
       >
-        <AuthBanner />
         <Container
           maxWidth="sm"
           sx={{ py: '80px' }}
@@ -62,12 +62,17 @@ const Login: FC = () => {
             }}
           >
             <RouterLink to="/">
-              <Logo
+              <Box
                 sx={{
                   height: 40,
-                  width: 40
+                  '& > img': {
+                    maxHeight: '100%',
+                    width: 'auto'
+                  }
                 }}
-              />
+              >
+                <img src={logoImage} />
+              </Box>
             </RouterLink>
           </Box>
           <Card>
@@ -94,27 +99,7 @@ const Login: FC = () => {
                   >
                     Log in
                   </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="body2"
-                  >
-                    Log in on the internal platform
-                  </Typography>
                 </div>
-                <Box
-                  sx={{
-                    height: 32,
-                    '& > img': {
-                      maxHeight: '100%',
-                      width: 'auto'
-                    }
-                  }}
-                >
-                  <img
-                    alt="Auth platform"
-                    src={platformIcons[platform]}
-                  />
-                </Box>
               </Box>
               <Box
                 sx={{
@@ -128,25 +113,6 @@ const Login: FC = () => {
                 {platform === 'JWT' && <LoginJWT />}
               </Box>
               <Divider sx={{ my: 3 }} />
-              <Link
-                color="textSecondary"
-                component={RouterLink}
-                to="/authentication/register"
-                variant="body2"
-              >
-                Create new account
-              </Link>
-              {platform === 'Amplify' && (
-                <Link
-                  color="textSecondary"
-                  component={RouterLink}
-                  sx={{ mt: 1 }}
-                  to="/authentication/password-recovery"
-                  variant="body2"
-                >
-                  Forgot password
-                </Link>
-              )}
             </CardContent>
           </Card>
         </Container>

@@ -191,6 +191,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           avatar: '/static/mock-images/avatars/avatar-jane_rotanson.png',
           email: user.attributes.email,
           name: 'Jane Rotanson',
+          username: 'Jane Rotanson',
           plan: 'Premium'
         }
       }

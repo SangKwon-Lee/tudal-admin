@@ -1,0 +1,150 @@
+import { useState, useEffect, useCallback } from 'react';
+import type { FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Container,
+  Grid,
+  Link,
+  Typography
+} from '@material-ui/core';
+import { HiddenboxListTable } from '../../components/dashboard/hiddenbox';
+import useIsMountedRef from '../../hooks/useIsMountedRef';
+import ChevronRightIcon from '../../icons/ChevronRight';
+import DownloadIcon from '../../icons/Download';
+import PlusIcon from '../../icons/Plus';
+import UploadIcon from '../../icons/Upload';
+import useSettings from '../../hooks/useSettings';
+import gtm from '../../lib/gtm';
+import type { Hiddenbox } from '../../types/hiddenbox';
+import axios, { token } from '../../lib/axios';
+
+const HiddenboxList: FC = () => {
+  const isMountedRef = useIsMountedRef();
+  const { settings } = useSettings();
+  const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
+
+  useEffect(() => {
+    gtm.push({ event: 'page_view' });
+  }, []);
+
+  const getHiddenboxes = useCallback(async () => {
+    console.log("isMountedRef", isMountedRef.current)
+    try {
+      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?token=${token}`);
+
+      if (isMountedRef.current) {
+        setHiddenboxes(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isMountedRef]);
+
+  useEffect(() => {
+    console.log("useEffect, getHiddenboxes")
+    getHiddenboxes();
+  }, [getHiddenboxes]);
+
+  return (
+    <>
+      <Helmet>
+        <title>Dashboard: Hiddenbox List | TUDAL Admin</title>
+      </Helmet>
+      <Box
+        sx={{
+          backgroundColor: 'background.default',
+          minHeight: '100%',
+          py: 8
+        }}
+      >
+        <Container maxWidth={settings.compact ? 'xl' : false}>
+          <Grid
+            container
+            justifyContent="space-between"
+            spacing={3}
+          >
+            <Grid item>
+              <Typography
+                color="textPrimary"
+                variant="h5"
+              >
+                Customer List
+              </Typography>
+              <Breadcrumbs
+                aria-label="breadcrumb"
+                separator={<ChevronRightIcon fontSize="small" />}
+                sx={{ mt: 1 }}
+              >
+                <Link
+                  color="textPrimary"
+                  component={RouterLink}
+                  to="/dashboard"
+                  variant="subtitle2"
+                >
+                  대시보드
+                </Link>
+                <Link
+                  color="textPrimary"
+                  component={RouterLink}
+                  to="/dashboard"
+                  variant="subtitle2"
+                >
+                  컨텐츠관리
+                </Link>
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                >
+                  히든박스
+                </Typography>
+              </Breadcrumbs>
+              <Box
+                sx={{
+                  mb: -1,
+                  mx: -1,
+                  mt: 1
+                }}
+              >
+                <Button
+                  color="primary"
+                  startIcon={<UploadIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                >
+                  Import
+                </Button>
+                <Button
+                  color="primary"
+                  startIcon={<DownloadIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                >
+                  Export
+                </Button>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box sx={{ m: -1 }}>
+                <Button
+                  color="primary"
+                  startIcon={<PlusIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                  variant="contained"
+                >
+                  히든박스 추가
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+          <Box sx={{ mt: 3 }}>
+            <HiddenboxListTable hiddenboxes={hiddenboxes} />
+          </Box>
+        </Container>
+      </Box>
+    </>
+  );
+};
+
+export default HiddenboxList;

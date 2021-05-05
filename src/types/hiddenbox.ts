@@ -1,0 +1,27 @@
+interface Tag {
+  id: number;
+  name: string;
+}
+
+interface Stock {
+  code: string;
+  name: string;
+}
+
+export interface Hiddenbox {
+  id: number;
+  title: string;
+  description?: string;
+  contents: string;
+  startDate: string;
+  endDate: string;
+  publicDate: string;
+  author: {
+    id: number;
+    username: string;
+    email: string;
+  };
+  productId: string;
+  stocks: Stock[];
+  tags: Tag[];
+}
