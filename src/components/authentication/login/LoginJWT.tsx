@@ -18,8 +18,8 @@ const LoginJWT: FC = (props) => {
   return (
     <Formik
       initialValues={{
-        email: 'demo@devias.io',
-        password: 'Password123!',
+        email: '',
+        password: '',
         submit: null
       }}
       validationSchema={
@@ -28,13 +28,13 @@ const LoginJWT: FC = (props) => {
           .shape({
             email: Yup
               .string()
-              .email('Must be a valid email')
+              .email('올바른 이메일을 입력해주세요.')
               .max(255)
-              .required('Email is required'),
+              .required('이메일을 입력해주세요.'),
             password: Yup
               .string()
               .max(255)
-              .required('Password is required')
+              .required('비밀번호를 입력해주세요.')
           })
       }
       onSubmit={async (values, {
@@ -53,7 +53,7 @@ const LoginJWT: FC = (props) => {
           console.error(err);
           if (isMountedRef.current) {
             setStatus({ success: false });
-            setErrors({ submit: err.message });
+            setErrors({ submit: '이메일 또는 비밀번호가 잘못되었습니다.' });
             setSubmitting(false);
           }
         }
@@ -78,7 +78,7 @@ const LoginJWT: FC = (props) => {
             error={Boolean(touched.email && errors.email)}
             fullWidth
             helperText={touched.email && errors.email}
-            label="Email Address"
+            label="이메일"
             margin="normal"
             name="email"
             onBlur={handleBlur}
@@ -91,7 +91,7 @@ const LoginJWT: FC = (props) => {
             error={Boolean(touched.password && errors.password)}
             fullWidth
             helperText={touched.password && errors.password}
-            label="Password"
+            label="비밀번호"
             margin="normal"
             name="password"
             onBlur={handleBlur}
@@ -116,21 +116,8 @@ const LoginJWT: FC = (props) => {
               type="submit"
               variant="contained"
             >
-              Log In
+              로그인
             </Button>
-          </Box>
-          <Box sx={{ mt: 2 }}>
-            <Alert severity="info">
-              <div>
-                Use
-                {' '}
-                <b>demo@devias.io</b>
-                {' '}
-                and password
-                {' '}
-                <b>Password123!</b>
-              </div>
-            </Alert>
           </Box>
         </form>
       )}

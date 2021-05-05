@@ -41,7 +41,6 @@ const App: FC = () => {
           maxSnack={3}
         >
           <GlobalStyles />
-          <SettingsDrawer />
           {auth.isInitialized ? content : <SplashScreen />}
         </SnackbarProvider>
       </RTL>
