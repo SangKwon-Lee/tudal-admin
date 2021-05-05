@@ -49,7 +49,6 @@ const AccountPopover: FC = () => {
       });
     }
   };
-
   return (
     <>
       <Box
@@ -87,13 +86,13 @@ const AccountPopover: FC = () => {
             color="textPrimary"
             variant="subtitle2"
           >
-            {user.name}
+            {user.email}
           </Typography>
           <Typography
             color="textSecondary"
             variant="subtitle2"
           >
-            Devias IO
+            {user.username}
           </Typography>
         </Box>
         <Divider />
@@ -111,7 +110,7 @@ const AccountPopover: FC = () => {
                   color="textPrimary"
                   variant="subtitle2"
                 >
-                  Profile
+                  프로필
                 </Typography>
               )}
             />
@@ -129,7 +128,7 @@ const AccountPopover: FC = () => {
                   color="textPrimary"
                   variant="subtitle2"
                 >
-                  Settings
+                  관리
                 </Typography>
               )}
             />
@@ -142,7 +141,7 @@ const AccountPopover: FC = () => {
             onClick={handleLogout}
             variant="outlined"
           >
-            Logout
+            로그아웃
           </Button>
         </Box>
       </Popover>
