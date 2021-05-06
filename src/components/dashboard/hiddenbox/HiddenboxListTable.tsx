@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import numeral from 'numeral';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import {
   Avatar,
@@ -48,38 +48,42 @@ interface SortOption {
 
 const tabs = [
   {
-    label: 'All',
+    label: '전체',
     value: 'all'
   },
   {
-    label: 'Accepts Marketing',
-    value: 'hasAcceptedMarketing'
+    label: '판매 전',
+    value: 'beforeSale'
   },
   {
-    label: 'Prospect',
-    value: 'isProspect'
+    label: '판매 중',
+    value: 'onSale'
   },
   {
-    label: 'Returning',
-    value: 'isReturning'
+    label: '판매 완료',
+    value: 'afterSale'
+  },
+  {
+    label: '공개',
+    value: 'public'
   }
 ];
 
 const sortOptions: SortOption[] = [
   {
-    label: 'Last update (newest)',
+    label: '최신순',
     value: 'updatedAt|desc'
   },
   {
-    label: 'Last update (oldest)',
+    label: '오래된순',
     value: 'updatedAt|asc'
   },
   {
-    label: 'Total orders (highest)',
+    label: '판매량 최고',
     value: 'orders|desc'
   },
   {
-    label: 'Total orders (lowest)',
+    label: '판매량 최저',
     value: 'orders|asc'
   }
 ];
@@ -93,12 +97,19 @@ const applyFilters = (
     let matches = true;
 
     if (query) {
-      const properties = ['title'];
+      const properties = ['title', 'author-username'];
       let containsQuery = false;
 
       properties.forEach((property) => {
-        if (hiddenbox[property].toLowerCase().includes(query.toLowerCase())) {
-          containsQuery = true;
+        if( property.indexOf('-') > -1 ){
+          const strArray = property.split("-");
+          if (hiddenbox[strArray[0]][strArray[1]].toLowerCase().includes(query.toLowerCase())) {
+            containsQuery = true;
+          }
+        } else {
+          if (hiddenbox[property].toLowerCase().includes(query.toLowerCase())) {
+            containsQuery = true;
+          }
         }
       });
 
@@ -110,8 +121,27 @@ const applyFilters = (
     Object.keys(filters).forEach((key) => {
       const value = filters[key];
 
-      if (value && hiddenbox[key] !== value) {
-        matches = false;
+      switch(key){
+        case 'beforeSale':
+          if( value && moment().diff(moment(hiddenbox.startDate)) > 0 ){
+            matches = false;
+          } 
+          break;
+        case 'onSale':
+          if( value && ( moment().diff(moment(hiddenbox.startDate)) < 0 || moment().diff(moment(hiddenbox.endDate)) > 0 )){
+            matches = false;
+          }
+          break;
+        case 'afterSale':
+          if( value && moment().diff(moment(hiddenbox.endDate)) < 0 ){
+            matches = false;
+          } 
+          break;
+        case 'public':
+          if( value && moment().diff(moment(hiddenbox.publicDate)) < 0 ){
+            matches = false;
+          } 
+          break;
       }
     });
 
@@ -177,17 +207,19 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const [query, setQuery] = useState<string>('');
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
   const [filters, setFilters] = useState<any>({
-    hasAcceptedMarketing: null,
-    isProspect: null,
-    isReturning: null
+    beforeSale: null,
+    onSale: null,
+    afterSale: null,
+    public: null
   });
 
   const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
     const updatedFilters = {
       ...filters,
-      hasAcceptedMarketing: null,
-      isProspect: null,
-      isReturning: null
+      beforeSale: null,
+      onSale: null,
+      afterSale: null,
+      public: null
     };
 
     if (value !== 'all') {
@@ -365,16 +397,16 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                   />
                 </TableCell>
                 <TableCell>
-                  Name
+                  상품명
                 </TableCell>
                 <TableCell>
-                  Location
+                  판매일
                 </TableCell>
                 <TableCell>
-                  Orders
+                  공개일
                 </TableCell>
                 <TableCell>
-                  Spent
+                  판매량
                 </TableCell>
                 <TableCell align="right">
                   Actions
@@ -413,7 +445,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                           <Link
                             color="inherit"
                             component={RouterLink}
-                            to="/dashboard/customers/1"
+                            to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
                             variant="subtitle2"
                           >
                             {hiddenbox.title}
@@ -428,10 +460,13 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      {`${hiddenbox.startDate}-${hiddenbox.endDate}`}
+                      {`${moment(hiddenbox.startDate).format("YYYY년 M월 D일 HH:mm")} - ${moment(hiddenbox.endDate).format("YYYY년 M월 D일 HH:mm")}`}
                     </TableCell>
                     <TableCell>
-                      {hiddenbox.publicDate}
+                      {moment(hiddenbox.publicDate).format("YYYY년 M월 D일 HH:mm")}
+                    </TableCell>
+                    <TableCell>
+                      {0}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
@@ -442,7 +477,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       </IconButton>
                       <IconButton
                         component={RouterLink}
-                        to="/dashboard/customers/1"
+                        to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
                       >
                         <ArrowRightIcon fontSize="small" />
                       </IconButton>

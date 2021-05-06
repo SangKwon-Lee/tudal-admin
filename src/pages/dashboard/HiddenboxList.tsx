@@ -72,7 +72,7 @@ const HiddenboxList: FC = () => {
                 color="textPrimary"
                 variant="h5"
               >
-                Customer List
+                Hiddenbox List
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -102,28 +102,6 @@ const HiddenboxList: FC = () => {
                   히든박스
                 </Typography>
               </Breadcrumbs>
-              <Box
-                sx={{
-                  mb: -1,
-                  mx: -1,
-                  mt: 1
-                }}
-              >
-                <Button
-                  color="primary"
-                  startIcon={<UploadIcon fontSize="small" />}
-                  sx={{ m: 1 }}
-                >
-                  Import
-                </Button>
-                <Button
-                  color="primary"
-                  startIcon={<DownloadIcon fontSize="small" />}
-                  sx={{ m: 1 }}
-                >
-                  Export
-                </Button>
-              </Box>
             </Grid>
             <Grid item>
               <Box sx={{ m: -1 }}>
