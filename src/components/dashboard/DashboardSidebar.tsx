@@ -68,21 +68,7 @@ const sections = [
       {
         title: '히든박스',
         path: '/dashboard/hiddenboxes',
-        icon: <UsersIcon fontSize="small" />,
-        children: [
-          {
-            title: 'List',
-            path: '/dashboard/hiddenboxes'
-          },
-          {
-            title: 'Details',
-            path: '/dashboard/hiddenboxes/1'
-          },
-          {
-            title: 'Edit',
-            path: '/dashboard/hiddenboxes/1/edit'
-          }
-        ]
+        icon: <FolderOpenIcon fontSize="small" />
       },
     ]
   }
