@@ -20,7 +20,7 @@ import UploadIcon from '../../icons/Upload';
 import useSettings from '../../hooks/useSettings';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
-import axios, { token } from '../../lib/axios';
+import axios from '../../lib/axios';
 
 const HiddenboxList: FC = () => {
   const isMountedRef = useIsMountedRef();
@@ -34,7 +34,7 @@ const HiddenboxList: FC = () => {
   const getHiddenboxes = useCallback(async () => {
     console.log("isMountedRef", isMountedRef.current)
     try {
-      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?token=${token}`);
+      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes`);
 
       if (isMountedRef.current) {
         setHiddenboxes(response.data);
@@ -110,6 +110,8 @@ const HiddenboxList: FC = () => {
                   startIcon={<PlusIcon fontSize="small" />}
                   sx={{ m: 1 }}
                   variant="contained"
+                  component={RouterLink}
+                  to="/dashboard/hiddenboxes/new"
                 >
                   히든박스 추가
                 </Button>

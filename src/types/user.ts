@@ -1,8 +1,12 @@
+interface Avatar {
+  url: string;
+}
+
 export interface User {
   id: string;
-  avatar: string;
+  avatar?: Avatar;
   email: string;
-  name: string;
-  username?: string;
+  username: string;
+  nickname?: string;
   [key: string]: any;
 }

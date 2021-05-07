@@ -22,7 +22,7 @@ import ChevronRightIcon from '../../icons/ChevronRight';
 import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
-import axios, { token } from '../../lib/axios';
+import axios from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
 
 const tabs = [
@@ -43,7 +43,7 @@ const HiddenboxDetails: FC = () => {
 
   const getHiddenbox = useCallback(async () => {
     try {
-      const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}?token=${token}`);
+      const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}`);
       console.log("[HiddenboxDetail", response.data);
       if (isMountedRef.current) {
         setHiddenbox(response.data);

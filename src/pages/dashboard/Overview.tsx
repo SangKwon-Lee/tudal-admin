@@ -40,7 +40,7 @@ const Overview: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Overview | Material Kit Pro</title>
+        <title>Dashboard: Overview | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -49,7 +49,13 @@ const Overview: FC = () => {
           py: 8
         }}
       >
-        <Container maxWidth={settings.compact ? 'xl' : false}>
+        <Typography
+          color="textPrimary"
+          variant="h5"
+        >
+          대시보드 개발 중입니다.
+        </Typography>
+        {/* <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid
             container
             spacing={3}
@@ -390,7 +396,7 @@ const Overview: FC = () => {
               </Card>
             </Grid>
           </Grid>
-        </Container>
+        </Container> */}
       </Box>
     </>
   );

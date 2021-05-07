@@ -15,6 +15,8 @@ import useSettings from './hooks/useSettings';
 import gtm from './lib/gtm';
 import routes from './routes';
 import { createTheme } from './theme';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 const App: FC = () => {
   const content = useRoutes(routes);
@@ -35,15 +37,17 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <RTL direction={settings.direction}>
-        <SnackbarProvider
-          dense
-          maxSnack={3}
-        >
-          <GlobalStyles />
-          {auth.isInitialized ? content : <SplashScreen />}
-        </SnackbarProvider>
-      </RTL>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <RTL direction={settings.direction}>
+          <SnackbarProvider
+            dense
+            maxSnack={3}
+          >
+            <GlobalStyles />
+            {auth.isInitialized ? content : <SplashScreen />}
+          </SnackbarProvider>
+        </RTL>
+      </MuiPickersUtilsProvider>
     </ThemeProvider>
   );
 };

@@ -57,6 +57,7 @@ const CustomerEdit = Loadable(lazy(() => import('./pages/dashboard/CustomerEdit'
 const CustomerList = Loadable(lazy(() => import('./pages/dashboard/CustomerList')));
 const HiddenboxList = Loadable(lazy(() => import('./pages/dashboard/HiddenboxList')));
 const HiddenboxDetails = Loadable(lazy(() => import('./pages/dashboard/HiddenboxDetails')));
+const HiddenboxCreate = Loadable(lazy(() => import('./pages/dashboard/HiddenboxCreate')));
 const Finance = Loadable(lazy(() => import('./pages/dashboard/Finance')));
 const InvoiceDetails = Loadable(lazy(() => import('./pages/dashboard/InvoiceDetails')));
 const InvoiceList = Loadable(lazy(() => import('./pages/dashboard/InvoiceList')));
@@ -215,7 +216,11 @@ const routes: PartialRouteObject[] = [
           {
             path: ':customerId/edit',
             element: <CustomerEdit />
-          }
+          },
+          {
+            path: 'new',
+            element: <HiddenboxCreate />
+          },
         ]
       },
       {
