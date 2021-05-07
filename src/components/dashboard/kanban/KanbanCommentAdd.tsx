@@ -6,6 +6,7 @@ import { Avatar, Box, TextField } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
 import { addComment } from '../../../slices/kanban';
 import { useDispatch } from '../../../store';
+import { CMSURL } from '../../../lib/axios';
 
 interface KanbanCommentAddProps {
   cardId: string;
@@ -56,7 +57,7 @@ const KanbanCommentAdd: FC<KanbanCommentAddProps> = (props) => {
       {...other}
     >
       <Avatar
-        src={user.avatar}
+        src={`${CMSURL}${user.avatar.url}`}
         sx={{ mr: 2 }}
       />
       <TextField

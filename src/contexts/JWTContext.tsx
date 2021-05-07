@@ -60,12 +60,14 @@ const initialState: State = {
   user: null
 };
 
-const setSession = (accessToken: string | null): void => {
-  if (accessToken) {
+const setSession = (accessToken: string | null, userId?: string | null ): void => {
+  if (accessToken && userId) {
     localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('userId', userId);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
     delete axios.defaults.headers.common.Authorization;
   }
 };
@@ -126,11 +128,14 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     const initialize = async (): Promise<void> => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-        if (accessToken && verify(accessToken, JWT_SECRET)) {
-          setSession(accessToken);
-
-          const response = await axios.get<{ user: User }>('/api/identity/me');
-          const { user } = response.data;
+        const userId = window.localStorage.getItem('userId');
+        console.log("accessToken", accessToken)
+        if (accessToken) {
+          setSession(accessToken, userId);
+          console.log("accessToken is verifyeid");
+          const response = await axios.get<User>(`/users/${userId}`);
+          console.log("user", response.data);
+          const user = response.data;
 
           dispatch({
             type: 'INITIALIZE',
@@ -171,9 +176,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     });
     console.log("[JWTContext] response", response);
 
-    const { accessToken, user } = response.data;
+    const { jwt: accessToken, user } = response.data;
 
-    setSession(accessToken);
+    setSession(accessToken, (user.id).toString());
     dispatch({
       type: 'LOGIN',
       payload: {

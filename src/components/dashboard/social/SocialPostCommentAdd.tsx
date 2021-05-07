@@ -12,6 +12,7 @@ import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SendIcon from '@material-ui/icons/Send';
 import useAuth from '../../../hooks/useAuth';
+import { CMSURL } from '../../../lib/axios';
 
 const SocialPostCommentAdd: FC = (props) => {
   const { user } = useAuth();
@@ -35,7 +36,7 @@ const SocialPostCommentAdd: FC = (props) => {
       {...props}
     >
       <Avatar
-        src={user.avatar}
+        src={`${CMSURL}${user.avatar.url}`}
         sx={{ mr: 1 }}
       />
       <TextField

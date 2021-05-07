@@ -13,6 +13,7 @@ import { experimentalStyled } from '@material-ui/core/styles';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import useAuth from '../../../hooks/useAuth';
+import { CMSURL } from '../../../lib/axios';
 
 const MailReplyTextarea = experimentalStyled(TextareaAutosize)(
   ({ theme }) => (
@@ -55,7 +56,7 @@ const MailReply: FC = (props) => {
       }}
       {...props}
     >
-      <Avatar src={user.avatar} />
+      <Avatar src={`${CMSURL}${user.avatar.url}`} />
       <Paper
         sx={{
           flexGrow: 1,

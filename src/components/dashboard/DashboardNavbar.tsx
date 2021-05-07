@@ -9,7 +9,7 @@ import AccountPopover from './AccountPopover';
 import ContactsPopover from './ContactsPopover';
 import ContentSearch from './ContentSearch';
 import LanguagePopover from './LanguagePopover';
-import Logo from '../Logo';
+import { WhiteLogo } from '../Logo';
 import NotificationsPopover from './NotificationsPopover';
 
 interface DashboardNavbarProps extends AppBarProps {
@@ -54,7 +54,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = (props) => {
         </Hidden>
         <Hidden lgDown>
           <RouterLink to="/">
-            <Logo
+            <WhiteLogo
               sx={{
                 height: 40,
                 width: 40

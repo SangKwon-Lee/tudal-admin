@@ -9,7 +9,8 @@ interface LogoProps {
   sx?: SxProps<Theme>;
 }
 
-const logoImage = '/static/logo_white.png';
+const logoImage = '/static/logo.png';
+const whiteLogoImage = '/static/logo_white.png';
 
 const Logo: FC<LogoProps> = (props) => (
   <Box
@@ -25,4 +26,19 @@ const Logo: FC<LogoProps> = (props) => (
   </Box>
 );
 
+export const WhiteLogo: FC<LogoProps> = (props) => (
+  <Box
+    sx={{
+      height: 35,
+      '& > img': {
+        maxHeight: '100%',
+        width: 'auto'
+      }
+    }}
+  >
+    <img src={whiteLogoImage} />
+  </Box>
+);
+
 export default Logo;
+

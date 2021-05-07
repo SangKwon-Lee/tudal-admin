@@ -18,6 +18,7 @@ import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SendIcon from '@material-ui/icons/Send';
 import useAuth from '../../../hooks/useAuth';
+import { CMSURL } from '../../../lib/axios';
 
 interface ChatMessageAddProps {
   disabled?: boolean;
@@ -71,7 +72,7 @@ const ChatMessageAdd: FC<ChatMessageAddProps> = (props) => {
       <Hidden smDown>
         <Avatar
           sx={{ mr: 2 }}
-          src={user.avatar}
+          src={`${CMSURL}${user.avatar.url}`}
         />
       </Hidden>
       <TextField

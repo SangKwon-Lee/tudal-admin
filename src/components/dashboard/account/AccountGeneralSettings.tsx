@@ -23,6 +23,7 @@ import {
 import useAuth from '../../../hooks/useAuth';
 import wait from '../../../utils/wait';
 import countries from './countries';
+import { CMSURL } from '../../../lib/axios';
 
 const AccountGeneralSettings: FC = (props) => {
   const { user } = useAuth();
@@ -59,7 +60,7 @@ const AccountGeneralSettings: FC = (props) => {
                 }}
               >
                 <Avatar
-                  src={user.avatar}
+                  src={`${CMSURL}${user.avatar.url}`}
                   sx={{
                     height: 100,
                     width: 100

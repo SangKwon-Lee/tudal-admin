@@ -1,8 +1,11 @@
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 
+export const CMSURL = 'http://103.244.108.203:1337';
+export const APIURL = 'http://103.244.108.41:3000/api';
+
 const axiosInstance = axios.create({
-  baseURL: 'http://103.244.108.203:1337/',
+  baseURL: CMSURL,
 });
 
 axiosInstance.interceptors.response.use(
@@ -14,8 +17,19 @@ axiosInstance.interceptors.response.use(
 
 export const mock = new AxiosMockAdapter(axiosInstance, { delayResponse: 0 });
 
+export const apiServer = axios.create({
+  baseURL: APIURL,
+});
+
+apiServer.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject((
+    error.response && error.response.data
+  ) || `Something went wrong`)
+);
+
 const pureAxiosInstance = axios.create({
-  baseURL: 'http://103.244.108.203:1337/',
+  baseURL: CMSURL,
 });
 
 pureAxiosInstance.interceptors.response.use(
@@ -25,6 +39,4 @@ pureAxiosInstance.interceptors.response.use(
   ) || `Something went wrong`)
 );
 
-
-export const token = 'sbcnepqm22@0';
 export default pureAxiosInstance;

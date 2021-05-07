@@ -17,6 +17,7 @@ import {
 import useAuth from '../../hooks/useAuth';
 import CogIcon from '../../icons/Cog';
 import UserIcon from '../../icons/User';
+import { CMSURL } from '../../lib/axios';
 
 const AccountPopover: FC = () => {
   const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -61,7 +62,7 @@ const AccountPopover: FC = () => {
         }}
       >
         <Avatar
-          src={user.avatar}
+          src={`${CMSURL}${user.avatar.url}`}
           sx={{
             height: 32,
             width: 32
@@ -96,7 +97,7 @@ const AccountPopover: FC = () => {
           </Typography>
         </Box>
         <Divider />
-        <Box sx={{ mt: 2 }}>
+        {/* <Box sx={{ mt: 2 }}>
           <MenuItem
             component={RouterLink}
             to="/dashboard/social/profile"
@@ -133,7 +134,7 @@ const AccountPopover: FC = () => {
               )}
             />
           </MenuItem>
-        </Box>
+        </Box> */}
         <Box sx={{ p: 2 }}>
           <Button
             color="primary"

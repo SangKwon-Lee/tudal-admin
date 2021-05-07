@@ -12,9 +12,6 @@ import {
   Typography
 } from '@material-ui/core';
 import {
-  LoginAmplify,
-  LoginAuth0,
-  LoginFirebase,
   LoginJWT
 } from '../../components/authentication/login';
 import Logo from '../../components/Logo';
@@ -22,9 +19,6 @@ import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
 const platformIcons = {
-  Amplify: '/static/icons/amplify.svg',
-  Auth0: '/static/icons/auth0.svg',
-  Firebase: '/static/icons/firebase.svg',
   JWT: '/static/icons/jwt.svg'
 };
 
@@ -107,9 +101,6 @@ const Login: FC = () => {
                   mt: 3
                 }}
               >
-                {platform === 'Amplify' && <LoginAmplify />}
-                {platform === 'Auth0' && <LoginAuth0 />}
-                {platform === 'Firebase' && <LoginFirebase />}
                 {platform === 'JWT' && <LoginJWT />}
               </Box>
               <Divider sx={{ my: 3 }} />
