@@ -28,6 +28,7 @@ const HiddenboxCreateWizard: FC = (props) => {
     startDate: (moment().add(1, 'day').set('hour', 7).set('minute', 0)).toDate(),
     endDate: (moment().add(1, 'day').set('hour', 9).set('minute', 0)).toDate(),
     publicDate: (moment().add(7, 'day').set('hour', 17).set('minute', 0)).toDate(),
+    author: parseInt(user.id)
   }
 
   const [activeStep, setActiveStep] = useState<number>(0);

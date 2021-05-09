@@ -13,6 +13,7 @@ import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import moment from 'moment';
+import { apiServer } from '../../../lib/axios';
 
 const AWS = require('aws-sdk');
 const fs = require('fs');
@@ -93,11 +94,20 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
           contents: contents,
         })
       }
-      return;
-      // NOTE: Make API request
-
-      if (onComplete) {
-        onComplete();
+      const newHiddenbox = {
+        ...values,
+        startDate: moment(values.startDate).format("YYYY-MM-DD HH:mm:ss"),
+        endDate: moment(values.endDate).format("YYYY-MM-DD HH:mm:ss"),
+        publicDate: moment(values.publicDate).format("YYYY-MM-DD HH:mm:ss")
+      }
+      
+      const response = await apiServer.post('/hiddenbox/new', newHiddenbox);
+      if( response.status === 200 ){
+        if (onComplete) {
+          onComplete();
+        }
+      } else {
+        return;
       }
     } catch (err) {
       console.error(err);
