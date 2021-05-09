@@ -129,12 +129,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
         const userId = window.localStorage.getItem('userId');
-        console.log("accessToken", accessToken)
         if (accessToken) {
           setSession(accessToken, userId);
-          console.log("accessToken is verifyeid");
           const response = await axios.get<User>(`/users/${userId}`);
-          console.log("user", response.data);
           const user = response.data;
 
           dispatch({
