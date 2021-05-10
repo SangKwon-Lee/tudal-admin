@@ -36,8 +36,8 @@ interface HiddenboxListTableProps {
 }
 
 type Sort =
-  | 'updatedAt|desc'
-  | 'updatedAt|asc'
+  | 'updated_at|desc'
+  | 'updated_at|asc'
   | 'orders|desc'
   | 'orders|asc';
 
@@ -72,11 +72,11 @@ const tabs = [
 const sortOptions: SortOption[] = [
   {
     label: '최신순',
-    value: 'updatedAt|desc'
+    value: 'updated_at|desc'
   },
   {
     label: '오래된순',
-    value: 'updatedAt|asc'
+    value: 'updated_at|asc'
   },
   {
     label: '판매량 최고',
