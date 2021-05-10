@@ -29,7 +29,7 @@ const Mail: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Mail | Material Kit Pro</title>
+        <title>Dashboard: Mail | TUDAL Admin</title>
       </Helmet>
       <Box
         ref={rootRef}

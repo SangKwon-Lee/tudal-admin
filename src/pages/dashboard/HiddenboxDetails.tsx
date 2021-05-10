@@ -68,7 +68,7 @@ const HiddenboxDetails: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Details | Material Kit Pro</title>
+        <title>Dashboard: Hiddenbox Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

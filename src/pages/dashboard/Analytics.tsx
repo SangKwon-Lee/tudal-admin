@@ -34,7 +34,7 @@ const Analytics: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Analytics | Material Kit Pro</title>
+        <title>Dashboard: Analytics | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

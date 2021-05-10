@@ -89,7 +89,7 @@ const BlogPostList: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Blog: Post List | Material Kit Pro</title>
+        <title>Blog: Post List | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

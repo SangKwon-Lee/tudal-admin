@@ -50,7 +50,7 @@ const CustomerEdit: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Customer Edit | Material Kit Pro</title>
+        <title>Dashboard: Customer Edit | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -50,7 +50,7 @@ const InvoiceList: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Invoice List | Material Kit Pro</title>
+        <title>Dashboard: Invoice List | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

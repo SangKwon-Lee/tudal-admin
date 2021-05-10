@@ -25,7 +25,7 @@ const BlogPostCreate: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Blog: Post Create | Material Kit Pro</title>
+        <title>Blog: Post Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

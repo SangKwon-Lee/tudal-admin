@@ -15,7 +15,7 @@ const BrowseColors: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Colors | Material Kit Pro</title>
+        <title>Browse: Colors | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

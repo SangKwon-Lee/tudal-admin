@@ -39,7 +39,7 @@ const Register: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Register | Material Kit Pro</title>
+        <title>Register | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -20,6 +20,7 @@ export interface Hiddenbox {
     id: number;
     username: string;
     email: string;
+    nickname: string;
   };
   productId: string;
   stocks: Stock[];

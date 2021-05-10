@@ -56,7 +56,9 @@ const MailReply: FC = (props) => {
       }}
       {...props}
     >
-      <Avatar src={`${CMSURL}${user.avatar.url}`} />
+      {user.avatar && user.avatar.url ? (
+        <Avatar src={`${CMSURL}${user.avatar.url}`} />
+      ) : null }
       <Paper
         sx={{
           flexGrow: 1,

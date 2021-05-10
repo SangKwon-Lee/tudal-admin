@@ -24,7 +24,7 @@ const BrowseTables: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Tables | Material Kit Pro</title>
+        <title>Browse: Tables | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

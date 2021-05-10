@@ -74,7 +74,7 @@ const Kanban: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Kanban | Material Kit Pro</title>
+        <title>Dashboard: Kanban | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

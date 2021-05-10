@@ -34,7 +34,7 @@ const PasswordReset: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Password Reset | Material Kit Pro</title>
+        <title>Password Reset | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

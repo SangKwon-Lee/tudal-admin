@@ -45,7 +45,7 @@ const Account: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Account | Material Kit Pro</title>
+        <title>Dashboard: Account | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -56,10 +56,12 @@ const KanbanCommentAdd: FC<KanbanCommentAddProps> = (props) => {
       }}
       {...other}
     >
-      <Avatar
-        src={`${CMSURL}${user.avatar.url}`}
-        sx={{ mr: 2 }}
-      />
+      {user.avatar && user.avatar.url ? (
+        <Avatar
+          src={`${CMSURL}${user.avatar.url}`}
+          sx={{ mr: 2 }}
+        />
+      ) : null }
       <TextField
         fullWidth
         onChange={handleChange}

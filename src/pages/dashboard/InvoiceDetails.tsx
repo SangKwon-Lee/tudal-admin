@@ -56,7 +56,7 @@ const InvoiceDetails: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Invoice Details | Material Kit Pro</title>
+        <title>Dashboard: Invoice Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -24,7 +24,7 @@ const BrowseGroupedLists: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Grouped Lists | Material Kit Pro</title>
+        <title>Browse: Grouped Lists | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -50,7 +50,7 @@ const ProductList: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Product List | Material Kit Pro</title>
+        <title>Dashboard: Product List | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
