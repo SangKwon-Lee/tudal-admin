@@ -36,8 +36,8 @@ interface HiddenboxListTableProps {
 }
 
 type Sort =
-  | 'updatedAt|desc'
-  | 'updatedAt|asc'
+  | 'updated_at|desc'
+  | 'updated_at|asc'
   | 'orders|desc'
   | 'orders|asc';
 
@@ -72,11 +72,11 @@ const tabs = [
 const sortOptions: SortOption[] = [
   {
     label: '최신순',
-    value: 'updatedAt|desc'
+    value: 'updated_at|desc'
   },
   {
     label: '오래된순',
-    value: 'updatedAt|asc'
+    value: 'updated_at|asc'
   },
   {
     label: '판매량 최고',
@@ -250,7 +250,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     hiddenboxId: number
   ): void => {
     if (!selectedHiddenboxes.includes(hiddenboxId)) {
-      setSelectedHiddenboxes((prevSelected) => [...prevSelected, hiddenboxId]);
+      setSelectedHiddenboxes((prevSelected) => [hiddenboxId]);
     } else {
       setSelectedHiddenboxes((prevSelected) => prevSelected.filter((id) => id !== hiddenboxId));
     }
@@ -360,12 +360,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               zIndex: 2
             }}
           >
-            <Checkbox
+            {/* <Checkbox
               checked={selectedAllHiddenboxes}
               color="primary"
               indeterminate={selectedSomeHiddenboxes}
               onChange={handleSelectAllHiddenboxes}
-            />
+            /> */}
             <Button
               color="primary"
               sx={{ ml: 2 }}
@@ -373,10 +373,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
             >
               삭제
             </Button>
-            <Button
+            <Button 
               color="primary"
               sx={{ ml: 2 }}
               variant="outlined"
+              component={RouterLink}
+              to={`/dashboard/hiddenboxes/${selectedHiddenboxes[0]}/edit`}
             >
               수정
             </Button>
@@ -389,12 +391,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
+                  {/* <Checkbox
                     checked={selectedAllHiddenboxes}
                     color="primary"
                     indeterminate={selectedSomeHiddenboxes}
                     onChange={handleSelectAllHiddenboxes}
-                  />
+                  /> */}
                 </TableCell>
                 <TableCell>
                   상품명
@@ -454,7 +456,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                             color="textSecondary"
                             variant="body2"
                           >
-                            {hiddenbox.author.username}
+                            {hiddenbox.author.nickname}
                           </Typography>
                         </Box>
                       </Box>
@@ -471,7 +473,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                     <TableCell align="right">
                       <IconButton
                         component={RouterLink}
-                        to="/dashboard/customers/1/edit"
+                        to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
                       >
                         <PencilAltIcon fontSize="small" />
                       </IconButton>

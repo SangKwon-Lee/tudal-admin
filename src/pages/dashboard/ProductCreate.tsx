@@ -27,7 +27,7 @@ const ProductCreate: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Product Create | Material Kit Pro</title>
+        <title>Dashboard: Product Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

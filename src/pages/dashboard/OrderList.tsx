@@ -50,7 +50,7 @@ const OrderList: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Order List | Material Kit Pro</title>
+        <title>Dashboard: Order List | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

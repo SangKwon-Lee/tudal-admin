@@ -58,7 +58,7 @@ const HomeHero: FC = (props) => {
           color="textPrimary"
           variant="h3"
         >
-          Material Kit Pro v4
+          TUDAL Admin v4
         </Typography>
         <Typography
           align="center"

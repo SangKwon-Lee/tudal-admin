@@ -34,7 +34,7 @@ const VerifyCode: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Verify Code | Material Kit Pro</title>
+        <title>Verify Code | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

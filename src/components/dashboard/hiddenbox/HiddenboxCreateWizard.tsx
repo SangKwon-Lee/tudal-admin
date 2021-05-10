@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -15,8 +15,16 @@ import HiddenboxDetailsForm from './HiddenboxDetailsForm';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import moment from 'moment';
 import useAuth from '../../../hooks/useAuth';
+import axios from '../../../lib/axios';
 
-const HiddenboxCreateWizard: FC = (props) => {
+interface HiddenboxCreateWizardProps {
+  mode?: string;
+  boxId?: number;
+}
+
+const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
+  const mode = props.mode || 'create';
+  const hiddenboxId = props.boxId || 0;
   const { user, logout } = useAuth();
   const initialHiddenbox: any = {
     title: '',
@@ -30,10 +38,39 @@ const HiddenboxCreateWizard: FC = (props) => {
     publicDate: (moment().add(7, 'day').set('hour', 17).set('minute', 0)).toDate(),
     author: parseInt(user.id)
   }
-
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const [newHiddenbox, setNewHiddenbox] = useState<any>(initialHiddenbox);
+
+  useEffect(() => {
+    if( mode === 'edit' ){
+      getHiddenbox();
+    }
+  }, []);
+
+  const getHiddenbox = async () => {
+    try {
+      if( hiddenboxId === 0 ) return;
+
+      const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId.toString()}`);
+      if( response.status === 200 ){
+        const data = response.data;
+        const newHiddenboxData = {
+          ...data,
+          tags: data.tags.map(item => item.name),
+          stocks: data.stocks.map(item => item.code),
+          startDate: moment(data.startDate).toDate(),
+          endDate: moment(data.endDate).toDate(),
+          publicDate: moment(data.publicDate).toDate(),
+          author: data.author.id
+        }
+        console.log("Edit Mode", newHiddenboxData);
+        setNewHiddenbox(newHiddenboxData);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   const handleNext = (): void => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

@@ -18,7 +18,7 @@ const ServerError: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Error: Server Error | Material Kit Pro</title>
+        <title>Error: Server Error | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

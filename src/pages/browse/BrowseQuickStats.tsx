@@ -21,7 +21,7 @@ const BrowseQuickStats: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Quick Stats | Material Kit Pro</title>
+        <title>Browse: Quick Stats | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

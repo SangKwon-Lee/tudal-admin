@@ -128,7 +128,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (props) => {
                 color="textSecondary"
                 variant="body2"
               >
-                {`${hiddenbox.author.username}(${hiddenbox.author.email})`}
+                {`${hiddenbox.author.nickname}(${hiddenbox.author.email})`}
               </Typography>
             </TableCell>
           </TableRow>

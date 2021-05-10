@@ -201,7 +201,7 @@ const Docs: FC = () => {
   return (
     <div>
       <Helmet>
-        <title>{`Docs: ${file.data.title} | Material Kit Pro`}</title>
+        <title>{`Docs: ${file.data.title} | TUDAL Admin`}</title>
       </Helmet>
       <Container
         maxWidth={settings.compact ? 'lg' : false}

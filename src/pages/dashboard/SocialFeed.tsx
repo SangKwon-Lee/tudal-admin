@@ -35,7 +35,7 @@ const SocialFeed: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Social Feed | Material Kit Pro</title>
+        <title>Dashboard: Social Feed | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

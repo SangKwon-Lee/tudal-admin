@@ -73,7 +73,7 @@ const CustomerDetails: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Customer Details | Material Kit Pro</title>
+        <title>Dashboard: Customer Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

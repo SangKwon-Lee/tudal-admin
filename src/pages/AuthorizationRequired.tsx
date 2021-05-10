@@ -18,7 +18,7 @@ const AuthorizationRequired: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Error: Authorization Required | Material Kit Pro</title>
+        <title>Error: Authorization Required | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

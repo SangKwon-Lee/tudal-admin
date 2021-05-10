@@ -52,21 +52,23 @@ const AccountGeneralSettings: FC = (props) => {
                 textAlign: 'center'
               }}
             >
-              <Box
-                sx={{
-                  p: 1,
-                  border: (theme) => `1px dashed ${theme.palette.divider}`,
-                  borderRadius: '50%'
-                }}
-              >
-                <Avatar
-                  src={`${CMSURL}${user.avatar.url}`}
+              {user.avatar && user.avatar.url ? (
+                <Box
                   sx={{
-                    height: 100,
-                    width: 100
+                    p: 1,
+                    border: (theme) => `1px dashed ${theme.palette.divider}`,
+                    borderRadius: '50%'
                   }}
-                />
-              </Box>
+                >
+                  <Avatar
+                    src={`${CMSURL}${user.avatar.url}`}
+                    sx={{
+                      height: 100,
+                      width: 100
+                    }}
+                  />
+                </Box>
+              ) : null }
               <Typography
                 color="textPrimary"
                 sx={{ mt: 1 }}

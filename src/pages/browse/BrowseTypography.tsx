@@ -13,7 +13,7 @@ const BrowseTypography: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Typography | Material Kit Pro</title>
+        <title>Browse: Typography | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

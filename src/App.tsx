@@ -17,6 +17,10 @@ import routes from './routes';
 import { createTheme } from './theme';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
+import moment from 'moment';
+
+let koLocale = require('moment/locale/ko');
+moment.locale('ko', koLocale);
 
 const App: FC = () => {
   const content = useRoutes(routes);
@@ -37,7 +41,7 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={MomentUtils} locale='ko_Kr'>
         <RTL direction={settings.direction}>
           <SnackbarProvider
             dense

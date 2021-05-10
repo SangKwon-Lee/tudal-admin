@@ -17,8 +17,8 @@ import {
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SendIcon from '@material-ui/icons/Send';
-import useAuth from '../../../hooks/useAuth';
-import { CMSURL } from '../../../lib/axios';
+import useAuth from '../../hooks/useAuth';
+import { CMSURL } from '../../lib/axios';
 
 interface ChatMessageAddProps {
   disabled?: boolean;

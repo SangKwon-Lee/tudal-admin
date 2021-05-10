@@ -21,7 +21,7 @@ const BrowseDetailLists: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Detail Lists | Material Kit Pro</title>
+        <title>Browse: Detail Lists | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

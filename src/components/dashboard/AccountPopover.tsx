@@ -52,6 +52,7 @@ const AccountPopover: FC = () => {
   };
   return (
     <>
+    {user.avatar && user.avatar.url ? (
       <Box
         component={ButtonBase}
         onClick={handleOpen}
@@ -69,6 +70,7 @@ const AccountPopover: FC = () => {
           }}
         />
       </Box>
+    ) : null}
       <Popover
         anchorEl={anchorRef.current}
         anchorOrigin={{

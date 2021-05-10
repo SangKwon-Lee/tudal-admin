@@ -39,7 +39,7 @@ const Pricing: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Pricing | Material Kit Pro</title>
+        <title>Pricing | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

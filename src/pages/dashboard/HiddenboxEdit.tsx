@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
@@ -10,47 +10,23 @@ import {
   Link,
   Typography
 } from '@material-ui/core';
-import { CustomerEditForm } from '../../components/dashboard/customer';
-import useIsMountedRef from '../../hooks/useIsMountedRef';
+import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
-import type { Customer } from '../../types/customer';
-import axios from '../../lib/axios';
 
-const CustomerEdit: FC = () => {
-  const isMountedRef = useIsMountedRef();
+const HiddenboxEdit: FC = () => {
   const { settings } = useSettings();
-  const [customer, setCustomer] = useState<Customer | null>(null);
-
+  const { hiddenboxId } = useParams();
+  console.log("hiddenboxId", hiddenboxId);
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
 
-  const getCustomer = useCallback(async () => {
-    try {
-      const response = await axios.get<{ customer: Customer }>('/api/customers/1');
-
-      if (isMountedRef.current) {
-        setCustomer(response.data.customer);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [isMountedRef]);
-
-  useEffect(() => {
-    getCustomer();
-  }, [getCustomer]);
-
-  if (!customer) {
-    return null;
-  }
-
   return (
     <>
       <Helmet>
-        <title>Dashboard: Customer Edit | TUDAL Admin</title>
+        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -61,6 +37,7 @@ const CustomerEdit: FC = () => {
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid
+            alignItems="center"
             container
             justifyContent="space-between"
             spacing={3}
@@ -70,7 +47,7 @@ const CustomerEdit: FC = () => {
                 color="textPrimary"
                 variant="h5"
               >
-                Customer Edit
+                히든박스 생성 Process
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -83,27 +60,19 @@ const CustomerEdit: FC = () => {
                   to="/dashboard"
                   variant="subtitle2"
                 >
-                  Dashboard
-                </Link>
-                <Link
-                  color="textPrimary"
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  Management
+                  대시보드
                 </Link>
                 <Typography
                   color="textSecondary"
                   variant="subtitle2"
                 >
-                  Customers
+                  히든박스
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
-          <Box mt={3}>
-            <CustomerEditForm customer={customer} />
+          <Box sx={{ mt: 3 }}>
+            <HiddenboxCreateWizard mode={'edit'} boxId={parseInt(hiddenboxId)} />
           </Box>
         </Container>
       </Box>
@@ -111,4 +80,4 @@ const CustomerEdit: FC = () => {
   );
 };
 
-export default CustomerEdit;
+export default HiddenboxEdit;

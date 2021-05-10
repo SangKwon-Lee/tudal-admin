@@ -17,13 +17,11 @@ import { apiServer } from '../../../lib/axios';
 
 const AWS = require('aws-sdk');
 const fs = require('fs');
-const endpoint = new AWS.Endpoint('https://kr.object.fin-ncloudstorage.com');
-const region = 'kr-standard';
-const access_key = 'yS3crIOtslAdZXIr8WP1';
-const secret_key = 'lgbR5AhsCpx5xiNt8BdZFv1KumQcfIMACjNEPRcy';
+const region = 'ap-northeast-2';
+const access_key = 'AKIAY53UECMD2OMWX4UR';
+const secret_key = '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';
 
 const S3 = new AWS.S3({
-    endpoint,
     region,
     credentials: {
         accessKeyId : access_key,
@@ -63,15 +61,15 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
     
     try{
       // Koscom Cloud에 업로드하기
-      const image = await S3.putObject({
+      await S3.putObject({
           Bucket: bucket_name,
           Key: imageName,
           ACL: 'public-read',
           // ACL을 지우면 전체공개가 되지 않습니다.
           Body: blob
       }).promise()
-      console.log("Upload completed", image)
-      callback(image, imageName);
+      const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`
+      callback(imageUrl, imageName);
     } catch(error){
       return false;
     }
@@ -93,21 +91,23 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
           ...values,
           contents: contents,
         })
-      }
-      const newHiddenbox = {
-        ...values,
-        startDate: moment(values.startDate).format("YYYY-MM-DD HH:mm:ss"),
-        endDate: moment(values.endDate).format("YYYY-MM-DD HH:mm:ss"),
-        publicDate: moment(values.publicDate).format("YYYY-MM-DD HH:mm:ss")
-      }
-      
-      const response = await apiServer.post('/hiddenbox/new', newHiddenbox);
-      if( response.status === 200 ){
-        if (onComplete) {
-          onComplete();
+
+        const newHiddenbox = {
+          ...values,
+          contents: contents,
+          startDate: moment(values.startDate).utc().format("YYYY-MM-DD HH:mm:ss"),
+          endDate: moment(values.endDate).utc().format("YYYY-MM-DD HH:mm:ss"),
+          publicDate: moment(values.publicDate).utc().format("YYYY-MM-DD HH:mm:ss")
         }
-      } else {
-        return;
+
+        const response = await apiServer.post('/hiddenbox/new', newHiddenbox);
+        if( response.status === 200 ){
+          if (onComplete) {
+            onComplete();
+          }
+        } else {
+          return;
+        }
       }
     } catch (err) {
       console.error(err);

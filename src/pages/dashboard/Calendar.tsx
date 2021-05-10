@@ -210,7 +210,7 @@ const Calendar: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Calendar | Material Kit Pro</title>
+        <title>Dashboard: Calendar | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

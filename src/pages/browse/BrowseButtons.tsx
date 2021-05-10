@@ -16,7 +16,7 @@ const BrowseButtons: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Buttons | Material Kit Pro</title>
+        <title>Browse: Buttons | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

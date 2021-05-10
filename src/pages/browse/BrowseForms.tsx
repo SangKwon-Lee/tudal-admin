@@ -29,7 +29,7 @@ const BrowseForms: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Browse: Forms | Material Kit Pro</title>
+        <title>Browse: Forms | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

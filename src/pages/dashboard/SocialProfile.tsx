@@ -74,7 +74,7 @@ const SocialProfile: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Social Profile | Material Kit Pro</title>
+        <title>Dashboard: Social Profile | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{

@@ -34,11 +34,13 @@ const SocialPostCommentAdd: FC = (props) => {
         display: 'flex'
       }}
       {...props}
-    >
-      <Avatar
-        src={`${CMSURL}${user.avatar.url}`}
-        sx={{ mr: 1 }}
-      />
+    > 
+      {user.avatar && user.avatar.url ? (
+        <Avatar
+          src={`${CMSURL}${user.avatar.url}`}
+          sx={{ mr: 1 }}
+        />
+      ) : null }
       <TextField
         fullWidth
         onChange={handleChange}
