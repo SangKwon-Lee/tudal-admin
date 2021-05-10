@@ -18,7 +18,6 @@ import {
 import PlusIcon from '../../../icons/Plus';
 import moment from 'moment';
 import type { Hiddenbox } from '../../../types/hiddenbox';
-import { values } from 'lodash';
 import { apiServer } from '../../../lib/axios';
 import { ChangeCircleRounded } from '@material-ui/icons';
 
@@ -39,7 +38,9 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const [tag, setTag] = useState<string>('');
   const [stock, setStock] = useState<string>('');
   const [stockList, setStockList] = useState<any[]>([]);
+  const values = props.values;
 
+  console.log("values", values)
   const categoryOptions = [
     { label: '베이직(5,500원)', value: 'hiddenbox-basic' },
     { label: '스탠다드(33,000원)', value: 'hiddenbox-standard' },
@@ -65,7 +66,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   return (
     <Formik
       initialValues={{
-        ...props.values,
+        ...values,
         submit: null
       }}
       validationSchema={
