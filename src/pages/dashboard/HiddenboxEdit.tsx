@@ -72,7 +72,7 @@ const HiddenboxEdit: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxCreateWizard mode={'edit'} boxId={parseInt(hiddenboxId)} />
+            <HiddenboxCreateWizard mode={'edit'} boxid={parseInt(hiddenboxId)} />
           </Box>
         </Container>
       </Box>

@@ -35,10 +35,11 @@ interface HiddenboxContentFormProps {
   onComplete?: () => void;
   setValues?: (any) => void;
   values: any;
+  mode: string;
 }
 
 const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
-  const { onBack, onComplete, values, setValues, ...other } = props;
+  const { onBack, onComplete, values, setValues, mode, ...other } = props;
   const [content, setContent] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,16 +98,27 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
           contents: contents,
           startDate: moment(values.startDate).utc().format("YYYY-MM-DD HH:mm:ss"),
           endDate: moment(values.endDate).utc().format("YYYY-MM-DD HH:mm:ss"),
-          publicDate: moment(values.publicDate).utc().format("YYYY-MM-DD HH:mm:ss")
+          publicDate: moment(values.publicDate).format("YYYY-MM-DD HH:mm:ss")
         }
 
-        const response = await apiServer.post('/hiddenbox/new', newHiddenbox);
-        if( response.status === 200 ){
-          if (onComplete) {
-            onComplete();
+        if( mode === 'create' ){
+          const response = await apiServer.post('/hiddenbox/new', newHiddenbox);
+          if( response.status === 200 ){
+            if (onComplete) {
+              onComplete();
+            }
+          } else {
+            return;
           }
         } else {
-          return;
+          const response = await apiServer.put(`/hiddenbox/update/${newHiddenbox.id}`, newHiddenbox);
+          if( response.status === 200 ){
+            if (onComplete) {
+              onComplete();
+            }
+          } else {
+            return;
+          }
         }
       }
     } catch (err) {

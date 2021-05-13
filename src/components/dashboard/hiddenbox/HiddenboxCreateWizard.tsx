@@ -19,12 +19,12 @@ import axios from '../../../lib/axios';
 
 interface HiddenboxCreateWizardProps {
   mode?: string;
-  boxId?: number;
+  boxid?: number;
 }
 
 const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
   const mode = props.mode || 'create';
-  const hiddenboxId = props.boxId || 0;
+  const hiddenboxId = props.boxid || 0;
   const { user, logout } = useAuth();
   const initialHiddenbox: any = {
     title: '',
@@ -41,6 +41,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const [newHiddenbox, setNewHiddenbox] = useState<any>(initialHiddenbox);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if( mode === 'edit' ){
@@ -56,7 +57,11 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
       if( response.status === 200 ){
         const data = response.data;
         const newHiddenboxData = {
-          ...data,
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          productId: data.productId,
+          contents: data.contents,
           tags: data.tags.map(item => item.name),
           stocks: data.stocks.map(item => item.code),
           startDate: moment(data.startDate).toDate(),
@@ -65,10 +70,15 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
           author: data.author.id
         }
         console.log("Edit Mode", newHiddenboxData);
-        setNewHiddenbox(newHiddenboxData);
+        setNewHiddenbox(prev => ({
+          ...prev,
+          ...newHiddenboxData
+        }));
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -98,19 +108,21 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
         !completed
           ? (
             <>
-              {activeStep === 0 && (
+              {activeStep === 0 && (( mode === 'edit' && loading === false ) || ( mode === 'create' )) ? (
                 <HiddenboxDetailsForm 
                   onNext={handleNext} 
                   setValues={handleSetNewHiddenbox}
                   values={newHiddenbox}
+                  mode={mode}
                 />
-              )}
+              ) : null}
               {activeStep === 1 && (
                 <HiddenboxContentForm
                   onBack={handleBack}
                   onComplete={handleComplete}
                   setValues={handleSetNewHiddenbox}
                   values={newHiddenbox}
+                  mode={mode}
                 />
               )}
             </>
@@ -145,7 +157,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
                       color="textPrimary"
                       variant="h3"
                     >
-                      히든박스가 만들어졌습니다!
+                      {mode === 'create' ? '히든박스가 만들어졌습니다!' : '히든박스가 수정되었습니다!'}
                     </Typography>
                   </Box>
                   <Box sx={{ mt: 2 }}>
