@@ -26,6 +26,7 @@ interface HiddenboxDetailsProps {
   onNext?: () => void;
   setValues?: (any) => void;
   values: any;
+  mode: string;
 }
 
 type Stock = {
@@ -34,13 +35,11 @@ type Stock = {
 }
 
 const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
-  const { onBack, onNext, setValues, ...other } = props;
+  const { onBack, onNext, setValues, values, mode, ...other } = props;
   const [tag, setTag] = useState<string>('');
   const [stock, setStock] = useState<string>('');
   const [stockList, setStockList] = useState<any[]>([]);
-  const values = props.values;
-
-  console.log("values", values)
+ 
   const categoryOptions = [
     { label: '베이직(5,500원)', value: 'hiddenbox-basic' },
     { label: '스탠다드(33,000원)', value: 'hiddenbox-standard' },
@@ -99,6 +98,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
           // It is important to have it on server to be able to reuse it if user
           // decides to continue later.
           setValues({
+            ...values,
             title: values.title,
             description: values.description,
             tags: values.tags,
@@ -356,7 +356,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onChange={(date) => setFieldValue('startDate', date)}
                     onClose={() => setFieldTouched('startDate')}
                     value={values.startDate}
-                    disablePast
+                    disablePast={mode === 'edit' ? false : true}
                     minutesStep={5}
                     format="YYYY년 M월 D일 HH:mm"
                     minDateMessage={'판매 시작일은 현재 시간 이후여야 합니다.'}
@@ -370,7 +370,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onChange={(date) => setFieldValue('endDate', date)}
                     onClose={() => setFieldTouched('endDate')}
                     value={values.endDate}
-                    disablePast
+                    disablePast={mode === 'edit' ? false : true}
                     minDate={values.startDate}
                     minDateMessage={'판매 종료일은 시작일 이후여야 합니다.'}
                     minutesStep={5}
@@ -385,7 +385,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onChange={(date) => setFieldValue('publicDate', date)}
                     onClose={() => setFieldTouched('publicDate')}
                     value={values.publicDate}
-                    disablePast
+                    disablePast={mode === 'edit' ? false : true}
                     minDate={values.endDate}
                     minDateMessage={'공개일은 판매 종료일 이후여야 합니다.'}
                     minutesStep={5}

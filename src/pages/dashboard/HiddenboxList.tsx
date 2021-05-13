@@ -31,12 +31,12 @@ const HiddenboxList: FC = () => {
     gtm.push({ event: 'page_view' });
   }, []);
 
-  const getHiddenboxes = useCallback(async () => {
+  const getHiddenboxes = useCallback(async (reload=false) => {
     console.log("isMountedRef", isMountedRef.current)
     try {
-      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?_sort=created_at:DESC`);
+      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?isDeleted=0&_sort=created_at:DESC`);
 
-      if (isMountedRef.current) {
+      if (isMountedRef.current || reload) {
         setHiddenboxes(response.data);
       }
     } catch (err) {
@@ -48,6 +48,10 @@ const HiddenboxList: FC = () => {
     console.log("useEffect, getHiddenboxes")
     getHiddenboxes();
   }, [getHiddenboxes]);
+
+  const reload = () => {
+    getHiddenboxes();
+  }
 
   return (
     <>
@@ -119,7 +123,10 @@ const HiddenboxList: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxListTable hiddenboxes={hiddenboxes} />
+            <HiddenboxListTable
+              hiddenboxes={hiddenboxes}
+              reload={reload}
+            />
           </Box>
         </Container>
       </Box>

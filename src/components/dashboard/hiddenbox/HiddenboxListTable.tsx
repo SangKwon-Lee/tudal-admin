@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, forwardRef } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
@@ -22,7 +22,8 @@ import {
   TableRow,
   Tabs,
   TextField,
-  Typography
+  Typography,
+  Dialog,
 } from '@material-ui/core';
 import ArrowRightIcon from '../../../icons/ArrowRight';
 import PencilAltIcon from '../../../icons/PencilAlt';
@@ -30,10 +31,20 @@ import SearchIcon from '../../../icons/Search';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import getInitials from '../../../utils/getInitials';
 import Scrollbar from '../../Scrollbar';
+import axios, { apiServer } from '../../../lib/axios';
+import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
 
 interface HiddenboxListTableProps {
   hiddenboxes: Hiddenbox[];
+  reload: () => void;
 }
+
+// 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
+const Bar = forwardRef((props: any, ref: any) => (
+  <div {...props} ref={ref}>
+      {props.children}
+  </div>
+));
 
 type Sort =
   | 'updated_at|desc'
@@ -199,7 +210,7 @@ const applySort = (hiddenboxes: Hiddenbox[], sort: Sort): Hiddenbox[] => {
 };
 
 const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
-  const { hiddenboxes, ...other } = props;
+  const { hiddenboxes, reload, ...other } = props;
   const [currentTab, setCurrentTab] = useState<string>('all');
   const [selectedHiddenboxes, setSelectedHiddenboxes] = useState<number[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -212,6 +223,26 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     afterSale: null,
     public: null
   });
+  const [open, setOpen] = useState(false);
+  const modal = useRef(null);
+
+  const onClickDelete = () => {
+    setOpen(true);
+  }
+
+  const handleDelete = async () => {
+    try{
+      const hiddenboxId = selectedHiddenboxes[0];
+      const response = await apiServer.delete(`/hiddenbox/${hiddenboxId.toString()}`);
+      if( response.status === 200 ){
+        props.reload();
+      }
+    } catch(e) {
+
+    } finally {
+      setOpen(false);
+    }
+  }
 
   const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
     const updatedFilters = {
@@ -273,234 +304,251 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const selectedAllHiddenboxes = selectedHiddenboxes.length === hiddenboxes.length;
 
   return (
-    <Card {...other}>
-      <Tabs
-        indicatorColor="primary"
-        onChange={handleTabsChange}
-        scrollButtons="auto"
-        textColor="primary"
-        value={currentTab}
-        variant="scrollable"
-      >
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.value}
-            label={tab.label}
-            value={tab.value}
-          />
-        ))}
-      </Tabs>
-      <Divider />
-      <Box
-        sx={{
-          alignItems: 'center',
-          display: 'flex',
-          flexWrap: 'wrap',
-          m: -1,
-          p: 2
-        }}
-      >
+    <>
+      <Card {...other}>
+        <Tabs
+          indicatorColor="primary"
+          onChange={handleTabsChange}
+          scrollButtons="auto"
+          textColor="primary"
+          value={currentTab}
+          variant="scrollable"
+        >
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.value}
+              label={tab.label}
+              value={tab.value}
+            />
+          ))}
+        </Tabs>
+        <Divider />
         <Box
           sx={{
-            m: 1,
-            maxWidth: '100%',
-            width: 500
+            alignItems: 'center',
+            display: 'flex',
+            flexWrap: 'wrap',
+            m: -1,
+            p: 2
           }}
         >
-          <TextField
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
-            }}
-            onChange={handleQueryChange}
-            placeholder="히든박스 검색"
-            value={query}
-            variant="outlined"
-          />
-        </Box>
-        <Box
-          sx={{
-            m: 1,
-            width: 240
-          }}
-        >
-          <TextField
-            label="정렬"
-            name="sort"
-            onChange={handleSortChange}
-            select
-            SelectProps={{ native: true }}
-            value={sort}
-            variant="outlined"
-          >
-            {sortOptions.map((option) => (
-              <option
-                key={option.value}
-                value={option.value}
-              >
-                {option.label}
-              </option>
-            ))}
-          </TextField>
-        </Box>
-      </Box>
-      {enableBulkActions && (
-        <Box sx={{ position: 'relative' }}>
           <Box
             sx={{
-              backgroundColor: 'background.paper',
-              mt: '6px',
-              position: 'absolute',
-              px: '4px',
-              width: '100%',
-              zIndex: 2
+              m: 1,
+              maxWidth: '100%',
+              width: 500
             }}
           >
-            {/* <Checkbox
-              checked={selectedAllHiddenboxes}
-              color="primary"
-              indeterminate={selectedSomeHiddenboxes}
-              onChange={handleSelectAllHiddenboxes}
-            /> */}
-            <Button
-              color="primary"
-              sx={{ ml: 2 }}
+            <TextField
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+              onChange={handleQueryChange}
+              placeholder="히든박스 검색"
+              value={query}
+              variant="outlined"
+            />
+          </Box>
+          <Box
+            sx={{
+              m: 1,
+              width: 240
+            }}
+          >
+            <TextField
+              label="정렬"
+              name="sort"
+              onChange={handleSortChange}
+              select
+              SelectProps={{ native: true }}
+              value={sort}
               variant="outlined"
             >
-              삭제
-            </Button>
-            <Button 
-              color="primary"
-              sx={{ ml: 2 }}
-              variant="outlined"
-              component={RouterLink}
-              to={`/dashboard/hiddenboxes/${selectedHiddenboxes[0]}/edit`}
-            >
-              수정
-            </Button>
+              {sortOptions.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
           </Box>
         </Box>
-      )}
-      <Scrollbar>
-        <Box sx={{ minWidth: 700 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  {/* <Checkbox
-                    checked={selectedAllHiddenboxes}
-                    color="primary"
-                    indeterminate={selectedSomeHiddenboxes}
-                    onChange={handleSelectAllHiddenboxes}
-                  /> */}
-                </TableCell>
-                <TableCell>
-                  상품명
-                </TableCell>
-                <TableCell>
-                  판매일
-                </TableCell>
-                <TableCell>
-                  공개일
-                </TableCell>
-                <TableCell>
-                  판매량
-                </TableCell>
-                <TableCell align="right">
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedHiddenboxes.map((hiddenbox) => {
-                const isHiddenboxSelected = selectedHiddenboxes.includes(hiddenbox.id);
+        {enableBulkActions && (
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              sx={{
+                backgroundColor: 'background.paper',
+                mt: '6px',
+                position: 'absolute',
+                px: '4px',
+                width: '100%',
+                zIndex: 2
+              }}
+            >
+              {/* <Checkbox
+                checked={selectedAllHiddenboxes}
+                color="primary"
+                indeterminate={selectedSomeHiddenboxes}
+                onChange={handleSelectAllHiddenboxes}
+              /> */}
+              <Button
+                color="primary"
+                sx={{ ml: 2 }}
+                variant="outlined"
+                onClick={onClickDelete}
+              >
+                삭제
+              </Button>
+              <Button 
+                color="primary"
+                sx={{ ml: 2 }}
+                variant="outlined"
+                component={RouterLink}
+                to={`/dashboard/hiddenboxes/${selectedHiddenboxes[0]}/edit`}
+              >
+                수정
+              </Button>
+            </Box>
+          </Box>
+        )}
+        <Scrollbar>
+          <Box sx={{ minWidth: 700 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    {/* <Checkbox
+                      checked={selectedAllHiddenboxes}
+                      color="primary"
+                      indeterminate={selectedSomeHiddenboxes}
+                      onChange={handleSelectAllHiddenboxes}
+                    /> */}
+                  </TableCell>
+                  <TableCell>
+                    상품명
+                  </TableCell>
+                  <TableCell>
+                    판매일
+                  </TableCell>
+                  <TableCell>
+                    공개일
+                  </TableCell>
+                  <TableCell>
+                    판매량
+                  </TableCell>
+                  <TableCell align="right">
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {paginatedHiddenboxes.map((hiddenbox) => {
+                  const isHiddenboxSelected = selectedHiddenboxes.includes(hiddenbox.id);
 
-                return (
-                  <TableRow
-                    hover
-                    key={hiddenbox.id}
-                    selected={isHiddenboxSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isHiddenboxSelected}
-                        color="primary"
-                        onChange={(event) => handleSelectOneHiddenbox(
-                          event,
-                          hiddenbox.id
-                        )}
-                        value={isHiddenboxSelected}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex'
-                        }}
-                      >
-                        <Box sx={{ ml: 1 }}>
-                          <Link
-                            color="inherit"
-                            component={RouterLink}
-                            to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                            variant="subtitle2"
-                          >
-                            {hiddenbox.title}
-                          </Link>
-                          <Typography
-                            color="textSecondary"
-                            variant="body2"
-                          >
-                            {hiddenbox.author.nickname}
-                          </Typography>
+                  return (
+                    <TableRow
+                      hover
+                      key={hiddenbox.id}
+                      selected={isHiddenboxSelected}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isHiddenboxSelected}
+                          color="primary"
+                          onChange={(event) => handleSelectOneHiddenbox(
+                            event,
+                            hiddenbox.id
+                          )}
+                          value={isHiddenboxSelected}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex'
+                          }}
+                        >
+                          <Box sx={{ ml: 1 }}>
+                            <Link
+                              color="inherit"
+                              component={RouterLink}
+                              to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                              variant="subtitle2"
+                            >
+                              {hiddenbox.title}
+                            </Link>
+                            <Typography
+                              color="textSecondary"
+                              variant="body2"
+                            >
+                              {hiddenbox.author.nickname}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      {`${moment(hiddenbox.startDate).format("YYYY년 M월 D일 HH:mm")} - ${moment(hiddenbox.endDate).format("YYYY년 M월 D일 HH:mm")}`}
-                    </TableCell>
-                    <TableCell>
-                      {moment(hiddenbox.publicDate).format("YYYY년 M월 D일 HH:mm")}
-                    </TableCell>
-                    <TableCell>
-                      {0}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        component={RouterLink}
-                        to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
-                      >
-                        <PencilAltIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        component={RouterLink}
-                        to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                      >
-                        <ArrowRightIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Box>
-      </Scrollbar>
-      <TablePagination
-        component="div"
-        count={filteredHiddenboxes.length}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleLimitChange}
-        page={page}
-        rowsPerPage={limit}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
-    </Card>
+                      </TableCell>
+                      <TableCell>
+                        {`${moment(hiddenbox.startDate).format("YYYY년 M월 D일 HH:mm")} - ${moment(hiddenbox.endDate).format("YYYY년 M월 D일 HH:mm")}`}
+                      </TableCell>
+                      <TableCell>
+                        {moment(hiddenbox.publicDate).format("YYYY년 M월 D일 HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        {0}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          component={RouterLink}
+                          to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
+                        >
+                          <PencilAltIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          component={RouterLink}
+                          to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                        >
+                          <ArrowRightIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Box>
+        </Scrollbar>
+        <TablePagination
+          component="div"
+          count={filteredHiddenboxes.length}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleLimitChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
+      </Card>
+      <Dialog
+        aria-labelledby="ConfirmModal"
+        open={open}
+        onClose={() => setOpen(false)}
+        
+      >
+        <ConfirmModal
+          title={'정말 삭제하시겠습니까?'}
+          content={'고객들이 구매한 상품의 경우 삭제시 큰 주의가 필요합니다.'}
+          confirmTitle={'삭제'}
+          handleOnClick={handleDelete}
+          handleOnCancel={() => setOpen(false)}
+        />
+      </Dialog>
+    </>
   );
 };
 
