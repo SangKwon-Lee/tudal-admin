@@ -43,9 +43,9 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const [valueForClear, setValueForClear] = useState('');
  
   const categoryOptions = [
-    { label: '베이직(5,500원)', value: 'hiddenbox-basic' },
-    { label: '스탠다드(33,000원)', value: 'hiddenbox-standard' },
-    { label: '프리미엄(110,000원)', value: 'hiddenbox-premium' }
+    { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
+    { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+    { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' }
   ];
 
   useEffect(() => {
