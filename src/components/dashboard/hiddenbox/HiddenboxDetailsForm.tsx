@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
@@ -39,6 +39,8 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const [tag, setTag] = useState<string>('');
   const [stock, setStock] = useState<string>('');
   const [stockList, setStockList] = useState<any[]>([]);
+  const stockInput = useRef(null);
+  const [valueForClear, setValueForClear] = useState('');
  
   const categoryOptions = [
     { label: '베이직(5,500원)', value: 'hiddenbox-basic' },
@@ -94,6 +96,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
         setSubmitting
       }): Promise<void> => {
         try {
+          
           // Call API to store step data in server session
           // It is important to have it on server to be able to reuse it if user
           // decides to continue later.
@@ -136,6 +139,11 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
       }): JSX.Element => (
         <form
           onSubmit={handleSubmit}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
           {...other}
         >
           <Card sx={{ p: 3 }}>
@@ -215,6 +223,21 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     const val = (event.target.value || '').replace(/\s+/gi, '');
                     setTag(val)
                   }}
+                  onKeyPress={(e): void => {
+                    if (!tag || e.key !== 'Enter' ) {
+                      return;
+                    }
+
+                    if( values.tags.find(element => element === tag) ){
+                      return;
+                    }
+
+                    setFieldValue('tags', [
+                      ...values.tags,
+                      tag
+                    ]);
+                    setTag('');
+                  }}
                   value={tag}
                   variant="outlined"
                 />
@@ -222,6 +245,10 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   sx={{ ml: 2 }}
                   onClick={(): void => {
                     if (!tag) {
+                      return;
+                    }
+
+                    if( values.tags.find(element => element === tag) ){
                       return;
                     }
 
@@ -289,6 +316,20 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                       onChange={(event): void => {
                         const val = (event.target.value || '').replace(/\s+/gi, '');
                         setStock(val)
+                      }}
+                      onKeyPress={(e): void => {
+                        if (!stock || e.key !== 'Enter' ) {
+                          return;
+                        }
+                        if( values.stocks.find(element => element === stock) ){
+                          return;
+                        }
+    
+                        setFieldValue('stocks', [
+                          ...values.stocks,
+                          stock
+                        ]);
+                        setStock('');
                       }}
                       value={stock}
                       variant="outlined"
