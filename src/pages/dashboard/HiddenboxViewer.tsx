@@ -34,32 +34,24 @@ const HiddenboxViewer: FC = () => {
   const isMountedRef = useIsMountedRef();
   const { settings } = useSettings();
   const [hiddenbox, setHiddenbox] = useState<Hiddenbox | null>(null);
-  const [currentTab, setCurrentTab] = useState<string>('details');
   const { hiddenboxId } = useParams();
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
 
-  const getHiddenbox = useCallback(async () => {
+  const getHiddenbox = async () => {
     try {
       const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}`);
-      console.log("[HiddenboxDetail", response.data);
-      if (isMountedRef.current) {
-        setHiddenbox(response.data);
-      }
+      setHiddenbox(response.data);
     } catch (err) {
       console.error(err);
     }
-  }, [isMountedRef]);
+  };
 
   useEffect(() => {
     getHiddenbox();
-  }, [getHiddenbox]);
-
-  const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
-    setCurrentTab(value);
-  };
+  }, []);
 
   if (!hiddenbox) {
     return null;
