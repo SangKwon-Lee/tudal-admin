@@ -19,7 +19,7 @@ import UserIcon from '../../../icons/User';
 import Label from '../../Label';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import moment from 'moment';
-import Markdown from 'react-markdown/with-html';
+import { Viewer } from '@toast-ui/react-editor';
 
 interface HiddenboxProductDetails {
   hiddenbox: Hiddenbox
@@ -239,9 +239,9 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (props) => {
         </Typography>
         <Box sx={{ py: 3 }}>
           <Container maxWidth="md">
-            <MarkdownWrapper>
-              <Markdown source={hiddenbox.contents} />
-            </MarkdownWrapper>
+            <Viewer
+              initialValue={hiddenbox.contents}
+            />
           </Container>
         </Box>
       </Box>
