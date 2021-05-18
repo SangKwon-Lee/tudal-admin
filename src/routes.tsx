@@ -57,6 +57,7 @@ const CustomerEdit = Loadable(lazy(() => import('./pages/dashboard/CustomerEdit'
 const CustomerList = Loadable(lazy(() => import('./pages/dashboard/CustomerList')));
 const HiddenboxList = Loadable(lazy(() => import('./pages/dashboard/HiddenboxList')));
 const HiddenboxDetails = Loadable(lazy(() => import('./pages/dashboard/HiddenboxDetails')));
+const HiddenboxViewer = Loadable(lazy(() => import('./pages/dashboard/HiddenboxViewer')));
 const HiddenboxCreate = Loadable(lazy(() => import('./pages/dashboard/HiddenboxCreate')));
 const HiddenboxEdit = Loadable(lazy(() => import('./pages/dashboard/HiddenboxEdit')));
 const Finance = Loadable(lazy(() => import('./pages/dashboard/Finance')));
@@ -161,6 +162,15 @@ const routes: PartialRouteObject[] = [
   {
     path: 'contact',
     element: <Contact />
+  },
+  {
+    path: 'viewer',
+    children: [
+      {
+        path: 'hiddenbox/:hiddenboxId',
+        element: <HiddenboxViewer />
+      },
+    ]
   },
   {
     path: 'dashboard',
