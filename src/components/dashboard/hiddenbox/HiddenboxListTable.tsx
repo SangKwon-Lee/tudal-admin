@@ -1,4 +1,4 @@
-import { useState, useRef, forwardRef } from 'react';
+import { useState, useRef, useEffect, forwardRef } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
@@ -28,11 +28,13 @@ import {
 import ArrowRightIcon from '../../../icons/ArrowRight';
 import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
+import ChatIcon from '../../../icons/ChatAlt';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import getInitials from '../../../utils/getInitials';
 import Scrollbar from '../../Scrollbar';
-import axios, { apiServer } from '../../../lib/axios';
+import axios, { CMSURL, apiServer } from '../../../lib/axios';
 import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
+import { SocialPostComment, SocialPostCommentAdd } from '../social';
 
 interface HiddenboxListTableProps {
   hiddenboxes: Hiddenbox[];
@@ -224,7 +226,37 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     public: null
   });
   const [open, setOpen] = useState(false);
-  const modal = useRef(null);
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [targetHiddenbox, setTargetHiddenbox] = useState(null);
+
+  useEffect(() => {
+    if( targetHiddenbox ){
+      fetchComments(targetHiddenbox.id);
+    }
+  }, [targetHiddenbox]);
+
+  const fetchComments = async (hiddenboxId) => {
+    try{
+      const response = await axios.get(`/hiddenbox-comments?hiddenbox=${hiddenboxId}`);
+      if( response.status === 200 ){
+        setComments(response.data);
+        setCommentOpen(true);
+      }
+    } catch(e) {
+
+    } finally {
+      
+    }
+  }
+
+  const onClickComment = (hiddenbox) => {
+    if( hiddenbox.id === targetHiddenbox.id ){
+      fetchComments(hiddenbox.id);
+    } else {
+      setTargetHiddenbox(hiddenbox);
+    }
+  }
 
   const onClickDelete = () => {
     setOpen(true);
@@ -294,6 +326,37 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setLimit(parseInt(event.target.value, 10));
   };
+
+  const handleWriteComment = async (message: string) => {
+    try{
+      const newComment = {
+        hiddenbox: targetHiddenbox.id,
+        author: targetHiddenbox.author.id,
+        message,
+      }
+      const response = await axios.post(`/hiddenbox-comments`, newComment);
+      if( response.status === 200 ){
+        fetchComments(targetHiddenbox.id);
+      }
+    } catch(e) {
+
+    } finally {
+      
+    }
+  }
+
+  const handleDeleteComment = async (commentId: number) => {
+    try{
+      const response = await axios.delete(`/hiddenbox-comments/${commentId}`);
+      if( response.status === 200 ){
+        fetchComments(targetHiddenbox.id);
+      }
+    } catch(e) {
+
+    } finally {
+      
+    }
+  }
 
   const filteredHiddenboxes = applyFilters(hiddenboxes, query, filters);
   const sortedHiddenboxes = applySort(filteredHiddenboxes, sort);
@@ -505,6 +568,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
+                          onClick={() => { onClickComment(hiddenbox); }}
+                        >
+                          <ChatIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
                           component={RouterLink}
                           to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
                         >
@@ -547,6 +615,29 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
           handleOnClick={handleDelete}
           handleOnCancel={() => setOpen(false)}
         />
+      </Dialog>
+      <Dialog
+        aria-labelledby="CommentModal"
+        open={commentOpen}
+        onClose={() => setCommentOpen(false)}
+      >
+        <Box sx={{ py: 3, px: 3, minWidth: 400 }}>
+          {comments.length > 0 ? comments.map((comment) => (
+            <SocialPostComment
+              commentId={comment.id}
+              authorAvatar={comment.author.avatar ? `${CMSURL}${comment.author.avatar.url}` : ''}
+              authorName={comment.author.nickname}
+              createdAt={comment.created_at}
+              key={comment.id}
+              message={comment.message}
+              handleDeleteComment={handleDeleteComment}
+            />
+          )) : (
+            <Typography variant={'body1'}>{'작성된 댓글이 없습니다.'}</Typography>
+          )}
+          <Divider sx={{ my: 2 }} />
+          <SocialPostCommentAdd handleWriteComment={handleWriteComment} />
+        </Box>
       </Dialog>
     </>
   );

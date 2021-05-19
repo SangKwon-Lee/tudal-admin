@@ -22,7 +22,7 @@ import ChevronRightIcon from '../../icons/ChevronRight';
 import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
-import axios from '../../lib/axios';
+import { cmsServer, CMS_TOKEN } from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
 
 const tabs = [
@@ -42,7 +42,7 @@ const HiddenboxViewer: FC = () => {
 
   const getHiddenbox = async () => {
     try {
-      const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}`);
+      const response = await cmsServer.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}?token=${CMS_TOKEN}`);
       setHiddenbox(response.data);
     } catch (err) {
       console.error(err);

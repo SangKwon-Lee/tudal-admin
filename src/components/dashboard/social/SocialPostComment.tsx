@@ -2,21 +2,27 @@ import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Avatar, Box, Link, Typography } from '@material-ui/core';
+import { Avatar, Box, Link, Typography, IconButton } from '@material-ui/core';
+import moment from 'moment';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface SocialPostCommentProps {
+  commentId?: number;
   authorAvatar: string;
   authorName: string;
   createdAt: number;
   message: string;
+  handleDeleteComment?: (commentId: number) => Promise<void>;
 }
 
 const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
   const {
+    commentId,
     authorAvatar,
     authorName,
     createdAt,
     message,
+    handleDeleteComment,
     ...other
   } = props;
 
@@ -57,15 +63,20 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           >
             {authorName}
           </Link>
-          <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ flexGrow: 1 }} />
           <Typography
             color="textSecondary"
             variant="caption"
           >
-            {formatDistanceToNowStrict(createdAt)}
-            {' '}
-            ago
+            {moment(createdAt).fromNow()}
           </Typography>
+          <IconButton
+            color={'default'}
+            component={'button'}
+            onClick={() => handleDeleteComment(commentId)}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
         </Box>
         <Typography
           color="textPrimary"
@@ -76,13 +87,6 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
       </Box>
     </Box>
   );
-};
-
-SocialPostComment.propTypes = {
-  authorAvatar: PropTypes.string.isRequired,
-  authorName: PropTypes.string.isRequired,
-  createdAt: PropTypes.number.isRequired,
-  message: PropTypes.string.isRequired
 };
 
 export default SocialPostComment;
