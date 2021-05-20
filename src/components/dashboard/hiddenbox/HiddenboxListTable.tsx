@@ -238,7 +238,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
 
   const fetchComments = async (hiddenboxId) => {
     try{
-      const response = await axios.get(`/hiddenbox-comments?hiddenbox=${hiddenboxId}`);
+      const response = await axios.get(`/hiddenbox-comments?hiddenboxId=${hiddenboxId}`);
       if( response.status === 200 ){
         setComments(response.data);
         setCommentOpen(true);
@@ -330,7 +330,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const handleWriteComment = async (message: string) => {
     try{
       const newComment = {
-        hiddenbox: targetHiddenbox.id,
+        hiddenboxId: targetHiddenbox.id,
         author: targetHiddenbox.author.id,
         message,
       }
