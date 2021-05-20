@@ -251,7 +251,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   }
 
   const onClickComment = (hiddenbox) => {
-    if( hiddenbox.id === targetHiddenbox.id ){
+    if( targetHiddenbox && hiddenbox.id === targetHiddenbox.id ){
       fetchComments(hiddenbox.id);
     } else {
       setTargetHiddenbox(hiddenbox);
