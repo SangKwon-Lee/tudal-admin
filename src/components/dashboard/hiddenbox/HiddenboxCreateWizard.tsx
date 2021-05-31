@@ -30,7 +30,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (props) => {
     title: '',
     description: '',
     contents: '',
-    productId: 'hiddenbox-basic',
+    productId: 'hiddenbox_basic',
     tags: [],
     stocks: [],
     startDate: (moment().add(1, 'day').set('hour', 7).set('minute', 0)).toDate(),
