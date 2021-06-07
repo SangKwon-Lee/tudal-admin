@@ -8,6 +8,7 @@ import {
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
+import './customViewer.css';
 
 interface HiddenboxProductViewer {
   hiddenbox: Hiddenbox
