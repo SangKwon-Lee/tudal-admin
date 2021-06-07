@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { DateTimePicker } from "@material-ui/pickers";
+import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import {
   Box,
   Button,
@@ -390,7 +390,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 }}
               >
                 <Box sx={{ mr: 2 }}>
-                  <DateTimePicker
+                  <KeyboardDateTimePicker
                     label="판매 시작일"
                     inputVariant="outlined"
                     onAccept={() => setFieldTouched('startDate')}
@@ -398,13 +398,12 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onClose={() => setFieldTouched('startDate')}
                     value={values.startDate}
                     disablePast={mode === 'edit' ? false : true}
-                    minutesStep={5}
-                    format="YYYY년 M월 D일 HH:mm"
+                    format="YYYY-MM-DD HH:mm"
                     minDateMessage={'판매 시작일은 현재 시간 이후여야 합니다.'}
                   />
                 </Box>
                 <Box sx={{ mr: 2 }}>
-                  <DateTimePicker
+                  <KeyboardDateTimePicker
                     label="판매 종료일"
                     inputVariant="outlined"
                     onAccept={() => setFieldTouched('endDate')}
@@ -414,12 +413,11 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     disablePast={mode === 'edit' ? false : true}
                     minDate={values.startDate}
                     minDateMessage={'판매 종료일은 시작일 이후여야 합니다.'}
-                    minutesStep={5}
-                    format="YYYY년 M월 D일 HH:mm"
+                    format="YYYY-MM-DD HH:mm"
                   />
                 </Box>
                 <Box sx={{ mr: 2 }}>
-                  <DateTimePicker
+                  <KeyboardDateTimePicker
                     label="공개일"
                     inputVariant="outlined"
                     onAccept={() => setFieldTouched('publicDate')}
@@ -429,8 +427,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     disablePast={mode === 'edit' ? false : true}
                     minDate={values.endDate}
                     minDateMessage={'공개일은 판매 종료일 이후여야 합니다.'}
-                    minutesStep={5}
-                    format="YYYY년 M월 D일 HH:mm"
+                    format="YYYY-MM-DD HH:mm"
                   />
                 </Box>
               </Box>
