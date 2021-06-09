@@ -18,6 +18,7 @@ import { createTheme } from './theme';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
+import SocketProvider from './contexts/SocketContext';
 
 let koLocale = require('moment/locale/ko');
 moment.locale('ko', koLocale);
@@ -47,8 +48,10 @@ const App: FC = () => {
             dense
             maxSnack={3}
           >
-            <GlobalStyles />
-            {auth.isInitialized ? content : <SplashScreen />}
+            <SocketProvider>
+              <GlobalStyles />
+              {auth.isInitialized ? content : <SplashScreen />}
+            </SocketProvider>
           </SnackbarProvider>
         </RTL>
       </MuiPickersUtilsProvider>

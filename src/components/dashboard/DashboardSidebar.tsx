@@ -71,6 +71,16 @@ const sections = [
         icon: <FolderOpenIcon fontSize="small" />
       },
     ]
+  },
+  {
+    title: 'Generator',
+    items: [
+      {
+        title: '리포트',
+        path: '/dashboard/report',
+        icon: <ChartPieIcon fontSize="small" />
+      },
+    ]
   }
 ];
 

@@ -60,6 +60,7 @@ const HiddenboxDetails = Loadable(lazy(() => import('./pages/dashboard/Hiddenbox
 const HiddenboxViewer = Loadable(lazy(() => import('./pages/dashboard/HiddenboxViewer')));
 const HiddenboxCreate = Loadable(lazy(() => import('./pages/dashboard/HiddenboxCreate')));
 const HiddenboxEdit = Loadable(lazy(() => import('./pages/dashboard/HiddenboxEdit')));
+const ReportMaker = Loadable(lazy(() => import('./pages/dashboard/ReportMaker')));
 const Finance = Loadable(lazy(() => import('./pages/dashboard/Finance')));
 const InvoiceDetails = Loadable(lazy(() => import('./pages/dashboard/InvoiceDetails')));
 const InvoiceList = Loadable(lazy(() => import('./pages/dashboard/InvoiceList')));
@@ -211,6 +212,15 @@ const routes: PartialRouteObject[] = [
             path: ':threadKey',
             element: <Chat />
           }
+        ]
+      },
+      {
+        path: 'report',
+        children: [
+          {
+            path: '/',
+            element: <ReportMaker />
+          },
         ]
       },
       {
