@@ -25,4 +25,5 @@ export interface Hiddenbox {
   productId: string;
   stocks: Stock[];
   tags: Tag[];
+  orders?: number;
 }
