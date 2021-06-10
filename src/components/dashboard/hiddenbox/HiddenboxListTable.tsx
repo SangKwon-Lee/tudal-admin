@@ -229,12 +229,30 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [targetHiddenbox, setTargetHiddenbox] = useState(null);
+  const [salesDataLoaded, setSalesDataLoaded] = useState(false);
+
+  useEffect(() => {
+    if( hiddenboxes.length > 0 ){
+      fetchSalesCount();
+    }
+  }, [hiddenboxes]);
 
   useEffect(() => {
     if( targetHiddenbox ){
       fetchComments(targetHiddenbox.id);
     }
   }, [targetHiddenbox]);
+
+  const fetchSalesCount = async () => {
+    await Promise.all(hiddenboxes.map(async hiddenbox => {
+      const response = await axios.get(`/my-hiddenboxes/count?hiddenbox=${hiddenbox.id}`);
+      if( response.status === 200 ){
+        const theHiddenbox = hiddenboxes.find(element => element.id === hiddenbox.id);
+        theHiddenbox.orders = response.data;
+      }
+    }));
+    setSalesDataLoaded(true);
+  }
 
   const fetchComments = async (hiddenboxId) => {
     try{
@@ -564,7 +582,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         {moment(hiddenbox.publicDate).format("YYYY년 M월 D일 HH:mm")}
                       </TableCell>
                       <TableCell>
-                        {0}
+                        {hiddenbox.orders}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton

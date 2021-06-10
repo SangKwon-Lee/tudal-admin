@@ -35,7 +35,7 @@ const HiddenboxList: FC = () => {
     console.log("isMountedRef", isMountedRef.current)
     try {
       const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?isDeleted=0&_sort=created_at:DESC`);
-
+      console.log(response.data)
       if (isMountedRef.current || reload) {
         setHiddenboxes(response.data);
       }
