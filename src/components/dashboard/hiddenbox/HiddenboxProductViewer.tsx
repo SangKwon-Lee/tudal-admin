@@ -8,7 +8,13 @@ import {
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
+import 'tui-color-picker/dist/tui-color-picker.css';
+import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+
 import './customViewer.css';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+
+
 
 interface HiddenboxProductViewer {
   hiddenbox: Hiddenbox
@@ -33,6 +39,7 @@ const HiddenboxProductViewer: FC<HiddenboxProductViewer> = (props) => {
         </Typography>
         <Viewer
           initialValue={hiddenbox.contents}
+          plugins={[colorSyntax]}
         />
       </Container>
     </Box>    
