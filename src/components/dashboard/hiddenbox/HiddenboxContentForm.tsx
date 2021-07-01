@@ -12,11 +12,12 @@ import {
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
-import 'tui-color-picker/dist/tui-color-picker.css';
-import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+//import 'tui-color-picker/dist/tui-color-picker.css';
+//import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+//import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 
 import { Editor } from '@toast-ui/react-editor';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+
 import moment from 'moment';
 import { apiServer } from '../../../lib/axios';
 
@@ -166,7 +167,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
             hooks={{
               addImageBlobHook: handleUploadImage
             }}
-            plugins={[colorSyntax]}
+            //plugins={[colorSyntax]}
           />
         </Paper>
         {error && (

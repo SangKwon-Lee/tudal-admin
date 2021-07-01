@@ -3701,6 +3701,13 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
+"@toast-ui/editor-plugin-color-syntax@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@toast-ui/editor-plugin-color-syntax/-/editor-plugin-color-syntax-3.0.0.tgz#64f134ce3751d6d8b10035f9027a8e85068c6a6d"
+  integrity sha512-wACI+m0CVehlBIqvOZqd1qTvD8rdjVgu31P5W4pkLk3OYym5mk4imAEeiCmWgtP1+CEAgMYREn7ajs9f40Mivg==
+  dependencies:
+    tui-color-picker "^2.2.6"
+
 "@toast-ui/editor@^2.5.2":
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/@toast-ui/editor/-/editor-2.5.2.tgz#0637e1bbdb205c1ab53b6d3722ced26399b2f0ca"
@@ -14467,6 +14474,11 @@ tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
   integrity sha1-oVe6QC2iTpv5V/mqadUk7tQpAaY=
+
+tui-color-picker@^2.2.6, tui-color-picker@^2.2.7:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/tui-color-picker/-/tui-color-picker-2.2.7.tgz#233cd501b17568ae6d604e06898b0c8553851186"
+  integrity sha512-y7gUe6PdVBq8ruZbiOkeaN7N/DX+ogVyLkK53OM4qW5Vrc4pDWYEKlnOBCsPODb4/RSzS9iTd6fXYirXxeakJA==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
