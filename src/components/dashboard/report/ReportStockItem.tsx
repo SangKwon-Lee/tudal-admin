@@ -33,6 +33,7 @@ const ReportStockItem: FC<ReportStockItemProps> = (props) => {
   const { stock, startDate, endDate, showOnlyHaveNews } = props
   const [newsData, setNewsData] = useState([]);
   const [priceData, setPriceData] = useState([]);
+  const [realtimePriceData, setRealtimePriceData] = useState({});
   const [info, setInfo] = useState<any>({});
   const { queryManager, connected, reconnect } = useContext(SocketContext);
 
