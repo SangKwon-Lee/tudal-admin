@@ -2,6 +2,7 @@
 # yarn lockfile v1
 
 
+<<<<<<< Updated upstream
 "@auth0/auth0-spa-js@^1.13.6":
   version "1.14.0"
   resolved "https://registry.yarnpkg.com/@auth0/auth0-spa-js/-/auth0-spa-js-1.14.0.tgz#20e72dd8e6a3f5b2a6d8f2c7c0ee316f3833537d"
@@ -15548,3 +15549,5 @@ zen-push@0.2.1:
   integrity sha512-Qv4qvc8ZIue51B/0zmeIMxpIGDVhz4GhJALBvnKs/FRa2T7jy4Ori9wFwaHVt0zWV7MIFglKAHbgnVxVTw7U1w==
   dependencies:
     zen-observable "^0.7.0"
+=======
+>>>>>>> Stashed changes
