@@ -1,170 +1,174 @@
-import { Suspense, lazy } from 'react';
-import type { PartialRouteObject } from 'react-router';
-import { Navigate } from 'react-router-dom';
-import AuthGuard from './components/AuthGuard';
-import DashboardLayout from './components/dashboard/DashboardLayout';
-import GuestGuard from './components/GuestGuard';
-import LoadingScreen from './components/LoadingScreen';
-import MainLayout from './components/MainLayout';
+import { Suspense, lazy } from "react"
+import type { PartialRouteObject } from "react-router"
+import { Navigate } from "react-router-dom"
+import AuthGuard from "./components/AuthGuard"
+import DashboardLayout from "./components/dashboard/DashboardLayout"
+import GuestGuard from "./components/GuestGuard"
+import LoadingScreen from "./components/LoadingScreen"
+import MainLayout from "./components/MainLayout"
+import ScheduleList from "./pages/dashboard/Schedule"
 
-const Loadable = (Component) => (props) => (
-  <Suspense fallback={<LoadingScreen />}>
-    <Component {...props} />
-  </Suspense>
-);
-
+const Loadable = (Component) => (props) =>
+  (
+    <Suspense fallback={<LoadingScreen />}>
+      <Component {...props} />
+    </Suspense>
+  )
 
 // Authentication pages
 
-const Login = Loadable(lazy(() => import('./pages/authentication/Login')));
-const PasswordRecovery = Loadable(lazy(() => import('./pages/authentication/PasswordRecovery')));
-const PasswordReset = Loadable(lazy(() => import('./pages/authentication/PasswordReset')));
-const Register = Loadable(lazy(() => import('./pages/authentication/Register')));
-const VerifyCode = Loadable(lazy(() => import('./pages/authentication/VerifyCode')));
+const Login = Loadable(lazy(() => import("./pages/authentication/Login")))
+const PasswordRecovery = Loadable(lazy(() => import("./pages/authentication/PasswordRecovery")))
+const PasswordReset = Loadable(lazy(() => import("./pages/authentication/PasswordReset")))
+const Register = Loadable(lazy(() => import("./pages/authentication/Register")))
+const VerifyCode = Loadable(lazy(() => import("./pages/authentication/VerifyCode")))
 
 // Dashboard pages
-const HiddenboxList = Loadable(lazy(() => import('./pages/dashboard/HiddenboxList')));
-const HiddenboxDetails = Loadable(lazy(() => import('./pages/dashboard/HiddenboxDetails')));
-const HiddenboxViewer = Loadable(lazy(() => import('./pages/dashboard/HiddenboxViewer')));
-const HiddenboxCreate = Loadable(lazy(() => import('./pages/dashboard/HiddenboxCreate')));
-const HiddenboxEdit = Loadable(lazy(() => import('./pages/dashboard/HiddenboxEdit')));
-const Overview = Loadable(lazy(() => import('./pages/dashboard/Overview')));
-const ReportMaker = Loadable(lazy(() => import('./pages/dashboard/ReportMaker')));
-
-
+const HiddenboxList = Loadable(lazy(() => import("./pages/dashboard/HiddenboxList")))
+const HiddenboxDetails = Loadable(lazy(() => import("./pages/dashboard/HiddenboxDetails")))
+const HiddenboxViewer = Loadable(lazy(() => import("./pages/dashboard/HiddenboxViewer")))
+const HiddenboxCreate = Loadable(lazy(() => import("./pages/dashboard/HiddenboxCreate")))
+const HiddenboxEdit = Loadable(lazy(() => import("./pages/dashboard/HiddenboxEdit")))
+const Overview = Loadable(lazy(() => import("./pages/dashboard/Overview")))
+const ReportMaker = Loadable(lazy(() => import("./pages/dashboard/ReportMaker")))
 
 // Error pages
 
-const AuthorizationRequired = Loadable(lazy(() => import('./pages/AuthorizationRequired')));
-const NotFound = Loadable(lazy(() => import('./pages/NotFound')));
-const ServerError = Loadable(lazy(() => import('./pages/ServerError')));
-
+const AuthorizationRequired = Loadable(lazy(() => import("./pages/AuthorizationRequired")))
+const NotFound = Loadable(lazy(() => import("./pages/NotFound")))
+const ServerError = Loadable(lazy(() => import("./pages/ServerError")))
 
 const routes: PartialRouteObject[] = [
   {
-    path: 'authentication',
+    path: "authentication",
     children: [
       {
-        path: 'login',
+        path: "login",
         element: (
           <GuestGuard>
             <Login />
           </GuestGuard>
-        )
+        ),
       },
       {
-        path: 'login-unguarded',
-        element: <Login />
+        path: "login-unguarded",
+        element: <Login />,
       },
       {
-        path: 'password-recovery',
-        element: <PasswordRecovery />
+        path: "password-recovery",
+        element: <PasswordRecovery />,
       },
       {
-        path: 'password-reset',
-        element: <PasswordReset />
+        path: "password-reset",
+        element: <PasswordReset />,
       },
       {
-        path: 'register',
+        path: "register",
         element: (
           <GuestGuard>
             <Register />
           </GuestGuard>
-        )
+        ),
       },
       {
-        path: 'register-unguarded',
-        element: <Register />
+        path: "register-unguarded",
+        element: <Register />,
       },
       {
-        path: 'verify-code',
-        element: <VerifyCode />
-      }
-    ]
+        path: "verify-code",
+        element: <VerifyCode />,
+      },
+    ],
   },
   {
-    path: 'viewer',
+    path: "viewer",
     children: [
       {
-        path: 'hiddenbox/:hiddenboxId',
-        element: <HiddenboxViewer />
+        path: "hiddenbox/:hiddenboxId",
+        element: <HiddenboxViewer />,
       },
-    ]
+    ],
   },
   {
-    path: 'dashboard',
+    path: "dashboard",
     element: (
       <AuthGuard>
         <DashboardLayout />
       </AuthGuard>
     ),
-    
+
     children: [
       {
-        path: '/',
-        element: <Overview />
+        path: "/",
+        element: <Overview />,
       },
       {
-        path: 'hiddenboxes',
+        path: "hiddenboxes",
         children: [
           {
-            path: '/',
-            element: <HiddenboxList />
+            path: "/",
+            element: <HiddenboxList />,
           },
           {
-            path: ':hiddenboxId',
-            element: <HiddenboxDetails />
+            path: ":hiddenboxId",
+            element: <HiddenboxDetails />,
           },
           {
-            path: ':hiddenboxId/edit',
-            element: <HiddenboxEdit />
+            path: ":hiddenboxId/edit",
+            element: <HiddenboxEdit />,
           },
           {
-            path: 'new',
-            element: <HiddenboxCreate />
+            path: "new",
+            element: <HiddenboxCreate />,
           },
-        ]
+        ],
       },
       {
-        path: 'report',
+        path: "schedule",
         children: [
           {
-            path: '/',
-            element: <ReportMaker />
+            path: "/",
+            element: <ScheduleList />,
           },
-        ]
+        ],
       },
-    ]
+      {
+        path: "report",
+        children: [
+          {
+            path: "/",
+            element: <ReportMaker />,
+          },
+        ],
+      },
+    ],
   },
   {
-    path: '*',
+    path: "*",
     element: <MainLayout />,
     children: [
       {
-        path: '/',
-        element: <Navigate
-          to="/dashboard"
-          replace
-        />
+        path: "/",
+        element: <Navigate to="/dashboard" replace />,
       },
       {
-        path: '401',
-        element: <AuthorizationRequired />
+        path: "401",
+        element: <AuthorizationRequired />,
       },
       {
-        path: '404',
-        element: <NotFound />
+        path: "404",
+        element: <NotFound />,
       },
       {
-        path: '500',
-        element: <ServerError />
+        path: "500",
+        element: <ServerError />,
       },
       {
-        path: '*',
-        element: <NotFound />
-      }
-    ]
-  }
-];
+        path: "*",
+        element: <NotFound />,
+      },
+    ],
+  },
+]
 
-export default routes;
+export default routes
