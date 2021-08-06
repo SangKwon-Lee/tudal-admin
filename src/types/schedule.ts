@@ -1,8 +1,3 @@
-export type paramProps = {
-  _sort: string
-  priority: number
-}
-
 export interface Tag {
     id: number;
     name: string;

@@ -16,14 +16,19 @@ import {
   FormControl,
   Autocomplete,
 } from "@material-ui/core"
-import { createFilterOptions } from "@material-ui/lab/Autocomplete"
 
-import AsyncCreatableSelect from "react-select/async-creatable"
+import { createFilterOptions } from "@material-ui/core/Autocomplete"
+
 import { Schedule, Priority, Stock, Tag, Category } from "src/types/schedule"
 import axios, { apiServer } from "../../../lib/axios"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import ConfirmModal from "src/components/widgets/modals/ConfirmModal"
 import useAuth from "src/hooks/useAuth"
+import { AxiosResponse } from "axios"
+import { IRoleType } from "src/types/user"
+
+const customFilter = createFilterOptions<any>()
+const customFilter2 = createFilterOptions<any>()
 
 interface scheduleFormProps {
   reload: () => void
@@ -128,12 +133,11 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
     }))
   }
 
-  const handleDate = (startDate, endDate): void =>
-    setNewSchedule((prev) => ({
-      ...prev,
-      startDate,
-      endDate,
-    }))
+  const handleDate = (startDate, endDate): void => {
+    setNewSchedule((prev) => {
+      return { ...prev, startDate, endDate }
+    })
+  }
 
   const addStock = (stock: Stock): void => {
     setNewSchedule((prev) => {
@@ -171,13 +175,11 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
       categories,
     }))
   }
-  const handleTag = (keywords: Tag[]): void => {
+  const handleKeyword = (event, newKeywords: Tag[]): void => {
     setNewSchedule((prev) => {
-      return {
-        ...prev,
-        keywords,
-      }
+      return { ...prev, keywords: newKeywords }
     })
+    console.log("AFTER CHANGE state.keyword", newSchedule.keywords)
   }
 
   const clearScheduleForm = (): void => setNewSchedule(initialSchedule)
@@ -195,16 +197,38 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
     const { categories, endDate, startDate, priority, title, comment, keywords, stocks } =
       newSchedule
 
+    const oldKeywords = keywords.filter((keyword) => !keyword.hasOwnProperty("isNew"))
+    const newKeywords = keywords
+      .filter((keyword) => keyword.hasOwnProperty("isNew"))
+      .map((keyword) => axios.post("/tags", { name: keyword.name }))
+
+    await Promise.all(newKeywords)
+      .then((responses) => {
+        responses.forEach((res) => oldKeywords.push(res.data))
+      })
+      .catch((e) => console.log(e))
+
+    const oldCategories = categories.filter((category) => !category.hasOwnProperty("isNew"))
+    const createNewCategories: Array<Promise<AxiosResponse<Category>>> = categories
+      .filter((category) => category.hasOwnProperty("isNew"))
+      .map((category) => axios.post<Category>("/categories", { name: category.name }))
+
+    await Promise.all(createNewCategories)
+      .then((responses) => {
+        responses.forEach((res) => oldCategories.push(res.data))
+      })
+      .catch((e) => console.log(e))
+
     const response = await axios.post(`/schedules`, {
       title,
       comment,
       priority,
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
-      author: user.id, // author.id,
-      keywords: keywords.map((keyword) => keyword.id),
+      author: user.id,
+      keywords: oldKeywords.map((keyword) => keyword.id),
       stockCodes: stocks.map((stock) => stock.stockcode),
-      categories: categories.map((category) => category.id),
+      categories: oldCategories.map((category) => category.id),
     })
 
     if (response.status == 200) {
@@ -214,25 +238,27 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
     }
   }
 
+  // stock
   const stockMap = useMemo(() => createStockNameMap(stockList), [stockList])
 
   const handleExtraction = (value: string) => {
-    const tokens = value.trim().split("/s+/")
+    // const tokens = value.trim().split("[\\r\\n]+\\s")
+    const tokens = value.replaceAll("\n", " ").split(" ")
+    console.log("TOKENS", tokens)
     for (let i = 0; i < tokens.length; i++) {
       // 먼저 token이 종목에 포함되어 있는지 확인
       if (stockMap[tokens[i]]) {
         addStock(stockMap[tokens[i]])
         tokens.splice(i, 1)
+        console.log("TOKENS after stock", tokens)
         continue
       }
     }
     const promises = tokens.map((token) => {
       return axios.get(`/tags-excluded?_where[name]=${token}`)
     })
-    console.log("키워드 들어감", tokens)
     Promise.all(promises)
       .then((response) => {
-        console.log("keywords autocomplete response", response)
         const filtered: Tag[] = response
           .filter((response) => response.data.length === 1)
           .map((response) => response.data[0])
@@ -250,10 +276,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
         m: 3,
       }}
     >
-      {console.log("##dayjs", newSchedule.startDate)}
-      {console.log("##now", newSchedule.endDate)}
-      {console.log("stock==>", newSchedule.stocks)}
-      {console.log("keyword==>", newSchedule.keywords)}
       <form onSubmit={(event) => event.preventDefault()}>
         <Grid container spacing={3} alignItems="center">
           <Grid item md={4} xs={12}>
@@ -274,7 +296,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
               fullWidth
               label="코멘트"
               name="comment"
-              helperText="줄 바꾸기 ctrl(cmd) + enter"
+              helperText="줄 바꾸기 shift + enter"
               value={newSchedule.comment}
               onBlur={(e) => handleExtraction(e.target.value)}
               onChange={(e) => handleChange(e)}
@@ -285,6 +307,8 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
           <Grid item md={3} xs={12}>
             <Autocomplete
               multiple
+              fullWidth
+              autoHighlight
               options={stockList}
               value={newSchedule.stocks}
               getOptionLabel={(option) => `${option.stockname}(${option.stockcode})`}
@@ -292,40 +316,39 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
               onChange={(event, stocks: Stock[]) => {
                 handleStock(stocks)
               }}
-              fullWidth
-              autoHighlight
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  label="종목 이름"
-                  name="stocks"
-                  variant="outlined"
-                />
+                <TextField {...params} fullWidth label="종목" name="stocks" variant="outlined" />
               )}
             />
           </Grid>
           <Grid item md={3} xs={12}>
             <Autocomplete
               multiple
-              options={tagList}
-              value={newSchedule.keywords}
-              getOptionLabel={(option) => `${option.name}`}
-              getOptionSelected={(option, value) => option.id === value.id}
-              onChange={(event, value: Tag[]) => {
-                console.log("ONCHANGE", value)
-                handleTag(value)
-              }}
               fullWidth
               autoHighlight
+              options={tagList}
+              value={newSchedule.keywords}
+              getOptionSelected={(option, value) => option.id === value.id}
+              onChange={handleKeyword}
+              getOptionLabel={(option) => {
+                const label = option.name
+                if (option.hasOwnProperty("isNew")) {
+                  return `+ '${label}'`
+                }
+                return label
+              }}
               filterOptions={(options, params) => {
-                const filtered = filter(options, params)
+                const filtered = customFilter(options, params)
 
-                // Suggest the creation of a new value
-                if (params.inputValue !== "") {
+                if (
+                  user.role.type !== IRoleType.Author &&
+                  filtered.length === 0 &&
+                  params.inputValue !== ""
+                ) {
                   filtered.push({
-                    inputValue: params.inputValue,
-                    title: `Add "${params.inputValue}"`,
+                    id: Math.random(),
+                    isNew: true,
+                    name: params.inputValue,
                   })
                 }
 
@@ -336,7 +359,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
                   {...params}
                   onChange={debounceOnChange}
                   fullWidth
-                  label="태그 이름"
+                  label="키워드"
                   name="keyword"
                   variant="outlined"
                   inputRef={tagInput}
@@ -356,26 +379,50 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
           <Grid item md={3} xs={12}>
             <Autocomplete
               multiple
+              fullWidth
+              autoHighlight
               options={categoryList}
               value={newSchedule.categories}
-              getOptionLabel={(option) => `${option.name}`}
               getOptionSelected={(option, value) => option.id === value.id}
+              getOptionLabel={(option) => {
+                const label = option.name
+                if (option.hasOwnProperty("isNew")) {
+                  return `+ '${label}'`
+                }
+                return label
+              }}
               onChange={(event, value: Category[]) => {
                 handleCategory(value)
               }}
-              fullWidth
-              autoHighlight
+              filterOptions={(options, params) => {
+                const filtered = customFilter2(options, params)
+                console.log(filtered, params)
+                if (
+                  user.role.type !== IRoleType.Author &&
+                  filtered.length === 0 &&
+                  params.inputValue !== ""
+                ) {
+                  filtered.push({
+                    id: Math.random(),
+                    isNew: true,
+                    name: params.inputValue,
+                  })
+                }
+
+                return filtered
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   fullWidth
-                  label="카테고리 이름"
+                  label="카테고리"
                   name="category"
                   variant="outlined"
                 />
               )}
             />
           </Grid>
+          {console.log(user)}
           <Grid item md={3} xs={12}>
             <FormControl variant="filled" fullWidth>
               <InputLabel htmlFor="filled-age-native-simple">중요도</InputLabel>
@@ -424,7 +471,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = (props) => {
         </Dialog>
         <Box sx={{ mt: 2 }}></Box>
       </form>
-      {console.log(newSchedule.keywords)}
     </Box>
   )
 }
