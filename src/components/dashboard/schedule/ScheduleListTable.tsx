@@ -21,7 +21,6 @@ import {
 
 import DeleteIcon from "@material-ui/icons/Delete"
 import Label from "../../Label"
-import ArrowRightIcon from "../../../icons/ArrowRight"
 import SearchIcon from "../../../icons/Search"
 import { Priority, Schedule } from "../../../types/schedule"
 import ConfirmModal from "src/components/widgets/modals/ConfirmModal"
@@ -43,7 +42,6 @@ const getPriorityLabel = (priority) => {
       text: "LOW",
     },
   }
-
   const { text, color }: any = map[scale]
 
   return <Label color={color}>{text}</Label>
@@ -79,7 +77,7 @@ const sortOptions: SortOption[] = [
     value: "startDate|asc",
   },
   {
-    label: "작성자 이름 내림차순",
+    label: "작성자 내림차순",
     value: "author|desc",
   },
   {
@@ -120,8 +118,8 @@ const applySort = (schedules: Schedule[], sort: Sort): Schedule[] => {
 
 interface ScheduleListTableProps {
   schedules: Schedule[]
-  query: string
-  setQuery: (value) => void
+  search: string
+  setSearch: (value) => void
   postDelete: (id: number) => void
   reload: () => void
 }
@@ -130,7 +128,7 @@ const applyPagination = (schedules: Schedule[], page: number, limit: number): Sc
   schedules.slice(page * limit, page * limit + limit)
 
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
-  const { schedules, postDelete, query, setQuery } = props
+  const { schedules, postDelete, search, setSearch } = props
   const [page, setPage] = useState<number>(0)
   const [limit, setLimit] = useState<number>(10)
   const [sort, setSort] = useState<Sort>(sortOptions[0].value)
@@ -185,7 +183,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
               }}
               name={"_q"}
               placeholder="제목 또는 코멘트를 검색해주세요"
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
               variant="outlined"
             />
           </Box>

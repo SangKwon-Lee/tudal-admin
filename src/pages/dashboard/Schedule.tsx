@@ -1,59 +1,43 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import { Helmet } from "react-helmet-async"
-import qs from "qs"
-import { Priority, Schedule } from "src/types/schedule"
+import { Schedule } from "src/types/schedule"
 
-import useIsMountedRef from "src/hooks/useIsMountedRef"
 import axios from "src/lib/axios"
 import { Box, Breadcrumbs, Button, Container, Grid, Link, Typography } from "@material-ui/core"
 import { ScheduleForm } from "src/components/dashboard/schedule"
 import ChevronRightIcon from "../../icons/ChevronRight"
 import { ScheduleListTable } from "../../components/dashboard/schedule"
 import useSettings from "src/hooks/useSettings"
+import useAsync from "src/hooks/useAsync"
+import { APISchedule } from "src/lib/api"
 
 const ScheduleList: React.FC = () => {
   const { settings } = useSettings()
-  const [schedules, setSchedules] = useState<Schedule[]>([])
-  const [query, setQuery] = useState<string>("")
-  const isMountedRef = useIsMountedRef()
+  const [search, setSearch] = useState<string>("")
 
-  const getSchedules = useCallback(
-    async (reload = false) => {
-      try {
-        let q: any = {}
-        if (query) {
-          q._q = query
-        }
-
-        const { data } = await axios.get<Schedule[]>(`/schedules?${qs.stringify(q)}`)
-
-        if (isMountedRef.current || reload) {
-          setSchedules(data)
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    [isMountedRef, query]
+  const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
+    () => APISchedule.getList(search),
+    [search],
+    []
   )
 
-  const postDelete = useCallback(async (id: number) => {
+  const { data: schedules, error: schedulesError, loading: schedulesLoading } = schedulesState
+  const reload = useCallback(() => refetchSchedule(), [])
+
+  const postDelete = async (id: number) => {
     try {
-      const response = await axios.delete<Schedule[]>(`/schedules/${id}`)
-      if (response.status == 200) {
+      const { status } = await APISchedule.deleteItem(id)
+      if (status === 200) {
         reload()
       }
+      if (status === 404) {
+        alert("존재하지 않는 스케줄입니다. 확인 부탁드립니다.")
+      }
     } catch (error) {
-      console.log(error)
+      alert("삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.")
     }
-  }, [])
-
-  useEffect(() => {
-    getSchedules()
-  }, [getSchedules, query])
-
-  const reload = () => getSchedules()
+  }
 
   return (
     <>
@@ -105,8 +89,8 @@ const ScheduleList: React.FC = () => {
             <ScheduleListTable
               schedules={schedules}
               reload={reload}
-              query={query}
-              setQuery={setQuery}
+              search={search}
+              setSearch={setSearch}
               postDelete={postDelete}
             />
           </Box>
