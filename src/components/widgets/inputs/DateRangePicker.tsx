@@ -20,15 +20,16 @@ const BasicDateRangePicker: React.FC<BasicDateRangePickerProps> = (props) => {
         startText="시작 날짜"
         endText="끝 날짜"
         value={[startDate, endDate]}
+        inputFormat={"yyyy-MM-dd"}
         onChange={(newValue) => {
           const [startDate, endDate] = newValue
           handleChange(startDate, endDate)
         }}
         renderInput={(startProps, endProps) => (
           <>
-            <TextField {...startProps} />
+            <TextField {...startProps} fullWidth />
             <Box sx={{ mx: 2 }}> ~ </Box>
-            <TextField {...endProps} />
+            <TextField {...endProps} fullWidth />
           </>
         )}
       />

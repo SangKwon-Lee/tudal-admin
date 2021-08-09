@@ -224,7 +224,11 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
   const stockMap = useCallback(() => createStockNameMap(stockListState.data), [stockList])
 
   const extractKeyword = (value: string) => {
-    const tokens = value.replaceAll("\n", " ").split(" ")
+    const tokens = value
+      .replaceAll("\n", " ")
+      .split(" ")
+      .filter((token) => Boolean(token))
+
     for (let i = 0; i < tokens.length; i++) {
       if (stockMap[tokens[i]]) {
         dispatch({ type: ScheduleActionKind.ADD_STOCK, payload: stockMap[tokens[i]] })
@@ -425,7 +429,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item md={3} xs={12}>
+          <Grid item md={5} xs={12}>
             <DateRangePicker
               startDate={newScheduleForm.startDate}
               endDate={newScheduleForm.endDate}
