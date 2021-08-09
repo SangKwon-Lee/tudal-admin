@@ -276,7 +276,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
               fullWidth
               label="코멘트"
               name="comment"
-              helperText="줄 바꾸기 shift + enter"
+              helperText="줄 바꾸기 enter"
               value={newScheduleForm.comment}
               onBlur={(e) => extractKeyword(e.target.value)}
               onChange={(event) =>
