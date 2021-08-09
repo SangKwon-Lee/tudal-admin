@@ -70,6 +70,11 @@ const sections = [
         path: '/dashboard/hiddenboxes',
         icon: <FolderOpenIcon fontSize="small" />
       },
+      {
+        title: '일정',
+        path: '/dashboard/schedule',
+        icon: <FolderOpenIcon fontSize="small" />
+      },
     ]
   },
   {

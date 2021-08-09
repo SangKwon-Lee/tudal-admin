@@ -67,7 +67,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (props) => {
     const imageName = `hb-${moment().format('YYYYMMDDHHmmss')}.${ext}`;
     
     try{
-      // Koscom Cloud에 업로드하기
+      // Koscom Cloud에 업로드하기!
       await S3.putObject({
           Bucket: bucket_name,
           Key: imageName,
