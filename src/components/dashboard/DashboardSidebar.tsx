@@ -10,7 +10,7 @@ import {
   Drawer,
   Hidden,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import useAuth from '../../hooks/useAuth';
@@ -27,9 +27,9 @@ import ShoppingBagIcon from '../../icons/ShoppingBag';
 import ShoppingCartIcon from '../../icons/ShoppingCart';
 import UserIcon from '../../icons/User';
 import UsersIcon from '../../icons/Users';
-import Logo from '../Logo';
-import NavSection from '../NavSection';
-import Scrollbar from '../Scrollbar';
+import Logo from '../common/Logo';
+import NavSection from '../layout/NavSection';
+import Scrollbar from '../layout/Scrollbar';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -43,7 +43,7 @@ const sections = [
       {
         title: 'Overview',
         path: '/dashboard',
-        icon: <ChartSquareBarIcon fontSize="small" />
+        icon: <ChartSquareBarIcon fontSize="small" />,
       },
       // {
       //   title: 'Analytics',
@@ -60,7 +60,7 @@ const sections = [
       //   path: '/dashboard/account',
       //   icon: <UserIcon fontSize="small" />
       // }
-    ]
+    ],
   },
   {
     title: 'Management',
@@ -68,14 +68,14 @@ const sections = [
       {
         title: '히든박스',
         path: '/dashboard/hiddenboxes',
-        icon: <FolderOpenIcon fontSize="small" />
+        icon: <FolderOpenIcon fontSize="small" />,
       },
       {
         title: '일정',
         path: '/dashboard/schedule',
-        icon: <FolderOpenIcon fontSize="small" />
+        icon: <FolderOpenIcon fontSize="small" />,
       },
-    ]
+    ],
   },
   {
     title: 'Generator',
@@ -83,10 +83,10 @@ const sections = [
       {
         title: '리포트',
         path: '/dashboard/report',
-        icon: <ChartPieIcon fontSize="small" />
+        icon: <ChartPieIcon fontSize="small" />,
       },
-    ]
-  }
+    ],
+  },
 ];
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
@@ -105,7 +105,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%'
+        height: '100%',
       }}
     >
       <Scrollbar options={{ suppressScrollX: true }}>
@@ -121,7 +121,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
               <Logo
                 sx={{
                   height: 40,
-                  width: 40
+                  width: 40,
                 }}
               />
             </RouterLink>
@@ -135,8 +135,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
               pathname={location.pathname}
               sx={{
                 '& + &': {
-                  mt: 3
-                }
+                  mt: 3,
+                },
               }}
               {...section}
             />
@@ -157,8 +157,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
           PaperProps={{
             sx: {
               backgroundColor: 'background.paper',
-              width: 280
-            }
+              width: 280,
+            },
           }}
           variant="temporary"
         >
@@ -174,8 +174,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
               backgroundColor: 'background.paper',
               height: 'calc(100% - 64px) !important',
               top: '64px !Important',
-              width: 280
-            }
+              width: 280,
+            },
           }}
           variant="persistent"
         >
@@ -188,7 +188,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
 
 DashboardSidebar.propTypes = {
   onMobileClose: PropTypes.func,
-  openMobile: PropTypes.bool
+  openMobile: PropTypes.bool,
 };
 
 export default DashboardSidebar;

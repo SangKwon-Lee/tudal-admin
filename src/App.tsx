@@ -4,10 +4,10 @@ import { useRoutes } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/core';
 import './i18n';
-import GlobalStyles from './components/GlobalStyles';
-import RTL from './components/RTL';
-import SettingsDrawer from './components/SettingsDrawer';
-import SplashScreen from './components/SplashScreen';
+import GlobalStyles from './components/layout/GlobalStyles';
+import RTL from './components/layout/RTL';
+import SettingsDrawer from './components/layout/SettingsDrawer';
+import SplashScreen from './components/layout/SplashScreen';
 import { gtmConfig } from './config';
 import useAuth from './hooks/useAuth';
 import useScrollReset from './hooks/useScrollReset';
@@ -37,17 +37,14 @@ const App: FC = () => {
     direction: settings.direction,
     responsiveFontSizes: settings.responsiveFontSizes,
     roundedCorners: settings.roundedCorners,
-    theme: settings.theme
+    theme: settings.theme,
   });
 
   return (
     <ThemeProvider theme={theme}>
-      <MuiPickersUtilsProvider utils={MomentUtils} locale='ko_Kr'>
+      <MuiPickersUtilsProvider utils={MomentUtils} locale="ko_Kr">
         <RTL direction={settings.direction}>
-          <SnackbarProvider
-            dense
-            maxSnack={3}
-          >
+          <SnackbarProvider dense maxSnack={3}>
             <SocketProvider>
               <GlobalStyles />
               {auth.isInitialized ? content : <SplashScreen />}

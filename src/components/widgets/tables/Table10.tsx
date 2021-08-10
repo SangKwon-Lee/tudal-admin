@@ -10,10 +10,10 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import Label from '../../Label';
-import Scrollbar from '../../Scrollbar';
+import Label from '../Label';
+import Scrollbar from '../../layout/Scrollbar';
 import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
 
 const now = new Date();
@@ -21,76 +21,100 @@ const now = new Date();
 const logs = [
   {
     id: '5ece2cfeb6e2ac847bba11ce',
-    createdAt: subDays(subMinutes(subSeconds(now, 56), 2), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 56), 2),
+      2,
+    ).getTime(),
     description: 'Purchase',
     ip: '84.234.243.42',
     method: 'POST',
     route: '/api/purchase',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d02510484b2952e1e05',
-    createdAt: subDays(subMinutes(subSeconds(now, 56), 2), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 56), 2),
+      2,
+    ).getTime(),
     description: 'Purchase',
     ip: '84.234.243.42',
     method: 'POST',
     route: '/api/purchase',
-    status: 522
+    status: 522,
   },
   {
     id: '5ece2d08e2748e4e9788901a',
-    createdAt: subDays(subMinutes(subSeconds(now, 23), 8), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 23), 8),
+      2,
+    ).getTime(),
     description: 'Cart remove',
     ip: '84.234.243.42',
     method: 'DELETE',
     route: '/api/products/d65654e/remove',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d0c47214e342c2d7f28',
-    createdAt: subDays(subMinutes(subSeconds(now, 54), 20), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 54), 20),
+      2,
+    ).getTime(),
     description: 'Cart add',
     ip: '84.234.243.42',
     method: 'GET',
     route: '/api/products/d65654e/add',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d11e4060a97b2b57623',
-    createdAt: subDays(subMinutes(subSeconds(now, 16), 34), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 16), 34),
+      2,
+    ).getTime(),
     description: 'Cart add',
     ip: '84.234.243.42',
     method: 'GET',
     route: '/api/products/c85727f/add',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d16cf6d53d8e33656af',
-    createdAt: subDays(subMinutes(subSeconds(now, 30), 54), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 30), 54),
+      2,
+    ).getTime(),
     description: 'View product',
     ip: '84.234.243.42',
     method: 'GET',
     route: '/api/products/c85727f',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d1b2ec5071be9286a96',
-    createdAt: subDays(subMinutes(subSeconds(now, 40), 56), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 40), 56),
+      2,
+    ).getTime(),
     description: 'Get products',
     ip: '84.234.243.42',
     method: 'GET',
     route: '/api/products',
-    status: 200
+    status: 200,
   },
   {
     id: '5ece2d22e68d5498917e47bc',
-    createdAt: subDays(subMinutes(subSeconds(now, 5), 57), 2).getTime(),
+    createdAt: subDays(
+      subMinutes(subSeconds(now, 5), 57),
+      2,
+    ).getTime(),
     description: 'Login',
     ip: '84.234.243.42',
     method: 'POST',
     route: '/api/authentication/login',
-    status: 200
-  }
+    status: 200,
+  },
 ];
 
 const Table10: FC = () => (
@@ -98,16 +122,16 @@ const Table10: FC = () => (
     sx={{
       backgroundColor: 'background.default',
       minHeight: '100%',
-      p: 3
+      p: 3,
     }}
   >
     <Card>
       <CardHeader
-        action={(
+        action={
           <IconButton>
             <DotsHorizontalIcon fontSize="small" />
           </IconButton>
-        )}
+        }
         title="Logs"
       />
       <Divider />
@@ -127,22 +151,14 @@ const Table10: FC = () => (
                   </TableCell>
                   <TableCell width="64">
                     <Label
-                      color={log.status === 200
-                        ? 'success'
-                        : 'error'}
+                      color={log.status === 200 ? 'success' : 'error'}
                     >
                       {log.status}
                     </Label>
                   </TableCell>
-                  <TableCell>
-                    {log.route}
-                  </TableCell>
-                  <TableCell>
-                    {log.description}
-                  </TableCell>
-                  <TableCell align="right">
-                    {log.ip}
-                  </TableCell>
+                  <TableCell>{log.route}</TableCell>
+                  <TableCell>{log.description}</TableCell>
+                  <TableCell align="right">{log.ip}</TableCell>
                   <TableCell align="right">
                     {format(log.createdAt, 'yyyy/MM/dd | HH:mm:ss')}
                   </TableCell>

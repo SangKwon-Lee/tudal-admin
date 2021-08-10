@@ -6,17 +6,17 @@ import {
   CardContent,
   CardHeader,
   Divider,
-  IconButton
+  IconButton,
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import Scrollbar from '../../Scrollbar';
+import Scrollbar from '../../layout/Scrollbar';
 import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
 
 const data = {
   series: [
     {
-      data: [10, 5, 11, 20, 13, 28, 18, 4, 13, 12, 13, 5]
-    }
+      data: [10, 5, 11, 20, 13, 28, 18, 4, 13, 12, 13, 5],
+    },
   ],
   categories: [
     'Jan',
@@ -30,8 +30,8 @@ const data = {
     'Sep',
     'Oct',
     'Nov',
-    'Dec'
-  ]
+    'Dec',
+  ],
 };
 
 const Chart4: FC = () => {
@@ -42,18 +42,18 @@ const Chart4: FC = () => {
       markers: {
         size: 6,
         strokeColors: theme.palette.background.default,
-        strokeWidth: 3
+        strokeWidth: 3,
       },
       chart: {
         background: 'transparent',
         stacked: false,
         toolbar: {
-          show: false
+          show: false,
         },
       },
       colors: ['#00ab57'],
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       fill: {
         gradient: {
@@ -61,66 +61,65 @@ const Chart4: FC = () => {
           opacityTo: 0.1,
           shadeIntensity: 1,
           stops: [0, 100],
-          type: 'vertical'
+          type: 'vertical',
         },
-        type: 'gradient'
+        type: 'gradient',
       },
       grid: {
         borderColor: theme.palette.divider,
-        strokeDashArray: 2
+        strokeDashArray: 2,
       },
       stroke: {
-        curve: 'smooth'
+        curve: 'smooth',
       } as ApexStroke,
       theme: {
-        mode: theme.palette.mode
+        mode: theme.palette.mode,
       },
       xaxis: {
         axisBorder: {
           color: theme.palette.divider,
-          show: true
+          show: true,
         },
         axisTicks: {
           color: theme.palette.divider,
-          show: true
+          show: true,
         },
         categories: data.categories,
         labels: {
           offsetY: 5,
           style: {
-            colors: theme.palette.text.secondary
-          }
-        }
+            colors: theme.palette.text.secondary,
+          },
+        },
       },
       yaxis: {
         labels: {
-          formatter: (value: number): string | number => (
-            value > 0 ? `${value}K` : value
-          ),
+          formatter: (value: number): string | number =>
+            value > 0 ? `${value}K` : value,
           offsetX: -10,
           style: {
-            colors: theme.palette.text.secondary
-          }
-        }
-      } as ApexYAxis
+            colors: theme.palette.text.secondary,
+          },
+        },
+      } as ApexYAxis,
     },
-    series: data.series
+    series: data.series,
   };
 
   return (
     <Box
       sx={{
         backgroundColor: 'background.default',
-        p: 3
+        p: 3,
       }}
     >
       <Card>
         <CardHeader
-          action={(
+          action={
             <IconButton>
               <DotsHorizontalIcon fontSize="small" />
             </IconButton>
-          )}
+          }
           title="Performance Over Time"
         />
         <Divider />
@@ -130,14 +129,10 @@ const Chart4: FC = () => {
               sx={{
                 height: 375,
                 minWidth: 500,
-                position: 'relative'
+                position: 'relative',
               }}
             >
-              <Chart
-                height="350"
-                type="area"
-                {...chart}
-              />
+              <Chart height="350" type="area" {...chart} />
             </Box>
           </Scrollbar>
         </CardContent>

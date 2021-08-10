@@ -7,11 +7,11 @@ import {
   Input,
   Paper,
   Tooltip,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-import QuillEditor from '../../QuillEditor';
+import QuillEditor from '../QuillEditor';
 import ArrowsExpandIcon from '../../../icons/ArrowsExpand';
 import XIcon from '../../../icons/X';
 
@@ -20,7 +20,7 @@ const Modal1: FC = () => (
     sx={{
       backgroundColor: 'background.default',
       minHeight: '100%',
-      p: 3
+      p: 3,
     }}
   >
     <Paper
@@ -32,7 +32,7 @@ const Modal1: FC = () => (
         minHeight: 500,
         mx: 'auto',
         outline: 'none',
-        width: 600
+        width: 600,
       }}
     >
       <Box
@@ -40,13 +40,10 @@ const Modal1: FC = () => (
           alignItems: 'center',
           display: 'flex',
           px: 2,
-          py: 1
+          py: 1,
         }}
       >
-        <Typography
-          variant="h6"
-          color="textPrimary"
-        >
+        <Typography variant="h6" color="textPrimary">
           New Message
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
@@ -64,7 +61,7 @@ const Modal1: FC = () => (
         sx={{
           p: 1,
           borderBottom: 1,
-          borderColor: 'divider'
+          borderColor: 'divider',
         }}
       />
       <Input
@@ -74,14 +71,14 @@ const Modal1: FC = () => (
         sx={{
           p: 1,
           borderBottom: 1,
-          borderColor: 'divider'
+          borderColor: 'divider',
         }}
       />
       <QuillEditor
         placeholder="Leave a message"
         sx={{
           border: 'none',
-          flexGrow: 1
+          flexGrow: 1,
         }}
       />
       <Divider />
@@ -90,28 +87,19 @@ const Modal1: FC = () => (
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'flex-end',
-          p: 2
+          p: 2,
         }}
       >
-        <Button
-          color="primary"
-          variant="contained"
-        >
+        <Button color="primary" variant="contained">
           Send
         </Button>
         <Tooltip title="Attach image">
-          <IconButton
-            size="small"
-            sx={{ ml: 1 }}
-          >
+          <IconButton size="small" sx={{ ml: 1 }}>
             <AddPhotoIcon fontSize="small" />
           </IconButton>
         </Tooltip>
         <Tooltip title="Attach file">
-          <IconButton
-            size="small"
-            sx={{ ml: 1 }}
-          >
+          <IconButton size="small" sx={{ ml: 1 }}>
             <AttachFileIcon fontSize="small" />
           </IconButton>
         </Tooltip>

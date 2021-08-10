@@ -6,7 +6,7 @@ import {
   Box,
   Button,
   FormHelperText,
-  TextField
+  TextField,
 } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
@@ -20,28 +20,21 @@ const LoginJWT: FC = (props) => {
       initialValues={{
         email: '',
         password: '',
-        submit: null
+        submit: null,
       }}
-      validationSchema={
-        Yup
-          .object()
-          .shape({
-            email: Yup
-              .string()
-              .email('올바른 이메일을 입력해주세요.')
-              .max(255)
-              .required('이메일을 입력해주세요.'),
-            password: Yup
-              .string()
-              .max(255)
-              .required('비밀번호를 입력해주세요.')
-          })
-      }
-      onSubmit={async (values, {
-        setErrors,
-        setStatus,
-        setSubmitting
-      }): Promise<void> => {
+      validationSchema={Yup.object().shape({
+        email: Yup.string()
+          .email('올바른 이메일을 입력해주세요.')
+          .max(255)
+          .required('이메일을 입력해주세요.'),
+        password: Yup.string()
+          .max(255)
+          .required('비밀번호를 입력해주세요.'),
+      })}
+      onSubmit={async (
+        values,
+        { setErrors, setStatus, setSubmitting },
+      ): Promise<void> => {
         try {
           await login(values.email, values.password);
 
@@ -53,7 +46,9 @@ const LoginJWT: FC = (props) => {
           console.error(err);
           if (isMountedRef.current) {
             setStatus({ success: false });
-            setErrors({ submit: '이메일 또는 비밀번호가 잘못되었습니다.' });
+            setErrors({
+              submit: '이메일 또는 비밀번호가 잘못되었습니다.',
+            });
             setSubmitting(false);
           }
         }
@@ -66,13 +61,9 @@ const LoginJWT: FC = (props) => {
         handleSubmit,
         isSubmitting,
         touched,
-        values
+        values,
       }): JSX.Element => (
-        <form
-          noValidate
-          onSubmit={handleSubmit}
-          {...props}
-        >
+        <form noValidate onSubmit={handleSubmit} {...props}>
           <TextField
             autoFocus
             error={Boolean(touched.email && errors.email)}
@@ -102,9 +93,7 @@ const LoginJWT: FC = (props) => {
           />
           {errors.submit && (
             <Box sx={{ mt: 3 }}>
-              <FormHelperText error>
-                {errors.submit}
-              </FormHelperText>
+              <FormHelperText error>{errors.submit}</FormHelperText>
             </Box>
           )}
           <Box sx={{ mt: 2 }}>

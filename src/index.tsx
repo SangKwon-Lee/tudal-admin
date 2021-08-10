@@ -1,8 +1,7 @@
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import 'react-quill/dist/quill.snow.css';
 import 'nprogress/nprogress.css';
-import './__mocks__';
+
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -16,27 +15,24 @@ import { AuthProvider } from './contexts/JWTContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
-import store from './store';
 
 ReactDOM.render(
   <StrictMode>
     <HelmetProvider>
-      <ReduxProvider store={store}>
-        <StyledEngineProvider injectFirst>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <BrowserRouter>
-                <AuthProvider>
-                  <App />
-                </AuthProvider>
-              </BrowserRouter>
-            </SettingsProvider>
-          </LocalizationProvider>
-        </StyledEngineProvider>
-      </ReduxProvider>
+      <StyledEngineProvider injectFirst>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <SettingsProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </BrowserRouter>
+          </SettingsProvider>
+        </LocalizationProvider>
+      </StyledEngineProvider>
     </HelmetProvider>
   </StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // If you want to enable client cache, register instead.
