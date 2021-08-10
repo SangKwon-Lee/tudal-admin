@@ -103,6 +103,7 @@ const scheduleFormReducer = (
 
     case ScheduleActionKind.HANDLE_CHANGES:
       const { name, value } = payload.target
+      console.log(name, value)
       return { ...state, [name]: value }
 
     case ScheduleActionKind.REPLACE_DATES:
@@ -224,7 +225,11 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
   const stockMap = useCallback(() => createStockNameMap(stockListState.data), [stockList])
 
   const extractKeyword = (value: string) => {
-    const tokens = value.replaceAll("\n", " ").split(" ")
+    const tokens = value
+      .replaceAll("\n", " ")
+      .split(" ")
+      .filter((token) => Boolean(token))
+
     for (let i = 0; i < tokens.length; i++) {
       if (stockMap[tokens[i]]) {
         dispatch({ type: ScheduleActionKind.ADD_STOCK, payload: stockMap[tokens[i]] })
@@ -256,7 +261,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
     >
       <form onSubmit={(event) => event.preventDefault()}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item md={4} xs={12}>
+          <Grid item md={12} xs={12}>
             <TextField
               fullWidth
               label="제목"
@@ -271,12 +276,12 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
               variant="outlined"
             />
           </Grid>
-          <Grid item md={8} xs={12}>
+          <Grid item md={12} xs={12}>
             <TextField
               fullWidth
               label="코멘트"
               name="comment"
-              helperText="줄 바꾸기 shift + enter"
+              helperText="줄 바꾸기 enter"
               value={newScheduleForm.comment}
               onBlur={(e) => extractKeyword(e.target.value)}
               onChange={(event) =>
@@ -408,12 +413,13 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
           <Grid item md={3} xs={12}>
             <FormControl variant="filled" fullWidth>
               <InputLabel htmlFor="filled-age-native-simple">중요도</InputLabel>
+              {console.log(newScheduleForm.priority)}
               <Select
                 name="priority"
                 value={newScheduleForm.priority}
                 fullWidth
                 inputProps={{
-                  name: "중요도",
+                  name: "priority",
                 }}
                 onChange={(event) =>
                   dispatch({ type: ScheduleActionKind.HANDLE_CHANGES, payload: event })
@@ -425,7 +431,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item md={3} xs={12}>
+          <Grid item md={5} xs={12}>
             <DateRangePicker
               startDate={newScheduleForm.startDate}
               endDate={newScheduleForm.endDate}

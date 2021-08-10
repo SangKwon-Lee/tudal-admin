@@ -1,6 +1,6 @@
-import React, { ChangeEvent, useState } from "react"
-import PropTypes from "prop-types"
-import dayjs from "dayjs"
+import React, { ChangeEvent, useState } from "react";
+import PropTypes from "prop-types";
+import dayjs from "dayjs";
 import {
   Box,
   Card,
@@ -17,17 +17,21 @@ import {
   TextField,
   CircularProgress,
   Dialog,
-} from "@material-ui/core"
+} from "@material-ui/core";
 
-import DeleteIcon from "@material-ui/icons/Delete"
-import Label from "../../Label"
-import SearchIcon from "../../../icons/Search"
-import { Priority, Schedule } from "../../../types/schedule"
-import ConfirmModal from "src/components/widgets/modals/ConfirmModal"
+import DeleteIcon from "@material-ui/icons/Delete";
+import Label from "../../Label";
+import SearchIcon from "../../../icons/Search";
+import { Priority, Schedule } from "../../../types/schedule";
+import ConfirmModal from "src/components/widgets/modals/ConfirmModal";
 
 const getPriorityLabel = (priority) => {
   const scale =
-    priority > Priority.MIDDLE ? "high" : priority === Priority.MIDDLE ? "middle" : "low"
+    priority > Priority.MIDDLE
+      ? "high"
+      : priority === Priority.MIDDLE
+      ? "middle"
+      : "low";
   const map = {
     high: {
       color: "error",
@@ -41,11 +45,11 @@ const getPriorityLabel = (priority) => {
       color: "warning",
       text: "LOW",
     },
-  }
-  const { text, color }: any = map[scale]
+  };
+  const { text, color }: any = map[scale];
 
-  return <Label color={color}>{text}</Label>
-}
+  return <Label color={color}>{text}</Label>;
+};
 
 type Sort =
   | "updated_at|desc"
@@ -53,11 +57,11 @@ type Sort =
   | "startDate|desc"
   | "startDate|asc"
   | "author|desc"
-  | "priority|desc"
+  | "priority|desc";
 
 interface SortOption {
-  value: Sort
-  label: string
+  value: Sort;
+  label: string;
 }
 const sortOptions: SortOption[] = [
   {
@@ -84,70 +88,74 @@ const sortOptions: SortOption[] = [
     label: "중요도 내림차순",
     value: "priority|desc",
   },
-]
+];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
-    return -1
+    return -1;
   }
   if (b[orderBy] > a[orderBy]) {
-    return 1
+    return 1;
   }
-  return 0
+  return 0;
 }
 
 const getComparator = (order: "asc" | "desc", orderBy: string) => {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy)
-}
+    : (a, b) => -descendingComparator(a, b, orderBy);
+};
 const applySort = (schedules: Schedule[], sort: Sort): Schedule[] => {
-  const [orderBy, order] = sort.split("|") as [string, "asc" | "desc"]
-  const comparator = getComparator(order, orderBy)
-  const stabilizedThis = schedules.map((el, index) => [el, index])
+  const [orderBy, order] = sort.split("|") as [string, "asc" | "desc"];
+  const comparator = getComparator(order, orderBy);
+  const stabilizedThis = schedules.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0])
-    if (order !== 0) return order
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
     // @ts-ignore
-    return a[1] - b[1]
-  })
+    return a[1] - b[1];
+  });
   // @ts-ignore
-  return stabilizedThis.map((el) => el[0])
-}
+  return stabilizedThis.map((el) => el[0]);
+};
 
 interface ScheduleListTableProps {
-  schedules: Schedule[]
-  search: string
-  setSearch: (value) => void
-  postDelete: (id: number) => void
-  reload: () => void
+  schedules: Schedule[];
+  search: string;
+  setSearch: (value) => void;
+  postDelete: (id: number) => void;
+  reload: () => void;
 }
 
-const applyPagination = (schedules: Schedule[], page: number, limit: number): Schedule[] =>
-  schedules.slice(page * limit, page * limit + limit)
+const applyPagination = (
+  schedules: Schedule[],
+  page: number,
+  limit: number
+): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
-  const { schedules, postDelete, search, setSearch } = props
-  const [page, setPage] = useState<number>(0)
-  const [limit, setLimit] = useState<number>(10)
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value)
-  const [targetSchedule, setTargetSchedule] = useState<Schedule>(null)
-  const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] = useState<boolean>(false)
+  const { schedules, postDelete, search, setSearch } = props;
+  const [page, setPage] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(10);
+  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
+  const [targetSchedule, setTargetSchedule] = useState<Schedule>(null);
+  const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
+    useState<boolean>(false);
 
   const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setLimit(parseInt(event.target.value, 10))
-  }
+    setLimit(parseInt(event.target.value, 10));
+  };
 
   const handleSort = (event): void => {
-    setSort(event.target.value)
-  }
-  const sortedSchedules = applySort(schedules, sort)
-  const paginatedSchedule = applyPagination(sortedSchedules, page, limit)
+    setSort(event.target.value);
+  };
+  const sortedSchedules = applySort(schedules, sort);
+  const paginatedSchedule = applyPagination(sortedSchedules, page, limit);
 
   return (
     <Box
@@ -208,7 +216,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
                   <option key={i} value={sort.value}>
                     {sort.label}
                   </option>
-                )
+                );
               })}
             </TextField>
           </Box>
@@ -228,34 +236,46 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
             </TableHead>
             <TableBody>
               {paginatedSchedule.map((schedule) => {
-                const { comment, priority, author, startDate, endDate } = schedule
+                console.log("schedule", schedule);
+                const { comment, priority, author, startDate, endDate } =
+                  schedule;
                 return (
                   <TableRow hover key={schedule.id}>
                     <TableCell padding="checkbox">
                       <Checkbox color="primary" />
                     </TableCell>
                     <TableCell>
-                      <Link color="textPrimary" underline="none" variant="subtitle2">
+                      <Link
+                        color="textPrimary"
+                        underline="none"
+                        variant="subtitle2"
+                      >
                         {schedule.title}
                       </Link>
                     </TableCell>
                     <TableCell>{comment}</TableCell>
                     <TableCell>{getPriorityLabel(priority)}</TableCell>
-                    <TableCell>{author.username}</TableCell>
-                    <TableCell>{`${dayjs(startDate).format("YYYY-MM-DD")}`}</TableCell>
-                    <TableCell>{`${dayjs(endDate).format("YYYY-MM-DD")}`}</TableCell>
+                    <TableCell>
+                      {author ? author.username : "알 수 없음"}
+                    </TableCell>
+                    <TableCell>{`${dayjs(startDate).format(
+                      "YYYY-MM-DD"
+                    )}`}</TableCell>
+                    <TableCell>{`${dayjs(endDate).format(
+                      "YYYY-MM-DD"
+                    )}`}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
-                          setTargetSchedule(schedule)
-                          setIsOpenDeleteConfirm(true)
+                          setTargetSchedule(schedule);
+                          setIsOpenDeleteConfirm(true);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
@@ -280,23 +300,23 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
               content={`삭제하면 되돌리기 어렵습니다.`}
               confirmTitle={"네 삭제합니다."}
               handleOnClick={() => {
-                postDelete(targetSchedule.id)
-                setTargetSchedule(null)
+                postDelete(targetSchedule.id);
+                setTargetSchedule(null);
               }}
               handleOnCancel={() => {
-                setTargetSchedule(null)
-                setIsOpenDeleteConfirm(false)
+                setTargetSchedule(null);
+                setIsOpenDeleteConfirm(false);
               }}
             />
           </Dialog>
         )}
       </Card>
     </Box>
-  )
-}
+  );
+};
 
-export default ScheduleListTable
+export default ScheduleListTable;
 
 ScheduleListTable.propTypes = {
   schedules: PropTypes.array.isRequired,
-}
+};
