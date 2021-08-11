@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { INews } from 'src/types/news';
 import axios from 'src/lib/axios';
 
 import {
   Box,
   Breadcrumbs,
+  Skeleton,
   Container,
   Grid,
   Link,
@@ -19,13 +20,22 @@ import useSettings from '../../hooks/useSettings';
 import { News } from 'src/fixtures';
 import gtm from '../../lib/gtm';
 import { NewsListTable } from 'src/components/dashboard/news';
+import { APINews } from 'src/lib/api';
 
 const NewsComments: React.FC = () => {
   const { settings } = useSettings();
 
-  useEffect(() => {
-    gtm.push({ event: 'page_view' });
-  }, []);
+  const [newsState, refetchNews] = useAsync<INews[]>(
+    APINews.getList,
+    [],
+    [],
+  );
+
+  const {
+    data: newsList,
+    error: newsError,
+    loading: newsLoading,
+  } = newsState;
 
   return (
     <>
@@ -72,9 +82,13 @@ const NewsComments: React.FC = () => {
               </Breadcrumbs>
             </Grid>
           </Grid>
-          {/* <ScheduleForm reload={reload} /> */}
           <Box sx={{ mt: 3 }}>
-            <NewsListTable newsList={News.list} />
+            {newsList.length > 0 && (
+              <NewsListTable
+                data-testid="news-list-table"
+                newsList={newsList}
+              />
+            )}
           </Box>
         </Container>
       </Box>

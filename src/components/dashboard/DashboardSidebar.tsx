@@ -2,31 +2,11 @@ import { useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  Hidden,
-  Link,
-  Typography,
-} from '@material-ui/core';
-import ReceiptIcon from '@material-ui/icons/Receipt';
+import { Box, Divider, Drawer, Hidden } from '@material-ui/core';
 import useAuth from '../../hooks/useAuth';
-import BriefcaseIcon from '../../icons/Briefcase';
-import CalendarIcon from '../../icons/Calendar';
 import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
-import ChatAltIcon from '../../icons/ChatAlt';
-import ClipboardListIcon from '../../icons/ClipboardList';
 import FolderOpenIcon from '../../icons/FolderOpen';
-import MailIcon from '../../icons/Mail';
-import ShareIcon from '../../icons/Share';
-import ShoppingBagIcon from '../../icons/ShoppingBag';
-import ShoppingCartIcon from '../../icons/ShoppingCart';
-import UserIcon from '../../icons/User';
-import UsersIcon from '../../icons/Users';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';

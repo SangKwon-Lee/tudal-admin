@@ -125,6 +125,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
       sx={{
         backgroundColor: 'background.default',
       }}
+      data-testid="news-list-table"
     >
       <Card>
         <Box
@@ -197,23 +198,23 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
               <TableRow>
                 <TableCell padding="checkbox"></TableCell>
                 <TableCell width="30%">제목</TableCell>
-                <TableCell width="50%">코멘트</TableCell>
+                <TableCell width="50%">기사(요약)</TableCell>
                 <TableCell width="10%">언론사</TableCell>
                 <TableCell width="10%">출판일</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="news-table-list">
               {paginatedNewsList.map((news) => {
+                console.log(news);
                 const {
                   title,
-                  tags,
                   id,
-                  url,
                   mediaName,
                   summarized,
                   source,
                   publishDate,
                 } = news;
+                console.log(summarized);
                 return (
                   <TableRow hover key={id}>
                     <TableCell padding="checkbox">
