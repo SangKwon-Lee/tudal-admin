@@ -7,7 +7,7 @@ import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
 import ScheduleList from './pages/dashboard/Schedule';
-import NewsComments from './pages/dashboard/NewsComments';
+import News from './pages/dashboard/News';
 
 const Loadable = (Component) => (props) =>
   (
@@ -166,7 +166,7 @@ const routes: PartialRouteObject[] = [
         children: [
           {
             path: '/',
-            element: <NewsComments />,
+            element: <News />,
           },
         ],
       },

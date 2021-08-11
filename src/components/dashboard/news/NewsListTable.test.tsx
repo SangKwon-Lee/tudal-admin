@@ -1,8 +1,13 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import dayjs from 'dayjs';
 import NewsListTable from './NewsListTable';
-import { News } from 'src/fixtures';
+import { FixtureNews } from 'src/fixtures';
 import userEvent from '@testing-library/user-event';
+
+const search = jest.fn();
+const setSearch = jest.fn();
+const postDelete = jest.fn();
+const reload = jest.fn();
 
 describe('News List Table', () => {
   function renderTable(
@@ -12,17 +17,24 @@ describe('News List Table', () => {
     postDelete?,
     reload?,
   ) {
-    return render(<NewsListTable newsList={news} />);
+    return render(
+      <NewsListTable
+        newsList={news}
+        search={search}
+        setSearch={setSearch}
+        reload={reload}
+      />,
+    );
   }
 
   it('renders news', async () => {
-    const { findAllByText } = renderTable(News.list);
+    const { findAllByText } = renderTable(FixtureNews.list);
     const elements = await findAllByText(/로이터 증권/);
     expect(elements).not.toBeNull();
   });
 
   it('render multiple news', () => {
-    const render = renderTable(News.list);
+    const render = renderTable(FixtureNews.list);
     expect(
       render.queryByTestId('news-table-list').querySelectorAll('tr'),
     ).toHaveLength(6);
@@ -30,7 +42,7 @@ describe('News List Table', () => {
 
   it('sort news by updated_at:DESC', () => {
     const { queryByTestId, getAllByRole, queryAllByTestId } =
-      renderTable(News.list);
+      renderTable(FixtureNews.list);
 
     const selectButtons = getAllByRole('combobox').filter(
       (element) => element.id === 'sort',
@@ -55,7 +67,7 @@ describe('News List Table', () => {
 
   it('sort news by updated_at:ASC', async () => {
     const { getAllByRole, queryByTestId, queryAllByTestId } =
-      renderTable(News.list);
+      renderTable(FixtureNews.list);
 
     const selectButtons = getAllByRole('combobox').filter(
       (element) => element.id === 'sort',
@@ -76,15 +88,4 @@ describe('News List Table', () => {
       ).toBeTruthy();
     }
   });
-
-  // it('changes search words', async () => {
-  //   const { getAllByRole } = renderTable(News.list);
-
-  //   const searchInput = getAllByRole('textbox').filter(
-  //     (element) => element.id === '_q',
-  //   )[0];
-
-  //   fireEvent.change(searchInput, { target: { value: '로이터' } });
-  //   expect(searchInput.nodeValue).toEqual('로이터');
-  // });
 });

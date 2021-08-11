@@ -1,43 +1,59 @@
-import React, { useState, useEffect, useCallback } from "react"
-import { Link as RouterLink } from "react-router-dom"
-import { Helmet } from "react-helmet-async"
-import { Schedule } from "src/types/schedule"
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Schedule } from 'src/types/schedule';
 
-import axios from "src/lib/axios"
-import { Box, Breadcrumbs, Button, Container, Grid, Link, Typography } from "@material-ui/core"
-import { ScheduleForm } from "src/components/dashboard/schedule"
-import ChevronRightIcon from "../../icons/ChevronRight"
-import { ScheduleListTable } from "../../components/dashboard/schedule"
-import useSettings from "src/hooks/useSettings"
-import useAsync from "src/hooks/useAsync"
-import { APISchedule } from "src/lib/api"
+import axios from 'src/lib/axios';
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Container,
+  Grid,
+  Link,
+  Typography,
+} from '@material-ui/core';
+import { ScheduleForm } from 'src/components/dashboard/schedule';
+import ChevronRightIcon from '../../icons/ChevronRight';
+import { ScheduleListTable } from '../../components/dashboard/schedule';
+import useSettings from 'src/hooks/useSettings';
+import useAsync from 'src/hooks/useAsync';
+import { APISchedule } from 'src/lib/api';
 
 const ScheduleList: React.FC = () => {
-  const { settings } = useSettings()
-  const [search, setSearch] = useState<string>("")
+  const { settings } = useSettings();
+  const [search, setSearch] = useState<string>('');
 
   const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
     () => APISchedule.getList(search),
     [search],
-    []
-  )
+    [],
+  );
 
-  const { data: schedules, error: schedulesError, loading: schedulesLoading } = schedulesState
-  const reload = useCallback(() => refetchSchedule(), [])
+  const {
+    data: schedules,
+    error: schedulesError,
+    loading: schedulesLoading,
+  } = schedulesState;
+
+  const reload = useCallback(
+    () => refetchSchedule(),
+    [refetchSchedule],
+  );
 
   const postDelete = async (id: number) => {
     try {
-      const { status } = await APISchedule.deleteItem(id)
+      const { status } = await APISchedule.deleteItem(id);
       if (status === 200) {
-        reload()
+        reload();
       }
       if (status === 404) {
-        alert("존재하지 않는 스케줄입니다. 확인 부탁드립니다.")
+        alert('존재하지 않는 스케줄입니다. 확인 부탁드립니다.');
       }
     } catch (error) {
-      alert("삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.")
+      alert('삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.');
     }
-  }
+  };
 
   return (
     <>
@@ -46,12 +62,12 @@ const ScheduleList: React.FC = () => {
       </Helmet>
       <Box
         sx={{
-          backgroundColor: "background.default",
-          minHeight: "100%",
+          backgroundColor: 'background.default',
+          minHeight: '100%',
           py: 8,
         }}
       >
-        <Container maxWidth={settings.compact ? "xl" : false}>
+        <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
@@ -97,7 +113,7 @@ const ScheduleList: React.FC = () => {
         </Container>
       </Box>
     </>
-  )
-}
+  );
+};
 
-export default ScheduleList
+export default ScheduleList;

@@ -3,33 +3,37 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { INews } from 'src/types/news';
 import axios from 'src/lib/axios';
-
+import * as _ from 'lodash';
 import {
   Box,
   Breadcrumbs,
-  Skeleton,
   Container,
   Grid,
   Link,
   Typography,
+  LinearProgress,
 } from '@material-ui/core';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import useAsync from 'src/hooks/useAsync';
 
 import useSettings from '../../hooks/useSettings';
-import { News } from 'src/fixtures';
+import { FixtureNews } from 'src/fixtures';
 import gtm from '../../lib/gtm';
 import { NewsListTable } from 'src/components/dashboard/news';
 import { APINews } from 'src/lib/api';
+import GroupedList11 from 'src/components/widgets/grouped-lists/GroupedList11';
 
-const NewsComments: React.FC = () => {
+const News: React.FC = () => {
   const { settings } = useSettings();
-
+  const [search, setSearch] = useState<string>('');
   const [newsState, refetchNews] = useAsync<INews[]>(
-    APINews.getList,
-    [],
+    () => APINews.getList(search),
+    [search],
     [],
   );
+
+  const handleSearch = _.debounce(setSearch, 300);
+  const reload = useCallback(() => refetchNews(), [refetchNews]);
 
   const {
     data: newsList,
@@ -83,12 +87,13 @@ const NewsComments: React.FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            {newsList.length > 0 && (
-              <NewsListTable
-                data-testid="news-list-table"
-                newsList={newsList}
-              />
-            )}
+            <NewsListTable
+              newsList={newsList}
+              search={search}
+              setSearch={handleSearch}
+              reload={reload}
+              isLoading={newsLoading}
+            />
           </Box>
         </Container>
       </Box>
@@ -96,4 +101,4 @@ const NewsComments: React.FC = () => {
   );
 };
 
-export default NewsComments;
+export default News;

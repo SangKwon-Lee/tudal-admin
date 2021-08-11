@@ -7,7 +7,9 @@ export async function getList(search: string) {
   if (search) {
     q._q = search;
   }
-  return await axios.get<INews[]>(`/general-news?${qs.stringify(q)}`);
+  return await axios.get<INews[]>(
+    `/general-news?_sort=publishDate:DESC&${qs.stringify(q)}`,
+  );
 }
 
 // export async function create(schedule: IScheduleForm) {
