@@ -2,10 +2,18 @@ import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import dotenv from 'dotenv';
 dotenv.config();
-const { REACT_APP_CMS_TOKEN, REACT_APP_CMS_URL, REACT_APP_API_URL } =
-  process.env;
+const {
+  REACT_APP_CMS_TOKEN,
+  REACT_APP_CMS_URL,
+  REACT_APP_API_URL,
+  REACT_APP_DEV_CMS_URL,
+} = process.env;
 
-export const CMSURL = REACT_APP_CMS_URL;
+export const CMSURL =
+  process.env.NODE_ENV === 'development'
+    ? REACT_APP_DEV_CMS_URL
+    : REACT_APP_CMS_URL;
+
 export const CMS_TOKEN = REACT_APP_CMS_TOKEN;
 export const APIURL = REACT_APP_API_URL;
 

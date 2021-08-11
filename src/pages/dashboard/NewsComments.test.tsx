@@ -16,8 +16,21 @@ import NewsComment from './NewsComments';
 
 jest.mock('react-helmet-async', () => ({
   Helmet: () => <header></header>,
-  //   HelmetProvider: () => jest.fn(),
 }));
+
+const handlers = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/general-news`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(News.list));
+    },
+  ),
+];
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+beforeEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 function renderNews() {
   return render(
@@ -28,17 +41,6 @@ function renderNews() {
 }
 
 test('load and display loading', async () => {
-  const handlers = [
-    rest.get(
-      'http://103.244.108.203:1337/schedules',
-      (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(News.list));
-      },
-    ),
-  ];
-  const server = setupServer(...handlers);
-  server.listen();
-
   const { container } = renderNews();
 
   await waitFor(() => screen.getByTestId('news-list-table'));

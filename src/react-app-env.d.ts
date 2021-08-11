@@ -11,5 +11,8 @@ declare namespace NodeJS {
     REACT_APP_CMS_TOKEN: string;
     REACT_APP_CMS_URL: string;
     REACT_APP_API_URL: string;
+
+    // development
+    REACT_APP_DEV_API_URL: string;
   }
 }

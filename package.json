@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint ./src",
     "lint-fix": "eslint --fix ./src",
-    "dev": "sh -ac '. .env.${REACT_APP_ENV}; react-scripts start",
-    "build": "sh -ac '. .env.${REACT_APP_ENV}; react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!ui-core)/\" --env=jsdom",
     "eject": "react-scripts eject"
   },
