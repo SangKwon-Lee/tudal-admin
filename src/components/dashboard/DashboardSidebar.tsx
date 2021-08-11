@@ -75,6 +75,11 @@ const sections = [
         path: '/dashboard/schedule',
         icon: <FolderOpenIcon fontSize="small" />,
       },
+      {
+        title: '뉴스 코멘트',
+        path: '/dashboard/news-comments',
+        icon: <FolderOpenIcon fontSize="small" />,
+      },
     ],
   },
   {
