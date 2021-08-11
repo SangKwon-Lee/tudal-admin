@@ -1,9 +1,13 @@
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
+import dotenv from 'dotenv';
+dotenv.config();
+const { REACT_APP_CMS_TOKEN, REACT_APP_CMS_URL, REACT_APP_API_URL } =
+  process.env;
 
-export const CMSURL = 'http://103.244.108.203:1337';
-export const CMS_TOKEN = 'sbcnepqm22@0';
-export const APIURL = 'http://103.244.108.41:3000/api';
+export const CMSURL = REACT_APP_CMS_URL;
+export const CMS_TOKEN = REACT_APP_CMS_TOKEN;
+export const APIURL = REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
   baseURL: CMSURL,
@@ -11,12 +15,16 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject((
-    error.response && error.response.data
-  ) || `Something went wrong`)
+  (error) =>
+    Promise.reject(
+      (error.response && error.response.data) ||
+        `Something went wrong`,
+    ),
 );
 
-export const mock = new AxiosMockAdapter(axiosInstance, { delayResponse: 0 });
+export const mock = new AxiosMockAdapter(axiosInstance, {
+  delayResponse: 0,
+});
 
 export const apiServer = axios.create({
   baseURL: APIURL,
@@ -28,9 +36,11 @@ export const cmsServer = axios.create({
 
 apiServer.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject((
-    error.response && error.response.data
-  ) || `Something went wrong`)
+  (error) =>
+    Promise.reject(
+      (error.response && error.response.data) ||
+        `Something went wrong`,
+    ),
 );
 
 const pureAxiosInstance = axios.create({
@@ -39,9 +49,11 @@ const pureAxiosInstance = axios.create({
 
 pureAxiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject((
-    error.response && error.response.data
-  ) || `Something went wrong`)
+  (error) =>
+    Promise.reject(
+      (error.response && error.response.data) ||
+        `Something went wrong`,
+    ),
 );
 
 export default pureAxiosInstance;
