@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
-import type { FC } from 'react';
-import PropTypes from 'prop-types';
+import { useRef, useState } from "react";
+import type { FC } from "react";
+import PropTypes from "prop-types";
 import {
   Avatar,
   AvatarGroup,
@@ -11,36 +11,23 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-  Typography
-} from '@material-ui/core';
-import { experimentalStyled } from '@material-ui/core/styles';
-import ArchiveIcon from '../../../icons/Archive';
-import BellIcon from '../../../icons/Bell';
-import BanIcon from '../../../icons/Ban';
-import CameraIcon from '../../../icons/Camera';
-import PhoneIcon from '../../../icons/Phone';
-import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
-import TrashIcon from '../../../icons/Trash';
-import type { Participant } from '../../../types/chat';
+  Typography,
+} from "@material-ui/core";
+import { experimentalStyled } from "@material-ui/core/styles";
+import ArchiveIcon from "../../../icons/Archive";
+import BellIcon from "../../../icons/Bell";
+import BanIcon from "../../../icons/Ban";
+import CameraIcon from "../../../icons/Camera";
+import PhoneIcon from "../../../icons/Phone";
+import DotsHorizontalIcon from "../../../icons/DotsHorizontal";
+import TrashIcon from "../../../icons/Trash";
+import type { Participant } from "../../../types/chat";
 
 interface ChatThreadToolbarProps {
   participants: Participant[];
 }
 
-const ParticipantAvatar = experimentalStyled((props) => (
-  <Avatar {...props} />
-))(({ styleProps }) => {
-  if (styleProps.small) {
-    return {
-      height: 30,
-      width: 30,
-      '&:nth-of-type(2)': {
-        mt: '10px'
-      }
-    };
-  }
-  return {};
-});
+const ParticipantAvatar = experimentalStyled((props) => <Avatar {...props} />);
 
 const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
   const { participants, ...other } = props;
@@ -49,13 +36,12 @@ const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
 
   // We hardcode the current user ID because the mocked that is not in sync with the auth provider.
   // When implementing this app with a real database, replace this ID with the ID from Auth Context.
-  const otherParticipants = participants.filter((participant) => (
-    participant.id !== '5e86809283e28b96d2d38537'
-  ));
-  const displayNames = otherParticipants.reduce((
-    names,
-    participant
-  ) => [...names, participant.name], []).join(', ');
+  const otherParticipants = participants.filter(
+    (participant) => participant.id !== "5e86809283e28b96d2d38537"
+  );
+  const displayNames = otherParticipants
+    .reduce((names, participant) => [...names, participant.name], [])
+    .join(", ");
 
   const handleMenuOpen = (): void => {
     setOpenMenu(true);
@@ -68,28 +54,28 @@ const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
   return (
     <Box
       sx={{
-        alignItems: 'center',
-        backgroundColor: 'background.paper',
+        alignItems: "center",
+        backgroundColor: "background.paper",
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-        display: 'flex',
+        display: "flex",
         flexShrink: 0,
         minHeight: 64,
         px: 2,
-        py: 1
+        py: 1,
       }}
       {...other}
     >
       <Box
         sx={{
-          alignItems: 'center',
-          display: 'flex',
-          '& .MuiAvatar-root': otherParticipants.length > 1 && {
+          alignItems: "center",
+          display: "flex",
+          "& .MuiAvatar-root": otherParticipants.length > 1 && {
             height: 30,
             width: 30,
-            '&:nth-of-type(2)': {
-              mt: '10px'
-            }
-          }
+            "&:nth-of-type(2)": {
+              mt: "10px",
+            },
+          },
         }}
       >
         <AvatarGroup max={2}>
@@ -101,11 +87,7 @@ const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
             />
           ))}
         </AvatarGroup>
-        <Typography
-          color="textPrimary"
-          sx={{ ml: 2 }}
-          variant="subtitle2"
-        >
+        <Typography color="textPrimary" sx={{ ml: 2 }} variant="subtitle2">
           {displayNames}
         </Typography>
       </Box>
@@ -117,10 +99,7 @@ const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
         <CameraIcon fontSize="small" />
       </IconButton>
       <Tooltip title="More options">
-        <IconButton
-          onClick={handleMenuOpen}
-          ref={moreRef}
-        >
+        <IconButton onClick={handleMenuOpen} ref={moreRef}>
           <DotsHorizontalIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -161,11 +140,11 @@ const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
 };
 
 ChatThreadToolbar.propTypes = {
-  participants: PropTypes.array
+  participants: PropTypes.array,
 };
 
 ChatThreadToolbar.defaultProps = {
-  participants: []
+  participants: [],
 };
 
 export default ChatThreadToolbar;
