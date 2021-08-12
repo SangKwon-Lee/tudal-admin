@@ -6,7 +6,6 @@ import { ThemeProvider } from "@material-ui/core";
 import "./i18n";
 import GlobalStyles from "./components/GlobalStyles";
 import RTL from "./components/RTL";
-import SettingsDrawer from "./components/SettingsDrawer";
 import SplashScreen from "./components/SplashScreen";
 import { gtmConfig } from "./config";
 import useAuth from "./hooks/useAuth";
@@ -15,10 +14,10 @@ import useSettings from "./hooks/useSettings";
 import gtm from "./lib/gtm";
 import routes from "./routes";
 import { createTheme } from "./theme";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import moment from "moment";
 import SocketProvider from "./contexts/SocketContext";
+import AdapterMoment from "@material-ui/lab/AdapterMoment";
+import LocalizationProvider from "@material-ui/lab/LocalizationProvider";
 
 let koLocale = require("moment/locale/ko");
 moment.locale("ko", koLocale);
@@ -42,7 +41,7 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <MuiPickersUtilsProvider utils={MomentUtils} locale="ko_Kr">
+      <LocalizationProvider dateAdapter={AdapterMoment} locale="ko_Kr">
         <RTL direction={settings.direction}>
           <SnackbarProvider dense maxSnack={3}>
             <SocketProvider>
@@ -51,7 +50,7 @@ const App: FC = () => {
             </SocketProvider>
           </SnackbarProvider>
         </RTL>
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 };
