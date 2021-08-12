@@ -18,6 +18,9 @@ jest.mock('react-helmet-async', () => ({
   Helmet: () => <header></header>,
 }));
 
+const scrollIntoViewMock = jest.fn();
+HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
+
 const handlers = [
   rest.get(
     `${process.env.REACT_APP_CMS_URL}/general-news`,
@@ -26,6 +29,7 @@ const handlers = [
     },
   ),
 ];
+
 const server = setupServer(...handlers);
 
 beforeAll(() => server.listen());

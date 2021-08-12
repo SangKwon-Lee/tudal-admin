@@ -4,12 +4,11 @@ import dayjs from 'dayjs';
 import {
   Box,
   Card,
-  Checkbox,
-  IconButton,
-  InputAdornment,
-  Link,
+  Chip,
   Table,
+  Checkbox,
   TableBody,
+  InputAdornment,
   TableCell,
   TableHead,
   TablePagination,
@@ -17,17 +16,12 @@ import {
   TextField,
   LinearProgress,
   Button,
-  CardHeader,
   Divider,
   Typography,
 } from '@material-ui/core';
 
-import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '../../../icons/Search';
-import { Priority, Schedule } from '../../../types/schedule';
-import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import { INews } from 'src/types/news';
-import Label from 'src/components/widgets/Label';
 
 type Sort = 'publishDate|desc' | 'publishDate|asc';
 
@@ -84,7 +78,12 @@ interface NewsListTableProps {
   newsList: INews[];
   search: string;
   isLoading: boolean;
+  page: number;
+  limit: number;
+  setPage: (event: any, newPage: number) => void;
+  setLimit: (limit: number) => void;
   setSearch?: (value) => void;
+  updateSelect: (news: INews) => void;
   postDelete?: (id: number) => void;
   reload?: () => void;
 }
@@ -95,38 +94,18 @@ const applyPagination = (
   limit: number,
 ): INews[] => news.slice(page * limit, page * limit + limit);
 
-const labelColorsMap = {
-  draft: 'secondary',
-  active: 'success',
-  stopped: 'error',
-};
-
-const randomColor = () => {
-  let hex = Math.floor(Math.random() * 0xffffff);
-  let color = '#' + hex.toString(16);
-
-  return color;
-};
-
 const NewsListTable: React.FC<NewsListTableProps> = (props) => {
   const {
     newsList,
-    search,
     setSearch,
-    postDelete,
-    reload,
+    page,
+    setPage,
+    limit,
+    setLimit,
     isLoading,
+    updateSelect,
   } = props;
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [targetNews, setTargetNews] = useState<INews>(null);
-  const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
-    useState<boolean>(false);
-
-  const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
 
   const handleLimitChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -145,167 +124,6 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
   );
 
   return (
-    // <Box
-    //   sx={{
-    //     backgroundColor: 'background.default',
-    //   }}
-    //   data-testid="news-list-table"
-    // >
-    // //<Card>
-    // //     <Box
-    //       sx={{
-    //         alignItems: 'center',
-    //         display: 'flex',
-    //         flexWrap: 'wrap',
-    //         m: -1,
-    //         p: 2,
-    //       }}
-    //     >
-    //   <Box
-    //     sx={{
-    //       m: 1,
-    //       maxWidth: '100%',
-    //       width: 500,
-    //     }}
-    //   >
-    //     <TextField
-    //       fullWidth
-    //       InputProps={{
-    //         id: '_q',
-    //         startAdornment: (
-    //           <InputAdornment position="start">
-    //             <SearchIcon fontSize="small" />
-    //           </InputAdornment>
-    //         ),
-    //       }}
-    //       name={'_q'}
-    //       placeholder="제목 또는 코멘트를 검색해주세요"
-    //       onChange={(event) => setSearch(event.target.value)}
-    //       variant="outlined"
-    //     />
-    //   </Box>
-    //   <Box
-    //     sx={{
-    //       m: 1,
-    //       maxWidth: '100%',
-    //       width: 240,
-    //     }}
-    //   >
-    //     <TextField
-    //       fullWidth
-    //       label="정렬"
-    //       id="sort"
-    //       select
-    //       onChange={(event) => handleSort(event)}
-    //       SelectProps={{
-    //         native: true,
-    //       }}
-    //       variant="outlined"
-    //     >
-    //       {sortOptions.map((sort, i) => {
-    //         return (
-    //           <option
-    //             key={i}
-    //             value={sort.value}
-    //             data-testid="select-option"
-    //           >
-    //             {sort.label}
-    //           </option>
-    //         );
-    //       })}
-    //     </TextField>
-    //   </Box>
-    // </Box>
-    //     <Box>
-    //       <Table>
-    // <TableHead>
-    //   <TableRow>
-    //     <TableCell padding="checkbox"></TableCell>
-    //     <TableCell width="30%">제목</TableCell>
-    //     <TableCell width="50%">기사(요약)</TableCell>
-    //     <TableCell width="10%">언론사</TableCell>
-    //     <TableCell width="10%">출판일</TableCell>
-    //   </TableRow>
-    // </TableHead>
-    //         <TableBody data-testid="news-table-list">
-    //           {paginatedNewsList.map((news) => {
-    //             const {
-    //               title,
-    //               id,
-    //               mediaName,
-    //               summarized,
-    //               publishDate,
-    //             } = news;
-    //             return (
-    //               <TableRow hover key={id}>
-    //                 <TableCell padding="checkbox">
-    //                   <Checkbox color="primary" />
-    //                 </TableCell>
-    //                 <TableCell>
-    //                   <Link
-    //                     color="textPrimary"
-    //                     underline="none"
-    //                     variant="subtitle2"
-    //                   >
-    //                     {title}
-    //                   </Link>
-    //                 </TableCell>
-    //                 <TableCell>{summarized}</TableCell>
-    //                 <TableCell>
-    //                   {mediaName ? mediaName : 'NA'}
-    //                 </TableCell>
-    //                 <TableCell data-testid="news-table-row-publish-date">{`${dayjs(
-    //                   publishDate,
-    //                 ).format('YYYY-MM-DD')}`}</TableCell>
-    //                 <TableCell align="right">
-    //                   <IconButton
-    //                     onClick={() => {
-    //                       setTargetNews(news);
-    //                       setIsOpenDeleteConfirm(true);
-    //                     }}
-    //                   >
-    //                     <DeleteIcon fontSize="small" />
-    //                   </IconButton>
-    //                 </TableCell>
-    //               </TableRow>
-    //             );
-    //           })}
-    //         </TableBody>
-    //       </Table>
-    //     </Box>
-    // <TablePagination
-    //   component="div"
-    //   count={newsList.length}
-    //   onPageChange={handlePageChange}
-    //   onRowsPerPageChange={handleLimitChange}
-    //   page={page}
-    //   rowsPerPage={limit}
-    //   rowsPerPageOptions={[5, 10, 25]}
-    // />
-    //     {targetNews && (
-    //       <Dialog
-    //         aria-labelledby="ConfirmModal"
-    //         open={isOpenDeleteConfirm}
-    //         onClose={() => setIsOpenDeleteConfirm(false)}
-    //       >
-    //         <ConfirmModal
-    //           title={`${targetNews.title} 일정을 삭제하시겠습니까?`}
-    //           content={`삭제하면 되돌리기 어렵습니다.`}
-    //           confirmTitle={'네 삭제합니다.'}
-    //           handleOnClick={() => {
-    //             postDelete(targetNews.id);
-    //             setTargetNews(null);
-    //           }}
-    //           handleOnCancel={() => {
-    //             setTargetNews(null);
-    //             setIsOpenDeleteConfirm(false);
-    //           }}
-    //         />
-    //       </Dialog>
-    //     )}
-    //   </Card>
-    // </Box>
-
     <Box
       sx={{
         backgroundColor: 'background.default',
@@ -386,14 +204,17 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>pick</TableCell>
               <TableCell width="60%">제목/기사(요약)</TableCell>
               <TableCell>언론사</TableCell>
-              <TableCell>출판일</TableCell>
+              <TableCell>발행일</TableCell>
+              <TableCell>더보기</TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="news-table-list">
             {paginatedNewsList.map((news) => (
               <TableRow
+                hover
                 key={news.id}
                 sx={{
                   '&:last-child td': {
@@ -401,12 +222,21 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   },
                 }}
               >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    checked={news.isSelected}
+                    onClick={() => updateSelect(news)}
+                  />
+                </TableCell>
+
                 <TableCell>
                   <Typography
                     color="textPrimary"
                     sx={{ cursor: 'pointer' }}
                     variant="subtitle2"
                     fontSize={18}
+                    fontWeight={news.isSelected ? 'bold' : 'normal'}
                   >
                     {news.title}
                   </Typography>
@@ -421,6 +251,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       color="textSecondary"
                       variant="body2"
                       fontSize={15}
+                      fontWeight={news.isSelected ? 'bold' : 'normal'}
                     >
                       {news.summarized}
                     </Typography>
@@ -434,9 +265,14 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   >
                     {Array.isArray(news.tags) &&
                       news.tags.length > 0 &&
-                      news.tags.map((tag) => (
-                        <Label key={tag.id}>{tag.name}</Label>
-                      ))}
+                      news.tags
+                        .filter((tag) => Boolean(tag.name))
+                        .map((tag) => (
+                          <React.Fragment key={tag.id}>
+                            <Chip color="primary" label={tag.name} />
+                            <Box marginRight={1} />
+                          </React.Fragment>
+                        ))}
                   </Box>
                 </TableCell>
                 <TableCell>
@@ -455,7 +291,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   </Typography>
                 </TableCell>
 
-                <TableCell align="right">
+                <TableCell align="left">
                   <Button
                     color="primary"
                     size="small"
@@ -472,7 +308,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
       <TablePagination
         component="div"
         count={newsList.length}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         onRowsPerPageChange={handleLimitChange}
         page={page}
         rowsPerPage={limit}

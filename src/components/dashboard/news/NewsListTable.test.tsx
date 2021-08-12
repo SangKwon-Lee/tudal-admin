@@ -4,25 +4,23 @@ import NewsListTable from './NewsListTable';
 import { FixtureNews } from 'src/fixtures';
 import userEvent from '@testing-library/user-event';
 
-const search = jest.fn();
-const setSearch = jest.fn();
-const postDelete = jest.fn();
-const reload = jest.fn();
+const mock = jest.fn();
 
 describe('News List Table', () => {
-  function renderTable(
-    news,
-    search?,
-    setSerach?,
-    postDelete?,
-    reload?,
-  ) {
+  function renderTable(news, search?) {
     return render(
       <NewsListTable
         newsList={news}
         search={search}
-        setSearch={setSearch}
-        reload={reload}
+        isLoading={false}
+        page={0}
+        limit={10}
+        setSearch={mock}
+        reload={mock}
+        setPage={mock}
+        setLimit={mock}
+        updateSelect={mock}
+        postDelete={mock}
       />,
     );
   }
@@ -74,6 +72,7 @@ describe('News List Table', () => {
     )[0];
 
     userEvent.selectOptions(selectButtons, '오래된 등록순');
+
     const list =
       queryByTestId('news-table-list').querySelectorAll('tr');
     expect(list).toHaveLength(6);

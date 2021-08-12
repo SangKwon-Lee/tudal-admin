@@ -14,4 +14,5 @@ export interface INews {
   photo: string;
   officeId: string;
   tags: Tag[];
+  isSelected: boolean;
 }

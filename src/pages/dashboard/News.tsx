@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useReducer,
+  useRef,
+  createRef,
+} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { INews } from 'src/types/news';
@@ -17,29 +24,147 @@ import ChevronRightIcon from '../../icons/ChevronRight';
 import useAsync from 'src/hooks/useAsync';
 
 import useSettings from '../../hooks/useSettings';
-import { FixtureNews } from 'src/fixtures';
-import gtm from '../../lib/gtm';
 import { NewsListTable } from 'src/components/dashboard/news';
 import { APINews } from 'src/lib/api';
-import GroupedList11 from 'src/components/widgets/grouped-lists/GroupedList11';
+import { updateIsSelected } from 'src/lib/api/news.api';
+import { AxiosError } from 'axios';
+
+enum NewsActionKind {
+  LOADING = 'LOADING',
+  ADD_NEWS = 'ADD_NEWS',
+  RELOAD_NEWS = 'SUCCRELOAD_NEWSESS',
+  ERROR = 'ERROR',
+}
+
+interface NewsAction {
+  type: NewsActionKind;
+  payload?: any;
+}
+
+interface newsState {
+  news: INews[];
+  loading: boolean;
+  error: AxiosError<any> | boolean;
+}
+
+const initialState: newsState = {
+  news: [],
+  loading: true,
+  error: null,
+};
+
+const newsReducer = (
+  state: newsState,
+  action: NewsAction,
+): newsState => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case NewsActionKind.LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case NewsActionKind.RELOAD_NEWS:
+      console.log('RELOAD');
+      return {
+        ...state,
+        loading: false,
+        news: payload,
+      };
+    case NewsActionKind.ADD_NEWS:
+      console.log('ADD NEWS', payload);
+      return {
+        ...state,
+        loading: false,
+        news: [...state.news, ...payload],
+      };
+    case NewsActionKind.ERROR:
+      return {
+        ...state,
+        error: payload,
+      };
+  }
+};
 
 const News: React.FC = () => {
   const { settings } = useSettings();
   const [search, setSearch] = useState<string>('');
-  const [newsState, refetchNews] = useAsync<INews[]>(
-    () => APINews.getList(search),
-    [search],
-    [],
-  );
-
-  const handleSearch = _.debounce(setSearch, 300);
-  const reload = useCallback(() => refetchNews(), [refetchNews]);
+  const [tick, setTick] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(10);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
+  const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
+  const scrollRef = useRef<HTMLInputElement>(null);
+  const [newsState, dispatch] = useReducer(newsReducer, initialState);
 
   const {
-    data: newsList,
+    news: newsList,
     error: newsError,
     loading: newsLoading,
   } = newsState;
+
+  const handleSearch = _.debounce(setSearch, 300);
+
+  const getNews = useCallback(async () => {
+    dispatch({ type: NewsActionKind.LOADING });
+    try {
+      const { data } = await APINews.getList(search);
+      dispatch({
+        type: NewsActionKind.RELOAD_NEWS,
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({ type: NewsActionKind.ERROR, payload: error });
+    }
+  }, [search]);
+
+  const addNews = useCallback(async () => {
+    if (!shouldUpdate) return;
+    try {
+      const { data } = await APINews.getList(
+        search,
+        (page + 1) * limit,
+      );
+      dispatch({ type: NewsActionKind.ADD_NEWS, payload: data });
+      setShouldUpdate(false);
+    } catch (error) {}
+  }, [page, limit, search, shouldUpdate]);
+
+  useEffect(() => {
+    function refreshTimer() {
+      return setTimeout(() => {
+        setTick((prev) => !prev);
+      }, minutesRefresh * 1000 * 60);
+    }
+    refreshTimer();
+    return () => clearTimeout(refreshTimer());
+  }, [tick, minutesRefresh]);
+
+  useEffect(() => {
+    getNews();
+    console.log(scrollRef);
+  }, [getNews]);
+
+  useEffect(() => {
+    addNews();
+  }, [addNews]);
+
+  useEffect(() => {
+    scrollRef && scrollRef.current.scrollIntoView();
+  }, [page]);
+
+  const updateSelect = async (news: INews) => {
+    await updateIsSelected(news.id, news.isSelected);
+    getNews();
+  };
+
+  const handlePageChange = (event: any, newPage: number): void => {
+    if ((page + 1) * limit >= newsList.length - limit) {
+      setShouldUpdate(true);
+    }
+    setPage(newPage);
+  };
 
   return (
     <>
@@ -53,7 +178,10 @@ const News: React.FC = () => {
           py: 8,
         }}
       >
-        <Container maxWidth={settings.compact ? 'xl' : false}>
+        <Container
+          maxWidth={settings.compact ? 'xl' : false}
+          ref={scrollRef}
+        >
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
@@ -91,8 +219,13 @@ const News: React.FC = () => {
               newsList={newsList}
               search={search}
               setSearch={handleSearch}
-              reload={reload}
+              reload={getNews}
               isLoading={newsLoading}
+              updateSelect={updateSelect}
+              page={page}
+              setPage={handlePageChange}
+              limit={limit}
+              setLimit={setLimit}
             />
           </Box>
         </Container>
