@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import type { FC } from "react";
 import { useRoutes } from "react-router-dom";
-import { SnackbarProvider } from "notistack";
-import { ThemeProvider } from "@material-ui/core";
+import { Toaster } from "react-hot-toast";
+import { CssBaseline, ThemeProvider } from "@material-ui/core";
 import "./i18n";
-import GlobalStyles from "./components/GlobalStyles";
 import RTL from "./components/RTL";
+import SettingsDrawer from "./components/SettingsDrawer";
 import SplashScreen from "./components/SplashScreen";
 import { gtmConfig } from "./config";
 import useAuth from "./hooks/useAuth";
@@ -13,7 +13,7 @@ import useScrollReset from "./hooks/useScrollReset";
 import useSettings from "./hooks/useSettings";
 import gtm from "./lib/gtm";
 import routes from "./routes";
-import { createTheme } from "./theme";
+import { createCustomTheme } from "./theme";
 import moment from "moment";
 import SocketProvider from "./contexts/SocketContext";
 import AdapterMoment from "@material-ui/lab/AdapterMoment";
@@ -26,13 +26,14 @@ const App: FC = () => {
   const content = useRoutes(routes);
   const { settings } = useSettings();
   const auth = useAuth();
+
   useScrollReset();
 
   useEffect(() => {
     gtm.initialize(gtmConfig);
   }, []);
 
-  const theme = createTheme({
+  const theme = createCustomTheme({
     direction: settings.direction,
     responsiveFontSizes: settings.responsiveFontSizes,
     roundedCorners: settings.roundedCorners,
@@ -43,12 +44,12 @@ const App: FC = () => {
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterMoment} locale="ko_Kr">
         <RTL direction={settings.direction}>
-          <SnackbarProvider dense maxSnack={3}>
-            <SocketProvider>
-              <GlobalStyles />
-              {auth.isInitialized ? content : <SplashScreen />}
-            </SocketProvider>
-          </SnackbarProvider>
+          <SocketProvider>
+            <CssBaseline />
+            <Toaster position="top-center" />
+            <SettingsDrawer />
+            {auth.isInitialized ? content : <SplashScreen />}
+          </SocketProvider>
         </RTL>
       </LocalizationProvider>
     </ThemeProvider>
