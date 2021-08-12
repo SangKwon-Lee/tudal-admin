@@ -1,27 +1,27 @@
-import { useEffect } from 'react';
-import type { FC } from 'react';
-import { useRoutes } from 'react-router-dom';
-import { SnackbarProvider } from 'notistack';
-import { ThemeProvider } from '@material-ui/core';
-import './i18n';
-import GlobalStyles from './components/GlobalStyles';
-import RTL from './components/RTL';
-import SettingsDrawer from './components/SettingsDrawer';
-import SplashScreen from './components/SplashScreen';
-import { gtmConfig } from './config';
-import useAuth from './hooks/useAuth';
-import useScrollReset from './hooks/useScrollReset';
-import useSettings from './hooks/useSettings';
-import gtm from './lib/gtm';
-import routes from './routes';
-import { createTheme } from './theme';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import moment from 'moment';
-import SocketProvider from './contexts/SocketContext';
+import { useEffect } from "react";
+import type { FC } from "react";
+import { useRoutes } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
+import { ThemeProvider } from "@material-ui/core";
+import "./i18n";
+import GlobalStyles from "./components/GlobalStyles";
+import RTL from "./components/RTL";
+import SettingsDrawer from "./components/SettingsDrawer";
+import SplashScreen from "./components/SplashScreen";
+import { gtmConfig } from "./config";
+import useAuth from "./hooks/useAuth";
+import useScrollReset from "./hooks/useScrollReset";
+import useSettings from "./hooks/useSettings";
+import gtm from "./lib/gtm";
+import routes from "./routes";
+import { createTheme } from "./theme";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import moment from "moment";
+import SocketProvider from "./contexts/SocketContext";
 
-let koLocale = require('moment/locale/ko');
-moment.locale('ko', koLocale);
+let koLocale = require("moment/locale/ko");
+moment.locale("ko", koLocale);
 
 const App: FC = () => {
   const content = useRoutes(routes);
@@ -37,17 +37,14 @@ const App: FC = () => {
     direction: settings.direction,
     responsiveFontSizes: settings.responsiveFontSizes,
     roundedCorners: settings.roundedCorners,
-    theme: settings.theme
+    theme: settings.theme,
   });
 
   return (
     <ThemeProvider theme={theme}>
-      <MuiPickersUtilsProvider utils={MomentUtils} locale='ko_Kr'>
+      <MuiPickersUtilsProvider utils={MomentUtils} locale="ko_Kr">
         <RTL direction={settings.direction}>
-          <SnackbarProvider
-            dense
-            maxSnack={3}
-          >
+          <SnackbarProvider dense maxSnack={3}>
             <SocketProvider>
               <GlobalStyles />
               {auth.isInitialized ? content : <SplashScreen />}
