@@ -1,9 +1,9 @@
 import { createContext, useEffect, useReducer } from "react";
 import type { FC, ReactNode } from "react";
 import PropTypes from "prop-types";
-import axios, { cmsServer } from "../lib/axios";
 import type { User } from "../types/user";
-import { verify, JWT_SECRET } from "../utils/jwt";
+import { authApi } from "../lib/api/auth.api";
+import axios, { cmsServer } from "../lib/axios";
 
 interface State {
   isInitialized: boolean;
@@ -15,7 +15,6 @@ interface AuthContextValue extends State {
   platform: "JWT";
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (email: string, name: string, password: string) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -64,10 +63,12 @@ const setSession = (
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("userId", userId);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    cmsServer.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
     delete axios.defaults.headers.common.Authorization;
+    delete cmsServer.defaults.headers.common.Authorization;
   }
 };
 
@@ -115,7 +116,6 @@ const AuthContext = createContext<AuthContextValue>({
   platform: "JWT",
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  register: () => Promise.resolve(),
 });
 
 export const AuthProvider: FC<AuthProviderProps> = (props) => {
@@ -127,11 +127,12 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       try {
         const accessToken = window.localStorage.getItem("accessToken");
         const userId = window.localStorage.getItem("userId");
+
+        console.log("INIT", accessToken, userId);
         if (accessToken) {
           setSession(accessToken, userId);
-          const response = await axios.get<User>(`/users/${userId}`);
-          const user = response.data;
-
+          const user = await authApi.me(userId);
+          console.log("INIT User", user);
           dispatch({
             type: "INITIALIZE",
             payload: {
@@ -150,7 +151,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           });
         }
       } catch (err) {
-        console.error(err);
         setSession(null);
         dispatch({
           type: "INITIALIZE",
@@ -166,16 +166,11 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    console.log("[JWTContext] trying login");
     setSession(null);
-    const response = await axios.post("/auth/local", {
-      identifier: email,
+    const { accessToken, user } = await authApi.login({
+      email,
       password,
     });
-    console.log("[JWTContext] response", response);
-
-    const { jwt: accessToken, user } = response.data;
-
     setSession(accessToken, user.id.toString());
     dispatch({
       type: "LOGIN",
@@ -190,30 +185,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     dispatch({ type: "LOGOUT" });
   };
 
-  const register = async (
-    email: string,
-    name: string,
-    password: string
-  ): Promise<void> => {
-    const response = await axios.post<{ accessToken: string; user: User }>(
-      "/api/authentication/register",
-      {
-        email,
-        name,
-        password,
-      }
-    );
-    const { accessToken, user } = response.data;
-
-    window.localStorage.setItem("accessToken", accessToken);
-    dispatch({
-      type: "REGISTER",
-      payload: {
-        user,
-      },
-    });
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -221,7 +192,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         platform: "JWT",
         login,
         logout,
-        register,
       }}
     >
       {children}

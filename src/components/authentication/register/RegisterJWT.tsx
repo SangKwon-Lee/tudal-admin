@@ -11,10 +11,10 @@ import {
   Link
 } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 
 const RegisterJWT: FC = (props) => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { register } = useAuth() as any;
 
   return (
@@ -57,7 +57,7 @@ const RegisterJWT: FC = (props) => {
         try {
           await register(values.email, values.name, values.password);
 
-          if (isMountedRef.current) {
+          if (mounted.current) {
             setStatus({ success: true });
             setSubmitting(false);
           }

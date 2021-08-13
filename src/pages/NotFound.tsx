@@ -18,7 +18,7 @@ const NotFound: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Error: Not Found | TUDAL Admin</title>
+        <title>Error: Not Found | Material Kit Pro</title>
       </Helmet>
       <Box
         sx={{

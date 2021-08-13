@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import {
   Avatar,
@@ -19,38 +20,37 @@ import ChevronUpIcon from '../../../icons/ChevronUp';
 const QuickStats6: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-      },
-      colors: ['#27c6db'],
-      labels: [''],
-      plotOptions: {
-        radialBar: {
-          dataLabels: {
-            value: {
-              show: false
-            }
-          },
-          hollow: {
-            size: '60%'
-          },
-          track: {
-            background: theme.palette.background.default
-          }
-        }
-      },
-      theme: {
-        mode: theme.palette.mode
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
+        show: false
       }
     },
-    series: [83]
+    colors: ['#27c6db'],
+    labels: [''],
+    plotOptions: {
+      radialBar: {
+        dataLabels: {
+          value: {
+            show: false
+          }
+        },
+        hollow: {
+          size: '60%'
+        },
+        track: {
+          background: theme.palette.background.default
+        }
+      }
+    },
+    theme: {
+      mode: theme.palette.mode
+    }
   };
+
+  const chartSeries = [83];
 
   return (
     <Box
@@ -77,9 +77,10 @@ const QuickStats6: FC = () => {
             >
               <Chart
                 height="160"
+                options={chartOptions}
+                series={chartSeries}
                 type="radialBar"
                 width="160"
-                {...chart}
               />
               <Box
                 sx={{
@@ -134,15 +135,16 @@ const QuickStats6: FC = () => {
           <Card>
             <CardContent
               sx={{
-                display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                display: 'flex'
               }}
             >
               <Chart
                 height="160"
+                options={chartOptions}
+                series={chartSeries}
                 type="radialBar"
                 width="160"
-                {...chart}
               />
               <Box
                 sx={{

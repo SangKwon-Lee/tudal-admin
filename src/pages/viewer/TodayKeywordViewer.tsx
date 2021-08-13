@@ -1,32 +1,37 @@
-import { useCallback, useState, useEffect, useContext, useRef } from "react";
-import type { FC, ChangeEvent } from "react";
-import { Link as RouterLink, useParams } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import { Box, Container, Typography } from "@material-ui/core";
-import TodayKeywordChart from "../../components/viewer/TodayKeywordChart";
-import useIsMountedRef from "../../hooks/useIsMountedRef";
-import gtm from "../../lib/gtm";
-import useSettings from "../../hooks/useSettings";
-import { SocketContext } from "../../contexts/SocketContext";
-import { apiServer, cmsServer, CMS_TOKEN } from "src/lib/axios";
-import type { Stock, Tag, TagData } from "../../types/todaykeyword";
+import {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
+import type { FC, ChangeEvent } from 'react';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Box, Container, Typography } from '@material-ui/core';
+import TodayKeywordChart from '../../components/viewer/TodayKeywordChart';
+import gtm from '../../lib/gtm';
+import useSettings from '../../hooks/useSettings';
+import { SocketContext } from '../../contexts/SocketContext';
+import { apiServer, cmsServer, CMS_TOKEN } from 'src/lib/axios';
+import type { Stock, Tag, TagData } from '../../types/todaykeyword';
 
 const colorsets = [
-  "f19066",
-  "f5cd79",
-  "94a1dd",
-  "fea47f",
-  "cf6a87",
-  "93d4c3",
-  "9aecdb",
-  "bdc581",
-  "b0efae",
-  "f56464",
+  'f19066',
+  'f5cd79',
+  '94a1dd',
+  'fea47f',
+  'cf6a87',
+  '93d4c3',
+  '9aecdb',
+  'bdc581',
+  'b0efae',
+  'f56464',
 ];
 
 const TodayKeywordViewer: FC = () => {
-  const { queryManager, connected, reconnect } = useContext(SocketContext);
-  const isMountedRef = useIsMountedRef();
+  const { queryManager, connected, reconnect } =
+    useContext(SocketContext);
   const { settings } = useSettings();
   const [showKeyword, setShowKeyword] = useState(false);
   const [list, setList] = useState<Stock[]>([]);
@@ -35,7 +40,7 @@ const TodayKeywordViewer: FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    gtm.push({ event: "page_view" });
+    gtm.push({ event: 'page_view' });
   }, []);
 
   useEffect(() => {
@@ -56,19 +61,19 @@ const TodayKeywordViewer: FC = () => {
     try {
       setLoading(true);
       queryManager.current.sendProcessByName(
-        "i0043",
+        'i0043',
         function (queryData) {
           if (!queryData) {
             return;
           }
 
-          var block = queryData.getBlockData("InBlock1")[0];
+          var block = queryData.getBlockData('InBlock1')[0];
           // 0: 전체, 1: 코스피, 2: 코스닥
-          block["exc_tp"] = "0";
+          block['exc_tp'] = '0';
           // 1:거래상위 2:상승률 3:하락률 4:시가총액상위
-          block["gbn"] = "2";
-          block["req_cnt"] = "20";
-          block["req_page"] = "1";
+          block['gbn'] = '2';
+          block['req_cnt'] = '20';
+          block['req_page'] = '1';
         },
         function (queryData) {
           if (!queryData) {
@@ -76,12 +81,12 @@ const TodayKeywordViewer: FC = () => {
             return;
           }
 
-          let result1 = queryData.getBlockData("OutBlock1");
-          let result2 = queryData.getBlockData("OutBlock2");
+          let result1 = queryData.getBlockData('OutBlock1');
+          let result2 = queryData.getBlockData('OutBlock2');
           if (result2 && result2.length >= 20) {
             setList([...result2]);
           }
-        }
+        },
       );
     } catch (err) {
       console.error(err);
@@ -91,7 +96,7 @@ const TodayKeywordViewer: FC = () => {
   };
 
   useEffect(() => {
-    console.log("TagArray", tagArray);
+    console.log('TagArray', tagArray);
   }, [tagArray]);
 
   const fetchTagsByList = () => {
@@ -99,9 +104,15 @@ const TodayKeywordViewer: FC = () => {
     list.map(async (stock, index) => {
       const stockcode = stock.shcode.substring(1);
 
-      const { data } = await apiServer.get<Tag[]>(`/stocks/${stockcode}/tags`);
+      const { data } = await apiServer.get<Tag[]>(
+        `/stocks/${stockcode}/tags`,
+      );
       let ratio = 0;
-      if (stock.price !== 0 && stock.jnilclose && stock.jnilclose !== 0) {
+      if (
+        stock.price !== 0 &&
+        stock.jnilclose &&
+        stock.jnilclose !== 0
+      ) {
         ratio = (stock.price / stock.jnilclose - 1) * 100;
       }
       // 우선 ceiling 을 한다.
@@ -156,7 +167,7 @@ const TodayKeywordViewer: FC = () => {
       </Helmet>
       <Box
         sx={{
-          backgroundColor: "white",
+          backgroundColor: 'white',
           height: 400,
           maxHeight: 400,
           width: 500,
@@ -164,7 +175,7 @@ const TodayKeywordViewer: FC = () => {
         }}
       >
         <Container>
-          <Typography variant="h5">{"Today Keyword"}</Typography>
+          <Typography variant="h5">{'Today Keyword'}</Typography>
           {showKeyword && !loading ? (
             <TodayKeywordChart
               data={tagArray}
@@ -174,8 +185,8 @@ const TodayKeywordViewer: FC = () => {
           ) : (
             <Box
               sx={{
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 height: 300,
                 width: 400,
                 flex: 1,
@@ -183,20 +194,20 @@ const TodayKeywordViewer: FC = () => {
             >
               <Typography
                 variant="body1"
-                textAlign={"center"}
-                lineHeight={"300px"}
+                textAlign={'center'}
+                lineHeight={'300px'}
               >
-                {"투데이키워드는 오전 9시부터 제공됩니다."}
+                {'투데이키워드는 오전 9시부터 제공됩니다.'}
               </Typography>
             </Box>
           )}
           <Box>
             <Typography
-              textAlign={"right"}
-              color={"rgba(0,0,0,0.4)"}
+              textAlign={'right'}
+              color={'rgba(0,0,0,0.4)'}
               fontSize={12}
             >
-              {"투데이키워드 서비스는 (주)이노핀에서 제공합니다."}
+              {'투데이키워드 서비스는 (주)이노핀에서 제공합니다.'}
             </Typography>
           </Box>
         </Container>

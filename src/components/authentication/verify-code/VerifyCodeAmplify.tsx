@@ -12,14 +12,14 @@ import {
   Typography
 } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 
 interface LocationState {
   username?: string;
 }
 
 const VerifyCodeAmplify: FC = () => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { verifyCode } = useAuth() as any;
   const location = useLocation() as Location<LocationState>;
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ const VerifyCodeAmplify: FC = () => {
           navigate('/authentication/login');
         } catch (err) {
           console.error(err);
-          if (isMountedRef.current) {
+          if (mounted.current) {
             setStatus({ success: false });
             setErrors({ submit: err.message });
             setSubmitting(false);

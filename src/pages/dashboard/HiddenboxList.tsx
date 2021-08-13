@@ -9,10 +9,9 @@ import {
   Container,
   Grid,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { HiddenboxListTable } from '../../components/dashboard/hiddenbox';
-import useIsMountedRef from '../../hooks/useIsMountedRef';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import DownloadIcon from '../../icons/Download';
 import PlusIcon from '../../icons/Plus';
@@ -21,37 +20,42 @@ import useSettings from '../../hooks/useSettings';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
+import useMounted from 'src/hooks/useMounted';
 
 const HiddenboxList: FC = () => {
-  const isMountedRef = useIsMountedRef();
   const { settings } = useSettings();
   const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
+  const mounted = useMounted();
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
 
-  const getHiddenboxes = useCallback(async (reload=false) => {
-    console.log("isMountedRef", isMountedRef.current)
-    try {
-      const response = await axios.get<Hiddenbox[]>(`/hiddenboxes?isDeleted=0&_sort=created_at:DESC`);
-      console.log(response.data)
-      if (isMountedRef.current || reload) {
-        setHiddenboxes(response.data);
+  const getHiddenboxes = useCallback(
+    async (reload = false) => {
+      try {
+        const response = await axios.get<Hiddenbox[]>(
+          `/hiddenboxes?isDeleted=0&_sort=created_at:DESC`,
+        );
+        console.log(response.data);
+        if (mounted || reload) {
+          setHiddenboxes(response.data);
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [isMountedRef]);
+    },
+    [mounted],
+  );
 
   useEffect(() => {
-    console.log("useEffect, getHiddenboxes")
+    console.log('useEffect, getHiddenboxes');
     getHiddenboxes();
   }, [getHiddenboxes]);
 
   const reload = () => {
     getHiddenboxes();
-  }
+  };
 
   return (
     <>
@@ -62,20 +66,13 @@ const HiddenboxList: FC = () => {
         sx={{
           backgroundColor: 'background.default',
           minHeight: '100%',
-          py: 8
+          py: 8,
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid
-            container
-            justifyContent="space-between"
-            spacing={3}
-          >
+          <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
-              <Typography
-                color="textPrimary"
-                variant="h5"
-              >
+              <Typography color="textPrimary" variant="h5">
                 Hiddenbox List
               </Typography>
               <Breadcrumbs
@@ -99,10 +96,7 @@ const HiddenboxList: FC = () => {
                 >
                   컨텐츠관리
                 </Link>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                >
+                <Typography color="textSecondary" variant="subtitle2">
                   히든박스
                 </Typography>
               </Breadcrumbs>

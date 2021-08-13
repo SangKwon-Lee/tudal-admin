@@ -6,7 +6,7 @@ import {
   Divider,
   IconButton,
   TextField,
-  Tooltip
+  Tooltip,
 } from '@material-ui/core';
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
@@ -18,13 +18,16 @@ interface SocialPostCommentAddProps {
   handleWriteComment?: (message: string) => void;
 }
 
-
-const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (props) => {
+const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (
+  props,
+) => {
   const { handleWriteComment, ...others } = props;
   const { user } = useAuth();
   const [value, setValue] = useState<string>('');
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
     setValue(event.target.value);
   };
 
@@ -32,16 +35,13 @@ const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (props) => {
     <Box
       sx={{
         alignItems: 'center',
-        display: 'flex'
+        display: 'flex',
       }}
       {...others}
-    > 
+    >
       {user.avatar && user.avatar.url ? (
-        <Avatar
-          src={`${CMSURL}${user.avatar.url}`}
-          sx={{ mr: 1 }}
-        />
-      ) : null }
+        <Avatar src={`${CMSURL}${user.avatar.url}`} sx={{ mr: 1 }} />
+      ) : null}
       <TextField
         fullWidth
         onChange={handleChange}
@@ -61,7 +61,7 @@ const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (props) => {
           color={value ? 'primary' : 'default'}
           component={value ? 'button' : 'span'}
           onClick={() => {
-            handleWriteComment(value)
+            handleWriteComment(value);
           }}
           disabled={!value}
         >

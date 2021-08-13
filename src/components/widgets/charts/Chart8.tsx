@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import {
   Box,
@@ -8,8 +9,7 @@ import {
   CardHeader,
   Container,
   Tooltip,
-  Typography,
-  colors
+  Typography
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import ArrowRightIcon from '../../../icons/ArrowRight';
@@ -18,41 +18,40 @@ import InformationCircleIcon from '../../../icons/InformationCircle';
 const Chart8: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-      },
-      colors: [
-        theme.palette.primary.light,
-        theme.palette.warning.light,
-        theme.palette.success.light,
-        theme.palette.info.light,
-        colors.blueGrey[700]
-      ],
-      dataLabels: {
-        enabled: false
-      },
-      labels: ['Linkedin', 'Facebook', 'Instagram', 'Twitter', 'Other'],
-      legend: {
-        labels: {
-          colors: theme.palette.text.secondary
-        },
-        show: true
-      },
-      stroke: {
-        width: 0
-      },
-      theme: {
-        mode: theme.palette.mode
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
+        show: false
       }
     },
-    series: [10, 10, 20, 10, 70]
+    colors: [
+      theme.palette.primary.light,
+      theme.palette.warning.light,
+      theme.palette.success.light,
+      theme.palette.info.light,
+      '#455a64'
+    ],
+    dataLabels: {
+      enabled: false
+    },
+    labels: ['Linkedin', 'Facebook', 'Instagram', 'Twitter', 'Other'],
+    legend: {
+      labels: {
+        colors: theme.palette.text.secondary
+      },
+      show: true
+    },
+    stroke: {
+      width: 0
+    },
+    theme: {
+      mode: theme.palette.mode
+    }
   };
+
+  const chartSeries = [10, 10, 20, 10, 70];
 
   return (
     <Box
@@ -79,9 +78,7 @@ const Chart8: FC = () => {
                 >
                   Social Media Sources
                 </Typography>
-                <Tooltip
-                  title="Widget25 source by Social Media platforms"
-                >
+                <Tooltip title="Traffic by Social Media platforms">
                   <InformationCircleIcon fontSize="small" />
                 </Tooltip>
               </Box>
@@ -90,8 +87,9 @@ const Chart8: FC = () => {
           <CardContent>
             <Chart
               height={300}
+              options={chartOptions}
+              series={chartSeries}
               type="donut"
-              {...chart}
             />
             <Box
               sx={{

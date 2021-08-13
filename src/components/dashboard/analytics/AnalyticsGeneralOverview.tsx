@@ -1,14 +1,7 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Grid,
-  Typography
-} from '@material-ui/core';
+import { Avatar, Box, Button, Card, Divider, Grid, Typography } from '@material-ui/core';
 import { alpha, useTheme } from '@material-ui/core/styles';
 import ArrowRightIcon from '../../../icons/ArrowRight';
 import ChevronDownIcon from '../../../icons/ChevronDown';
@@ -17,60 +10,56 @@ import ChevronUpIcon from '../../../icons/ChevronUp';
 const LineChart: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        toolbar: {
-          show: false
-        },
-        zoom: {
-          enabled: false
-        }
-      },
-      colors: ['#7783DB'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      toolbar: {
         show: false
       },
-      stroke: {
-        width: 3
-      },
-      theme: {
-        mode: theme.palette.mode
-      },
-      tooltip: {
+      zoom: {
         enabled: false
+      }
+    },
+    colors: ['#7783DB'],
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      show: false
+    },
+    stroke: {
+      width: 3
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    tooltip: {
+      enabled: false
+    },
+    xaxis: {
+      labels: {
+        show: false
       },
-      xaxis: {
-        labels: {
-          show: false
-        },
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
+      axisBorder: {
+        show: false
       },
-      yaxis: {
+      axisTicks: {
         show: false
       }
     },
-    series: [
-      {
-        data: [0, 60, 30, 60, 0, 30, 10, 30, 0]
-      }
-    ]
+    yaxis: {
+      show: false
+    }
   };
+
+  const chartSeries = [{ data: [0, 60, 30, 60, 0, 30, 10, 30, 0] }];
 
   return (
     <Chart
+      options={chartOptions}
+      series={chartSeries}
       type="line"
       width={120}
-      {...chart}
     />
   );
 };
@@ -78,73 +67,64 @@ const LineChart: FC = () => {
 const BarChart: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        toolbar: {
-          show: false
-        },
-        zoom: {
-          enabled: false
-        }
-      },
-      colors: ['#7783DB'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      toolbar: {
         show: false
       },
-      states: {
-        normal: {
-          active: {
-            filter: {
-              type: 'none'
-            }
-          },
-          filter: {
-            type: 'none',
-            value: 0
-          }
-        }
-      },
-      stroke: {
-        width: 0
-      },
-      theme: {
-        mode: theme.palette.mode
-      },
-      tooltip: {
+      zoom: {
         enabled: false
-      },
-      xaxis: {
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        labels: {
-          show: false
+      }
+    },
+    colors: ['#7783DB'],
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      show: false
+    },
+    states: {
+      normal: {
+        filter: {
+          type: 'none',
+          value: 0
         }
+      }
+    },
+    stroke: {
+      width: 0
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    tooltip: {
+      enabled: false
+    },
+    xaxis: {
+      axisBorder: {
+        show: false
       },
-      yaxis: {
+      axisTicks: {
+        show: false
+      },
+      labels: {
         show: false
       }
     },
-    series: [
-      {
-        data: [10, 20, 30, 40, 50, 60, 5]
-      }
-    ]
+    yaxis: {
+      show: false
+    }
   };
+
+  const chartSeries = [{ data: [10, 20, 30, 40, 50, 60, 5] }];
 
   return (
     <Chart
+      options={chartOptions}
+      series={chartSeries}
       type="bar"
       width={120}
-      {...chart}
     />
   );
 };

@@ -32,7 +32,7 @@ const PasswordRecovery: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Password Recovery | TUDAL Admin</title>
+        <title>Password Recovery | Material Kit Pro</title>
       </Helmet>
       <Box
         sx={{

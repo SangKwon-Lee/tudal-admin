@@ -1,5 +1,5 @@
 import merge from 'lodash/merge';
-import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
+import { createTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import type { Direction, Theme, ThemeOptions } from '@material-ui/core';
 import { THEMES } from '../constants';
 import { lightShadows, darkShadows } from './shadows';
@@ -29,6 +29,28 @@ const baseOptions: ThemeOptions = {
         }
       }
     },
+    MuiCssBaseline: {
+      styleOverrides: {
+        '*': {
+          boxSizing: 'border-box'
+        },
+        html: {
+          MozOsxFontSmoothing: 'grayscale',
+          WebkitFontSmoothing: 'antialiased',
+          height: '100%',
+          width: '100%'
+        },
+        body: {
+          height: '100%'
+        },
+        '#root': {
+          height: '100%'
+        },
+        '#nprogress .bar': {
+          zIndex: '2000 !important'
+        }
+      }
+    },
     MuiCardHeader: {
       defaultProps: {
         titleTypographyProps: {
@@ -49,6 +71,13 @@ const baseOptions: ThemeOptions = {
         root: {
           minWidth: 'auto',
           marginRight: '16px'
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none'
         }
       }
     }
@@ -216,7 +245,7 @@ const themesOptions: Record<string, ThemeOptions> = {
   }
 };
 
-export const createTheme = (config: ThemeConfig = {}): Theme => {
+export const createCustomTheme = (config: ThemeConfig = {}): Theme => {
   let themeOptions = themesOptions[config.theme];
 
   if (!themeOptions) {
@@ -224,7 +253,7 @@ export const createTheme = (config: ThemeConfig = {}): Theme => {
     themeOptions = themesOptions[THEMES.LIGHT];
   }
 
-  let theme = createMuiTheme(
+  let theme = createTheme(
     merge(
       {},
       baseOptions,

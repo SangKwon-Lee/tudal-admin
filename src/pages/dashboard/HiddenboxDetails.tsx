@@ -12,18 +12,16 @@ import {
   Link,
   Tab,
   Tabs,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import {
-  HiddenboxProductDetails,
-} from '../../components/dashboard/hiddenbox';
-import useIsMountedRef from '../../hooks/useIsMountedRef';
+import { HiddenboxProductDetails } from '../../components/dashboard/hiddenbox';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
+import useMounted from 'src/hooks/useMounted';
 
 const tabs = [
   { label: '상품내용', value: 'details' },
@@ -31,7 +29,7 @@ const tabs = [
 ];
 
 const HiddenboxDetails: FC = () => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { settings } = useSettings();
   const [hiddenbox, setHiddenbox] = useState<Hiddenbox | null>(null);
   const [currentTab, setCurrentTab] = useState<string>('details');
@@ -43,21 +41,26 @@ const HiddenboxDetails: FC = () => {
 
   const getHiddenbox = useCallback(async () => {
     try {
-      const response = await axios.get<Hiddenbox>(`/hiddenboxes/${hiddenboxId}`);
-      console.log("[HiddenboxDetail", response.data);
-      if (isMountedRef.current) {
+      const response = await axios.get<Hiddenbox>(
+        `/hiddenboxes/${hiddenboxId}`,
+      );
+      console.log('[HiddenboxDetail', response.data);
+      if (mounted) {
         setHiddenbox(response.data);
       }
     } catch (err) {
       console.error(err);
     }
-  }, [isMountedRef]);
+  }, [mounted]);
 
   useEffect(() => {
     getHiddenbox();
   }, [getHiddenbox]);
 
-  const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
+  const handleTabsChange = (
+    event: ChangeEvent<{}>,
+    value: string,
+  ): void => {
     setCurrentTab(value);
   };
 
@@ -74,20 +77,13 @@ const HiddenboxDetails: FC = () => {
         sx={{
           backgroundColor: 'background.default',
           minHeight: '100%',
-          py: 8
+          py: 8,
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid
-            container
-            justifyContent="space-between"
-            spacing={3}
-          >
+          <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
-              <Typography
-                color="textPrimary"
-                variant="h5"
-              >
+              <Typography color="textPrimary" variant="h5">
                 {hiddenbox.title}
               </Typography>
               <Breadcrumbs
@@ -111,10 +107,7 @@ const HiddenboxDetails: FC = () => {
                 >
                   컨텐츠관리
                 </Link>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                >
+                <Typography color="textSecondary" variant="subtitle2">
                   히든박스
                 </Typography>
               </Breadcrumbs>
@@ -155,10 +148,7 @@ const HiddenboxDetails: FC = () => {
           <Divider />
           <Box sx={{ mt: 3 }}>
             {currentTab === 'details' && (
-              <Grid
-                container
-                spacing={3}
-              >
+              <Grid container spacing={3}>
                 <Grid
                   item
                   lg={settings.compact ? 12 : 8}

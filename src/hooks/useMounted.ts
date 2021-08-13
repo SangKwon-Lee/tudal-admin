@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
 
-const useIsMountedRef = (): MutableRefObject<boolean> => {
+const useMounted = (): MutableRefObject<boolean> => {
   const isMounted = useRef(true);
 
   useEffect(() => (): void => {
@@ -11,4 +11,4 @@ const useIsMountedRef = (): MutableRefObject<boolean> => {
   return isMounted;
 };
 
-export default useIsMountedRef;
+export default useMounted;

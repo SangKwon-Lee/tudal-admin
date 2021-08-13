@@ -12,10 +12,10 @@ import {
   Typography
 } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 
 const RegisterFirebase: FC = (props) => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { createUserWithEmailAndPassword, signInWithGoogle } = useAuth() as any;
 
   const handleGoogleClick = async (): Promise<void> => {
@@ -105,13 +105,13 @@ const RegisterFirebase: FC = (props) => {
           try {
             await createUserWithEmailAndPassword(values.email, values.password);
 
-            if (isMountedRef.current) {
+            if (mounted.current) {
               setStatus({ success: true });
               setSubmitting(false);
             }
           } catch (err) {
             console.error(err);
-            if (isMountedRef.current) {
+            if (mounted.current) {
               setStatus({ success: false });
               setErrors({ submit: err.message });
               setSubmitting(false);

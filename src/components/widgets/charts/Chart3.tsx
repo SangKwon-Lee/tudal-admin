@@ -1,53 +1,47 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
-import {
-  Box,
-  Card,
-  CardContent,
-  Container,
-  Typography
-} from '@material-ui/core';
+import { Box, Card, CardContent, Container, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 
 const Chart3: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-      },
-      colors: ['#27c6db'],
-      labels: ['System Health'],
-      plotOptions: {
-        radialBar: {
-          dataLabels: {
-            name: {
-              color: theme.palette.text.primary,
-              fontFamily: theme.typography.fontFamily
-            },
-            value: {
-              color: theme.palette.text.secondary
-            }
-          },
-          hollow: {
-            size: '60%'
-          },
-          track: {
-            background: theme.palette.background.default
-          }
-        }
-      },
-      theme: {
-        mode: theme.palette.mode
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
+        show: false
       }
     },
-    series: [83]
+    colors: ['#27c6db'],
+    labels: ['System Health'],
+    plotOptions: {
+      radialBar: {
+        dataLabels: {
+          name: {
+            color: theme.palette.text.primary,
+            fontFamily: theme.typography.fontFamily
+          },
+          value: {
+            color: theme.palette.text.secondary
+          }
+        },
+        hollow: {
+          size: '60%'
+        },
+        track: {
+          background: theme.palette.background.default
+        }
+      }
+    },
+    theme: {
+      mode: theme.palette.mode
+    }
   };
+
+  const chartSeries = [83];
 
   return (
     <Box
@@ -61,8 +55,9 @@ const Chart3: FC = () => {
           <CardContent>
             <Chart
               height="300"
+              options={chartOptions}
+              series={chartSeries}
               type="radialBar"
-              {...chart}
             />
             <Typography
               align="center"

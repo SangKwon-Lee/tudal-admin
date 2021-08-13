@@ -4,10 +4,10 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { Box, Button, FormHelperText, TextField } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 
 const PasswordRecoveryAmplify: FC = () => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { passwordRecovery } = useAuth() as any;
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const PasswordRecoveryAmplify: FC = () => {
           });
         } catch (err) {
           console.error(err);
-          if (isMountedRef.current) {
+          if (mounted.current) {
             setStatus({ success: false });
             setErrors({ submit: err.message });
             setSubmitting(false);

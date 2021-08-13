@@ -1,33 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import type { FC } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  Hidden,
-  Skeleton,
-  Typography
-} from '@material-ui/core';
+import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
+import { Box, Button, Container, Grid, Typography } from '@material-ui/core';
 import ArrowLeftIcon from '../icons/ArrowLeft';
 
 const BrowseLayout: FC = () => {
   const { pathname } = useLocation();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [image, setImage] = useState<string>('');
-
-  useEffect(() => {
-    (
-      async () => {
-        const response = await fetch('/static/browse/hero.svg');
-        const blob = await response.blob();
-
-        setImage(URL.createObjectURL(blob));
-        setIsLoading(false);
-      }
-    )();
-  }, []);
-
   const urlLastSegment = pathname.slice(pathname.lastIndexOf('/') + 1);
   const isEntry = urlLastSegment === 'browse' || !urlLastSegment;
   const title = isEntry
@@ -39,66 +16,69 @@ const BrowseLayout: FC = () => {
 
   return (
     <>
-      <Box sx={{ backgroundColor: 'background.default' }}>
-        <Container
-          maxWidth="lg"
-          sx={{
-            alignItems: 'center',
-            display: 'flex',
-            py: 6
-          }}
-        >
-          <div>
-            {!isEntry && (
-              <Button
-                color="primary"
-                component={RouterLink}
-                startIcon={<ArrowLeftIcon />}
-                sx={{ mb: 3 }}
-                to="/browse"
-                variant="text"
-              >
-                Back to components
-              </Button>
-            )}
-            <Typography
-              color="textPrimary"
-              variant="h1"
+      <Box
+        sx={{
+          backgroundColor: 'background.default',
+          py: 15
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid
+            alignItems="center"
+            container
+            spacing={3}
+          >
+            <Grid
+              item
+              md={6}
+              xs={12}
             >
-              {title}
-            </Typography>
-            {isEntry && (
+              {!isEntry && (
+                <Button
+                  color="primary"
+                  component={RouterLink}
+                  startIcon={<ArrowLeftIcon />}
+                  sx={{ mb: 3 }}
+                  to="/browse"
+                  variant="text"
+                >
+                  Back to components
+                </Button>
+              )}
               <Typography
-                color="textSecondary"
-                sx={{ mt: 1 }}
-                variant="body1"
+                color="textPrimary"
+                variant="h1"
               >
-                Browse through over 100 individual components and over 35 screens
+                {title}
               </Typography>
-            )}
-          </div>
-          <Box sx={{ flexGrow: 1 }} />
-          <Hidden smDown>
-            {
-              isLoading
-                ? (
-                  <Skeleton
-                    sx={{
-                      borderRadius: 1,
-                      height: 206.24,
-                      width: 195.32
-                    }}
-                    variant="rectangular"
-                  />
-                )
-                : (
-                  <img
-                    alt="Components"
-                    src={image}
-                  />
-                )
-            }
-          </Hidden>
+              {isEntry && (
+                <Typography
+                  color="textSecondary"
+                  sx={{ mt: 1 }}
+                  variant="body1"
+                >
+                  Browse through over 100 individual components and over 35 screens
+                </Typography>
+              )}
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+              sx={{
+                display: {
+                  md: 'flex',
+                  xs: 'none'
+                },
+                justifyContent: 'center'
+              }}
+            >
+              <img
+                alt="Components"
+                src="/static/browse/hero.svg"
+              />
+            </Grid>
+          </Grid>
         </Container>
       </Box>
       <Outlet />

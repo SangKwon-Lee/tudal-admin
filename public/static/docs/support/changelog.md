@@ -2,6 +2,22 @@
 title: Changelog
 ---
 
+## v4.1.0
+
+###### May 24, 2021
+
+- Add Sketch and Figma dark versions
+- Fix Calendar App `Date` data type stored in Redux state warning
+- Fix Kanban App card move bug
+- Fix RTL bug
+- Fix `nprogress` display bug
+- Implement mocked api clients instead of mocked axios interceptors
+- Remove `axios` and `axios mock adapter` dependencies
+- Replace `Hidden` component with `sx` logic
+- Update `material-ui` and other dependencies
+
+---
+
 ## v4.0.0
 
 ###### Mar 17, 2021

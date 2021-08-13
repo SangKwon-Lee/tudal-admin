@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import { format } from 'date-fns';
 import { Box, Card, CardHeader, Typography } from '@material-ui/core';
@@ -31,80 +32,79 @@ const data = {
 const Chart12: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: true,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#3C4693', '#5664D2', '#7783DB'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
-        borderColor: theme.palette.divider,
-        xaxis: {
-          lines: {
-            show: true
-          }
-        },
-        yaxis: {
-          lines: {
-            show: true
-          }
-        }
-      },
-      states: {
-        active: {
-          filter: {
-            type: 'none'
-          }
-        },
-        hover: {
-          filter: {
-            type: 'none'
-          }
-        }
-      },
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: true,
+      toolbar: {
         show: false
-      },
-      stroke: {
-        colors: ['transparent'],
-        show: true,
-        width: 2
-      },
-      theme: {
-        mode: theme.palette.mode
-      },
+      }
+    },
+    colors: ['#3C4693', '#5664D2', '#7783DB'],
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      borderColor: theme.palette.divider,
       xaxis: {
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        categories: data.categories,
-        labels: {
-          style: {
-            colors: theme.palette.text.secondary
-          }
+        lines: {
+          show: true
         }
       },
       yaxis: {
-        labels: {
-          offsetX: -12,
-          style: {
-            colors: theme.palette.text.secondary
-          }
+        lines: {
+          show: true
         }
       }
     },
-    series: data.series
+    states: {
+      active: {
+        filter: {
+          type: 'none'
+        }
+      },
+      hover: {
+        filter: {
+          type: 'none'
+        }
+      }
+    },
+    legend: {
+      show: false
+    },
+    stroke: {
+      colors: ['transparent'],
+      show: true,
+      width: 2
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    xaxis: {
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      },
+      categories: data.categories,
+      labels: {
+        style: {
+          colors: theme.palette.text.secondary
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        offsetX: -12,
+        style: {
+          colors: theme.palette.text.secondary
+        }
+      }
+    }
   };
+
+  const chartSeries = data.series;
 
   return (
     <Box
@@ -135,8 +135,9 @@ const Chart12: FC = () => {
           >
             <Chart
               height="300"
+              options={chartOptions}
+              series={chartSeries}
               type="bar"
-              {...chart}
             />
           </Box>
         </Scrollbar>
