@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import numeral from 'numeral';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import { Box, Grid, Typography, Card } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -7,61 +8,57 @@ import { useTheme } from '@material-ui/core/styles';
 const ChartLine: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-        zoom: {
-          enabled: false
-        }
-      },
-      colors: ['#7783DB'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
       },
-      stroke: {
-        curve: 'smooth',
-        width: 3
-      } as ApexStroke,
-      theme: {
-        mode: theme.palette.mode
-      },
-      tooltip: {
+      zoom: {
         enabled: false
+      }
+    },
+    colors: ['#7783DB'],
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      show: false
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 3
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    tooltip: {
+      enabled: false
+    },
+    xaxis: {
+      labels: {
+        show: false
       },
-      xaxis: {
-        labels: {
-          show: false
-        },
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
+      axisBorder: {
+        show: false
       },
-      yaxis: {
+      axisTicks: {
         show: false
       }
     },
-    series: [
-      {
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
-      }
-    ]
+    yaxis: {
+      show: false
+    }
   };
+
+  const chartSeries = [{ data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30] }];
 
   return (
     <Chart
+      options={chartOptions}
+      series={chartSeries}
       type="line"
-      {...chart}
     />
   );
 };

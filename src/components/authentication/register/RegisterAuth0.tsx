@@ -2,10 +2,10 @@ import { useState } from 'react';
 import type { FC } from 'react';
 import { Box, Button, FormHelperText } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 
 const RegisterAuth0: FC = (props) => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const { loginWithPopup } = useAuth() as any;
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ const RegisterAuth0: FC = (props) => {
       await loginWithPopup();
     } catch (err) {
       console.error(err);
-      if (isMountedRef.current) {
+      if (mounted.current) {
         setError(err.message);
       }
     }

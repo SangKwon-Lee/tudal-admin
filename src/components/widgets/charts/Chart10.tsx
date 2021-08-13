@@ -1,14 +1,8 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import numeral from 'numeral';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Typography
-} from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader, Container, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 
 const data = {
@@ -34,33 +28,32 @@ const data = {
 const Chart10: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: data.series.map((item) => item.color),
-      dataLabels: {
-        enabled: false
-      },
-      labels: data.series.map((item) => item.label),
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
-      },
-      stroke: {
-        colors: [theme.palette.background.paper],
-        width: 1
-      },
-      theme: {
-        mode: theme.palette.mode
       }
     },
-    series: data.series.map((item) => item.data)
+    colors: data.series.map((item) => item.color),
+    dataLabels: {
+      enabled: false
+    },
+    labels: data.series.map((item) => item.label),
+    legend: {
+      show: false
+    },
+    stroke: {
+      colors: [theme.palette.background.paper],
+      width: 1
+    },
+    theme: {
+      mode: theme.palette.mode
+    }
   };
+
+  const chartSeries = data.series.map((item) => item.data);
 
   return (
     <Box
@@ -75,8 +68,9 @@ const Chart10: FC = () => {
           <CardContent>
             <Chart
               height="260"
+              options={chartOptions}
+              series={chartSeries}
               type="pie"
-              {...chart}
             />
             {data.series.map((item) => (
               <Box

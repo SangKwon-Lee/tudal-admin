@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-export const JWT_SECRET = '6f3f7b9d-d65a-4bdc-b78a-b24f0f11e879';
+export const JWT_SECRET = 'devias-top-secret-key';
 export const JWT_EXPIRES_IN = 3600 * 24 * 2; // 2 days
 
 // Since we are unable to sign a JWT in a browser
@@ -47,6 +47,7 @@ export const decode = (token: string): any => {
       ))
       .join('')
   );
+
   if (verifiedSignature !== signature) {
     throw new Error('Invalid signature');
   }
@@ -75,9 +76,6 @@ export const verify = (
       ))
       .join('')
   );
-
-  console.log("Veri", verifiedSignature)
-  console.log("Sig", signature)
 
   if (verifiedSignature !== signature) {
     throw new Error('Invalid signature');

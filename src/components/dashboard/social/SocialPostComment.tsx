@@ -1,9 +1,15 @@
-import type { FC } from "react";
-import { Link as RouterLink } from "react-router-dom";
-import PropTypes from "prop-types";
-import { Avatar, Box, Link, Typography, IconButton } from "@material-ui/core";
-import moment from "moment";
-import DeleteIcon from "@material-ui/icons/Delete";
+import type { FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import {
+  Avatar,
+  Box,
+  Link,
+  Typography,
+  IconButton,
+} from '@material-ui/core';
+import moment from 'moment';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface SocialPostCommentProps {
   commentId?: number;
@@ -28,7 +34,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
   return (
     <Box
       sx={{
-        display: "flex",
+        display: 'flex',
         mb: 2,
       }}
       {...other}
@@ -36,7 +42,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
       <Avatar component={RouterLink} src={authorAvatar} to="#" />
       <Box
         sx={{
-          backgroundColor: "background.default",
+          backgroundColor: 'background.default',
           borderRadius: 1,
           flexGrow: 1,
           ml: 2,
@@ -45,8 +51,8 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
       >
         <Box
           sx={{
-            alignItems: "center",
-            display: "flex",
+            alignItems: 'center',
+            display: 'flex',
             mb: 1,
           }}
         >
@@ -63,8 +69,8 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
             {moment(createdAt).fromNow()}
           </Typography>
           <IconButton
-            color={"default"}
-            component={"button"}
+            color={'default'}
+            component={'button'}
             onClick={() => handleDeleteComment(commentId)}
           >
             <DeleteIcon fontSize="small" />

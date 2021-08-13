@@ -18,7 +18,7 @@ const transactions = [
     amount: 25000,
     currency: 'usd',
     date: new Date(),
-    sender: 'Devias IO',
+    sender: 'Devias',
     type: 'receive'
   },
   {
@@ -42,7 +42,7 @@ const transactions = [
     amount: 49550,
     currency: 'usd',
     date: subDays(new Date(), 3),
-    sender: 'Devias IO',
+    sender: 'Devias',
     type: 'receive'
   }
 ];

@@ -1,20 +1,18 @@
 {
-  "name": "@devias/material-kit-pro-react",
-  "author": "Devias IO",
-  "version": "4.0.0",
+  "name": "tudal-admin",
+  "version": "0.0.2",
+  "author": "Innofin",
   "private": true,
   "scripts": {
     "lint": "eslint ./src",
     "lint-fix": "eslint --fix ./src",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
@@ -47,11 +45,8 @@
     "@material-ui/system": "5.0.0-alpha.34",
     "@react-pdf/renderer": "^1.6.13",
     "@reduxjs/toolkit": "^1.5.0",
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/user-event": "^13.0.1",
-    "@toast-ui/editor-plugin-color-syntax": "^3.0.0",
-    "@toast-ui/react-editor": "^2.5.3",
-    "@types/jest": "^26.0.20",
+    "@toast-ui/editor-plugin-color-syntax": "^3.0.1",
+    "@toast-ui/react-editor": "^3.0.2",
     "@types/lodash": "^4.14.167",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^17.0.1",
@@ -65,7 +60,6 @@
     "aws-amplify": "^3.0.20",
     "aws-sdk": "^2.966.0",
     "axios": "^0.21.1",
-    "axios-mock-adapter": "^1.19.0",
     "date-fns": "^2.21.3",
     "dayjs": "^1.10.6",
     "draft-js": "^0.11.7",
@@ -104,8 +98,10 @@
     "redux-thunk": "^2.3.0",
     "stylis": "^4.0.10",
     "stylis-plugin-rtl": "^2.1.0",
-    "tui-color-picker": "^2.2.7",
     "typescript": "^4.2.4",
     "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-typescript": "^12.3.1"
   }
 }

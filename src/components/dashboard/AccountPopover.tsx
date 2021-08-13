@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
-import type { FC } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useRef, useState } from 'react';
+import type { FC } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   Avatar,
   Box,
@@ -13,11 +13,11 @@ import {
   MenuItem,
   Popover,
   Typography,
-} from "@material-ui/core";
-import useAuth from "../../hooks/useAuth";
-import CogIcon from "../../icons/Cog";
-import UserIcon from "../../icons/User";
-import { CMSURL } from "../../lib/axios";
+} from '@material-ui/core';
+import useAuth from '../../hooks/useAuth';
+import CogIcon from '../../icons/Cog';
+import UserIcon from '../../icons/User';
+import { CMSURL } from '../../lib/axios';
 
 const AccountPopover: FC = () => {
   const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -37,42 +37,41 @@ const AccountPopover: FC = () => {
     try {
       handleClose();
       await logout();
-      navigate("/");
+      navigate('/');
     } catch (err) {
       console.error(err);
-      toast.error("Unable to logout.");
+      toast.error('Unable to logout.');
     }
   };
+
   return (
     <>
-      {user && (
-        <Box
-          component={ButtonBase}
-          onClick={handleOpen}
-          ref={anchorRef}
-          sx={{
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          {user.avatar ? (
-            <Avatar
-              src={user.avatar && `${CMSURL}${user.avatar.url}`}
-              sx={{
-                height: 32,
-                width: 32,
-              }}
-            />
-          ) : (
-            <UserIcon fontSize="small" />
-          )}
-        </Box>
-      )}
+      <Box
+        component={ButtonBase}
+        onClick={handleOpen}
+        ref={anchorRef}
+        sx={{
+          alignItems: 'center',
+          display: 'flex',
+        }}
+      >
+        {user.avatar ? (
+          <Avatar
+            src={user.avatar && `${CMSURL}${user.avatar.url}`}
+            sx={{
+              height: 32,
+              width: 32,
+            }}
+          />
+        ) : (
+          <UserIcon fontSize="small" />
+        )}
+      </Box>
       <Popover
         anchorEl={anchorRef.current}
         anchorOrigin={{
-          horizontal: "center",
-          vertical: "bottom",
+          horizontal: 'center',
+          vertical: 'bottom',
         }}
         keepMounted
         onClose={handleClose}
@@ -83,14 +82,14 @@ const AccountPopover: FC = () => {
       >
         <Box sx={{ p: 2 }}>
           <Typography color="textPrimary" variant="subtitle2">
-            {user.email}
+            {user.name}
           </Typography>
           <Typography color="textSecondary" variant="subtitle2">
-            {user.username}
+            Devias
           </Typography>
         </Box>
         <Divider />
-        {/* <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }}>
           <MenuItem
             component={RouterLink}
             to="/dashboard/social/profile"
@@ -99,35 +98,26 @@ const AccountPopover: FC = () => {
               <UserIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText
-              primary={(
-                <Typography
-                  color="textPrimary"
-                  variant="subtitle2"
-                >
-                  프로필
+              primary={
+                <Typography color="textPrimary" variant="subtitle2">
+                  Profile
                 </Typography>
-              )}
+              }
             />
           </MenuItem>
-          <MenuItem
-            component={RouterLink}
-            to="/dashboard/account"
-          >
+          <MenuItem component={RouterLink} to="/dashboard/account">
             <ListItemIcon>
               <CogIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText
-              primary={(
-                <Typography
-                  color="textPrimary"
-                  variant="subtitle2"
-                >
-                  관리
+              primary={
+                <Typography color="textPrimary" variant="subtitle2">
+                  Settings
                 </Typography>
-              )}
+              }
             />
           </MenuItem>
-        </Box> */}
+        </Box>
         <Box sx={{ p: 2 }}>
           <Button
             color="primary"
@@ -135,7 +125,7 @@ const AccountPopover: FC = () => {
             onClick={handleLogout}
             variant="outlined"
           >
-            로그아웃
+            Logout
           </Button>
         </Box>
       </Popover>

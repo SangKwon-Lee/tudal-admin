@@ -25,7 +25,7 @@ const logs = [
     description: 'Purchase',
     ip: '84.234.243.42',
     method: 'POST',
-    route: '/api/purchase',
+    route: '/__fakeApi__/purchase',
     status: 200
   },
   {
@@ -34,7 +34,7 @@ const logs = [
     description: 'Purchase',
     ip: '84.234.243.42',
     method: 'POST',
-    route: '/api/purchase',
+    route: '/__fakeApi__/purchase',
     status: 522
   },
   {
@@ -43,7 +43,7 @@ const logs = [
     description: 'Cart remove',
     ip: '84.234.243.42',
     method: 'DELETE',
-    route: '/api/products/d65654e/remove',
+    route: '/__fakeApi__/products/d65654e/remove',
     status: 200
   },
   {
@@ -52,7 +52,7 @@ const logs = [
     description: 'Cart add',
     ip: '84.234.243.42',
     method: 'GET',
-    route: '/api/products/d65654e/add',
+    route: '/__fakeApi__/products/d65654e/add',
     status: 200
   },
   {
@@ -61,7 +61,7 @@ const logs = [
     description: 'Cart add',
     ip: '84.234.243.42',
     method: 'GET',
-    route: '/api/products/c85727f/add',
+    route: '/__fakeApi__/products/c85727f/add',
     status: 200
   },
   {
@@ -70,7 +70,7 @@ const logs = [
     description: 'View product',
     ip: '84.234.243.42',
     method: 'GET',
-    route: '/api/products/c85727f',
+    route: '/__fakeApi__/products/c85727f',
     status: 200
   },
   {
@@ -79,7 +79,7 @@ const logs = [
     description: 'Get products',
     ip: '84.234.243.42',
     method: 'GET',
-    route: '/api/products',
+    route: '/__fakeApi__/products',
     status: 200
   },
   {
@@ -88,7 +88,7 @@ const logs = [
     description: 'Login',
     ip: '84.234.243.42',
     method: 'POST',
-    route: '/api/authentication/login',
+    route: '/__fakeApi__/authentication/login',
     status: 200
   }
 ];

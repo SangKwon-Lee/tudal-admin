@@ -3,10 +3,9 @@ export interface CalendarEvent {
   allDay: boolean;
   color?: string;
   description: string;
-  end: Date;
-  start: Date;
+  end: number;
+  start: number;
   title: string;
-  submit?: boolean;
 }
 
 export type CalendarView =

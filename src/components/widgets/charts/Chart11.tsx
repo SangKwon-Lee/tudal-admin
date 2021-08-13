@@ -1,14 +1,8 @@
 import type { FC } from 'react';
 import numeral from 'numeral';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Typography
-} from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader, Container, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 
 const data = {
@@ -44,70 +38,68 @@ const data = {
 const IncrementalSales: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: data.series.map((item) => item.color),
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
-        borderColor: theme.palette.divider,
-        yaxis: {
-          lines: {
-            show: false
-          }
-        }
-      },
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          barHeight: '45',
-          distributed: true
-        }
-      },
-      theme: {
-        mode: theme.palette.mode
-      },
-      tooltip: {
-        theme: theme.palette.mode,
-        y: {
-          formatter: (value: number): string => numeral(value).format('$0,0.00')
-        }
-      },
-      xaxis: {
-        axisBorder: {
-          color: theme.palette.divider,
-          show: true
-        },
-        axisTicks: {
-          color: theme.palette.divider,
-          show: true
-        },
-        categories: data.series.map((item) => item.category)
-      },
+      }
+    },
+    colors: data.series.map((item) => item.color),
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      borderColor: theme.palette.divider,
       yaxis: {
-        labels: {
+        lines: {
           show: false
         }
       }
     },
-    series: [
-      {
-        data: data.series.map((item) => item.data),
-        name: 'Sales'
+    legend: {
+      show: false
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        barHeight: '45',
+        distributed: true
       }
-    ]
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    tooltip: {
+      y: {
+        formatter: (value: number): string => numeral(value).format('$0,0.00')
+      }
+    },
+    xaxis: {
+      axisBorder: {
+        color: theme.palette.divider,
+        show: true
+      },
+      axisTicks: {
+        color: theme.palette.divider,
+        show: true
+      },
+      categories: data.series.map((item) => item.category)
+    },
+    yaxis: {
+      labels: {
+        show: false
+      }
+    }
   };
+
+  const chartSeries = [
+    {
+      data: data.series.map((item) => item.data),
+      name: 'Sales'
+    }
+  ];
 
   return (
     <Box
@@ -148,8 +140,9 @@ const IncrementalSales: FC = () => {
             ))}
             <Chart
               height="350"
+              options={chartOptions}
+              series={chartSeries}
               type="bar"
-              {...chart}
             />
           </CardContent>
         </Card>

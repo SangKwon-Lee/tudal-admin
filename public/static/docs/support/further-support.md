@@ -9,4 +9,4 @@ and pretty extensive previous knowledge of the libraries in use, as well as web 
 this not be your scenario, please keep in mind our team offers special training and exclusive for
 pay support, and based on your project size and our availability, we can take custom requests at a
 fee. For more details please get in contact with our team of experts on
-[support@deviasio.zendesk.com](mailto:support@deviasio.zendesk.com).
+[https://devias.io/contact](https://devias.io/contact).

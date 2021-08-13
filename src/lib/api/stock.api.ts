@@ -1,6 +1,10 @@
-import { apiServer } from "src/lib/axios"
-import { Stock } from "src/types/schedule"
+import { apiServer } from 'src/lib/axios';
+import { Stock } from 'src/types/schedule';
 
 export async function getList() {
-  return await apiServer.get<Stock[]>("/stocks/stkNmCd")
+  try {
+    return await apiServer.get<Stock[]>('/stocks/stkNmCd');
+  } catch (e) {
+    return [];
+  }
 }

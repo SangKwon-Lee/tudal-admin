@@ -5,12 +5,12 @@ import Chart from 'react-apexcharts';
 import {
   Box,
   Card,
-  CardContent,
   CardHeader,
   Checkbox,
   Tooltip,
   Typography
 } from '@material-ui/core';
+import type { CardProps } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import InformationCircleIcon from '../../../icons/InformationCircle';
 
@@ -63,7 +63,7 @@ const data = {
   }
 };
 
-const Chart7: FC = () => {
+const AnalyticsTrafficSources: FC<CardProps> = (props) => {
   const theme = useTheme();
   const [selectedSeries, setSelectedSeries] = useState([
     'Organic',
@@ -95,9 +95,14 @@ const Chart7: FC = () => {
     },
     grid: {
       borderColor: theme.palette.divider,
+      xaxis: {
+        lines: {
+          show: true
+        }
+      },
       yaxis: {
         lines: {
-          show: false
+          show: true
         }
       }
     },
@@ -173,86 +178,78 @@ const Chart7: FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: 'background.default',
-        p: 3
-      }}
-    >
-      <Card>
-        <CardHeader
-          disableTypography
-          title={(
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Typography
-                color="textPrimary"
-                variant="h6"
-              >
-                Traffic Sources
-              </Typography>
-              <Tooltip title="Chart 7 Source by channel">
-                <InformationCircleIcon fontSize="small" />
-              </Tooltip>
-            </Box>
-          )}
-        />
-        <CardContent>
+    <Card {...props}>
+      <CardHeader
+        disableTypography
+        title={(
           <Box
             sx={{
               alignItems: 'center',
               display: 'flex',
-              flexWrap: 'wrap'
+              justifyContent: 'space-between'
             }}
           >
-            {data.series.map((item) => (
-              <Box
-                key={item.name}
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  mr: 2
-                }}
-              >
-                <Checkbox
-                  checked={selectedSeries.some((visibleItem) => visibleItem === item.name)}
-                  color="primary"
-                  onChange={(event) => handleChange(event, item.name)}
-                />
-                <Box
-                  sx={{
-                    backgroundColor: item.color,
-                    borderRadius: '50%',
-                    height: 8,
-                    ml: 1,
-                    mr: 2,
-                    width: 8
-                  }}
-                />
-                <Typography
-                  color="textPrimary"
-                  variant="subtitle2"
-                >
-                  {item.name}
-                </Typography>
-              </Box>
-            ))}
+            <Typography
+              color="textPrimary"
+              variant="h6"
+            >
+              Traffic Sources
+            </Typography>
+            <Tooltip title="Widget25 Source by channel">
+              <InformationCircleIcon fontSize="small" />
+            </Tooltip>
           </Box>
-          <Chart
-            height="350"
-            options={chartOptions}
-            series={chartSeries}
-            type="line"
-          />
-        </CardContent>
-      </Card>
-    </Box>
+        )}
+      />
+      <Box
+        sx={{
+          alignItems: 'center',
+          display: 'flex',
+          flexWrap: 'wrap',
+          px: 2
+        }}
+      >
+        {data.series.map((item) => (
+          <Box
+            key={item.name}
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              mr: 2
+            }}
+          >
+            <Checkbox
+              checked={selectedSeries.some((visibleItem) => visibleItem === item.name)}
+              color="primary"
+              onChange={(event) => handleChange(event, item.name)}
+            />
+            <Box
+              sx={{
+                backgroundColor: item.color,
+                borderRadius: '50%',
+                height: 8,
+                ml: 1,
+                mr: 2,
+                width: 8
+              }}
+            />
+            <Typography
+              color="textPrimary"
+              variant="subtitle2"
+            >
+              {item.name}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+      <Chart
+        height="393"
+        options={chartOptions}
+        series={chartSeries}
+        type="line"
+      />
+    </Card>
   );
 };
 
-export default Chart7;
+export default AnalyticsTrafficSources;
