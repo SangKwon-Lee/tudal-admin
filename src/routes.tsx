@@ -6,7 +6,6 @@ import DashboardLayout from "./components/dashboard/DashboardLayout";
 import GuestGuard from "./components/GuestGuard";
 import LoadingScreen from "./components/LoadingScreen";
 import MainLayout from "./components/MainLayout";
-import ScheduleList from "./pages/dashboard/Schedule";
 
 const Loadable = (Component) => (props) =>
   (
@@ -48,6 +47,7 @@ const Overview = Loadable(lazy(() => import("./pages/dashboard/Overview")));
 const ReportMaker = Loadable(
   lazy(() => import("./pages/dashboard/ReportMaker"))
 );
+const ScheduleList = Loadable(lazy(() => import("./pages/dashboard/Schedule")));
 
 // Viewer pages
 const HiddenboxViewer = Loadable(

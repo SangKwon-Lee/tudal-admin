@@ -1,7 +1,7 @@
-import { useRef, useState } from "react"
-import type { FC } from "react"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
-import { useSnackbar } from "notistack"
+import { useRef, useState } from "react";
+import type { FC } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   Avatar,
   Box,
@@ -13,43 +13,36 @@ import {
   MenuItem,
   Popover,
   Typography,
-} from "@material-ui/core"
-import useAuth from "../../hooks/useAuth"
-import CogIcon from "../../icons/Cog"
-import UserIcon from "../../icons/User"
-import { CMSURL } from "../../lib/axios"
+} from "@material-ui/core";
+import useAuth from "../../hooks/useAuth";
+import CogIcon from "../../icons/Cog";
+import UserIcon from "../../icons/User";
+import { CMSURL } from "../../lib/axios";
 
 const AccountPopover: FC = () => {
-  const anchorRef = useRef<HTMLButtonElement | null>(null)
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const { enqueueSnackbar } = useSnackbar()
-  const [open, setOpen] = useState<boolean>(false)
+  const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleOpen = (): void => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleClose = (): void => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   const handleLogout = async (): Promise<void> => {
     try {
-      handleClose()
-      await logout()
-      navigate("/")
+      handleClose();
+      await logout();
+      navigate("/");
     } catch (err) {
-      console.error(err)
-      enqueueSnackbar("Unable to logout", {
-        anchorOrigin: {
-          horizontal: "right",
-          vertical: "top",
-        },
-        variant: "error",
-      })
+      console.error(err);
+      toast.error("Unable to logout.");
     }
-  }
+  };
   return (
     <>
       {user && (
@@ -136,13 +129,18 @@ const AccountPopover: FC = () => {
           </MenuItem>
         </Box> */}
         <Box sx={{ p: 2 }}>
-          <Button color="primary" fullWidth onClick={handleLogout} variant="outlined">
+          <Button
+            color="primary"
+            fullWidth
+            onClick={handleLogout}
+            variant="outlined"
+          >
             로그아웃
           </Button>
         </Box>
       </Popover>
     </>
-  )
-}
+  );
+};
 
-export default AccountPopover
+export default AccountPopover;

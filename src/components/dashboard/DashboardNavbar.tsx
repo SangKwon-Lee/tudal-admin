@@ -6,8 +6,6 @@ import { experimentalStyled } from "@material-ui/core/styles";
 import type { AppBarProps } from "@material-ui/core";
 import MenuIcon from "../../icons/Menu";
 import AccountPopover from "./AccountPopover";
-import ContactsPopover from "./ContactsPopover";
-import ContentSearch from "./ContentSearch";
 import LanguagePopover from "./LanguagePopover";
 import Logo from "../Logo";
 import NotificationsPopover from "./NotificationsPopover";
@@ -66,12 +64,6 @@ const DashboardNavbar: FC<DashboardNavbarProps> = (props) => {
           }}
         />
         <LanguagePopover />
-        <Box sx={{ ml: 1 }}>
-          <ContentSearch />
-        </Box>
-        <Box sx={{ ml: 1 }}>
-          <ContactsPopover />
-        </Box>
         <Box sx={{ ml: 1 }}>
           <NotificationsPopover />
         </Box>
