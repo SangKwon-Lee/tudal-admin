@@ -16,15 +16,11 @@ function init(initialCount) {
 const reducer = (state, action) => {
   switch (action.type) {
     case 'LOADING':
-      return {
-        loading: true,
-        data: state.data,
-        error: null,
-      };
+      return state;
     case 'SUCCESS':
       return {
-        data: action.data,
         loading: false,
+        data: action.data,
         error: null,
       };
     case 'ERROR':
@@ -47,8 +43,8 @@ export function useAsync<T>(
     reducer,
     {
       data: initialState,
-      loading: false,
-      error: false,
+      loading: true,
+      error: null,
     },
     init,
   );
@@ -57,8 +53,10 @@ export function useAsync<T>(
     dispatch({ type: 'LOADING' });
     try {
       const { data } = await callback();
+
       dispatch({ type: 'SUCCESS', data });
     } catch (e) {
+      console.error(e);
       dispatch({ type: 'ERROR', error: e });
     }
   };

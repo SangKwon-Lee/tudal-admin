@@ -77,12 +77,15 @@ const applySort = (news: INews[], sort: Sort): INews[] => {
 interface NewsListTableProps {
   newsList: INews[];
   search: string;
-  isLoading: boolean;
   page: number;
   limit: number;
+  isLoading: boolean;
+  isOpenForm: boolean;
+  setOpenForm: () => void;
   setPage: (event: any, newPage: number) => void;
   setLimit: (limit: number) => void;
   setSearch?: (value) => void;
+  setTargetNews: (INews) => void;
   updateSelect: (news: INews) => void;
   postDelete?: (id: number) => void;
   reload?: () => void;
@@ -104,6 +107,9 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
     setLimit,
     isLoading,
     updateSelect,
+    isOpenForm,
+    setTargetNews,
+    setOpenForm,
   } = props;
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
 
@@ -296,6 +302,10 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                     color="primary"
                     size="small"
                     variant="outlined"
+                    onClick={() => {
+                      setOpenForm();
+                      setTargetNews(news);
+                    }}
                   >
                     View
                   </Button>

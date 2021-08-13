@@ -8,10 +8,6 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Route, MemoryRouter } from 'react-router-dom';
-
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { FixtureNews } from 'src/fixtures';
 import NewsComment from './News';
 
 jest.mock('react-helmet-async', () => ({
@@ -20,21 +16,6 @@ jest.mock('react-helmet-async', () => ({
 
 const scrollIntoViewMock = jest.fn();
 HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
-
-const handlers = [
-  rest.get(
-    `${process.env.REACT_APP_CMS_URL}/general-news`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(FixtureNews.list));
-    },
-  ),
-];
-
-const server = setupServer(...handlers);
-
-beforeAll(() => server.listen());
-beforeEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 function renderNews() {
   return render(
@@ -67,5 +48,20 @@ describe('news-comment conatiner', () => {
       target: { value: '검색 테스트' },
     });
     expect(screen.getByDisplayValue('검색 테스트')).toBeTruthy();
+  });
+
+  it('shows comment add form when click View button', async () => {
+    const { getByTestId, getAllByText } = renderNews();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByTestId('news-list-loading'),
+    );
+
+    const list = getAllByText('View')[0];
+    fireEvent.click(list);
+
+    expect(
+      getByTestId('news-comment-add-dialog'),
+    ).toBeInTheDocument();
   });
 });

@@ -21,10 +21,11 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 import ChevronRightIcon from '../../icons/ChevronRight';
-import useAsync from 'src/hooks/useAsync';
-
 import useSettings from '../../hooks/useSettings';
-import { NewsListTable } from 'src/components/dashboard/news';
+import {
+  NewsCommentForm,
+  NewsListTable,
+} from 'src/components/dashboard/news';
 import { APINews } from 'src/lib/api';
 import { updateIsSelected } from 'src/lib/api/news.api';
 import { AxiosError } from 'axios';
@@ -66,14 +67,12 @@ const newsReducer = (
         loading: true,
       };
     case NewsActionKind.RELOAD_NEWS:
-      console.log('RELOAD');
       return {
         ...state,
         loading: false,
         news: payload,
       };
     case NewsActionKind.ADD_NEWS:
-      console.log('ADD NEWS', payload);
       return {
         ...state,
         loading: false,
@@ -89,23 +88,25 @@ const newsReducer = (
 
 const News: React.FC = () => {
   const { settings } = useSettings();
+  const [newsState, dispatch] = useReducer(newsReducer, initialState);
   const [search, setSearch] = useState<string>('');
   const [tick, setTick] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
-  const scrollRef = useRef<HTMLInputElement>(null);
-  const [newsState, dispatch] = useReducer(newsReducer, initialState);
+  const [isOpen, setOpen] = useState(false);
+  const [targetNews, setTargetNews] = useState<INews>(null);
 
-  const {
-    news: newsList,
-    error: newsError,
-    loading: newsLoading,
-  } = newsState;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { news: newsList, loading: newsLoading } = newsState;
 
   const handleSearch = _.debounce(setSearch, 300);
 
+  const handleOpenForm = useCallback(
+    () => setOpen((prev) => !prev),
+    [],
+  );
   const getNews = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
@@ -115,6 +116,7 @@ const News: React.FC = () => {
         payload: data,
       });
     } catch (error) {
+      console.error(error);
       dispatch({ type: NewsActionKind.ERROR, payload: error });
     }
   }, [search]);
@@ -143,7 +145,6 @@ const News: React.FC = () => {
 
   useEffect(() => {
     getNews();
-    console.log(scrollRef);
   }, [getNews]);
 
   useEffect(() => {
@@ -178,6 +179,14 @@ const News: React.FC = () => {
           py: 8,
         }}
       >
+        {isOpen && targetNews.id && (
+          <NewsCommentForm
+            isOpen={isOpen}
+            setOpen={handleOpenForm}
+            news={targetNews}
+          />
+        )}
+
         <Container
           maxWidth={settings.compact ? 'xl' : false}
           ref={scrollRef}
@@ -226,6 +235,9 @@ const News: React.FC = () => {
               setPage={handlePageChange}
               limit={limit}
               setLimit={setLimit}
+              isOpenForm={isOpen}
+              setOpenForm={handleOpenForm}
+              setTargetNews={setTargetNews}
             />
           </Box>
         </Container>
