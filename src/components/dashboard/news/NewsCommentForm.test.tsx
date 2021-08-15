@@ -2,49 +2,27 @@ import {
   findAllByText,
   findByTestId,
   fireEvent,
+  getAllByRole,
+  getByDisplayValue,
   render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react';
+import { debug } from 'node:console';
+import { FixtureNews } from 'src/fixtures';
 import { INews } from 'src/types/news';
 import NewsCommentForm from './NewsCommentForm';
 
 const mockFunc = jest.fn();
-
-const mockNews: INews = {
-  id: 1,
-  url: 'https://m.stock.naver.com/news/read.nhn?category=flashnews&officeId=643&articleId=0000095802',
-  title: 'Tata Motors, 3분기 국내 판매량 150,958대, 24% 증가',
-  mediaName: '로이터 증권(신)',
-  publishDate: '2020-12-31T15:00:00.000Z',
-  summarized:
-    '1월 1일(로이터) - Tata Motors Ltd. ::TA Motors Ltd.는 FY21 3분기 국내 판매량이 FY20 3분기에 비해 24% 증가했다고 말합니다.타타...',
-  source: 'naver:flash',
-  created_at: new Date('2021-02-04T06:41:42.000Z'),
-  updated_at: new Date('2021-02-04T06:41:42.000Z'),
-  newsId: '0000095802',
-  photo: null,
-  officeId: '643',
-  isSelected: false,
-  tags: [
-    {
-      id: 733,
-      name: 'M',
-    },
-    {
-      id: 1098,
-      name: 'S',
-    },
-  ],
-};
 
 test('renders form and title properly', async () => {
   const { getByTestId } = render(
     <NewsCommentForm
       isOpen={true}
       setOpen={mockFunc}
-      news={mockNews}
+      news={FixtureNews.list[0]}
     />,
   );
 
@@ -57,7 +35,7 @@ describe('Comment Input', () => {
       <NewsCommentForm
         isOpen={true}
         setOpen={mockFunc}
-        news={mockNews}
+        news={FixtureNews.list[0]}
       />,
     );
 
@@ -86,7 +64,7 @@ describe('Comment Input', () => {
       <NewsCommentForm
         isOpen={true}
         setOpen={mockFunc}
-        news={mockNews}
+        news={FixtureNews.list[0]}
       />,
     );
 
@@ -109,7 +87,7 @@ describe('Comment Input', () => {
       <NewsCommentForm
         isOpen={true}
         setOpen={mockFunc}
-        news={mockNews}
+        news={FixtureNews.list[0]}
       />,
     );
 

@@ -10,6 +10,7 @@ import { INews } from 'src/types/news';
 import { Category, Stock, Tag } from 'src/types/schedule';
 import { findKeywords } from 'src/lib/api/tag.api';
 
+import GroupedList from 'src/components/widgets/grouped-lists/GroupedList7';
 import {
   Box,
   Button,
@@ -226,6 +227,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }}
             />
           </Grid>
+          <Grid item md={12} xs={12}>
+            <GroupedList />
+          </Grid>
 
           <Grid item md={12} xs={12}>
             {stockLoading && (
@@ -248,7 +252,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }
               onChange={(event, stocks: Stock[]) => {
                 dispatch({
-                  type: NewsCommentActionType.ADD_STOCK,
+                  type: NewsCommentActionType.REPLACE_STOCK,
                   payload: stocks,
                 });
               }}
@@ -345,7 +349,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               multiple
               fullWidth
               autoHighlight
-              id="autocomplete-category"
+              data-testid="autocomplete-category"
               options={categoryList}
               value={commentForm.categories}
               getOptionSelected={(option, value) =>
@@ -386,7 +390,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   fullWidth
                   label="카테고리"
                   name="category"
-                  id="category"
                   variant="outlined"
                 />
               )}
