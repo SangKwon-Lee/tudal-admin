@@ -37,8 +37,8 @@ import { FixtureStocks } from 'src/fixtures';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import useAuth from 'src/hooks/useAuth';
 
-const customFilter = createFilterOptions<any>();
-const customFilter2 = createFilterOptions<any>();
+const keywordFilter = createFilterOptions<any>();
+const categoryFilter = createFilterOptions<any>();
 
 interface NewsCommentFormProps {
   isOpen: boolean;
@@ -146,33 +146,22 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     initialNewsCommentForm,
   );
 
-  const [stockListState] = useAsync<Stock[]>(
-    APIStock.getList,
-    [],
-    [],
-  );
+  const [{ data: stockList, loading: stockLoading }] = useAsync<
+    Stock[]
+  >(APIStock.getList, [], []);
 
-  const getTagList = () => {
+  const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
     return APITag.getList(value);
-  };
+  }, [tagInput]);
 
-  const [tagListState, refetchTag] = useAsync<Tag[]>(
-    getTagList,
-    [tagInput.current],
-    [],
-  );
+  const [{ data: tagList, loading: tagLoading }, refetchTag] =
+    useAsync<Tag[]>(getTagList, [tagInput.current], []);
 
-  const {
-    data: stockList,
-    error: stockError,
-    loading: stockLoading,
-  } = stockListState;
-  const {
-    data: tagList,
-    error: tagError,
-    loading: tagLoading,
-  } = tagListState;
+  const [
+    { data: categoryList, loading: categoryLoading },
+    refetchCategory,
+  ] = useAsync<Tag[]>(APICategory.getList, [], []);
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
@@ -239,7 +228,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           </Grid>
 
           <Grid item md={12} xs={12}>
-            {stockList.length === 0 && (
+            {stockLoading && (
               <div data-testid="stock-loading">
                 <LinearProgress />
               </div>
@@ -280,7 +269,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 <LinearProgress />
               </div>
             )}
-
             <Autocomplete
               multiple
               fullWidth
@@ -304,7 +292,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 return label;
               }}
               filterOptions={(options, params) => {
-                const filtered = customFilter(options, params);
+                const filtered = keywordFilter(options, params);
                 if (
                   user.role.type !== IRoleType.Author &&
                   filtered.length === 0 &&
@@ -342,6 +330,64 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                       </React.Fragment>
                     ),
                   }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item md={12} xs={12}>
+            {categoryLoading && (
+              <div data-testid="category-loading">
+                <LinearProgress />
+              </div>
+            )}
+
+            <Autocomplete
+              multiple
+              fullWidth
+              autoHighlight
+              id="autocomplete-category"
+              options={categoryList}
+              value={commentForm.categories}
+              getOptionSelected={(option, value) =>
+                option.id === value.id
+              }
+              getOptionLabel={(option) => {
+                const label = option.name;
+                if (option.hasOwnProperty('isNew')) {
+                  return `+ '${label}'`;
+                }
+                return label;
+              }}
+              onChange={(event, categories: Category[]) => {
+                dispatch({
+                  type: NewsCommentActionType.REPLACE_CATEGORY,
+                  payload: categories,
+                });
+              }}
+              filterOptions={(options, params) => {
+                const filtered = categoryFilter(options, params);
+                if (
+                  user.role.type !== IRoleType.Author &&
+                  filtered.length === 0 &&
+                  params.inputValue !== ''
+                ) {
+                  filtered.push({
+                    id: Math.random(),
+                    isNew: true,
+                    name: params.inputValue,
+                  });
+                }
+
+                return filtered;
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  label="카테고리"
+                  name="category"
+                  id="category"
+                  variant="outlined"
                 />
               )}
             />

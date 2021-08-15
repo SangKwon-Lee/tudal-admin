@@ -190,21 +190,9 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
     [],
   );
 
-  const {
-    data: stockList,
-    error: stockError,
-    loading: stockLoading,
-  } = stockListState;
-  const {
-    data: tagList,
-    error: tagError,
-    loading: tagLoading,
-  } = tagListState;
-  const {
-    data: categoryList,
-    error: categoryError,
-    loading: categoryLoading,
-  } = categoryListState;
+  const { data: stockList } = stockListState;
+  const { data: tagList, loading: tagLoading } = tagListState;
+  const { data: categoryList } = categoryListState;
 
   const handleTagChange = debounce(refetchTag, 300);
 
