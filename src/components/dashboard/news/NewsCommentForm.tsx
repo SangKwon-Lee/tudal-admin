@@ -151,11 +151,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     [],
     [],
   );
-  const [categoryListState] = useAsync<Category[]>(
-    APICategory.getList,
-    [],
-    [],
-  );
+
   const getTagList = () => {
     const value = tagInput.current ? tagInput.current.value : '';
     return APITag.getList(value);
@@ -177,11 +173,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     error: tagError,
     loading: tagLoading,
   } = tagListState;
-  const {
-    data: categoryList,
-    error: categoryError,
-    loading: categoryLoading,
-  } = categoryListState;
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
@@ -249,7 +240,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
           <Grid item md={12} xs={12}>
             {stockList.length === 0 && (
-              <div data-testid="stock-loading-test">
+              <div data-testid="stock-loading">
                 <LinearProgress />
               </div>
             )}
@@ -284,6 +275,12 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             />
           </Grid>
           <Grid item md={12} xs={12}>
+            {tagLoading && (
+              <div data-testid="tag-loading">
+                <LinearProgress />
+              </div>
+            )}
+
             <Autocomplete
               multiple
               fullWidth
@@ -295,7 +292,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }
               onChange={(event, keywords: Tag[]) => {
                 dispatch({
-                  type: NewsCommentActionType.ADD_KEYWORD,
+                  type: NewsCommentActionType.REPLACE_KEYWORD,
                   payload: keywords,
                 });
               }}

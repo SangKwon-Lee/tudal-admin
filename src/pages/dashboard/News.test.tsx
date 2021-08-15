@@ -49,19 +49,4 @@ describe('news-comment conatiner', () => {
     });
     expect(screen.getByDisplayValue('검색 테스트')).toBeTruthy();
   });
-
-  it('shows comment add form when click View button', async () => {
-    const { getByTestId, getAllByText } = renderNews();
-
-    await waitForElementToBeRemoved(() =>
-      screen.getByTestId('news-list-loading'),
-    );
-
-    const list = getAllByText('View')[0];
-    fireEvent.click(list);
-
-    expect(
-      getByTestId('news-comment-add-dialog'),
-    ).toBeInTheDocument();
-  });
 });

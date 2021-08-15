@@ -39,9 +39,21 @@ const mockNews: INews = {
   ],
 };
 
-describe('Add News comment form', () => {
-  test('renders form and title properly', async () => {
-    const { getByTestId } = render(
+test('renders form and title properly', async () => {
+  const { getByTestId } = render(
+    <NewsCommentForm
+      isOpen={true}
+      setOpen={mockFunc}
+      news={mockNews}
+    />,
+  );
+
+  await waitForElementToBeRemoved(() => getByTestId('tag-loading'));
+});
+
+describe('Comment Input', () => {
+  test('shock list should be automatically added', async () => {
+    const { getByText, getByTestId } = render(
       <NewsCommentForm
         isOpen={true}
         setOpen={mockFunc}
@@ -50,19 +62,50 @@ describe('Add News comment form', () => {
     );
 
     await waitForElementToBeRemoved(() =>
-      getByTestId('stock-loading-test'),
+      getByTestId('stock-loading'),
     );
+
+    const commentInput = screen
+      .getAllByRole('textbox')
+      .filter((element) => element.id === 'comment')[0];
+
+    fireEvent.click(commentInput, {
+      target: { value: '한화손해보험' },
+    });
+
+    expect(screen.getByDisplayValue(/한화손해보험/)).toBeTruthy();
+
+    fireEvent.blur(commentInput);
+
+    await waitFor(() => expect(getByText(/111370/)).toBeTruthy()); //한화 손해보험 stockcode
+    expect(getByText(/한화손해보험/)).toBeTruthy();
   });
 
-  test('stock and k', async () => {
-    const {
-      getByText,
-      getByDisplayValue,
-      getByTestId,
-      debug,
-      container,
-      rerender,
-    } = render(
+  test('keyword list should be automatically added', async () => {
+    const { getByText, getByTestId } = render(
+      <NewsCommentForm
+        isOpen={true}
+        setOpen={mockFunc}
+        news={mockNews}
+      />,
+    );
+
+    await waitForElementToBeRemoved(() => getByTestId('tag-loading'));
+
+    const commentInput = screen
+      .getAllByRole('textbox')
+      .filter((element) => element.id === 'comment')[0];
+
+    fireEvent.click(commentInput, {
+      target: { value: '문재인' },
+    });
+    expect(screen.getByDisplayValue(/문재인/)).toBeTruthy();
+    fireEvent.blur(commentInput);
+
+    await waitFor(() => expect(getByText(/문재인/)).toBeTruthy());
+  });
+  test('shock & keyword list should be automatically added', async () => {
+    const { getByText, getByTestId } = render(
       <NewsCommentForm
         isOpen={true}
         setOpen={mockFunc}
@@ -71,7 +114,7 @@ describe('Add News comment form', () => {
     );
 
     await waitForElementToBeRemoved(() =>
-      getByTestId('stock-loading-test'),
+      getByTestId('stock-loading'),
     );
 
     const commentInput = screen
@@ -85,9 +128,7 @@ describe('Add News comment form', () => {
     expect(screen.getByDisplayValue(/한화손해보험/)).toBeTruthy();
     expect(screen.getByDisplayValue(/문재인/)).toBeTruthy();
 
-    fireEvent.click(getByTestId('news-comment-add-dialog'));
     fireEvent.blur(commentInput);
-    fireEvent.click(getByTestId('autocomplete'));
 
     await waitFor(() => expect(getByText(/111370/)).toBeTruthy()); //한화 손해보험 stockcode
 

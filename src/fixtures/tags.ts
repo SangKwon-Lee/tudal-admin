@@ -402,6 +402,10 @@ export const list: Tag[] = [
     id: 100,
     name: '나진하산',
   },
+  {
+    id: 154,
+    name: '문재인',
+  },
 ];
 export const searchResponse: Tag[] = [
   {
