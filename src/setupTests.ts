@@ -8,6 +8,7 @@ import { rest, setupWorker } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   FixtureCategory,
+  FixtureGeneralNewsComment,
   FixtureNews,
   FixtureStocks,
   FixtureTags,
@@ -51,6 +52,20 @@ const handlers = [
     `${process.env.REACT_APP_CMS_URL}/categories`,
     (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(FixtureCategory.list));
+    },
+  ),
+
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/general-news-comments`,
+    (req, res, ctx) => {
+      const query = req.url.searchParams;
+      const news_id = query.get('_where[general_news]');
+
+      const response = FixtureGeneralNewsComment.list.filter(
+        (comment) =>
+          comment.general_news.id === parseInt(news_id, 10),
+      );
+      return res(ctx.status(200), ctx.json(response));
     },
   ),
 ];

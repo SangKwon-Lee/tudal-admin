@@ -6,11 +6,11 @@ import React, {
   useCallback,
 } from 'react';
 import * as _ from 'lodash';
-import { INews } from 'src/types/news';
+import { INews, INewsComment } from 'src/types/news';
 import { Category, Stock, Tag } from 'src/types/schedule';
-import { findKeywords } from 'src/lib/api/tag.api';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
-import GroupedList from 'src/components/widgets/grouped-lists/GroupedList7';
+import NewsCommentHistory from './NewsCommentHistory';
 import {
   Box,
   Button,
@@ -27,16 +27,17 @@ import {
 
 import { IRoleType } from 'src/types/user';
 import useAsync from 'src/hooks/useAsync';
-import { APICategory, APIStock, APITag } from 'src/lib/api';
+import { APICategory, APINews, APIStock, APITag } from 'src/lib/api';
 import {
   tokenize,
   extractStocks,
   extractKeywords,
 } from 'src/utils/extractKeywords';
 import { getByTestId } from '@testing-library/react';
-import { FixtureStocks } from 'src/fixtures';
+import { FixtureNews, FixtureStocks } from 'src/fixtures';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import useAuth from 'src/hooks/useAuth';
+import { createComment } from 'src/lib/api/news.api';
 
 const keywordFilter = createFilterOptions<any>();
 const categoryFilter = createFilterOptions<any>();
@@ -132,7 +133,7 @@ const scheduleFormReducer = (
     }
 
     case NewsCommentActionType.SUBMIT: {
-      return { ...state, showConfirm: false, submitForm: true };
+      return { ...state, submitForm: true };
     }
   }
 };
@@ -159,10 +160,18 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);
 
+  const [{ data: categoryList, loading: categoryLoading }] = useAsync<
+    Tag[]
+  >(APICategory.getList, [], []);
+
   const [
-    { data: categoryList, loading: categoryLoading },
-    refetchCategory,
-  ] = useAsync<Tag[]>(APICategory.getList, [], []);
+    { data: commentList, loading: commentLoading },
+    refetchComment,
+  ] = useAsync<INewsComment[]>(
+    () => APINews.getComments(news.id),
+    [],
+    [],
+  );
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
@@ -195,6 +204,37 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     [stockList],
   );
 
+  const handleSubmit = useCallback(async () => {
+    if (!commentForm.submitForm) {
+      return;
+    }
+    const data: any = {
+      comment: commentForm.comment,
+      categories: commentForm.categories.map(
+        (category) => category.id,
+      ),
+      stockCodes: commentForm.stocks.map((stock) => stock.stockcode),
+      keywords: commentForm.keywords.map((tag) => tag.id),
+      author: user.id,
+      general_news: news.id,
+    };
+
+    try {
+      const { status } = await APINews.createComment(data);
+      if (status === 200) {
+        refetchComment();
+
+        dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM });
+        dispatch({ type: NewsCommentActionType.CLEAR });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [commentForm, user, news, refetchComment]);
+
+  useEffect(() => {
+    commentForm.submitForm && handleSubmit();
+  }, [commentForm.submitForm, handleSubmit]);
   return (
     <Dialog
       open={isOpen}
@@ -223,20 +263,17 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }
               onBlur={(e) => {
                 handleExtract(e.target.value);
-                e.target.value = '';
               }}
             />
           </Grid>
+
           <Grid item md={12} xs={12}>
-            <GroupedList />
+            {!_.isEmpty(commentList) && (
+              <NewsCommentHistory newsComments={commentList} />
+            )}
           </Grid>
 
           <Grid item md={12} xs={12}>
-            {stockLoading && (
-              <div data-testid="stock-loading">
-                <LinearProgress />
-              </div>
-            )}
             <Autocomplete
               multiple
               fullWidth
@@ -266,13 +303,13 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 />
               )}
             />
-          </Grid>
-          <Grid item md={12} xs={12}>
-            {tagLoading && (
-              <div data-testid="tag-loading">
+            {stockLoading && (
+              <div data-testid="stock-loading">
                 <LinearProgress />
               </div>
             )}
+          </Grid>
+          <Grid item md={12} xs={12}>
             <Autocomplete
               multiple
               fullWidth
@@ -337,14 +374,13 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 />
               )}
             />
-          </Grid>
-          <Grid item md={12} xs={12}>
-            {categoryLoading && (
-              <div data-testid="category-loading">
+            {tagLoading && (
+              <div data-testid="tag-loading">
                 <LinearProgress />
               </div>
             )}
-
+          </Grid>
+          <Grid item md={12} xs={12}>
             <Autocomplete
               multiple
               fullWidth
@@ -394,94 +430,41 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 />
               )}
             />
+            {categoryLoading && (
+              <div data-testid="category-loading">
+                <LinearProgress />
+              </div>
+            )}
           </Grid>
-          {/* <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Country"
-                name="country"
-                value="USA"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="State/Region"
-                name="state"
-                value="New York"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Address 1"
-                name="address1"
-                value="Street John Wick, no. 7"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Address 2"
-                name="address2"
-                value="House #25"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Phone number"
-                name="phone"
-                value="+55 748 327 439"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item />
-            <Grid item md={6} xs={12}>
-              <Typography
-                color="textPrimary"
-                gutterBottom
-                variant="subtitle2"
-              >
-                Email Verified
-              </Typography>
-              <Typography color="textSecondary" variant="body2">
-                Disabling this will automatically send the user a
-                verification email
-              </Typography>
-              <Switch
-                color="primary"
-                defaultChecked
-                edge="start"
-                name="isVerified"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <Typography
-                color="textPrimary"
-                gutterBottom
-                variant="subtitle2"
-              >
-                Discounted Prices
-              </Typography>
-              <Typography color="textSecondary" variant="body2">
-                This will give the user discounted prices for all
-                products
-              </Typography>
-              <Switch
-                color="primary"
-                defaultChecked={false}
-                edge="start"
-                name="hasDiscountedPrices"
-              />
-            </Grid> */}
         </Grid>
+        <Dialog
+          aria-labelledby="ConfirmModal"
+          open={commentForm.showConfirm}
+          onClose={() =>
+            dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM })
+          }
+        >
+          <ConfirmModal
+            title={'일정 추가'}
+            content={'일정을 추가하시겠습니까?'}
+            confirmTitle={'추가'}
+            handleOnClick={() =>
+              dispatch({ type: NewsCommentActionType.SUBMIT })
+            }
+            handleOnCancel={() =>
+              dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM })
+            }
+          />
+        </Dialog>
         <Box sx={{ mt: 2 }}>
-          <Button color="primary" type="submit" variant="contained">
+          <Button
+            color="primary"
+            type="submit"
+            variant="contained"
+            onClick={() =>
+              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM })
+            }
+          >
             Update Customer
           </Button>
         </Box>
