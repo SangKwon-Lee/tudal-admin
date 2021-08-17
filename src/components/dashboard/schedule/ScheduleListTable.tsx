@@ -1,4 +1,9 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useState,
+  useRef,
+  RefObject,
+} from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import {
@@ -131,6 +136,7 @@ interface ScheduleListTableProps {
   postDelete: (id: number) => void;
   reload: () => void;
   setTargetModify: (target: Schedule) => void;
+  scrollRef: RefObject<HTMLDivElement>;
 }
 
 const applyPagination = (
@@ -142,7 +148,13 @@ const applyPagination = (
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
-  const { schedules, postDelete, setSearch, setTargetModify } = props;
+  const {
+    schedules,
+    postDelete,
+    setSearch,
+    setTargetModify,
+    scrollRef,
+  } = props;
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
@@ -163,6 +175,11 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   const handleSort = (event): void => {
     setSort(event.target.value);
   };
+
+  const scrollToTop = () => {
+    scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const sortedSchedules = applySort(schedules, sort);
   const paginatedSchedule = applyPagination(
     sortedSchedules,
@@ -175,6 +192,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
       sx={{
         backgroundColor: 'background.default',
       }}
+      ref={scrollRef}
     >
       <Card>
         <Box
@@ -299,6 +317,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                       <IconButton
                         onClick={() => {
                           setTargetModify(schedule);
+                          scrollToTop();
                         }}
                       >
                         <BuildIcon fontSize="small" />

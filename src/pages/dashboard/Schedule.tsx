@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Schedule } from 'src/types/schedule';
@@ -22,6 +22,7 @@ import { APISchedule } from 'src/lib/api';
 
 const ScheduleList: React.FC = () => {
   const { settings } = useSettings();
+  const scrollRef = useRef(null);
   const [search, setSearch] = useState<string>('');
   const [targetModify, setTargetModify] = useState<Schedule>(null);
   const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
@@ -62,6 +63,7 @@ const ScheduleList: React.FC = () => {
           minHeight: '100%',
           py: 8,
         }}
+        ref={scrollRef}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
@@ -105,6 +107,7 @@ const ScheduleList: React.FC = () => {
               setSearch={setSearch}
               postDelete={postDelete}
               setTargetModify={setTargetModify}
+              scrollRef={scrollRef}
             />
           </Box>
         </Container>

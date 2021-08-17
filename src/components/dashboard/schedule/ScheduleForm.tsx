@@ -603,13 +603,15 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           </Grid>
           <Grid padding={0} paddingLeft={3}>
             <Button
-              color="primary"
+              color={targetModify ? 'secondary' : 'primary'}
               startIcon={<PlusIcon fontSize="small" />}
               sx={{ m: 1 }}
               variant="contained"
-              onClick={() =>
-                dispatch({ type: ScheduleActionKind.SHOW_CONFIRM })
-              }
+              onClick={() => {
+                tagInput.current.dispatch({
+                  type: ScheduleActionKind.SHOW_CONFIRM,
+                });
+              }}
             >
               {targetModify ? '일정 수정' : '일정 등록'}
             </Button>
