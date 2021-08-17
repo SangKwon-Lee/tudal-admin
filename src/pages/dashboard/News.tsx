@@ -19,7 +19,11 @@ import {
   Link,
   Typography,
   LinearProgress,
+  Dialog,
+  DialogContent,
+  Button,
 } from '@material-ui/core';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import useSettings from '../../hooks/useSettings';
 import {
@@ -33,7 +37,9 @@ import { AxiosError } from 'axios';
 enum NewsActionKind {
   LOADING = 'LOADING',
   ADD_NEWS = 'ADD_NEWS',
-  RELOAD_NEWS = 'SUCCRELOAD_NEWSESS',
+  RELOAD_NEWS = 'RELOAD_NEWS',
+  SHOW_SELECT_CONFIRM = 'SHOW_SELECT_CONFIRM',
+  CLOSE_SELECT_CONFIRM = 'CLOSE_SELECT_CONFIRM',
   ERROR = 'ERROR',
 }
 
@@ -45,6 +51,7 @@ interface NewsAction {
 interface newsState {
   news: INews[];
   loading: boolean;
+  showUpdateConfirm: boolean;
   error: AxiosError<any> | boolean;
 }
 
@@ -52,6 +59,7 @@ const initialState: newsState = {
   news: [],
   loading: true,
   error: null,
+  showUpdateConfirm: false,
 };
 
 const newsReducer = (
@@ -78,6 +86,17 @@ const newsReducer = (
         loading: false,
         news: [...state.news, ...payload],
       };
+    case NewsActionKind.SHOW_SELECT_CONFIRM:
+      return {
+        ...state,
+        showUpdateConfirm: true,
+      };
+    case NewsActionKind.CLOSE_SELECT_CONFIRM:
+      return {
+        ...state,
+        showUpdateConfirm: false,
+      };
+
     case NewsActionKind.ERROR:
       return {
         ...state,
@@ -92,8 +111,8 @@ const News: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const [tick, setTick] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
-  const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
+  const [limit, setLimit] = useState<number>(100);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(true);
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
   const [targetNews, setTargetNews] = useState<INews>(null);
@@ -156,11 +175,13 @@ const News: React.FC = () => {
   }, [page]);
 
   const updateSelect = async (news: INews) => {
-    await updateIsSelected(news.id, news.isSelected);
-    getNews();
+    dispatch({ type: NewsActionKind.SHOW_SELECT_CONFIRM });
+    // await updateIsSelected(news.id, news.isSelected);
+    // getNews();
   };
 
   const handlePageChange = (event: any, newPage: number): void => {
+    console.log(page, limit, newsList.length);
     if ((page + 1) * limit >= newsList.length - limit) {
       setShouldUpdate(true);
     }
@@ -241,6 +262,26 @@ const News: React.FC = () => {
             />
           </Box>
         </Container>
+        <Dialog
+          aria-labelledby="ConfirmModal"
+          open={newsState.showUpdateConfirm}
+          onClose={() =>
+            dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
+          }
+        >
+          <ConfirmModal
+            title={'뉴스 선택'}
+            content={'뉴스를 선택하시겠습니까?'}
+            confirmTitle={'추가'}
+            type={'CONFIRM'}
+            handleOnClick={() =>
+              dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
+            }
+            handleOnCancel={() =>
+              dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
+            }
+          />
+        </Dialog>
       </Box>
     </>
   );

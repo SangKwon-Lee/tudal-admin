@@ -19,11 +19,15 @@ import {
   Divider,
   Typography,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import SearchIcon from '../../../icons/Search';
 import { INews } from 'src/types/news';
 
-type Sort = 'publishDate|desc' | 'publishDate|asc';
+type Sort =
+  | 'publishDate|desc'
+  | 'publishDate|asc'
+  | 'isSelected|desc';
 
 interface SortOption {
   value: Sort;
@@ -37,6 +41,10 @@ const sortOptions: SortOption[] = [
   {
     label: '오래된 등록순',
     value: 'publishDate|asc',
+  },
+  {
+    label: '선택한 뉴스순',
+    value: 'isSelected|desc',
   },
 ];
 
@@ -97,7 +105,16 @@ const applyPagination = (
   limit: number,
 ): INews[] => news.slice(page * limit, page * limit + limit);
 
+const useStyles = makeStyles({
+  title: {
+    '&:hover': {
+      color: 'blue',
+    },
+  },
+});
+
 const NewsListTable: React.FC<NewsListTableProps> = (props) => {
+  const classes = useStyles();
   const {
     newsList,
     setSearch,
@@ -210,7 +227,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>pick</TableCell>
+              <TableCell width="3%">선택</TableCell>
               <TableCell width="60%">제목/기사(요약)</TableCell>
               <TableCell>언론사</TableCell>
               <TableCell>발행일</TableCell>
@@ -236,51 +253,64 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   />
                 </TableCell>
 
-                <TableCell>
-                  <Typography
-                    color="textPrimary"
-                    sx={{ cursor: 'pointer' }}
-                    variant="subtitle2"
-                    fontSize={18}
-                    fontWeight={news.isSelected ? 'bold' : 'normal'}
-                  >
-                    {news.title}
-                  </Typography>
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      mt: 1,
-                    }}
-                  >
+                <a
+                  href={news.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <TableCell>
                     <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      fontSize={15}
+                      sx={{ cursor: 'pointer' }}
+                      className={classes.title}
+                      color="textPrimary"
+                      variant="subtitle2"
+                      fontSize={18}
                       fontWeight={news.isSelected ? 'bold' : 'normal'}
                     >
-                      {news.summarized}
+                      {news.title}
                     </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      mt: 1,
-                    }}
-                  >
-                    {Array.isArray(news.tags) &&
-                      news.tags.length > 0 &&
-                      news.tags
-                        .filter((tag) => Boolean(tag.name))
-                        .map((tag) => (
-                          <React.Fragment key={tag.id}>
-                            <Chip color="primary" label={tag.name} />
-                            <Box marginRight={1} />
-                          </React.Fragment>
-                        ))}
-                  </Box>
-                </TableCell>
+                    <Box
+                      sx={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        mt: 1,
+                      }}
+                    >
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        fontSize={15}
+                        fontWeight={
+                          news.isSelected ? 'bold' : 'normal'
+                        }
+                      >
+                        {news.summarized}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        mt: 1,
+                      }}
+                    >
+                      {Array.isArray(news.tags) &&
+                        news.tags.length > 0 &&
+                        news.tags
+                          .filter((tag) => Boolean(tag.name))
+                          .map((tag) => (
+                            <React.Fragment key={tag.id}>
+                              <Chip
+                                color="primary"
+                                label={tag.name}
+                              />
+                              <Box marginRight={1} />
+                            </React.Fragment>
+                          ))}
+                    </Box>
+                  </TableCell>
+                </a>
                 <TableCell>
                   <Typography
                     color="textPrimary"
@@ -293,7 +323,9 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
 
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
-                    {dayjs(news.publishDate).format('YYYY-MM-DD')}
+                    {dayjs(news.publishDate).format(
+                      'YYYY.MM.DD. HH:MM',
+                    )}
                   </Typography>
                 </TableCell>
 
@@ -307,7 +339,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       setTargetNews(news);
                     }}
                   >
-                    View
+                    수정
                   </Button>
                 </TableCell>
               </TableRow>
@@ -322,7 +354,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         onRowsPerPageChange={handleLimitChange}
         page={page}
         rowsPerPage={limit}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[50, 100]}
       />
     </Box>
   );
