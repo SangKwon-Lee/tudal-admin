@@ -14,6 +14,10 @@ export async function create(schedule: IScheduleForm) {
   return await axios.post('/schedules', schedule);
 }
 
+export async function update(id, schedule) {
+  return await axios.put(`/schedules/${id}`, schedule);
+}
+
 export async function deleteItem(id: number) {
   return await axios.delete<Schedule>(`/schedules/${id}`);
 }

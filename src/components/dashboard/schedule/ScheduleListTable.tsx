@@ -20,6 +20,7 @@ import {
 } from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
+import BuildIcon from '@material-ui/icons/Build';
 import Label from '../../widgets/Label';
 import SearchIcon from '../../../icons/Search';
 import { Priority, Schedule } from '../../../types/schedule';
@@ -129,6 +130,7 @@ interface ScheduleListTableProps {
   setSearch: (value) => void;
   postDelete: (id: number) => void;
   reload: () => void;
+  setTargetModify: (target: Schedule) => void;
 }
 
 const applyPagination = (
@@ -140,12 +142,11 @@ const applyPagination = (
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
-  const { schedules, postDelete, search, setSearch } = props;
+  const { schedules, postDelete, setSearch, setTargetModify } = props;
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [targetSchedule, setTargetSchedule] =
-    useState<Schedule>(null);
+  const [targetSchedule, setTargetDelete] = useState<Schedule>(null);
   const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
     useState<boolean>(false);
 
@@ -242,13 +243,14 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                 <TableCell width="30%">코멘트</TableCell>
                 <TableCell width="10%">중요도</TableCell>
                 <TableCell width="10%">작성자</TableCell>
-                <TableCell width="15%">시작</TableCell>
-                <TableCell width="15%">끝</TableCell>
+                <TableCell width="15%">시작 일자</TableCell>
+                <TableCell width="15%">종료 일자</TableCell>
+                <TableCell>삭제</TableCell>
+                <TableCell>수정</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedSchedule.map((schedule) => {
-                console.log('schedule', schedule);
                 const {
                   comment,
                   priority,
@@ -286,11 +288,20 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
-                          setTargetSchedule(schedule);
+                          setTargetDelete(schedule);
                           setIsOpenDeleteConfirm(true);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => {
+                          setTargetModify(schedule);
+                        }}
+                      >
+                        <BuildIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -320,10 +331,10 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               confirmTitle={'네 삭제합니다.'}
               handleOnClick={() => {
                 postDelete(targetSchedule.id);
-                setTargetSchedule(null);
+                setTargetDelete(null);
               }}
               handleOnCancel={() => {
-                setTargetSchedule(null);
+                setTargetDelete(null);
                 setIsOpenDeleteConfirm(false);
               }}
             />

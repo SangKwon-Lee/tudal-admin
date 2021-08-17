@@ -25,7 +25,13 @@ import {
 } from '@material-ui/core';
 
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
-import { Priority, Stock, Tag, Category } from 'src/types/schedule';
+import {
+  Priority,
+  Stock,
+  Tag,
+  Category,
+  Schedule,
+} from 'src/types/schedule';
 import axios, { apiServer } from '../../../lib/axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
@@ -54,6 +60,7 @@ const createStockNameMap = (stockList: Stock[]) => {
 
 interface scheduleFormProps {
   reload: () => void;
+  targetModify: Schedule;
 }
 
 export interface IScheduleFormState {
@@ -85,6 +92,7 @@ const initialSchedule: IScheduleFormState = {
 
 enum ScheduleActionKind {
   CLEAR = 'CLEAR',
+  SET = 'SET',
   ADD_STOCK = 'ADD_STOCK',
   ADD_KEYWORD = 'ADD_KEYWORD',
   REPLACE_STOCK = 'REPLACE_STOCK',
@@ -115,7 +123,6 @@ const scheduleFormReducer = (
 
     case ScheduleActionKind.HANDLE_CHANGES:
       const { name, value } = payload.target;
-      console.log(name, value);
       return { ...state, [name]: value };
 
     case ScheduleActionKind.REPLACE_DATES:
@@ -123,6 +130,19 @@ const scheduleFormReducer = (
         ...state,
         startDate: payload.startDate,
         endDate: payload.endDate,
+      };
+
+    case ScheduleActionKind.SET:
+      return {
+        ...initialSchedule,
+        categories: payload.categories,
+        stocks: payload.stocks,
+        comment: payload.comment,
+        endDate: payload.endDate,
+        keywords: payload.keywords,
+        priority: payload.priority,
+        title: payload.title,
+        startDate: payload.startDate,
       };
 
     case ScheduleActionKind.ADD_STOCK:
@@ -163,7 +183,10 @@ const scheduleFormReducer = (
   }
 };
 
-const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
+const ScheduleForm: React.FC<scheduleFormProps> = ({
+  reload,
+  targetModify,
+}) => {
   const { user } = useAuth();
   const tagInput = useRef(null);
 
@@ -171,6 +194,19 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
     scheduleFormReducer,
     initialSchedule,
   );
+
+  useEffect(() => {
+    if (!targetModify) return;
+    //@ts-ignore
+    targetModify.endDate = formatDate(targetModify.endDate);
+    //@ts-ignore
+    targetModify.startDate = formatDate(targetModify.startDate);
+    dispatch({
+      type: ScheduleActionKind.SET,
+      payload: targetModify,
+    });
+  }, [targetModify]);
+
   const { showConfirm, submitForm } = newScheduleForm;
   const [stockListState] = useAsync<Stock[]>(
     APIStock.getList,
@@ -240,27 +276,50 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
 
       const stockCodes = stocks.map((stock) => stock.stockcode);
 
-      await APISchedule.create({
-        title,
-        comment,
-        stockCodes,
-        author: user.id,
-        keywords: keywordIDs,
-        categories: categoryIDs,
-        priority,
-        startDate,
-        endDate,
-      })
-        .then(({ status }) => {
-          if (status == 200) {
-            reload();
-            dispatch({ type: ScheduleActionKind.CLEAR });
-            dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
-          }
+      if (targetModify) {
+        await APISchedule.update(targetModify.id, {
+          title,
+          comment,
+          stockCodes,
+          keywords,
+          categories,
+          priority,
+          startDate,
+          endDate,
         })
-        .catch((error) => {
-          console.log(error);
-        });
+          .then(({ status }) => {
+            if (status == 200) {
+              reload();
+              dispatch({ type: ScheduleActionKind.CLEAR });
+              dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        await APISchedule.create({
+          title,
+          comment,
+          stockCodes,
+          author: user.id,
+          keywords: keywordIDs,
+          categories: categoryIDs,
+          priority,
+          startDate,
+          endDate,
+        })
+          .then(({ status }) => {
+            if (status == 200) {
+              reload();
+              dispatch({ type: ScheduleActionKind.CLEAR });
+              dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     }
 
     submitForm && handleSubmit();
@@ -361,7 +420,11 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
               options={stockList}
               value={newScheduleForm.stocks}
               getOptionLabel={(option) =>
-                `${option.stockname}(${option.stockcode})`
+                //@ts-ignore
+                `${option.stockname || option.name}(${
+                  //@ts-ignore
+                  option.stockcode || option.code
+                })`
               }
               getOptionSelected={(option, value) =>
                 option.stockcode === value.stockcode
@@ -548,7 +611,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({ reload }) => {
                 dispatch({ type: ScheduleActionKind.SHOW_CONFIRM })
               }
             >
-              일정 등록
+              {targetModify ? '일정 수정' : '일정 등록'}
             </Button>
           </Grid>
         </Grid>

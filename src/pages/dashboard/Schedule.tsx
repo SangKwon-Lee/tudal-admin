@@ -23,18 +23,14 @@ import { APISchedule } from 'src/lib/api';
 const ScheduleList: React.FC = () => {
   const { settings } = useSettings();
   const [search, setSearch] = useState<string>('');
-
+  const [targetModify, setTargetModify] = useState<Schedule>(null);
   const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
     () => APISchedule.getList(search),
     [search],
     [],
   );
 
-  const {
-    data: schedules,
-    error: schedulesError,
-    loading: schedulesLoading,
-  } = schedulesState;
+  const { data: schedules } = schedulesState;
 
   const reload = useCallback(
     () => refetchSchedule(),
@@ -100,7 +96,7 @@ const ScheduleList: React.FC = () => {
               </Breadcrumbs>
             </Grid>
           </Grid>
-          <ScheduleForm reload={reload} />
+          <ScheduleForm reload={reload} targetModify={targetModify} />
           <Box sx={{ mt: 3 }}>
             <ScheduleListTable
               schedules={schedules}
@@ -108,6 +104,7 @@ const ScheduleList: React.FC = () => {
               search={search}
               setSearch={setSearch}
               postDelete={postDelete}
+              setTargetModify={setTargetModify}
             />
           </Box>
         </Container>
