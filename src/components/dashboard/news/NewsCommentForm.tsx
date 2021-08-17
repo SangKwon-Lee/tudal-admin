@@ -287,6 +287,38 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     }
   };
 
+  const handleAddKeyword = async (tagId) => {
+    try {
+      const updateTags = news.tags.map((tag) => tag.id).push(tagId);
+      const { data, status } = await APINews.update(news.id, {
+        tags: updateTags,
+      });
+      if (status === 200) {
+        alert('성공');
+        reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteKeyword = async (tagId) => {
+    try {
+      const updateTags = news.tags
+        .filter((tag) => tag.id !== tagId)
+        .map((tag) => tag.id);
+      const { data, status } = await APINews.update(news.id, {
+        tags: updateTags,
+      });
+      if (status === 200) {
+        alert('성공');
+        reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {}, []);
   return (
     <Dialog
@@ -350,6 +382,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                     item.option.stockcode,
                     item.option.stockname,
                   );
+                if (reason === 'clear')
+                  commentForm.stocks.forEach((stock) =>
+                    handleDeleteStock(stock.stockcode),
+                  );
+
                 dispatch({
                   type: NewsCommentActionType.REPLACE_STOCK,
                   payload: stocks,
@@ -381,7 +418,16 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               getOptionSelected={(option, value) =>
                 option.id === value.id
               }
-              onChange={(event, keywords: Tag[]) => {
+              onChange={(event, keywords: Tag[], reason, item) => {
+                if (reason === 'remove-option')
+                  handleDeleteKeyword(item.option.id);
+
+                if (reason === 'select-option')
+                  handleAddKeyword(item.option.id);
+                if (reason === 'clear')
+                  commentForm.keywords.forEach((tag) =>
+                    handleDeleteKeyword(tag.id),
+                  );
                 dispatch({
                   type: NewsCommentActionType.REPLACE_KEYWORD,
                   payload: keywords,

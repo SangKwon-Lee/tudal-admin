@@ -63,3 +63,7 @@ export async function createStockNews(
     keyword: stockname,
   });
 }
+
+export async function update(id, body) {
+  return await axios.put(`/general-news/${id}`, body);
+}
