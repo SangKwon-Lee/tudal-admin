@@ -113,8 +113,8 @@ const News: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const [tick, setTick] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(100);
-  const [shouldUpdate, setShouldUpdate] = useState<boolean>(true);
+  const [limit, setLimit] = useState<number>(20);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
   const [targetNews, setTargetNews] = useState<INews>(null);
@@ -136,6 +136,7 @@ const News: React.FC = () => {
       dispatch({ type: NewsActionKind.SHOW_SELECT_CONFIRM });
     }
   }, []);
+
   const getNews = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
@@ -219,6 +220,7 @@ const News: React.FC = () => {
             isOpen={isOpen}
             setOpen={handleOpenForm}
             news={targetNews}
+            reload={getNews}
           />
         )}
         <Container

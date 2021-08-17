@@ -17,6 +17,7 @@ export interface INews {
   tags: Tag[];
   isSelected: boolean;
   selected_by?: User;
+  stocks?: Stock[];
 }
 
 interface ISimpleNews {

@@ -46,6 +46,7 @@ interface NewsCommentFormProps {
   isOpen: boolean;
   setOpen: (isOpen) => void;
   news: INews;
+  reload: () => void;
 }
 
 enum NewsCommentActionType {
@@ -140,7 +141,8 @@ const scheduleFormReducer = (
 
 const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const { user } = useAuth();
-  const { isOpen, setOpen, news } = props;
+  const { isOpen, setOpen, news, reload } = props;
+
   const tagInput = useRef(null);
 
   const [commentForm, dispatch] = useReducer(
@@ -164,14 +166,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     Tag[]
   >(APICategory.getList, [], []);
 
-  const [
-    { data: commentList, loading: commentLoading },
-    refetchComment,
-  ] = useAsync<INewsComment[]>(
-    () => APINews.getComments(news.id),
-    [],
-    [],
-  );
+  const [{ data: commentList }, refetchComment] = useAsync<
+    INewsComment[]
+  >(() => APINews.getComments(news.id), [], []);
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
@@ -184,12 +181,13 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           extractStocks(stockList, tokens);
 
         const tags = await extractKeywords(afterStock);
-        stocks.forEach((stock) =>
+        stocks.forEach((stock) => {
           dispatch({
             type: NewsCommentActionType.ADD_STOCK,
             payload: stock,
-          }),
-        );
+          });
+          handleAddStock(stock.stockcode, stock.stockname);
+        });
 
         tags.forEach((tag) =>
           dispatch({
@@ -235,6 +233,61 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   useEffect(() => {
     commentForm.submitForm && handleSubmit();
   }, [commentForm.submitForm, handleSubmit]);
+
+  useEffect(() => {
+    props.news.stocks.forEach((stock) => {
+      dispatch({
+        type: NewsCommentActionType.ADD_STOCK,
+        payload: {
+          //@ts-ignore
+          stockname: stock.keyword,
+          stockcode: stock.stockcode,
+        },
+      });
+    });
+    props.news.tags.forEach((tag) => {
+      dispatch({
+        type: NewsCommentActionType.ADD_KEYWORD,
+        payload: tag,
+      });
+    });
+  }, []);
+
+  const handleDeleteStock = async (stockcode) => {
+    try {
+      const { data } = await APINews.deleteByStockAndNews(
+        stockcode,
+        news.id,
+      );
+
+      if (data[0].newsId === news.id) {
+        alert('삭제되었습니다.');
+        reload();
+      } else {
+        alert('삭제에 실패하였습니다.');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddStock = async (stockcode, stockname) => {
+    try {
+      const { data, status } = await APINews.createStockNews(
+        stockcode,
+        stockname,
+        news.id,
+      );
+      if (status === 200) {
+        alert('성공');
+        reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, []);
   return (
     <Dialog
       open={isOpen}
@@ -282,13 +335,21 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               options={stockList}
               data-testid="autocomplete"
               value={commentForm.stocks}
-              getOptionLabel={(option) =>
-                `${option.stockname}(${option.stockcode})`
-              }
+              getOptionLabel={(option) => {
+                return `${option.stockname}(${option.stockcode})`;
+              }}
               getOptionSelected={(option, value) =>
                 option.stockcode === value.stockcode
               }
-              onChange={(event, stocks: Stock[]) => {
+              onChange={(event, stocks: Stock[], reason, item) => {
+                if (reason === 'remove-option')
+                  handleDeleteStock(item.option.stockcode);
+
+                if (reason === 'select-option')
+                  handleAddStock(
+                    item.option.stockcode,
+                    item.option.stockname,
+                  );
                 dispatch({
                   type: NewsCommentActionType.REPLACE_STOCK,
                   payload: stocks,
@@ -362,12 +423,12 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                     ...params.InputProps,
                     endAdornment: (
                       <React.Fragment>
-                        {tagLoading ? (
+                        {tagLoading && (
                           <CircularProgress
                             color="inherit"
                             size={20}
                           />
-                        ) : null}
+                        )}
                         {params.InputProps.endAdornment}
                       </React.Fragment>
                     ),

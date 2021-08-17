@@ -19,6 +19,7 @@ import {
   Divider,
   Typography,
 } from '@material-ui/core';
+import * as _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SearchIcon from '../../../icons/Search';
@@ -301,14 +302,27 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   >
                     {Array.isArray(news.tags) &&
                       news.tags.length > 0 &&
-                      news.tags
-                        .filter((tag) => Boolean(tag.name))
-                        .map((tag) => (
-                          <React.Fragment key={tag.id}>
-                            <Chip color="primary" label={tag.name} />
-                            <Box marginRight={1} />
-                          </React.Fragment>
-                        ))}
+                      news.tags.map((tag) => (
+                        <React.Fragment key={tag.id}>
+                          {console.log(tag)}
+                          <Chip color="secondary" label={tag.name} />
+                          <Box marginRight={1} />
+                        </React.Fragment>
+                      ))}
+
+                    {Array.isArray(news.stocks) &&
+                      news.stocks.length > 0 &&
+                      news.stocks.map((stock, i) => (
+                        <React.Fragment key={i}>
+                          {console.log(stock)}
+                          <Chip
+                            color="primary"
+                            //@ts-ignore
+                            label={stock.keyword}
+                          />
+                          <Box marginRight={1} />
+                        </React.Fragment>
+                      ))}
                   </Box>
                 </TableCell>
                 <TableCell>
@@ -354,7 +368,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         onRowsPerPageChange={handleLimitChange}
         page={page}
         rowsPerPage={limit}
-        rowsPerPageOptions={[50, 100]}
+        rowsPerPageOptions={[10, 20, 50]}
       />
     </Box>
   );

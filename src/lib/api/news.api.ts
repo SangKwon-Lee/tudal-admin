@@ -10,9 +10,13 @@ export async function getList(search: string, start?: number) {
   if (start) {
     q._start = start;
   }
-  return await axios.get<INews[]>(
-    `/general-news?_sort=publishDate:DESC&${qs.stringify(q)}`,
+  const response = await axios.get<INews[]>(
+    `/general-news-with-stocks?_sort=publishDate:DESC&${qs.stringify(
+      q,
+    )}`,
   );
+
+  return response;
 }
 
 export async function getComments(newsId: number) {
@@ -39,6 +43,23 @@ export async function createComment(comment) {
   );
 }
 
-export async function deleteItem(id: number) {
-  return await axios.delete<INews>(`/schedules/${id}`);
+export async function deleteByStockAndNews(
+  stockcode: number,
+  newsId: number,
+) {
+  return await axios.delete(
+    `/stock-news?${qs.stringify({ stockcode, newsId })}`,
+  );
+}
+
+export async function createStockNews(
+  stockcode: string,
+  stockname: string,
+  newsId: number,
+) {
+  return await axios.post(`/stock-news-original`, {
+    newsId,
+    stockcode,
+    keyword: stockname,
+  });
 }
