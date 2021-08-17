@@ -16,6 +16,7 @@ export interface INews {
   officeId: string;
   tags: Tag[];
   isSelected: boolean;
+  selected_by?: User;
 }
 
 interface ISimpleNews {

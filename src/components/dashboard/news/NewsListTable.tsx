@@ -94,7 +94,7 @@ interface NewsListTableProps {
   setLimit: (limit: number) => void;
   setSearch?: (value) => void;
   setTargetNews: (INews) => void;
-  updateSelect: (news: INews) => void;
+  setOpenConfirm: () => void;
   postDelete?: (id: number) => void;
   reload?: () => void;
 }
@@ -107,6 +107,8 @@ const applyPagination = (
 
 const useStyles = makeStyles({
   title: {
+    color: '#0060B6',
+    textDecoration: 'none',
     '&:hover': {
       color: 'blue',
     },
@@ -123,7 +125,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
     limit,
     setLimit,
     isLoading,
-    updateSelect,
+    setOpenConfirm,
     isOpenForm,
     setTargetNews,
     setOpenForm,
@@ -249,68 +251,66 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   <Checkbox
                     color="primary"
                     checked={news.isSelected}
-                    onClick={() => updateSelect(news)}
+                    onClick={() => {
+                      setTargetNews(news);
+                      setOpenConfirm();
+                    }}
                   />
                 </TableCell>
 
-                <a
-                  href={news.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <TableCell>
-                    <Typography
-                      sx={{ cursor: 'pointer' }}
-                      className={classes.title}
-                      color="textPrimary"
-                      variant="subtitle2"
-                      fontSize={18}
-                      fontWeight={news.isSelected ? 'bold' : 'normal'}
+                <TableCell>
+                  <Typography
+                    sx={{ cursor: 'pointer' }}
+                    className={classes.title}
+                    color="textPrimary"
+                    variant="subtitle2"
+                    fontSize={18}
+                    fontWeight={news.isSelected ? 'bold' : 'normal'}
+                  >
+                    <a
+                      href={news.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ textDecoration: 'none' }}
                     >
                       {news.title}
+                    </a>
+                  </Typography>
+                  <Box
+                    sx={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      mt: 1,
+                    }}
+                  >
+                    <Typography
+                      color="textSecondary"
+                      variant="body2"
+                      fontSize={15}
+                      fontWeight={news.isSelected ? 'bold' : 'normal'}
+                    >
+                      {news.summarized}
                     </Typography>
-                    <Box
-                      sx={{
-                        alignItems: 'center',
-                        display: 'flex',
-                        mt: 1,
-                      }}
-                    >
-                      <Typography
-                        color="textSecondary"
-                        variant="body2"
-                        fontSize={15}
-                        fontWeight={
-                          news.isSelected ? 'bold' : 'normal'
-                        }
-                      >
-                        {news.summarized}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        alignItems: 'center',
-                        display: 'flex',
-                        mt: 1,
-                      }}
-                    >
-                      {Array.isArray(news.tags) &&
-                        news.tags.length > 0 &&
-                        news.tags
-                          .filter((tag) => Boolean(tag.name))
-                          .map((tag) => (
-                            <React.Fragment key={tag.id}>
-                              <Chip
-                                color="primary"
-                                label={tag.name}
-                              />
-                              <Box marginRight={1} />
-                            </React.Fragment>
-                          ))}
-                    </Box>
-                  </TableCell>
-                </a>
+                  </Box>
+                  <Box
+                    sx={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      mt: 1,
+                    }}
+                  >
+                    {Array.isArray(news.tags) &&
+                      news.tags.length > 0 &&
+                      news.tags
+                        .filter((tag) => Boolean(tag.name))
+                        .map((tag) => (
+                          <React.Fragment key={tag.id}>
+                            <Chip color="primary" label={tag.name} />
+                            <Box marginRight={1} />
+                          </React.Fragment>
+                        ))}
+                  </Box>
+                </TableCell>
                 <TableCell>
                   <Typography
                     color="textPrimary"

@@ -33,6 +33,7 @@ import {
 import { APINews } from 'src/lib/api';
 import { updateIsSelected } from 'src/lib/api/news.api';
 import { AxiosError } from 'axios';
+import useAuth from 'src/hooks/useAuth';
 
 enum NewsActionKind {
   LOADING = 'LOADING',
@@ -51,7 +52,7 @@ interface NewsAction {
 interface newsState {
   news: INews[];
   loading: boolean;
-  showUpdateConfirm: boolean;
+  isOpenConfirm: boolean;
   error: AxiosError<any> | boolean;
 }
 
@@ -59,7 +60,7 @@ const initialState: newsState = {
   news: [],
   loading: true,
   error: null,
-  showUpdateConfirm: false,
+  isOpenConfirm: false,
 };
 
 const newsReducer = (
@@ -89,12 +90,12 @@ const newsReducer = (
     case NewsActionKind.SHOW_SELECT_CONFIRM:
       return {
         ...state,
-        showUpdateConfirm: true,
+        isOpenConfirm: true,
       };
     case NewsActionKind.CLOSE_SELECT_CONFIRM:
       return {
         ...state,
-        showUpdateConfirm: false,
+        isOpenConfirm: false,
       };
 
     case NewsActionKind.ERROR:
@@ -107,6 +108,7 @@ const newsReducer = (
 
 const News: React.FC = () => {
   const { settings } = useSettings();
+  const { user } = useAuth();
   const [newsState, dispatch] = useReducer(newsReducer, initialState);
   const [search, setSearch] = useState<string>('');
   const [tick, setTick] = useState<boolean>(false);
@@ -126,6 +128,14 @@ const News: React.FC = () => {
     () => setOpen((prev) => !prev),
     [],
   );
+
+  const handleConfirmModal = useCallback(() => {
+    if (newsState.isOpenConfirm) {
+      dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM });
+    } else {
+      dispatch({ type: NewsActionKind.SHOW_SELECT_CONFIRM });
+    }
+  }, []);
   const getNews = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
@@ -171,17 +181,21 @@ const News: React.FC = () => {
   }, [addNews]);
 
   useEffect(() => {
-    scrollRef && scrollRef.current.scrollIntoView();
+    scrollRef && scrollRef.current.scrollTo();
   }, [page]);
 
-  const updateSelect = async (news: INews) => {
-    dispatch({ type: NewsActionKind.SHOW_SELECT_CONFIRM });
-    // await updateIsSelected(news.id, news.isSelected);
-    // getNews();
+  const updateSelect = async () => {
+    await updateIsSelected(
+      targetNews.id,
+      targetNews.isSelected,
+      user.id,
+    );
+    dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM });
+
+    getNews();
   };
 
   const handlePageChange = (event: any, newPage: number): void => {
-    console.log(page, limit, newsList.length);
     if ((page + 1) * limit >= newsList.length - limit) {
       setShouldUpdate(true);
     }
@@ -207,7 +221,6 @@ const News: React.FC = () => {
             news={targetNews}
           />
         )}
-
         <Container
           maxWidth={settings.compact ? 'xl' : false}
           ref={scrollRef}
@@ -251,7 +264,7 @@ const News: React.FC = () => {
               setSearch={handleSearch}
               reload={getNews}
               isLoading={newsLoading}
-              updateSelect={updateSelect}
+              setOpenConfirm={handleConfirmModal}
               page={page}
               setPage={handlePageChange}
               limit={limit}
@@ -264,7 +277,7 @@ const News: React.FC = () => {
         </Container>
         <Dialog
           aria-labelledby="ConfirmModal"
-          open={newsState.showUpdateConfirm}
+          open={newsState.isOpenConfirm}
           onClose={() =>
             dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
           }
@@ -274,9 +287,7 @@ const News: React.FC = () => {
             content={'뉴스를 선택하시겠습니까?'}
             confirmTitle={'추가'}
             type={'CONFIRM'}
-            handleOnClick={() =>
-              dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
-            }
+            handleOnClick={() => updateSelect()}
             handleOnCancel={() =>
               dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
             }

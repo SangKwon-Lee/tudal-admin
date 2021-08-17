@@ -24,9 +24,11 @@ export async function getComments(newsId: number) {
 export async function updateIsSelected(
   id: number,
   isSelected: boolean,
+  user_id: string,
 ) {
   return await axios.put(`/general-news/${id}`, {
     isSelected: !isSelected,
+    selected_by: user_id,
   });
 }
 
