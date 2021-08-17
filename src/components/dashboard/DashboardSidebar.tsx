@@ -7,6 +7,8 @@ import useAuth from '../../hooks/useAuth';
 import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
+import CalendarIcon from '../../icons/Calendar';
+import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
@@ -53,12 +55,12 @@ const sections = [
       {
         title: '일정',
         path: '/dashboard/schedule',
-        icon: <FolderOpenIcon fontSize="small" />,
+        icon: <CalendarIcon fontSize="small" />,
       },
       {
-        title: '뉴스 코멘트',
+        title: '뉴스',
         path: '/dashboard/news-comments',
-        icon: <FolderOpenIcon fontSize="small" />,
+        icon: <DeviceTabletIcon fontSize="small" />,
       },
     ],
   },

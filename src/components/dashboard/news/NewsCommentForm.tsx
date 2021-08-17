@@ -253,6 +253,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               name="comment"
               id="comment"
               label="코멘트"
+              value={commentForm.comment}
               variant="outlined"
               helperText="줄 바꾸기 enter"
               onChange={(event) =>
@@ -445,9 +446,10 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           }
         >
           <ConfirmModal
-            title={'일정 추가'}
-            content={'일정을 추가하시겠습니까?'}
+            title={'뉴스 코멘트 추가'}
+            content={'뉴스 코멘트를 추가하시겠습니까?'}
             confirmTitle={'추가'}
+            type={'CONFIRM'}
             handleOnClick={() =>
               dispatch({ type: NewsCommentActionType.SUBMIT })
             }
@@ -456,7 +458,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             }
           />
         </Dialog>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }} display="flex" justifyContent="flex-end">
           <Button
             color="primary"
             type="submit"
@@ -465,7 +467,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               dispatch({ type: NewsCommentActionType.SHOW_CONFIRM })
             }
           >
-            Update Customer
+            코멘트 등록
           </Button>
         </Box>
       </DialogContent>
