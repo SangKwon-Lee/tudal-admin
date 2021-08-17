@@ -22,7 +22,13 @@ import {
   TextField,
   CircularProgress,
   Dialog,
+  Chip,
 } from '@material-ui/core';
+import {
+  createStyles,
+  Theme,
+  makeStyles,
+} from '@material-ui/core/styles';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
@@ -145,6 +151,19 @@ const applyPagination = (
   limit: number,
 ): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    tags: {
+      display: 'flex',
+      justifyContent: 'start',
+      flexWrap: 'wrap',
+      '& > *': {
+        margin: theme.spacing(0.2),
+      },
+    },
+  }),
+);
+
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
@@ -155,6 +174,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
     setTargetModify,
     scrollRef,
   } = props;
+  const classes = useStyles();
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
@@ -177,7 +197,8 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   };
 
   const scrollToTop = () => {
-    scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    scrollRef.current &&
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   const sortedSchedules = applySort(schedules, sort);
@@ -192,7 +213,6 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
       sx={{
         backgroundColor: 'background.default',
       }}
-      ref={scrollRef}
     >
       <Card>
         <Box
@@ -261,8 +281,8 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                 <TableCell width="30%">코멘트</TableCell>
                 <TableCell width="10%">중요도</TableCell>
                 <TableCell width="10%">작성자</TableCell>
-                <TableCell width="15%">시작 일자</TableCell>
-                <TableCell width="15%">종료 일자</TableCell>
+                <TableCell width="15%">적용 일시</TableCell>
+
                 <TableCell>삭제</TableCell>
                 <TableCell>수정</TableCell>
               </TableRow>
@@ -275,11 +295,14 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                   author,
                   startDate,
                   endDate,
+                  keywords,
+                  stocks,
+                  categories,
                 } = schedule;
                 return (
                   <TableRow hover key={schedule.id}>
                     <TableCell padding="checkbox">
-                      <Checkbox color="primary" />
+                      {schedule.id}
                     </TableCell>
                     <TableCell>
                       <Link
@@ -290,7 +313,42 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                         {schedule.title}
                       </Link>
                     </TableCell>
-                    <TableCell>{comment}</TableCell>
+                    <TableCell>
+                      <TableRow>
+                        <pre>{comment}</pre>
+                      </TableRow>
+                      <Box m={2} />
+                      <TableRow className={classes.tags}>
+                        {keywords.map((keyword) => (
+                          <>
+                            <Chip
+                              key={keyword.id}
+                              color="default"
+                              label={keyword.name}
+                              size={'small'}
+                            />
+                            <Box m={1}></Box>
+                          </>
+                        ))}
+                        {stocks.map((stock, i) => (
+                          <Chip
+                            size={'small'}
+                            key={i}
+                            color="primary"
+                            //@ts-ignore
+                            label={stock.name}
+                          />
+                        ))}
+                        {categories.map((category) => (
+                          <Chip
+                            size={'small'}
+                            key={category.id}
+                            color="secondary"
+                            label={category.name}
+                          />
+                        ))}
+                      </TableRow>
+                    </TableCell>
                     <TableCell>
                       {getPriorityLabel(priority)}
                     </TableCell>
@@ -299,8 +357,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     </TableCell>
                     <TableCell>{`${dayjs(startDate).format(
                       'YYYY-MM-DD',
-                    )}`}</TableCell>
-                    <TableCell>{`${dayjs(endDate).format(
+                    )} - ${dayjs(endDate).format(
                       'YYYY-MM-DD',
                     )}`}</TableCell>
                     <TableCell align="right">

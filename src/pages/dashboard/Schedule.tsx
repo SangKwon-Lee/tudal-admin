@@ -52,6 +52,10 @@ const ScheduleList: React.FC = () => {
     }
   };
 
+  const clearTargetModify = () => {
+    setTargetModify(null);
+  };
+
   return (
     <>
       <Helmet>
@@ -98,7 +102,11 @@ const ScheduleList: React.FC = () => {
               </Breadcrumbs>
             </Grid>
           </Grid>
-          <ScheduleForm reload={reload} targetModify={targetModify} />
+          <ScheduleForm
+            reload={reload}
+            targetModify={targetModify}
+            clearTargetModify={clearTargetModify}
+          />
           <Box sx={{ mt: 3 }}>
             <ScheduleListTable
               schedules={schedules}

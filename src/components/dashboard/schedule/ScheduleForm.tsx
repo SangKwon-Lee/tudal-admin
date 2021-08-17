@@ -60,6 +60,7 @@ const createStockNameMap = (stockList: Stock[]) => {
 
 interface scheduleFormProps {
   reload: () => void;
+  clearTargetModify: () => void;
   targetModify: Schedule;
 }
 
@@ -186,6 +187,7 @@ const scheduleFormReducer = (
 const ScheduleForm: React.FC<scheduleFormProps> = ({
   reload,
   targetModify,
+  clearTargetModify,
 }) => {
   const { user } = useAuth();
   const tagInput = useRef(null);
@@ -197,9 +199,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
 
   useEffect(() => {
     if (!targetModify) return;
-    //@ts-ignore
     targetModify.endDate = formatDate(targetModify.endDate);
-    //@ts-ignore
     targetModify.startDate = formatDate(targetModify.startDate);
     dispatch({
       type: ScheduleActionKind.SET,
@@ -276,6 +276,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
 
       const stockCodes = stocks.map((stock) => stock.stockcode);
 
+      // 수정하는 경우
       if (targetModify) {
         await APISchedule.update(targetModify.id, {
           title,
@@ -288,8 +289,9 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           endDate,
         })
           .then(({ status }) => {
-            if (status == 200) {
+            if (status === 200) {
               reload();
+              clearTargetModify();
               dispatch({ type: ScheduleActionKind.CLEAR });
               dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
             }
@@ -310,7 +312,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           endDate,
         })
           .then(({ status }) => {
-            if (status == 200) {
+            if (status === 200) {
               reload();
               dispatch({ type: ScheduleActionKind.CLEAR });
               dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
@@ -608,13 +610,29 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               sx={{ m: 1 }}
               variant="contained"
               onClick={() => {
-                tagInput.current.dispatch({
+                dispatch({
                   type: ScheduleActionKind.SHOW_CONFIRM,
                 });
               }}
             >
               {targetModify ? '일정 수정' : '일정 등록'}
             </Button>
+            {targetModify && (
+              <Button
+                color={'secondary'}
+                startIcon={<PlusIcon fontSize="small" />}
+                sx={{ m: 1 }}
+                variant="contained"
+                onClick={() => {
+                  dispatch({
+                    type: ScheduleActionKind.CLEAR,
+                  });
+                  clearTargetModify();
+                }}
+              >
+                수정 취소
+              </Button>
+            )}
           </Grid>
         </Grid>
         <Dialog
