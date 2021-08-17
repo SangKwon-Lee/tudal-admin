@@ -11,7 +11,7 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
+  Chip,
   CardHeader,
   LinearProgress,
   List,
@@ -87,38 +87,78 @@ const NewsCommentHistory: FC<NewsCommentHistoryProps> = ({
                         color="textPrimary"
                         variant="subtitle1"
                       >
-                        {comment.author ? comment.author.email : ''}
+                        {comment.author
+                          ? `${comment.author.nickname} (${comment.author.email})`
+                          : ''}
                       </Typography>
                     )
                   }
                   secondary={
-                    <Box
-                      sx={{
-                        alignItems: 'center',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <pre
-                        style={{
-                          fontSize: 15,
-                          whiteSpace: 'pre-wrap',
-                        }}
-                      >
-                        {comment.comment}
-                      </pre>
-                      <Typography
-                        color="textSecondary"
-                        variant="caption"
-                      >
-                        {`${formatDistanceToNowStrict(
-                          new Date(comment.updated_at),
-                          {
-                            addSuffix: true,
-                          },
-                        )}`}
-                      </Typography>
-                    </Box>
+                    <>
+                      <Box>
+                        <Box
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                          paddingBottom={1}
+                        >
+                          <pre
+                            style={{
+                              fontSize: 15,
+                              whiteSpace: 'pre-wrap',
+                            }}
+                          >
+                            {comment.comment}
+                          </pre>
+                          <Typography
+                            color="textSecondary"
+                            variant="caption"
+                          >
+                            {`${formatDistanceToNowStrict(
+                              new Date(comment.updated_at),
+                              {
+                                addSuffix: true,
+                              },
+                            )}`}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box>
+                        <Box
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                          paddingBottom={1}
+                        >
+                          {!_.isEmpty(comment.keywords) &&
+                            comment.categories.map((category) => (
+                              <Chip
+                                color="primary"
+                                label={category.name}
+                                size={'small'}
+                              />
+                            ))}
+                          {!_.isEmpty(comment.keywords) &&
+                            comment.keywords.map((keyword) => (
+                              <Chip
+                                color={'default'}
+                                label={keyword.name}
+                                size={'small'}
+                              />
+                            ))}
+                          {!_.isEmpty(comment.stocks) &&
+                            comment.stocks.map((stock) => (
+                              <Chip
+                                label={stock.name}
+                                size={'small'}
+                              />
+                            ))}
+                        </Box>
+                      </Box>
+                    </>
                   }
                 />
               </ListItem>
