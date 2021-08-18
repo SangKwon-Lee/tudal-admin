@@ -314,21 +314,16 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <TableRow>
-                        <pre>{comment}</pre>
-                      </TableRow>
-                      <Box m={2} />
-                      <TableRow className={classes.tags}>
+                      <pre>{comment}</pre>
+                      <Box m={1} />
+                      <div className={classes.tags}>
                         {keywords.map((keyword) => (
-                          <>
-                            <Chip
-                              key={keyword.id}
-                              color="default"
-                              label={keyword.name}
-                              size={'small'}
-                            />
-                            <Box m={1}></Box>
-                          </>
+                          <Chip
+                            key={keyword.id}
+                            color="default"
+                            label={keyword.name}
+                            size={'small'}
+                          />
                         ))}
                         {stocks.map((stock, i) => (
                           <Chip
@@ -347,7 +342,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                             label={category.name}
                           />
                         ))}
-                      </TableRow>
+                      </div>
                     </TableCell>
                     <TableCell>
                       {getPriorityLabel(priority)}

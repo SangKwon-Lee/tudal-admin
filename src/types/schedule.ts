@@ -5,8 +5,10 @@ export interface Tag {
 }
 
 export interface Stock {
-  stockcode: number;
-  stockname: string;
+  code?: string;
+  name?: string;
+  stockcode?: string;
+  stockname?: string;
 }
 
 export interface Category {
@@ -46,7 +48,7 @@ export interface Schedule {
 export interface IScheduleForm {
   title: string;
   comment: string;
-  stockCodes: number[];
+  stockCodes: string[];
   author: string; //id
   keywords: number[];
   categories: number[];

@@ -400,34 +400,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       <DialogContent>
         <Grid container spacing={3}>
           <Grid item md={12} xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              name="comment"
-              id="comment"
-              label="코멘트"
-              value={commentForm.comment}
-              variant="outlined"
-              helperText="줄 바꾸기 enter"
-              onChange={(event) =>
-                dispatch({
-                  type: NewsCommentActionType.HANDLE_CHANGES,
-                  payload: event,
-                })
-              }
-              onBlur={(e) => {
-                handleExtract(e.target.value);
-              }}
-            />
-          </Grid>
-
-          <Grid item md={12} xs={12}>
-            {!_.isEmpty(commentList) && (
-              <NewsCommentHistory newsComments={commentList} />
-            )}
-          </Grid>
-
-          <Grid item md={12} xs={12}>
             <Autocomplete
               multiple
               fullWidth
@@ -532,6 +504,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   label="키워드"
                   name="keyword"
                   variant="outlined"
+                  helperText="신규 생성 권한은 추가로 문의주세요"
                   inputRef={tagInput}
                   InputProps={{
                     ...params.InputProps,
@@ -557,7 +530,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             )}
           </Grid>
           <Grid item md={12} xs={12}>
-            {console.log(commentForm.categories)}
             <Autocomplete
               multiple
               fullWidth
@@ -652,6 +624,33 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             }
           />
         </Dialog>
+        <Grid item md={12} xs={12}>
+          <TextField
+            fullWidth
+            multiline
+            name="comment"
+            id="comment"
+            label="코멘트"
+            value={commentForm.comment}
+            variant="outlined"
+            helperText="줄 바꾸기 enter"
+            onChange={(event) =>
+              dispatch({
+                type: NewsCommentActionType.HANDLE_CHANGES,
+                payload: event,
+              })
+            }
+            onBlur={(e) => {
+              handleExtract(e.target.value);
+            }}
+          />
+        </Grid>
+
+        <Grid item md={12} xs={12}>
+          {!_.isEmpty(commentList) && (
+            <NewsCommentHistory newsComments={commentList} />
+          )}
+        </Grid>
         <Box sx={{ mt: 2 }} display="flex" justifyContent="flex-end">
           <Button
             color="primary"

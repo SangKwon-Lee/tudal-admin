@@ -47,6 +47,12 @@ import {
   APITag,
 } from 'src/lib/api';
 
+import {
+  tokenize,
+  extractStocks,
+  extractKeywords,
+} from 'src/utils/extractKeywords';
+
 const customFilter = createFilterOptions<any>();
 const customFilter2 = createFilterOptions<any>();
 
@@ -85,7 +91,7 @@ const initialSchedule: IScheduleFormState = {
   stocks: [],
   keywords: [],
   categories: [],
-  priority: Priority.MIDDLE,
+  priority: Priority.LOW,
   startDate: formatDate(dayjs()),
   endDate: formatDate(dayjs()),
 
@@ -149,7 +155,7 @@ const scheduleFormReducer = (
       };
 
     case ScheduleActionKind.ADD_STOCK:
-      if (_.find(state.stocks, ['id', payload.id])) {
+      if (_.find(state.stocks, ['code', payload.code])) {
         return state;
       }
       return { ...state, stocks: [...state.stocks, action.payload] };
@@ -276,11 +282,12 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
         .concat(newCategories)
         .map((category) => category && category.id);
 
-      const stockCodes = stocks.map((stock) => stock.stockcode);
+      const stockCodes = stocks.map((stock) => stock.code);
 
       // 수정하는 경우
       if (targetModify) {
-        await APISchedule.update(targetModify.id, {
+        await APISchedule.update({
+          id: targetModify.id,
           title,
           comment,
           stockCodes,
@@ -329,45 +336,34 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     submitForm && handleSubmit();
   }, [submitForm, newScheduleForm]);
 
-  const stockMap = useCallback(
-    () => createStockNameMap(stockList),
+  const handleExtract = useCallback(
+    _.debounce(async (sentence) => {
+      try {
+        const tokens = tokenize(sentence);
+        if (!tokens) return;
+        const { extractedStocks: stocks, tokenized: afterStock } =
+          extractStocks(stockList, tokens);
+
+        const tags = await extractKeywords(afterStock);
+        stocks.forEach((stock) => {
+          dispatch({
+            type: ScheduleActionKind.ADD_STOCK,
+            payload: stock,
+          });
+        });
+
+        tags.forEach((tag) =>
+          dispatch({
+            type: ScheduleActionKind.ADD_KEYWORD,
+            payload: tag,
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300),
     [stockList],
   );
-
-  const extractKeyword = (value: string) => {
-    const tokens = value
-      .replaceAll('\n', ' ')
-      .split(' ')
-      .filter((token) => Boolean(token));
-
-    for (let i = 0; i < tokens.length; i++) {
-      if (stockMap[tokens[i]]) {
-        dispatch({
-          type: ScheduleActionKind.ADD_STOCK,
-          payload: stockMap[tokens[i]],
-        });
-        tokens.splice(i, 1);
-        continue;
-      }
-    }
-    const tagPromises = tokens.map((token) => {
-      return axios.get(`/tags-excluded?_where[name]=${token}`);
-    });
-
-    Promise.all(tagPromises)
-      .then((response) => {
-        response
-          .filter((response) => response.data.length === 1)
-          .map((response) => response.data[0])
-          .forEach((tag) =>
-            dispatch({
-              type: ScheduleActionKind.ADD_KEYWORD,
-              payload: tag,
-            }),
-          );
-      })
-      .catch((e) => console.log(e));
-  };
 
   return (
     <Box
@@ -394,7 +390,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
                   payload: event,
                 })
               }
-              onBlur={(e) => extractKeyword(e.target.value)}
+              onBlur={(e) => handleExtract(e.target.value)}
               variant="outlined"
             />
           </Grid>
@@ -405,7 +401,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               name="comment"
               helperText="줄 바꾸기 enter"
               value={newScheduleForm.comment}
-              onBlur={(e) => extractKeyword(e.target.value)}
+              onBlur={(e) => handleExtract(e.target.value)}
               onChange={(event) =>
                 dispatch({
                   type: ScheduleActionKind.HANDLE_CHANGES,
@@ -424,14 +420,10 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               options={stockList}
               value={newScheduleForm.stocks}
               getOptionLabel={(option) =>
-                //@ts-ignore
-                `${option.stockname || option.name}(${
-                  //@ts-ignore
-                  option.stockcode || option.code
-                })`
+                `${option.name}(${option.code})`
               }
               getOptionSelected={(option, value) =>
-                option.stockcode === value.stockcode
+                option.code === value.code
               }
               onChange={(event, stocks: Stock[]) => {
                 dispatch({
@@ -571,7 +563,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               <InputLabel htmlFor="filled-age-native-simple">
                 중요도
               </InputLabel>
-              {console.log(newScheduleForm.priority)}
               <Select
                 name="priority"
                 value={newScheduleForm.priority}

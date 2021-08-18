@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
   Box,
   Card,
@@ -24,6 +25,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import SearchIcon from '../../../icons/Search';
 import { INews } from 'src/types/news';
+dayjs.extend(customParseFormat);
 
 type Sort =
   | 'publishDate|desc'
@@ -183,7 +185,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
               ),
             }}
             name={'_q'}
-            placeholder="제목 또는 코멘트를 검색해주세요"
+            placeholder="제목 또는 요약본 검색 기능을 지원합니다."
             onChange={(event) => setSearch(event.target.value)}
             variant="outlined"
           />
@@ -230,11 +232,11 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="3%">선택</TableCell>
+              <TableCell width="6%">선택</TableCell>
               <TableCell width="60%">제목/기사(요약)</TableCell>
               <TableCell>언론사</TableCell>
               <TableCell>발행일</TableCell>
-              <TableCell>더보기</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="news-table-list">
@@ -347,7 +349,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
                     {dayjs(news.publishDate).format(
-                      'YYYY.MM.DD. HH:MM',
+                      'YYYY-MM-DD HH:mm',
                     )}
                   </Typography>
                 </TableCell>
