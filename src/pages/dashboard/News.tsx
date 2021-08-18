@@ -4,12 +4,11 @@ import React, {
   useCallback,
   useReducer,
   useRef,
-  createRef,
 } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import toast, { Toaster } from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 import { INews } from 'src/types/news';
-import axios from 'src/lib/axios';
 import * as _ from 'lodash';
 import {
   Box,
@@ -18,10 +17,7 @@ import {
   Grid,
   Link,
   Typography,
-  LinearProgress,
   Dialog,
-  DialogContent,
-  Button,
 } from '@material-ui/core';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import ChevronRightIcon from '../../icons/ChevronRight';
@@ -135,7 +131,7 @@ const News: React.FC = () => {
     } else {
       dispatch({ type: NewsActionKind.SHOW_SELECT_CONFIRM });
     }
-  }, []);
+  }, [newsState.isOpenConfirm]);
 
   const getNews = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
@@ -182,7 +178,14 @@ const News: React.FC = () => {
   }, [addNews]);
 
   useEffect(() => {
-    console.log('hello', scrollRef.current);
+    toast.promise(getNews(), {
+      loading: '뉴스 업데이트 중입니다.',
+      success: '완료했습니다 :)',
+      error: '처리하는 도중 에러가 발생했습니다. :(',
+    });
+  }, [tick, getNews]);
+
+  useEffect(() => {
     scrollRef &&
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [page]);
@@ -210,6 +213,7 @@ const News: React.FC = () => {
       <Helmet>
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
+      <Toaster />
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -276,6 +280,8 @@ const News: React.FC = () => {
               isOpenForm={isOpen}
               setOpenForm={handleOpenForm}
               setTargetNews={setTargetNews}
+              setMinutesRefresh={setMinutesRefresh}
+              minutesRefresh={minutesRefresh}
             />
           </Box>
         </Container>

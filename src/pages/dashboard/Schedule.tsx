@@ -2,17 +2,15 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Schedule } from 'src/types/schedule';
-
-import axios from 'src/lib/axios';
 import {
   Box,
   Breadcrumbs,
-  Button,
   Container,
   Grid,
   Link,
   Typography,
 } from '@material-ui/core';
+import toast, { Toaster } from 'react-hot-toast';
 import { ScheduleForm } from 'src/components/dashboard/schedule';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import { ScheduleListTable } from '../../components/dashboard/schedule';
@@ -45,10 +43,12 @@ const ScheduleList: React.FC = () => {
         reload();
       }
       if (status === 404) {
-        alert('존재하지 않는 스케줄입니다. 확인 부탁드립니다.');
+        toast.error('존재하지 않는 스케줄입니다. 확인 부탁드립니다.');
       }
     } catch (error) {
-      alert('삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.');
+      toast.error(
+        '삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.',
+      );
     }
   };
 
@@ -61,6 +61,8 @@ const ScheduleList: React.FC = () => {
       <Helmet>
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
+      <Toaster />
+
       <Box
         sx={{
           backgroundColor: 'background.default',

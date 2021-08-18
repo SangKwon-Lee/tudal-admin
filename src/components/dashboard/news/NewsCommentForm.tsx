@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import * as _ from 'lodash';
+import toast, { Toaster } from 'react-hot-toast';
 import { INews, INewsComment } from 'src/types/news';
 import { Category, Stock, Tag } from 'src/types/schedule';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
@@ -20,7 +21,6 @@ import {
   DialogTitle,
   DialogContent,
   Autocomplete,
-  Typography,
   LinearProgress,
   CircularProgress,
 } from '@material-ui/core';
@@ -272,10 +272,10 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       );
 
       if (data[0].newsId === news.id) {
-        alert('삭제되었습니다.');
         reload();
+        toast.success('삭제되었습니다.');
       } else {
-        alert('삭제에 실패하였습니다.');
+        toast.error('에러가 발생했습니다.');
       }
     } catch (error) {
       console.log(error);
@@ -290,7 +290,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         news.id,
       );
       if (status === 200) {
-        alert('성공');
+        toast.success('추가 되었습니다.');
         reload();
       }
     } catch (error) {
@@ -303,7 +303,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       if (tag.isNew) {
         const { data, status } = await APICategory.postItem(tag.name);
         if (status !== 200) {
-          alert(tag.name + '등록에 실패하였습니다.');
+          toast.error(
+            `${tag.name} 등록에 실패하였습니다. 지속 발생 시 관리자에게 문의 바랍니다.`,
+          );
           return;
         }
         tag = data;
@@ -315,7 +317,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         tags: updateTags,
       });
       if (status === 200) {
-        alert('성공');
+        toast.success('추가되었습니다.');
         reload();
       }
     } catch (error) {
@@ -332,7 +334,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         tags: updateTags,
       });
       if (status === 200) {
-        alert('성공');
+        toast.success('삭제되었습니다.');
         reload();
       }
     } catch (error) {
@@ -347,7 +349,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           category.name,
         );
         if (status !== 200) {
-          alert(category.name + '등록에 실패하였습니다.');
+          toast.error(category.name + '등록에 실패하였습니다.');
           return;
         }
         category = data;
@@ -361,7 +363,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         categories: newCategories,
       });
       if (status === 200) {
-        alert('성공');
+        toast.success('추가되었습니다.');
         reload();
       }
     } catch (error) {
@@ -379,7 +381,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         categories: newCategories,
       });
       if (status === 200) {
-        alert('성공');
+        toast.success('삭제되었습니다.');
         reload();
       }
     } catch (error) {
@@ -394,6 +396,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       onClose={() => setOpen(false)}
       data-testid="news-add-modal-form"
     >
+      <div>
+        <Toaster />
+      </div>
       <DialogTitle data-testid="news-comment-add-dialog">
         {news.title}
       </DialogTitle>
@@ -624,6 +629,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             }
           />
         </Dialog>
+        <Box m={5} />
         <Grid item md={12} xs={12}>
           <TextField
             fullWidth
@@ -646,12 +652,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           />
         </Grid>
 
-        <Grid item md={12} xs={12}>
-          {!_.isEmpty(commentList) && (
-            <NewsCommentHistory newsComments={commentList} />
-          )}
-        </Grid>
-        <Box sx={{ mt: 2 }} display="flex" justifyContent="flex-end">
+        <Box m={2} display="flex" justifyContent="flex-end">
           <Button
             color="primary"
             type="submit"
@@ -663,6 +664,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             코멘트 등록
           </Button>
         </Box>
+        <Grid item md={12} xs={12}>
+          {!_.isEmpty(commentList) && (
+            <NewsCommentHistory newsComments={commentList} />
+          )}
+        </Grid>
       </DialogContent>
     </Dialog>
   );

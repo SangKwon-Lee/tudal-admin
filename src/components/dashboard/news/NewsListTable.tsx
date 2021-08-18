@@ -92,12 +92,14 @@ interface NewsListTableProps {
   limit: number;
   isLoading: boolean;
   isOpenForm: boolean;
+  minutesRefresh: number;
   setOpenForm: () => void;
   setPage: (event: any, newPage: number) => void;
   setLimit: (limit: number) => void;
   setSearch?: (value) => void;
   setTargetNews: (INews) => void;
   setOpenConfirm: () => void;
+  setMinutesRefresh: (minutes: number) => void;
   postDelete?: (id: number) => void;
   reload?: () => void;
 }
@@ -129,9 +131,10 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
     setLimit,
     isLoading,
     setOpenConfirm,
-    isOpenForm,
     setTargetNews,
     setOpenForm,
+    minutesRefresh,
+    setMinutesRefresh,
   } = props;
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
 
@@ -219,6 +222,32 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 </option>
               );
             })}
+          </TextField>
+        </Box>
+        <Box
+          sx={{
+            m: 1,
+            maxWidth: '100%',
+            width: 240,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="새로고침 시간"
+            select
+            value={minutesRefresh}
+            onChange={(event) =>
+              setMinutesRefresh(parseInt(event.target.value, 10))
+            }
+            SelectProps={{
+              native: true,
+            }}
+            variant="outlined"
+          >
+            <option value={1}>1 분</option>
+            <option value={3}>3 분</option>
+            <option value={5}>5 분</option>
+            <option value={10}>10 분</option>
           </TextField>
         </Box>
       </Box>
