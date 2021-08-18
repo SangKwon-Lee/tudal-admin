@@ -478,6 +478,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   payload: keywords,
                 });
               }}
+              onClick={() => console.log('hello')}
               getOptionLabel={(option) => {
                 const label = option.name;
                 if (option.isNew) {
@@ -509,7 +510,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   label="키워드"
                   name="keyword"
                   variant="outlined"
-                  helperText="신규 생성 권한은 추가로 문의주세요"
+                  helperText="신규 생성 권한은 관리자에게 문의 바랍니다."
                   inputRef={tagInput}
                   InputProps={{
                     ...params.InputProps,
@@ -598,7 +599,8 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   label="카테고리"
                   name="category"
                   variant="outlined"
-                  helperText="신규 생성 권한은 추가로 문의주세요"
+                  helperText="신규 생성 권한은 관리자에게 문의 바랍니다."
+                  onClick={() => console.log('hello')}
                 />
               )}
             />

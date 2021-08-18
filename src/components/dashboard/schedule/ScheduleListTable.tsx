@@ -283,8 +283,8 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                 <TableCell width="10%">작성자</TableCell>
                 <TableCell width="15%">적용 일시</TableCell>
 
-                <TableCell>삭제</TableCell>
                 <TableCell>수정</TableCell>
+                <TableCell>삭제</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -358,21 +358,21 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
-                          setTargetDelete(schedule);
-                          setIsOpenDeleteConfirm(true);
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        onClick={() => {
                           setTargetModify(schedule);
                           scrollToTop();
                         }}
                       >
                         <BuildIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => {
+                          setTargetDelete(schedule);
+                          setIsOpenDeleteConfirm(true);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
                   </TableRow>

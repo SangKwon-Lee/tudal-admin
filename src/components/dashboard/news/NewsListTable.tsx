@@ -261,11 +261,11 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="6%">선택</TableCell>
+              <TableCell width="5%">선택</TableCell>
               <TableCell width="60%">제목/기사(요약)</TableCell>
-              <TableCell>언론사</TableCell>
-              <TableCell>발행일</TableCell>
-              <TableCell></TableCell>
+              <TableCell width="10%">언론사</TableCell>
+              <TableCell width="20%">발행일</TableCell>
+              <TableCell width="5%"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="news-table-list">
@@ -329,14 +329,16 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       alignItems: 'center',
                       display: 'flex',
                       mt: 1,
+                      flexWrap: 'wrap',
+                      alignContent: 'space-between',
                     }}
                   >
                     {Array.isArray(news.tags) &&
                       news.tags.length > 0 &&
                       news.tags.map((tag) => (
                         <React.Fragment key={tag.id}>
-                          <Chip color="default" label={tag.name} />
                           <Box marginRight={1} />
+                          <Chip color="default" label={tag.name} />
                         </React.Fragment>
                       ))}
 
@@ -344,23 +346,23 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       news.stocks.length > 0 &&
                       news.stocks.map((stock, i) => (
                         <React.Fragment key={i}>
+                          <Box marginRight={1} />
                           <Chip
                             color="primary"
                             //@ts-ignore
                             label={stock.keyword}
                           />
-                          <Box marginRight={1} />
                         </React.Fragment>
                       ))}
                     {Array.isArray(news.categories) &&
                       news.categories.length > 0 &&
                       news.categories.map((category, i) => (
                         <React.Fragment key={i}>
+                          <Box marginRight={1} />
                           <Chip
                             color="secondary"
                             label={category.name}
                           />
-                          <Box marginRight={1} />
                         </React.Fragment>
                       ))}
                   </Box>

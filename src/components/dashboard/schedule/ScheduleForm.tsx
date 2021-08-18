@@ -54,7 +54,7 @@ import {
 } from 'src/utils/extractKeywords';
 
 const customFilter = createFilterOptions<any>();
-const customFilter2 = createFilterOptions<any>();
+const categoryFilter = createFilterOptions<any>();
 
 const formatDate = (date): string => dayjs(date).format('YYYY-MM-DD');
 
@@ -291,8 +291,8 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           title,
           comment,
           stockCodes,
-          keywords,
-          categories,
+          keywords: keywordIDs,
+          categories: categoryIDs,
           priority,
           startDate,
           endDate,
@@ -532,7 +532,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
                 });
               }}
               filterOptions={(options, params) => {
-                const filtered = customFilter2(options, params);
+                const filtered = categoryFilter(options, params);
                 if (
                   user.role.type !== IRoleType.Author &&
                   filtered.length === 0 &&
@@ -641,10 +641,14 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           }
         >
           <ConfirmModal
-            title={'일정 추가'}
-            content={'일정을 추가하시겠습니까?'}
+            title={targetModify ? '일정 수정' : '일정 등록'}
+            content={
+              targetModify
+                ? '일정을 수정하시겠습니까?'
+                : '일정을 추가하시겠습니까?'
+            }
             type={'CONFIRM'}
-            confirmTitle={'추가'}
+            confirmTitle={targetModify ? '수정' : '추가'}
             handleOnClick={() =>
               dispatch({ type: ScheduleActionKind.SUBMIT })
             }
