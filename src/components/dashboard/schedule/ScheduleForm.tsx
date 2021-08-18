@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 import { debounce } from 'lodash';
 import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
 import PlusIcon from 'src/icons/Plus';
+import Cancel from '@material-ui/icons/Cancel';
+import SaveAlt from '@material-ui/icons/SaveAlt';
 import * as _ from 'lodash';
 import {
   Box,
@@ -539,7 +541,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               }}
               filterOptions={(options, params) => {
                 const filtered = customFilter2(options, params);
-                console.log(filtered, params);
                 if (
                   user.role.type !== IRoleType.Author &&
                   filtered.length === 0 &&
@@ -606,7 +607,13 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           <Grid padding={0} paddingLeft={3}>
             <Button
               color={targetModify ? 'secondary' : 'primary'}
-              startIcon={<PlusIcon fontSize="small" />}
+              startIcon={
+                targetModify ? (
+                  <PlusIcon fontSize="small" />
+                ) : (
+                  <SaveAlt />
+                )
+              }
               sx={{ m: 1 }}
               variant="contained"
               onClick={() => {
@@ -619,8 +626,8 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
             </Button>
             {targetModify && (
               <Button
-                color={'secondary'}
-                startIcon={<PlusIcon fontSize="small" />}
+                color={'primary'}
+                startIcon={<Cancel fontSize="small" />}
                 sx={{ m: 1 }}
                 variant="contained"
                 onClick={() => {
@@ -645,6 +652,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
           <ConfirmModal
             title={'일정 추가'}
             content={'일정을 추가하시겠습니까?'}
+            type={'CONFIRM'}
             confirmTitle={'추가'}
             handleOnClick={() =>
               dispatch({ type: ScheduleActionKind.SUBMIT })

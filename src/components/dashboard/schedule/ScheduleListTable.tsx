@@ -357,7 +357,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     </TableCell>
                     <TableCell>{`${dayjs(startDate).format(
                       'YYYY-MM-DD',
-                    )} - ${dayjs(endDate).format(
+                    )} ~ ${dayjs(endDate).format(
                       'YYYY-MM-DD',
                     )}`}</TableCell>
                     <TableCell align="right">

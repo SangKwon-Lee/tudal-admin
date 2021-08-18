@@ -1,6 +1,7 @@
 export interface Tag {
   id: number;
   name: string;
+  isNew?: boolean;
 }
 
 export interface Stock {
@@ -11,6 +12,7 @@ export interface Stock {
 export interface Category {
   id: number;
   name: string;
+  isNew?: boolean;
 }
 
 export enum Priority {

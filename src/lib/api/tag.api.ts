@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
@@ -8,6 +9,12 @@ export async function getList(search: string) {
     q._q = search;
   }
   return await axios.get<Tag[]>('/tags?' + qs.stringify(q));
+}
+
+export async function postItem(
+  name: string,
+): Promise<AxiosResponse<Tag>> {
+  return await axios.post('/tags', { name });
 }
 
 export async function postItems(name: string[]): Promise<Tag[]> {

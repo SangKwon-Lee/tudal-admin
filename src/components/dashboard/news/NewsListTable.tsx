@@ -304,8 +304,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       news.tags.length > 0 &&
                       news.tags.map((tag) => (
                         <React.Fragment key={tag.id}>
-                          {console.log(tag)}
-                          <Chip color="secondary" label={tag.name} />
+                          <Chip color="default" label={tag.name} />
                           <Box marginRight={1} />
                         </React.Fragment>
                       ))}
@@ -314,11 +313,21 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       news.stocks.length > 0 &&
                       news.stocks.map((stock, i) => (
                         <React.Fragment key={i}>
-                          {console.log(stock)}
                           <Chip
                             color="primary"
                             //@ts-ignore
                             label={stock.keyword}
+                          />
+                          <Box marginRight={1} />
+                        </React.Fragment>
+                      ))}
+                    {Array.isArray(news.categories) &&
+                      news.categories.length > 0 &&
+                      news.categories.map((category, i) => (
+                        <React.Fragment key={i}>
+                          <Chip
+                            color="secondary"
+                            label={category.name}
                           />
                           <Box marginRight={1} />
                         </React.Fragment>

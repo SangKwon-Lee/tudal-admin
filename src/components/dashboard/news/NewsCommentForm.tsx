@@ -55,6 +55,7 @@ enum NewsCommentActionType {
   ADD_KEYWORD = 'ADD_KEYWORD',
   REPLACE_STOCK = 'REPLACE_STOCK',
   REPLACE_KEYWORD = 'REPLACE_KEYWORD',
+  ADD_CATEGORY = 'ADD_CATEGORY',
   REPLACE_CATEGORY = 'REPLACE_CATEGORY',
   REPLACE_DATES = 'REPLACE_DATES',
   HANDLE_CHANGES = 'HANDLE_CHANGES',
@@ -121,6 +122,15 @@ const scheduleFormReducer = (
 
     case NewsCommentActionType.REPLACE_KEYWORD:
       return { ...state, keywords: payload };
+
+    case NewsCommentActionType.ADD_CATEGORY:
+      if (_.find(state.categories, ['id', payload.id])) {
+        return state;
+      }
+      return {
+        ...state,
+        categories: [...state.categories, action.payload],
+      };
 
     case NewsCommentActionType.REPLACE_CATEGORY:
       return { ...state, categories: payload };
@@ -208,11 +218,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     }
     const data: any = {
       comment: commentForm.comment,
-      categories: commentForm.categories.map(
-        (category) => category.id,
-      ),
-      stockCodes: commentForm.stocks.map((stock) => stock.stockcode),
-      keywords: commentForm.keywords.map((tag) => tag.id),
       author: user.id,
       general_news: news.id,
     };
@@ -251,6 +256,12 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         payload: tag,
       });
     });
+    props.news.categories.forEach((category) => {
+      dispatch({
+        type: NewsCommentActionType.ADD_CATEGORY,
+        payload: category,
+      });
+    });
   }, []);
 
   const handleDeleteStock = async (stockcode) => {
@@ -287,9 +298,19 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     }
   };
 
-  const handleAddKeyword = async (tagId) => {
+  const handleAddKeyword = async (tag) => {
     try {
-      const updateTags = news.tags.map((tag) => tag.id).push(tagId);
+      if (tag.isNew) {
+        const { data, status } = await APICategory.postItem(tag.name);
+        if (status !== 200) {
+          alert(tag.name + '등록에 실패하였습니다.');
+          return;
+        }
+        tag = data;
+      }
+
+      const updateTags = news.tags.map((tag) => tag.id);
+      updateTags.push(tag.id);
       const { data, status } = await APINews.update(news.id, {
         tags: updateTags,
       });
@@ -309,6 +330,53 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         .map((tag) => tag.id);
       const { data, status } = await APINews.update(news.id, {
         tags: updateTags,
+      });
+      if (status === 200) {
+        alert('성공');
+        reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddCategory = async (category: Category) => {
+    try {
+      if (category.isNew) {
+        const { data, status } = await APICategory.postItem(
+          category.name,
+        );
+        if (status !== 200) {
+          alert(category.name + '등록에 실패하였습니다.');
+          return;
+        }
+        category = data;
+      }
+
+      const newCategories = news.categories.map(
+        (category) => category.id,
+      );
+      newCategories.push(category.id);
+      const { status } = await APINews.update(news.id, {
+        categories: newCategories,
+      });
+      if (status === 200) {
+        alert('성공');
+        reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    try {
+      const newCategories = news.categories
+        .filter((category) => category.id !== categoryId)
+        .map((category) => category.id);
+
+      const { status } = await APINews.update(news.id, {
+        categories: newCategories,
       });
       if (status === 200) {
         alert('성공');
@@ -423,7 +491,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   handleDeleteKeyword(item.option.id);
 
                 if (reason === 'select-option')
-                  handleAddKeyword(item.option.id);
+                  handleAddKeyword(item.option);
                 if (reason === 'clear')
                   commentForm.keywords.forEach((tag) =>
                     handleDeleteKeyword(tag.id),
@@ -435,7 +503,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }}
               getOptionLabel={(option) => {
                 const label = option.name;
-                if (option.hasOwnProperty('isNew')) {
+                if (option.isNew) {
                   return `+ '${label}'`;
                 }
                 return label;
@@ -489,6 +557,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             )}
           </Grid>
           <Grid item md={12} xs={12}>
+            {console.log(commentForm.categories)}
             <Autocomplete
               multiple
               fullWidth
@@ -496,17 +565,34 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               data-testid="autocomplete-category"
               options={categoryList}
               value={commentForm.categories}
-              getOptionSelected={(option, value) =>
+              getOptionSelected={(option: Category, value) =>
                 option.id === value.id
               }
-              getOptionLabel={(option) => {
+              getOptionLabel={(option: Category) => {
                 const label = option.name;
-                if (option.hasOwnProperty('isNew')) {
+
+                if (option.isNew) {
                   return `+ '${label}'`;
                 }
                 return label;
               }}
-              onChange={(event, categories: Category[]) => {
+              onChange={(
+                event,
+                categories: Category[],
+                reason,
+                item,
+              ) => {
+                if (reason === 'remove-option')
+                  handleDeleteCategory(item.option.id);
+
+                if (reason === 'select-option')
+                  handleAddCategory(item.option);
+
+                if (reason === 'clear')
+                  commentForm.categories.forEach((category) =>
+                    handleDeleteCategory(category.id),
+                  );
+
                 dispatch({
                   type: NewsCommentActionType.REPLACE_CATEGORY,
                   payload: categories,
@@ -535,6 +621,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   label="카테고리"
                   name="category"
                   variant="outlined"
+                  helperText="신규 생성 권한은 추가로 문의주세요"
                 />
               )}
             />
