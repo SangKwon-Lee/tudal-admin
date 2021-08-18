@@ -478,7 +478,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   payload: keywords,
                 });
               }}
-              onClick={() => console.log('hello')}
               getOptionLabel={(option) => {
                 const label = option.name;
                 if (option.isNew) {

@@ -32,7 +32,7 @@ export async function updateIsSelected(
 ) {
   return await axios.put(`/general-news/${id}`, {
     isSelected: !isSelected,
-    selected_by: user_id,
+    isSelectedBy: user_id,
   });
 }
 

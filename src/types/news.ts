@@ -16,7 +16,7 @@ export interface INews {
   officeId: string;
   tags: Tag[];
   isSelected: boolean;
-  selected_by?: User;
+  isSelectedBy?: User;
   stocks?: Stock[];
   categories: Category[];
 }

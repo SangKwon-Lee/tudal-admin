@@ -5,6 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
   Box,
   Card,
+  Tooltip,
   Chip,
   Table,
   Checkbox,
@@ -261,8 +262,8 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="5%">선택</TableCell>
-              <TableCell width="60%">제목/기사(요약)</TableCell>
+              <TableCell width="5%">PICK</TableCell>
+              <TableCell width="60%">제목 / 본문 요약</TableCell>
               <TableCell width="10%">언론사</TableCell>
               <TableCell width="20%">발행일</TableCell>
               <TableCell width="5%"></TableCell>
@@ -280,14 +281,23 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 }}
               >
                 <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    checked={news.isSelected}
-                    onClick={() => {
-                      setTargetNews(news);
-                      setOpenConfirm();
-                    }}
-                  />
+                  <Tooltip
+                    title={
+                      news.isSelectedBy
+                        ? `by ${news.isSelectedBy.nickname}`
+                        : 'pick'
+                    }
+                    placement="bottom"
+                  >
+                    <Checkbox
+                      color="primary"
+                      checked={news.isSelected}
+                      onClick={() => {
+                        setTargetNews(news);
+                        setOpenConfirm();
+                      }}
+                    />
+                  </Tooltip>
                 </TableCell>
 
                 <TableCell>
