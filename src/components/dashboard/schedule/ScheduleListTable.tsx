@@ -277,9 +277,9 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox"></TableCell>
-                <TableCell width="20%">제목</TableCell>
+                <TableCell width="30%">제목</TableCell>
                 <TableCell width="30%">코멘트</TableCell>
-                <TableCell width="10%">중요도</TableCell>
+                <TableCell width="5%">중요도</TableCell>
                 <TableCell width="10%">작성자</TableCell>
                 <TableCell width="15%">적용 일시</TableCell>
 
@@ -301,9 +301,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                 } = schedule;
                 return (
                   <TableRow hover key={schedule.id}>
-                    <TableCell padding="checkbox">
-                      {schedule.id}
-                    </TableCell>
+                    <TableCell padding="checkbox"></TableCell>
                     <TableCell>
                       <Link
                         color="textPrimary"
@@ -314,7 +312,9 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <pre>{comment}</pre>
+                      <pre style={{ whiteSpace: 'pre-wrap' }}>
+                        {comment}
+                      </pre>
                       <Box m={1} />
                       <div className={classes.tags}>
                         {keywords.map((keyword) => (

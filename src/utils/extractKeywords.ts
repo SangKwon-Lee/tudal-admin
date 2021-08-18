@@ -5,6 +5,8 @@ export const tokenize = (sentence: string) => {
   if (typeof sentence !== 'string') return false;
   return sentence
     .replace(/\n/g, ' ')
+    .replace(/,/g, ' ')
+    .replace(/&/g, ' ')
     .split(' ')
     .filter((token) => Boolean(token));
 };
