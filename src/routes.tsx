@@ -6,7 +6,6 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
-import ScheduleList from './pages/dashboard/Schedule';
 import News from './pages/dashboard/News';
 
 const Loadable = (Component) => (props) =>
@@ -41,9 +40,7 @@ const HiddenboxList = Loadable(
 const HiddenboxDetails = Loadable(
   lazy(() => import('./pages/dashboard/HiddenboxDetails')),
 );
-const HiddenboxViewer = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxViewer')),
-);
+
 const HiddenboxCreate = Loadable(
   lazy(() => import('./pages/dashboard/HiddenboxCreate')),
 );
