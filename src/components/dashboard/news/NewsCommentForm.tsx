@@ -663,9 +663,13 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             color="primary"
             type="submit"
             variant="contained"
-            onClick={() =>
-              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM })
-            }
+            onClick={() => {
+              if (commentForm.comment === '') {
+                alert('코멘트를 등록해주세요');
+                return;
+              }
+              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM });
+            }}
           >
             코멘트 등록
           </Button>
