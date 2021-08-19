@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-<<<<<<< HEAD
 import {
   Avatar,
   Box,
@@ -15,9 +14,6 @@ import {
 import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ReceiptIcon from '@material-ui/icons/Receipt';
-=======
-import { Box, Divider, Drawer, Hidden } from '@material-ui/core';
->>>>>>> ID-299-뉴스-리스트
 import useAuth from '../../hooks/useAuth';
 import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
@@ -158,7 +154,6 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   }
 
   return (
-<<<<<<< HEAD
     <Drawer
       anchor="left"
       onClose={onMobileClose}
