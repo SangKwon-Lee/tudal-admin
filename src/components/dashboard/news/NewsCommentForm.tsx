@@ -300,8 +300,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
   const handleAddKeyword = async (tag) => {
     try {
+      console.log(tag);
       if (tag.isNew) {
-        const { data, status } = await APICategory.postItem(tag.name);
+        const { data, status } = await APITag.postItem(tag.name);
         if (status !== 200) {
           toast.error(
             `${tag.name} 등록에 실패하였습니다. 지속 발생 시 관리자에게 문의 바랍니다.`,
@@ -311,8 +312,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         tag = data;
       }
 
+      console.log(tag);
       const updateTags = news.tags.map((tag) => tag.id);
       updateTags.push(tag.id);
+
+      console.log(updateTags);
       const { data, status } = await APINews.update(news.id, {
         tags: updateTags,
       });
@@ -469,6 +473,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
                 if (reason === 'select-option')
                   handleAddKeyword(item.option);
+
                 if (reason === 'clear')
                   commentForm.keywords.forEach((tag) =>
                     handleDeleteKeyword(tag.id),
