@@ -98,13 +98,13 @@ const slice = createSlice({
 
 This allows you to dispatch multiple actions, extremely useful for async requests.
 
-In the created slice file, create a `getArticles` platform that dispatches the slice `setArticles`
+In the created slice file, create a `getPosts` platform that dispatches the slice `setArticles`
 action.
 
 ```js
-export const getArticles = () => async (dispatch) => {
+export const getPosts = () => async (dispatch) => {
   // Here make an async request to your sever and extract the date from the server response
-  // const response = await axios.get('/api/blog/articles');
+  // const response = await axios.get('/__fakeApi__/blog/articles');
   // const { data } = reponse;
 
   const data = [
@@ -122,9 +122,8 @@ Now, that you have a platform that dispatches an action, you can update the `set
 use the data from the payload.
 
 ```js
-  reducers: {
-  setArticles(state, payload)
-  {
+reducers: {
+  setArticles(state, payload) {
     state.articles = payload.articles;
   }
 }
@@ -169,20 +168,20 @@ const Blog = () => {
 
 ### Dispatching an action
 
-This is the last step of the process. Execute the platform `getArticles` to dispatch the slice
+This is the last step of the process. Execute the platform `getPosts` to dispatch the slice
 action and update the slice state. Once the action sets the new state, the app will re-render your
 current component, and the articles will be displayed.
 
 ```jsx
 import { useDispatch, useSelector } from 'react-redux';
-import { getArticles } from 'src/slices/blog';
+import { getPosts } from 'src/slices/blog';
 
 const Blog = () => {
   const dispatch = useDispatch();
   const { articles } = useSelector((state) => state.blog);
 
   const handleClick = () => {
-    dispatch(getArticles());
+    dispatch(getPosts());
   };
 
   return (
@@ -201,4 +200,3 @@ const Blog = () => {
   );
 };
 ```
-

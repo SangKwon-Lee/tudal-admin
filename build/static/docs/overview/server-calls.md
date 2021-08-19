@@ -52,7 +52,7 @@ to Express JS, for example:
 ```js
 import { mock } from '../lib/axios';
 
-mock.onGet('/api/invoices').reply(200, {
+mock.onGet('/__fakeApi__/invoices').reply(200, {
   invoices: [
     { id: 1, total: 32.43 },
     { id: 2, total: 67.00 }
