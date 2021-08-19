@@ -2,7 +2,12 @@ import type { FC } from 'react';
 import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Box, Button, Container, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+} from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import gtm from '../lib/gtm';
@@ -27,7 +32,7 @@ const AuthorizationRequired: FC = () => {
           display: 'flex',
           minHeight: '100%',
           px: 3,
-          py: '80px'
+          py: '80px',
         }}
       >
         <Container maxWidth="lg">
@@ -44,15 +49,14 @@ const AuthorizationRequired: FC = () => {
             sx={{ mt: 0.5 }}
             variant="subtitle2"
           >
-            You either tried some shady route or you
-            came here by mistake. Whichever it is, try using the
-            navigation.
+            You either tried some shady route or you came here by
+            mistake. Whichever it is, try using the navigation.
           </Typography>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              mt: 6
+              mt: 6,
             }}
           >
             <Box
@@ -62,7 +66,7 @@ const AuthorizationRequired: FC = () => {
               sx={{
                 height: 'auto',
                 maxWidth: '100%',
-                width: 400
+                width: 400,
               }}
             />
           </Box>
@@ -70,7 +74,7 @@ const AuthorizationRequired: FC = () => {
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              mt: 6
+              mt: 6,
             }}
           >
             <Button

@@ -31,7 +31,7 @@ import SearchIcon from '../../../icons/Search';
 import ChatIcon from '../../../icons/ChatAlt';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import getInitials from '../../../utils/getInitials';
-import Scrollbar from '../../Scrollbar';
+import Scrollbar from '../../layout/Scrollbar';
 import axios, { CMSURL, apiServer } from '../../../lib/axios';
 import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
@@ -44,7 +44,7 @@ interface HiddenboxListTableProps {
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
 const Bar = forwardRef((props: any, ref: any) => (
   <div {...props} ref={ref}>
-      {props.children}
+    {props.children}
   </div>
 ));
 
@@ -62,51 +62,51 @@ interface SortOption {
 const tabs = [
   {
     label: '전체',
-    value: 'all'
+    value: 'all',
   },
   {
     label: '판매 전',
-    value: 'beforeSale'
+    value: 'beforeSale',
   },
   {
     label: '판매 중',
-    value: 'onSale'
+    value: 'onSale',
   },
   {
     label: '판매 완료',
-    value: 'afterSale'
+    value: 'afterSale',
   },
   {
     label: '공개',
-    value: 'public'
-  }
+    value: 'public',
+  },
 ];
 
 const sortOptions: SortOption[] = [
   {
     label: '최신순',
-    value: 'updated_at|desc'
+    value: 'updated_at|desc',
   },
   {
     label: '오래된순',
-    value: 'updated_at|asc'
+    value: 'updated_at|asc',
   },
   {
     label: '판매량 최고',
-    value: 'orders|desc'
+    value: 'orders|desc',
   },
   {
     label: '판매량 최저',
-    value: 'orders|asc'
-  }
+    value: 'orders|asc',
+  },
 ];
 
 const applyFilters = (
   hiddenboxes: Hiddenbox[],
   query: string,
-  filters: any
-): Hiddenbox[] => hiddenboxes
-  .filter((hiddenbox) => {
+  filters: any,
+): Hiddenbox[] =>
+  hiddenboxes.filter((hiddenbox) => {
     let matches = true;
 
     if (query) {
@@ -114,13 +114,21 @@ const applyFilters = (
       let containsQuery = false;
 
       properties.forEach((property) => {
-        if( property.indexOf('-') > -1 ){
-          const strArray = property.split("-");
-          if (hiddenbox[strArray[0]][strArray[1]].toLowerCase().includes(query.toLowerCase())) {
+        if (property.indexOf('-') > -1) {
+          const strArray = property.split('-');
+          if (
+            hiddenbox[strArray[0]][strArray[1]]
+              .toLowerCase()
+              .includes(query.toLowerCase())
+          ) {
             containsQuery = true;
           }
         } else {
-          if (hiddenbox[property].toLowerCase().includes(query.toLowerCase())) {
+          if (
+            hiddenbox[property]
+              .toLowerCase()
+              .includes(query.toLowerCase())
+          ) {
             containsQuery = true;
           }
         }
@@ -134,26 +142,36 @@ const applyFilters = (
     Object.keys(filters).forEach((key) => {
       const value = filters[key];
 
-      switch(key){
+      switch (key) {
         case 'beforeSale':
-          if( value && moment().diff(moment(hiddenbox.startDate)) > 0 ){
+          if (
+            value &&
+            moment().diff(moment(hiddenbox.startDate)) > 0
+          ) {
             matches = false;
-          } 
+          }
           break;
         case 'onSale':
-          if( value && ( moment().diff(moment(hiddenbox.startDate)) < 0 || moment().diff(moment(hiddenbox.endDate)) > 0 )){
+          if (
+            value &&
+            (moment().diff(moment(hiddenbox.startDate)) < 0 ||
+              moment().diff(moment(hiddenbox.endDate)) > 0)
+          ) {
             matches = false;
           }
           break;
         case 'afterSale':
-          if( value && moment().diff(moment(hiddenbox.endDate)) < 0 ){
+          if (value && moment().diff(moment(hiddenbox.endDate)) < 0) {
             matches = false;
-          } 
+          }
           break;
         case 'public':
-          if( value && moment().diff(moment(hiddenbox.publicDate)) < 0 ){
+          if (
+            value &&
+            moment().diff(moment(hiddenbox.publicDate)) < 0
+          ) {
             matches = false;
-          } 
+          }
           break;
       }
     });
@@ -164,14 +182,14 @@ const applyFilters = (
 const applyPagination = (
   hiddenboxes: Hiddenbox[],
   page: number,
-  limit: number
-): Hiddenbox[] => hiddenboxes
-  .slice(page * limit, page * limit + limit);
+  limit: number,
+): Hiddenbox[] =>
+  hiddenboxes.slice(page * limit, page * limit + limit);
 
 const descendingComparator = (
   a: Hiddenbox,
   b: Hiddenbox,
-  orderBy: string
+  orderBy: string,
 ): number => {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -184,14 +202,21 @@ const descendingComparator = (
   return 0;
 };
 
-const getComparator = (order: 'asc' | 'desc', orderBy: string) => (
+const getComparator = (order: 'asc' | 'desc', orderBy: string) =>
   order === 'desc'
-    ? (a: Hiddenbox, b: Hiddenbox) => descendingComparator(a, b, orderBy)
-    : (a: Hiddenbox, b: Hiddenbox) => -descendingComparator(a, b, orderBy)
-);
+    ? (a: Hiddenbox, b: Hiddenbox) =>
+        descendingComparator(a, b, orderBy)
+    : (a: Hiddenbox, b: Hiddenbox) =>
+        -descendingComparator(a, b, orderBy);
 
-const applySort = (hiddenboxes: Hiddenbox[], sort: Sort): Hiddenbox[] => {
-  const [orderBy, order] = sort.split('|') as [string, 'asc' | 'desc'];
+const applySort = (
+  hiddenboxes: Hiddenbox[],
+  sort: Sort,
+): Hiddenbox[] => {
+  const [orderBy, order] = sort.split('|') as [
+    string,
+    'asc' | 'desc',
+  ];
   const comparator = getComparator(order, orderBy);
   const stabilizedThis = hiddenboxes.map((el, index) => [el, index]);
 
@@ -214,7 +239,9 @@ const applySort = (hiddenboxes: Hiddenbox[], sort: Sort): Hiddenbox[] => {
 const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const { hiddenboxes, reload, ...other } = props;
   const [currentTab, setCurrentTab] = useState<string>('all');
-  const [selectedHiddenboxes, setSelectedHiddenboxes] = useState<number[]>([]);
+  const [selectedHiddenboxes, setSelectedHiddenboxes] = useState<
+    number[]
+  >([]);
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
   const [query, setQuery] = useState<string>('');
@@ -223,7 +250,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     beforeSale: null,
     onSale: null,
     afterSale: null,
-    public: null
+    public: null,
   });
   const [open, setOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
@@ -232,75 +259,85 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const [salesDataLoaded, setSalesDataLoaded] = useState(false);
 
   useEffect(() => {
-    if( hiddenboxes.length > 0 ){
+    if (hiddenboxes.length > 0) {
       fetchSalesCount();
     }
   }, [hiddenboxes]);
 
   useEffect(() => {
-    if( targetHiddenbox ){
+    if (targetHiddenbox) {
       fetchComments(targetHiddenbox.id);
     }
   }, [targetHiddenbox]);
 
   const fetchSalesCount = async () => {
-    await Promise.all(hiddenboxes.map(async hiddenbox => {
-      const response = await axios.get(`/my-hiddenboxes/count?hiddenbox=${hiddenbox.id}`);
-      if( response.status === 200 ){
-        const theHiddenbox = hiddenboxes.find(element => element.id === hiddenbox.id);
-        theHiddenbox.orders = response.data;
-      }
-    }));
+    await Promise.all(
+      hiddenboxes.map(async (hiddenbox) => {
+        const response = await axios.get(
+          `/my-hiddenboxes/count?hiddenbox=${hiddenbox.id}`,
+        );
+        if (response.status === 200) {
+          const theHiddenbox = hiddenboxes.find(
+            (element) => element.id === hiddenbox.id,
+          );
+          theHiddenbox.orders = response.data;
+        }
+      }),
+    );
     setSalesDataLoaded(true);
-  }
+  };
 
   const fetchComments = async (hiddenboxId) => {
-    try{
-      const response = await axios.get(`/hiddenbox-comments?hiddenboxId=${hiddenboxId}`);
-      if( response.status === 200 ){
+    try {
+      const response = await axios.get(
+        `/hiddenbox-comments?hiddenboxId=${hiddenboxId}`,
+      );
+      if (response.status === 200) {
         setComments(response.data);
         setCommentOpen(true);
       }
-    } catch(e) {
-
+    } catch (e) {
     } finally {
-      
     }
-  }
+  };
 
   const onClickComment = (hiddenbox) => {
-    if( targetHiddenbox && hiddenbox.id === targetHiddenbox.id ){
+    if (targetHiddenbox && hiddenbox.id === targetHiddenbox.id) {
       fetchComments(hiddenbox.id);
     } else {
       setTargetHiddenbox(hiddenbox);
     }
-  }
+  };
 
   const onClickDelete = () => {
     setOpen(true);
-  }
+  };
 
   const handleDelete = async () => {
-    try{
+    try {
       const hiddenboxId = selectedHiddenboxes[0];
-      const response = await apiServer.delete(`/hiddenbox/${hiddenboxId.toString()}`);
-      if( response.status === 200 ){
+      const response = await apiServer.delete(
+        `/hiddenbox/${hiddenboxId.toString()}`,
+      );
+      if (response.status === 200) {
         props.reload();
       }
-    } catch(e) {
-
+    } catch (e) {
     } finally {
       setOpen(false);
     }
-  }
+  };
 
-  const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
+  const handleTabsChange = (
+    event: ChangeEvent<{}>,
+    value: string,
+  ): void => {
     const updatedFilters = {
       ...filters,
       beforeSale: null,
       onSale: null,
       afterSale: null,
-      public: null
+      public: null,
     };
 
     if (value !== 'all') {
@@ -312,28 +349,38 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     setCurrentTab(value);
   };
 
-  const handleQueryChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleQueryChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
     setQuery(event.target.value);
   };
 
-  const handleSortChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleSortChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
     setSort(event.target.value as Sort);
   };
 
-  const handleSelectAllHiddenboxes = (event: ChangeEvent<HTMLInputElement>): void => {
-    setSelectedHiddenboxes(event.target.checked
-      ? hiddenboxes.map((hiddenbox) => hiddenbox.id)
-      : []);
+  const handleSelectAllHiddenboxes = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setSelectedHiddenboxes(
+      event.target.checked
+        ? hiddenboxes.map((hiddenbox) => hiddenbox.id)
+        : [],
+    );
   };
 
   const handleSelectOneHiddenbox = (
     event: ChangeEvent<HTMLInputElement>,
-    hiddenboxId: number
+    hiddenboxId: number,
   ): void => {
     if (!selectedHiddenboxes.includes(hiddenboxId)) {
       setSelectedHiddenboxes((prevSelected) => [hiddenboxId]);
     } else {
-      setSelectedHiddenboxes((prevSelected) => prevSelected.filter((id) => id !== hiddenboxId));
+      setSelectedHiddenboxes((prevSelected) =>
+        prevSelected.filter((id) => id !== hiddenboxId),
+      );
     }
   };
 
@@ -341,48 +388,61 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     setPage(newPage);
   };
 
-  const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleLimitChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
     setLimit(parseInt(event.target.value, 10));
   };
 
   const handleWriteComment = async (message: string) => {
-    try{
+    try {
       const newComment = {
         hiddenboxId: targetHiddenbox.id,
         author: targetHiddenbox.author.id,
         message,
-      }
-      const response = await axios.post(`/hiddenbox-comments`, newComment);
-      if( response.status === 200 ){
+      };
+      const response = await axios.post(
+        `/hiddenbox-comments`,
+        newComment,
+      );
+      if (response.status === 200) {
         fetchComments(targetHiddenbox.id);
       }
-    } catch(e) {
-
+    } catch (e) {
     } finally {
-      
     }
-  }
+  };
 
   const handleDeleteComment = async (commentId: number) => {
-    try{
-      const response = await axios.delete(`/hiddenbox-comments/${commentId}`);
-      if( response.status === 200 ){
+    try {
+      const response = await axios.delete(
+        `/hiddenbox-comments/${commentId}`,
+      );
+      if (response.status === 200) {
         fetchComments(targetHiddenbox.id);
       }
-    } catch(e) {
-
+    } catch (e) {
     } finally {
-      
     }
-  }
+  };
 
-  const filteredHiddenboxes = applyFilters(hiddenboxes, query, filters);
+  const filteredHiddenboxes = applyFilters(
+    hiddenboxes,
+    query,
+    filters,
+  );
   const sortedHiddenboxes = applySort(filteredHiddenboxes, sort);
-  const paginatedHiddenboxes = applyPagination(sortedHiddenboxes, page, limit);
+  const paginatedHiddenboxes = applyPagination(
+    sortedHiddenboxes,
+    page,
+    limit,
+  );
   const enableBulkActions = selectedHiddenboxes.length > 0;
-  const selectedSomeHiddenboxes = selectedHiddenboxes.length > 0
-    && selectedHiddenboxes.length < hiddenboxes.length;
-  const selectedAllHiddenboxes = selectedHiddenboxes.length === hiddenboxes.length;
+  const selectedSomeHiddenboxes =
+    selectedHiddenboxes.length > 0 &&
+    selectedHiddenboxes.length < hiddenboxes.length;
+  const selectedAllHiddenboxes =
+    selectedHiddenboxes.length === hiddenboxes.length;
 
   return (
     <>
@@ -410,14 +470,14 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
             display: 'flex',
             flexWrap: 'wrap',
             m: -1,
-            p: 2
+            p: 2,
           }}
         >
           <Box
             sx={{
               m: 1,
               maxWidth: '100%',
-              width: 500
+              width: 500,
             }}
           >
             <TextField
@@ -427,7 +487,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                   <InputAdornment position="start">
                     <SearchIcon fontSize="small" />
                   </InputAdornment>
-                )
+                ),
               }}
               onChange={handleQueryChange}
               placeholder="히든박스 검색"
@@ -438,7 +498,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
           <Box
             sx={{
               m: 1,
-              width: 240
+              width: 240,
             }}
           >
             <TextField
@@ -451,10 +511,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               variant="outlined"
             >
               {sortOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                >
+                <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
@@ -470,7 +527,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 position: 'absolute',
                 px: '4px',
                 width: '100%',
-                zIndex: 2
+                zIndex: 2,
               }}
             >
               {/* <Checkbox
@@ -487,7 +544,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               >
                 삭제
               </Button>
-              <Button 
+              <Button
                 color="primary"
                 sx={{ ml: 2 }}
                 variant="outlined"
@@ -512,26 +569,17 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       onChange={handleSelectAllHiddenboxes}
                     /> */}
                   </TableCell>
-                  <TableCell>
-                    상품명
-                  </TableCell>
-                  <TableCell>
-                    판매일
-                  </TableCell>
-                  <TableCell>
-                    공개일
-                  </TableCell>
-                  <TableCell>
-                    판매량
-                  </TableCell>
-                  <TableCell align="right">
-                    Actions
-                  </TableCell>
+                  <TableCell>상품명</TableCell>
+                  <TableCell>판매일</TableCell>
+                  <TableCell>공개일</TableCell>
+                  <TableCell>판매량</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {paginatedHiddenboxes.map((hiddenbox) => {
-                  const isHiddenboxSelected = selectedHiddenboxes.includes(hiddenbox.id);
+                  const isHiddenboxSelected =
+                    selectedHiddenboxes.includes(hiddenbox.id);
 
                   return (
                     <TableRow
@@ -543,10 +591,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         <Checkbox
                           checked={isHiddenboxSelected}
                           color="primary"
-                          onChange={(event) => handleSelectOneHiddenbox(
-                            event,
-                            hiddenbox.id
-                          )}
+                          onChange={(event) =>
+                            handleSelectOneHiddenbox(
+                              event,
+                              hiddenbox.id,
+                            )
+                          }
                           value={isHiddenboxSelected}
                         />
                       </TableCell>
@@ -554,7 +604,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         <Box
                           sx={{
                             alignItems: 'center',
-                            display: 'flex'
+                            display: 'flex',
                           }}
                         >
                           <Box sx={{ ml: 1 }}>
@@ -576,17 +626,23 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         </Box>
                       </TableCell>
                       <TableCell>
-                        {`${moment(hiddenbox.startDate).format("YYYY년 M월 D일 HH:mm")} - ${moment(hiddenbox.endDate).format("YYYY년 M월 D일 HH:mm")}`}
+                        {`${moment(hiddenbox.startDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )} - ${moment(hiddenbox.endDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )}`}
                       </TableCell>
                       <TableCell>
-                        {moment(hiddenbox.publicDate).format("YYYY년 M월 D일 HH:mm")}
+                        {moment(hiddenbox.publicDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )}
                       </TableCell>
-                      <TableCell>
-                        {hiddenbox.orders}
-                      </TableCell>
+                      <TableCell>{hiddenbox.orders}</TableCell>
                       <TableCell align="right">
                         <IconButton
-                          onClick={() => { onClickComment(hiddenbox); }}
+                          onClick={() => {
+                            onClickComment(hiddenbox);
+                          }}
                         >
                           <ChatIcon fontSize="small" />
                         </IconButton>
@@ -624,11 +680,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         aria-labelledby="ConfirmModal"
         open={open}
         onClose={() => setOpen(false)}
-        
       >
         <ConfirmModal
           title={'정말 삭제하시겠습니까?'}
-          content={'고객들이 구매한 상품의 경우 삭제시 큰 주의가 필요합니다.'}
+          content={
+            '고객들이 구매한 상품의 경우 삭제시 큰 주의가 필요합니다.'
+          }
           confirmTitle={'삭제'}
           handleOnClick={handleDelete}
           handleOnCancel={() => setOpen(false)}
@@ -640,21 +697,31 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         onClose={() => setCommentOpen(false)}
       >
         <Box sx={{ py: 3, px: 3, minWidth: 400 }}>
-          {comments.length > 0 ? comments.map((comment) => (
-            <SocialPostComment
-              commentId={comment.id}
-              authorAvatar={comment.author.avatar ? `${CMSURL}${comment.author.avatar.url}` : ''}
-              authorName={comment.author.nickname}
-              createdAt={comment.created_at}
-              key={comment.id}
-              message={comment.message}
-              handleDeleteComment={handleDeleteComment}
-            />
-          )) : (
-            <Typography variant={'body1'}>{'작성된 댓글이 없습니다.'}</Typography>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <SocialPostComment
+                commentId={comment.id}
+                authorAvatar={
+                  comment.author.avatar
+                    ? `${CMSURL}${comment.author.avatar.url}`
+                    : ''
+                }
+                authorName={comment.author.nickname}
+                createdAt={comment.created_at}
+                key={comment.id}
+                message={comment.message}
+                handleDeleteComment={handleDeleteComment}
+              />
+            ))
+          ) : (
+            <Typography variant={'body1'}>
+              {'작성된 댓글이 없습니다.'}
+            </Typography>
           )}
           <Divider sx={{ my: 2 }} />
-          <SocialPostCommentAdd handleWriteComment={handleWriteComment} />
+          <SocialPostCommentAdd
+            handleWriteComment={handleWriteComment}
+          />
         </Box>
       </Dialog>
     </>
@@ -662,7 +729,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
 };
 
 HiddenboxListTable.propTypes = {
-  hiddenboxes: PropTypes.array.isRequired
+  hiddenboxes: PropTypes.array.isRequired,
 };
 
 export default HiddenboxListTable;

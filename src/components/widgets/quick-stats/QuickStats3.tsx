@@ -1,12 +1,12 @@
 import type { FC } from 'react';
 import { Box, Card, Grid, Typography } from '@material-ui/core';
-import Label from '../../Label';
+import Label from '../Label';
 
 const QuickStats3: FC = () => (
   <Box
     sx={{
       backgroundColor: 'background.default',
-      p: 3
+      p: 3,
     }}
   >
     <Card>
@@ -21,25 +21,18 @@ const QuickStats3: FC = () => (
           sm={6}
           xs={12}
           sx={{
-            borderRight: (theme) => (
-              {
-                md: `1px solid ${theme.palette.divider}`
-              }
-            ),
-            borderBottom: (theme) => (
-              {
-                md: 'none',
-                xs: `1px solid ${theme.palette.divider}`
-              }
-            ),
+            borderRight: (theme) => ({
+              md: `1px solid ${theme.palette.divider}`,
+            }),
+            borderBottom: (theme) => ({
+              md: 'none',
+              xs: `1px solid ${theme.palette.divider}`,
+            }),
             p: 3,
-            textAlign: 'center'
+            textAlign: 'center',
           }}
         >
-          <Typography
-            color="textPrimary"
-            variant="h5"
-          >
+          <Typography color="textPrimary" variant="h5">
             $4,250.00
           </Typography>
           <Typography
@@ -56,25 +49,18 @@ const QuickStats3: FC = () => (
           sm={6}
           xs={12}
           sx={{
-            borderRight: (theme) => (
-              {
-                md: `1px solid ${theme.palette.divider}`
-              }
-            ),
-            borderBottom: (theme) => (
-              {
-                md: 'none',
-                xs: `1px solid ${theme.palette.divider}`
-              }
-            ),
+            borderRight: (theme) => ({
+              md: `1px solid ${theme.palette.divider}`,
+            }),
+            borderBottom: (theme) => ({
+              md: 'none',
+              xs: `1px solid ${theme.palette.divider}`,
+            }),
             p: 3,
-            textAlign: 'center'
+            textAlign: 'center',
           }}
         >
-          <Typography
-            color="textPrimary"
-            variant="h5"
-          >
+          <Typography color="textPrimary" variant="h5">
             $12,500.00
           </Typography>
           <Typography
@@ -91,25 +77,18 @@ const QuickStats3: FC = () => (
           sm={6}
           xs={12}
           sx={{
-            borderRight: (theme) => (
-              {
-                md: `1px solid ${theme.palette.divider}`
-              }
-            ),
-            borderBottom: (theme) => (
-              {
-                sm: 'none',
-                xs: `1px solid ${theme.palette.divider}`
-              }
-            ),
+            borderRight: (theme) => ({
+              md: `1px solid ${theme.palette.divider}`,
+            }),
+            borderBottom: (theme) => ({
+              sm: 'none',
+              xs: `1px solid ${theme.palette.divider}`,
+            }),
             p: 3,
-            textAlign: 'center'
+            textAlign: 'center',
           }}
         >
-          <Typography
-            color="textPrimary"
-            variant="h5"
-          >
+          <Typography color="textPrimary" variant="h5">
             230
           </Typography>
           <Typography
@@ -127,14 +106,14 @@ const QuickStats3: FC = () => (
           xs={12}
           sx={{
             p: 3,
-            textAlign: 'center'
+            textAlign: 'center',
           }}
         >
           <Box
             sx={{
               alignItems: 'center',
               display: 'flex',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
             <Typography
@@ -145,9 +124,7 @@ const QuickStats3: FC = () => (
               5
             </Typography>
             <Box sx={{ ml: 1 }}>
-              <Label color="primary">
-                Live
-              </Label>
+              <Label color="primary">Live</Label>
             </Box>
           </Box>
           <Typography

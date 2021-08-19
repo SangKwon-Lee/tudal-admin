@@ -9,16 +9,16 @@ import {
   Container,
   Divider,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import AuthBanner from '../../components/authentication/AuthBanner';
 import {
   RegisterAmplify,
   RegisterAuth0,
   RegisterFirebase,
-  RegisterJWT
+  RegisterJWT,
 } from '../../components/authentication/register';
-import Logo from '../../components/Logo';
+import Logo from '../../components/common/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
@@ -26,7 +26,7 @@ const platformIcons = {
   Amplify: '/static/icons/amplify.svg',
   Auth0: '/static/icons/auth0.svg',
   Firebase: '/static/icons/firebase.svg',
-  JWT: '/static/icons/jwt.svg'
+  JWT: '/static/icons/jwt.svg',
 };
 
 const Register: FC = () => {
@@ -46,26 +46,23 @@ const Register: FC = () => {
           backgroundColor: 'background.default',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh'
+          minHeight: '100vh',
         }}
       >
         <AuthBanner />
-        <Container
-          maxWidth="sm"
-          sx={{ py: '80px' }}
-        >
+        <Container maxWidth="sm" sx={{ py: '80px' }}>
           <Box
             sx={{
               mb: 8,
               display: 'flex',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
             <RouterLink to="/">
               <Logo
                 sx={{
                   height: 40,
-                  width: 40
+                  width: 40,
                 }}
               />
             </RouterLink>
@@ -75,7 +72,7 @@ const Register: FC = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 4
+                p: 4,
               }}
             >
               <Box
@@ -83,7 +80,7 @@ const Register: FC = () => {
                   alignItems: 'center',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  mb: 3
+                  mb: 3,
                 }}
               >
                 <div>
@@ -94,10 +91,7 @@ const Register: FC = () => {
                   >
                     Register
                   </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="body2"
-                  >
+                  <Typography color="textSecondary" variant="body2">
                     Register on the internal platform
                   </Typography>
                 </div>
@@ -106,8 +100,8 @@ const Register: FC = () => {
                     height: 32,
                     '& > img': {
                       maxHeight: '100%',
-                      width: 'auto'
-                    }
+                      width: 'auto',
+                    },
                   }}
                 >
                   <img
@@ -119,7 +113,7 @@ const Register: FC = () => {
               <Box
                 sx={{
                   flexGrow: 1,
-                  mt: 3
+                  mt: 3,
                 }}
               >
                 {platform === 'Amplify' && <RegisterAmplify />}

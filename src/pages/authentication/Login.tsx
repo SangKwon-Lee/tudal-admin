@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { LoginJWT } from '../../components/authentication/login';
-import Logo from '../../components/Logo';
+import Logo from '../../components/common/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 

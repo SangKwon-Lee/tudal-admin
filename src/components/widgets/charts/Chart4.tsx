@@ -1,13 +1,24 @@
 import type { FC } from 'react';
 import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
-import { Box, Card, CardContent, CardHeader, Divider, IconButton } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  IconButton,
+} from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import Scrollbar from '../../Scrollbar';
+import Scrollbar from '../../layout/Scrollbar';
 import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
 
 const data = {
-  series: [{ data: [10, 5, 11, 20, 13, 28, 18, 4, 13, 12, 13, 5] }],
+  series: [
+    {
+      data: [10, 5, 11, 20, 13, 28, 18, 4, 13, 12, 13, 5],
+    },
+  ],
   categories: [
     'Jan',
     'Feb',
@@ -20,77 +31,80 @@ const data = {
     'Sep',
     'Oct',
     'Nov',
-    'Dec'
-  ]
+    'Dec',
+  ],
 };
 
 const Chart4: FC = () => {
   const theme = useTheme();
 
-  const chartOptions: ApexOptions = {
-    chart: {
-      background: 'transparent',
-      stacked: false,
-      toolbar: {
-        show: false
-      }
-    },
-    colors: ['#00ab57'],
-    dataLabels: {
-      enabled: false
-    },
-    fill: {
-      gradient: {
-        opacityFrom: 0.4,
-        opacityTo: 0.1,
-        shadeIntensity: 1,
-        stops: [0, 100],
-        type: 'vertical'
+  const chart = {
+    options: {
+      markers: {
+        size: 6,
+        strokeColors: theme.palette.background.default,
+        strokeWidth: 3,
       },
-      type: 'gradient'
-    },
-    grid: {
-      borderColor: theme.palette.divider,
-      strokeDashArray: 2
-    },
-    markers: {
-      size: 6,
-      strokeColors: theme.palette.background.default,
-      strokeWidth: 3
-    },
-    stroke: {
-      curve: 'smooth'
-    },
-    theme: {
-      mode: theme.palette.mode
-    },
-    xaxis: {
-      axisBorder: {
-        color: theme.palette.divider,
-        show: true
+      chart: {
+        background: 'transparent',
+        stacked: false,
+        toolbar: {
+          show: false,
+        },
       },
-      axisTicks: {
-        color: theme.palette.divider,
-        show: true
+      colors: ['#00ab57'],
+      dataLabels: {
+        enabled: false,
       },
-      categories: data.categories,
-      labels: {
-        offsetY: 5,
-        style: {
-          colors: theme.palette.text.secondary
-        }
-      }
+      fill: {
+        gradient: {
+          opacityFrom: 0.4,
+          opacityTo: 0.1,
+          shadeIntensity: 1,
+          stops: [0, 100],
+          type: 'vertical',
+        },
+        type: 'gradient',
+      },
+      grid: {
+        borderColor: theme.palette.divider,
+        strokeDashArray: 2,
+      },
+      stroke: {
+        curve: 'smooth',
+      } as ApexStroke,
+      theme: {
+        mode: theme.palette.mode,
+      },
+      xaxis: {
+        axisBorder: {
+          color: theme.palette.divider,
+          show: true,
+        },
+        axisTicks: {
+          color: theme.palette.divider,
+          show: true,
+        },
+        categories: data.categories,
+        labels: {
+          offsetY: 5,
+          style: {
+            colors: theme.palette.text.secondary,
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: (value: number): string | number =>
+            value > 0 ? `${value}K` : value,
+          offsetX: -10,
+          style: {
+            colors: theme.palette.text.secondary,
+          },
+        },
+      } as ApexYAxis,
     },
-    yaxis: {
-      labels: {
-        // @ts-ignore
-        formatter: (value) => (value > 0 ? `${value}K` : value),
-        offsetX: -10,
-        style: {
-          colors: theme.palette.text.secondary
-        }
-      }
-    }
+    series: data.series,
   };
 
   const chartSeries = data.series;
@@ -99,16 +113,16 @@ const Chart4: FC = () => {
     <Box
       sx={{
         backgroundColor: 'background.default',
-        p: 3
+        p: 3,
       }}
     >
       <Card>
         <CardHeader
-          action={(
+          action={
             <IconButton>
               <DotsHorizontalIcon fontSize="small" />
             </IconButton>
-          )}
+          }
           title="Performance Over Time"
         />
         <Divider />
@@ -118,15 +132,10 @@ const Chart4: FC = () => {
               sx={{
                 height: 375,
                 minWidth: 500,
-                position: 'relative'
+                position: 'relative',
               }}
             >
-              <Chart
-                height="350"
-                options={chartOptions}
-                series={chartSeries}
-                type="area"
-              />
+              <Chart height="350" type="area" {...chart} />
             </Box>
           </Scrollbar>
         </CardContent>

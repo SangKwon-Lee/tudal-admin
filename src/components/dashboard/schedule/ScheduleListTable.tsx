@@ -1,6 +1,11 @@
-import React, { ChangeEvent, useState } from "react";
-import PropTypes from "prop-types";
-import dayjs from "dayjs";
+import React, {
+  ChangeEvent,
+  useState,
+  useRef,
+  RefObject,
+} from 'react';
+import PropTypes from 'prop-types';
+import dayjs from 'dayjs';
 import {
   Box,
   Card,
@@ -17,33 +22,40 @@ import {
   TextField,
   CircularProgress,
   Dialog,
-} from "@material-ui/core";
+  Chip,
+} from '@material-ui/core';
+import {
+  createStyles,
+  Theme,
+  makeStyles,
+} from '@material-ui/core/styles';
 
-import DeleteIcon from "@material-ui/icons/Delete";
-import Label from "../../Label";
-import SearchIcon from "../../../icons/Search";
-import { Priority, Schedule } from "../../../types/schedule";
-import ConfirmModal from "src/components/widgets/modals/ConfirmModal";
+import DeleteIcon from '@material-ui/icons/Delete';
+import BuildIcon from '@material-ui/icons/Build';
+import Label from '../../widgets/Label';
+import SearchIcon from '../../../icons/Search';
+import { Priority, Schedule } from '../../../types/schedule';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 const getPriorityLabel = (priority) => {
   const scale =
     priority > Priority.MIDDLE
-      ? "high"
+      ? 'high'
       : priority === Priority.MIDDLE
-      ? "middle"
-      : "low";
+      ? 'middle'
+      : 'low';
   const map = {
     high: {
-      color: "error",
-      text: "HIGH",
+      color: 'error',
+      text: 'HIGH',
     },
     middle: {
-      color: "success",
-      text: "MIDDLE",
+      color: 'success',
+      text: 'MIDDLE',
     },
     low: {
-      color: "warning",
-      text: "LOW",
+      color: 'warning',
+      text: 'LOW',
     },
   };
   const { text, color }: any = map[scale];
@@ -52,12 +64,12 @@ const getPriorityLabel = (priority) => {
 };
 
 type Sort =
-  | "updated_at|desc"
-  | "updated_at|asc"
-  | "startDate|desc"
-  | "startDate|asc"
-  | "author|desc"
-  | "priority|desc";
+  | 'updated_at|desc'
+  | 'updated_at|asc'
+  | 'startDate|desc'
+  | 'startDate|asc'
+  | 'author|desc'
+  | 'priority|desc';
 
 interface SortOption {
   value: Sort;
@@ -65,28 +77,28 @@ interface SortOption {
 }
 const sortOptions: SortOption[] = [
   {
-    label: "최신 등록순",
-    value: "updated_at|desc",
+    label: '최신 등록순',
+    value: 'updated_at|desc',
   },
   {
-    label: "오래된 등록순",
-    value: "updated_at|asc",
+    label: '오래된 등록순',
+    value: 'updated_at|asc',
   },
   {
-    label: "시작일자 내림차순",
-    value: "startDate|desc",
+    label: '시작일자 내림차순',
+    value: 'startDate|desc',
   },
   {
-    label: "시작일자 오름차순",
-    value: "startDate|asc",
+    label: '시작일자 오름차순',
+    value: 'startDate|asc',
   },
   {
-    label: "작성자 내림차순",
-    value: "author|desc",
+    label: '작성자 내림차순',
+    value: 'author|desc',
   },
   {
-    label: "중요도 내림차순",
-    value: "priority|desc",
+    label: '중요도 내림차순',
+    value: 'priority|desc',
   },
 ];
 
@@ -100,13 +112,16 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
-const getComparator = (order: "asc" | "desc", orderBy: string) => {
-  return order === "desc"
+const getComparator = (order: 'asc' | 'desc', orderBy: string) => {
+  return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 };
 const applySort = (schedules: Schedule[], sort: Sort): Schedule[] => {
-  const [orderBy, order] = sort.split("|") as [string, "asc" | "desc"];
+  const [orderBy, order] = sort.split('|') as [
+    string,
+    'asc' | 'desc',
+  ];
   const comparator = getComparator(order, orderBy);
   const stabilizedThis = schedules.map((el, index) => [el, index]);
 
@@ -126,20 +141,44 @@ interface ScheduleListTableProps {
   setSearch: (value) => void;
   postDelete: (id: number) => void;
   reload: () => void;
+  setTargetModify: (target: Schedule) => void;
+  scrollRef: RefObject<HTMLDivElement>;
 }
 
 const applyPagination = (
   schedules: Schedule[],
   page: number,
-  limit: number
+  limit: number,
 ): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
-const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
-  const { schedules, postDelete, search, setSearch } = props;
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    tags: {
+      display: 'flex',
+      justifyContent: 'start',
+      flexWrap: 'wrap',
+      '& > *': {
+        margin: theme.spacing(0.2),
+      },
+    },
+  }),
+);
+
+const ScheduleListTable: React.FC<ScheduleListTableProps> = (
+  props,
+) => {
+  const {
+    schedules,
+    postDelete,
+    setSearch,
+    setTargetModify,
+    scrollRef,
+  } = props;
+  const classes = useStyles();
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [targetSchedule, setTargetSchedule] = useState<Schedule>(null);
+  const [targetSchedule, setTargetDelete] = useState<Schedule>(null);
   const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
     useState<boolean>(false);
 
@@ -147,28 +186,40 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
     setPage(newPage);
   };
 
-  const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleLimitChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
     setLimit(parseInt(event.target.value, 10));
   };
 
   const handleSort = (event): void => {
     setSort(event.target.value);
   };
+
+  const scrollToTop = () => {
+    scrollRef.current &&
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const sortedSchedules = applySort(schedules, sort);
-  const paginatedSchedule = applyPagination(sortedSchedules, page, limit);
+  const paginatedSchedule = applyPagination(
+    sortedSchedules,
+    page,
+    limit,
+  );
 
   return (
     <Box
       sx={{
-        backgroundColor: "background.default",
+        backgroundColor: 'background.default',
       }}
     >
       <Card>
         <Box
           sx={{
-            alignItems: "center",
-            display: "flex",
-            flexWrap: "wrap",
+            alignItems: 'center',
+            display: 'flex',
+            flexWrap: 'wrap',
             m: -1,
             p: 2,
           }}
@@ -176,7 +227,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
           <Box
             sx={{
               m: 1,
-              maxWidth: "100%",
+              maxWidth: '100%',
               width: 500,
             }}
           >
@@ -189,7 +240,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
                   </InputAdornment>
                 ),
               }}
-              name={"_q"}
+              name={'_q'}
               placeholder="제목 또는 코멘트를 검색해주세요"
               onChange={(event) => setSearch(event.target.value)}
               variant="outlined"
@@ -198,7 +249,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
           <Box
             sx={{
               m: 1,
-              maxWidth: "100%",
+              maxWidth: '100%',
               width: 240,
             }}
           >
@@ -226,24 +277,31 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox"></TableCell>
-                <TableCell width="20%">제목</TableCell>
+                <TableCell width="30%">제목</TableCell>
                 <TableCell width="30%">코멘트</TableCell>
-                <TableCell width="10%">중요도</TableCell>
+                <TableCell width="5%">중요도</TableCell>
                 <TableCell width="10%">작성자</TableCell>
-                <TableCell width="15%">시작</TableCell>
-                <TableCell width="15%">끝</TableCell>
+                <TableCell width="15%">적용 일시</TableCell>
+
+                <TableCell>수정</TableCell>
+                <TableCell>삭제</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedSchedule.map((schedule) => {
-                console.log("schedule", schedule);
-                const { comment, priority, author, startDate, endDate } =
-                  schedule;
+                const {
+                  comment,
+                  priority,
+                  author,
+                  startDate,
+                  endDate,
+                  keywords,
+                  stocks,
+                  categories,
+                } = schedule;
                 return (
                   <TableRow hover key={schedule.id}>
-                    <TableCell padding="checkbox">
-                      <Checkbox color="primary" />
-                    </TableCell>
+                    <TableCell padding="checkbox"></TableCell>
                     <TableCell>
                       <Link
                         color="textPrimary"
@@ -253,21 +311,64 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
                         {schedule.title}
                       </Link>
                     </TableCell>
-                    <TableCell>{comment}</TableCell>
-                    <TableCell>{getPriorityLabel(priority)}</TableCell>
                     <TableCell>
-                      {author ? author.username : "알 수 없음"}
+                      <pre style={{ whiteSpace: 'pre-wrap' }}>
+                        {comment}
+                      </pre>
+                      <Box m={1} />
+                      <div className={classes.tags}>
+                        {keywords.map((keyword) => (
+                          <Chip
+                            key={keyword.id}
+                            color="default"
+                            label={keyword.name}
+                            size={'small'}
+                          />
+                        ))}
+                        {stocks.map((stock, i) => (
+                          <Chip
+                            size={'small'}
+                            key={i}
+                            color="primary"
+                            //@ts-ignore
+                            label={stock.name}
+                          />
+                        ))}
+                        {categories.map((category) => (
+                          <Chip
+                            size={'small'}
+                            key={category.id}
+                            color="secondary"
+                            label={category.name}
+                          />
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getPriorityLabel(priority)}
+                    </TableCell>
+                    <TableCell>
+                      {author ? author.username : '알 수 없음'}
                     </TableCell>
                     <TableCell>{`${dayjs(startDate).format(
-                      "YYYY-MM-DD"
-                    )}`}</TableCell>
-                    <TableCell>{`${dayjs(endDate).format(
-                      "YYYY-MM-DD"
+                      'YYYY-MM-DD',
+                    )} ~ ${dayjs(endDate).format(
+                      'YYYY-MM-DD',
                     )}`}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
-                          setTargetSchedule(schedule);
+                          setTargetModify(schedule);
+                          scrollToTop();
+                        }}
+                      >
+                        <BuildIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => {
+                          setTargetDelete(schedule);
                           setIsOpenDeleteConfirm(true);
                         }}
                       >
@@ -298,13 +399,13 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (props) => {
             <ConfirmModal
               title={`${targetSchedule.title} 일정을 삭제하시겠습니까?`}
               content={`삭제하면 되돌리기 어렵습니다.`}
-              confirmTitle={"네 삭제합니다."}
+              confirmTitle={'네 삭제합니다.'}
               handleOnClick={() => {
                 postDelete(targetSchedule.id);
-                setTargetSchedule(null);
+                setTargetDelete(null);
               }}
               handleOnCancel={() => {
-                setTargetSchedule(null);
+                setTargetDelete(null);
                 setIsOpenDeleteConfirm(false);
               }}
             />

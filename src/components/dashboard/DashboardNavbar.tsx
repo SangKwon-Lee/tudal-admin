@@ -1,14 +1,18 @@
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { AppBar, Box, IconButton, Toolbar } from '@material-ui/core';
+import {
+  AppBar,
+  Box,
+  Hidden,
+  IconButton,
+  Toolbar,
+} from '@material-ui/core';
 import { experimentalStyled } from '@material-ui/core/styles';
 import type { AppBarProps } from '@material-ui/core';
 import MenuIcon from '../../icons/Menu';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
-import Logo from '../Logo';
-import NotificationsPopover from './NotificationsPopover';
+import { WhiteLogo } from '../common/Logo';
 
 interface DashboardNavbarProps extends AppBarProps {
   onSidebarMobileOpen?: () => void;
@@ -36,29 +40,21 @@ const DashboardNavbar: FC<DashboardNavbarProps> = (props) => {
   return (
     <DashboardNavbarRoot {...other}>
       <Toolbar sx={{ minHeight: 64 }}>
-        <IconButton
-          color="inherit"
-          onClick={onSidebarMobileOpen}
-          sx={{
-            display: {
-              lg: 'none',
-            },
-          }}
-        >
-          <MenuIcon fontSize="small" />
-        </IconButton>
-        <RouterLink to="/">
-          <Logo
-            sx={{
-              display: {
-                lg: 'inline',
-                xs: 'none',
-              },
-              height: 40,
-              width: 40,
-            }}
-          />
-        </RouterLink>
+        <Hidden lgUp>
+          <IconButton color="inherit" onClick={onSidebarMobileOpen}>
+            <MenuIcon fontSize="small" />
+          </IconButton>
+        </Hidden>
+        <Hidden lgDown>
+          <RouterLink to="/">
+            <WhiteLogo
+              sx={{
+                height: 40,
+                width: 40,
+              }}
+            />
+          </RouterLink>
+        </Hidden>
         <Box
           sx={{
             flexGrow: 1,
