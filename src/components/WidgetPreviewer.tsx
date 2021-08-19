@@ -12,7 +12,7 @@ import { THEMES } from '../constants';
 import useSettings from '../hooks/useSettings';
 import MoonIcon from '../icons/Moon';
 import SunIcon from '../icons/Sun';
-import { createTheme } from '../theme';
+import { createCustomTheme } from '../theme';
 
 interface DemoPreviewerProps {
   element: ReactNode;
@@ -40,7 +40,7 @@ const WidgetPreviewer: FC<DemoPreviewerProps> = (props) => {
     return THEMES.LIGHT;
   });
 
-  const theme = createTheme({
+  const theme = createCustomTheme({
     ...settings,
     theme: selectedTheme
   });

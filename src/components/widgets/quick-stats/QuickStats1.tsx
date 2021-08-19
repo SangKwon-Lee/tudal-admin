@@ -1,13 +1,7 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
-import {
-  Box,
-  Card,
-  CardHeader,
-  Divider,
-  IconButton,
-  Typography
-} from '@material-ui/core';
+import { Box, Card, CardHeader, Divider, IconButton, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
 
@@ -34,32 +28,31 @@ const data = {
 const QuickStats1: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-      },
-      colors: data.series.map((item) => item.color),
-      dataLabels: {
-        enabled: false
-      },
-      labels: data.series.map((item) => item.name),
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
-      },
-      stroke: {
-        show: false
-      },
-      theme: {
-        mode: theme.palette.mode
       }
     },
-    series: data.series.map((item) => item.data)
+    colors: data.series.map((item) => item.color),
+    dataLabels: {
+      enabled: false
+    },
+    labels: data.series.map((item) => item.name),
+    legend: {
+      show: false
+    },
+    stroke: {
+      show: false
+    },
+    theme: {
+      mode: theme.palette.mode
+    }
   };
+
+  const chartSeries = data.series.map((item) => item.data);
 
   return (
     <Box
@@ -81,8 +74,9 @@ const QuickStats1: FC = () => {
         <Box sx={{ p: 2 }}>
           <Chart
             height="300"
+            options={chartOptions}
+            series={chartSeries}
             type="donut"
-            {...chart}
           />
         </Box>
         <Divider />

@@ -93,16 +93,13 @@ const Footer: FC = (props) => (
           xs={12}
         >
           <Logo />
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              color="textSecondary"
-              variant="caption"
-            >
-              Devias IO
-              <br />
-              support@devias.io
-            </Typography>
-          </Box>
+          <Typography
+            color="textSecondary"
+            sx={{ mt: 1 }}
+            variant="caption"
+          >
+            © 2021 Devias.
+          </Typography>
         </Grid>
         {sections.map((section, index) => (
           <Grid

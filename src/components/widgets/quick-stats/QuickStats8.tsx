@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import { format, subDays } from 'date-fns';
 import { Avatar, Box, Card, Container, Typography } from '@material-ui/core';
@@ -19,64 +20,63 @@ const getCategories = () => {
 const QuickStats8: FC = () => {
   const theme = useTheme();
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        toolbar: {
-          show: false
-        },
-      },
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
-        yaxis: {
-          lines: {
-            show: false
-          }
-        },
-        xaxis: {
-          lines: {
-            show: false
-          }
-        }
-      },
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      toolbar: {
         show: false
-      },
-      stroke: {
-        width: 2,
-        colors: ['#f44336']
-      },
-      theme: {
-        mode: theme.palette.mode
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      yaxis: {
+        lines: {
+          show: false
+        }
       },
       xaxis: {
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        categories: getCategories(),
-        labels: {
-          show: false
-        }
-      },
-      yaxis: {
-        labels: {
+        lines: {
           show: false
         }
       }
     },
-    series: [
-      {
-        data: [14, 43, 98, 68, 155, 18, 8],
-        name: 'Conversions'
+    legend: {
+      show: false
+    },
+    stroke: {
+      width: 2,
+      colors: ['#f44336']
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    xaxis: {
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      },
+      categories: getCategories(),
+      labels: {
+        show: false
       }
-    ]
+    },
+    yaxis: {
+      labels: {
+        show: false
+      }
+    }
   };
+
+  const chartSeries = [
+    {
+      data: [14, 43, 98, 68, 155, 18, 8],
+      name: 'Conversions'
+    }
+  ];
 
   return (
     <Box
@@ -131,7 +131,8 @@ const QuickStats8: FC = () => {
               <Chart
                 height="100"
                 type="line"
-                {...chart}
+                options={chartOptions}
+                series={chartSeries}
               />
             </Box>
           </Box>

@@ -1,17 +1,7 @@
 import type { FC } from 'react';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  AppBar,
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Hidden,
-  IconButton,
-  Link,
-  Toolbar
-} from '@material-ui/core';
+import { AppBar, Box, Button, Chip, Divider, IconButton, Link, Toolbar } from '@material-ui/core';
 import MenuIcon from '../icons/Menu';
 import Logo from './Logo';
 
@@ -31,26 +21,39 @@ const MainNavbar: FC<MainNavbarProps> = (props) => {
       }}
     >
       <Toolbar sx={{ minHeight: 64 }}>
-        <Hidden lgUp>
-          <IconButton
-            color="inherit"
-            onClick={onSidebarMobileOpen}
-          >
-            <MenuIcon fontSize="small" />
-          </IconButton>
-        </Hidden>
-        <Hidden lgDown>
-          <RouterLink to="/">
-            <Logo
-              sx={{
-                height: 40,
-                width: 40
-              }}
-            />
-          </RouterLink>
-        </Hidden>
+        <IconButton
+          color="inherit"
+          onClick={onSidebarMobileOpen}
+          sx={{
+            display: {
+              md: 'none'
+            }
+          }}
+        >
+          <MenuIcon fontSize="small" />
+        </IconButton>
+        <RouterLink to="/">
+          <Logo
+            sx={{
+              display: {
+                md: 'inline',
+                xs: 'none'
+              },
+              height: 40,
+              width: 40
+            }}
+          />
+        </RouterLink>
         <Box sx={{ flexGrow: 1 }} />
-        <Hidden mdDown>
+        <Box
+          sx={{
+            alignItems: 'center',
+            display: {
+              md: 'flex',
+              xs: 'none'
+            }
+          }}
+        >
           <Link
             color="textSecondary"
             component={RouterLink}
@@ -96,7 +99,7 @@ const MainNavbar: FC<MainNavbarProps> = (props) => {
           >
             Get the kit
           </Button>
-        </Hidden>
+        </Box>
       </Toolbar>
       <Divider />
     </AppBar>

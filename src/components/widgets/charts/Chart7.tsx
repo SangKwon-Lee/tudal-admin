@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import {
   Box,
@@ -78,103 +79,97 @@ const Chart7: FC = () => {
     }
   };
 
-  const visibleSeries = data.series.filter((item) => selectedSeries.includes(item.name));
+  const chartSeries = data.series.filter((item) => selectedSeries.includes(item.name));
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        },
-      },
-      colors: visibleSeries.map((item) => item.color),
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
-        borderColor: theme.palette.divider,
-        yaxis: {
-          lines: {
-            show: false
-          }
-        }
-      },
-      legend: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
+      }
+    },
+    colors: chartSeries.map((item) => item.color),
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      borderColor: theme.palette.divider,
+      yaxis: {
+        lines: {
+          show: false
+        }
+      }
+    },
+    legend: {
+      show: false
+    },
+    markers: {
+      hover: {
+        size: undefined,
+        sizeOffset: 2
       },
-      markers: {
-        hover: {
-          size: undefined,
-          sizeOffset: 2
-        },
-        radius: 2,
-        shape: 'circle',
-        size: 4,
-        strokeWidth: 0
-      } as ApexMarkers,
-      stroke: {
-        curve: 'smooth',
-        lineCap: 'butt',
-        width: 3
-      } as ApexStroke,
-      theme: {
-        mode: theme.palette.mode
+      radius: 2,
+      shape: 'circle',
+      size: 4,
+      strokeWidth: 0
+    },
+    stroke: {
+      curve: 'smooth',
+      lineCap: 'butt',
+      width: 3
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    xaxis: {
+      axisBorder: {
+        color: theme.palette.divider
       },
-      tooltip: {
-        theme: theme.palette.mode
+      axisTicks: {
+        color: theme.palette.divider,
+        show: true
       },
-      xaxis: {
+      categories: data.xaxis.dataPoints,
+      labels: {
+        style: {
+          colors: theme.palette.text.secondary
+        }
+      }
+    },
+    yaxis: [
+      {
         axisBorder: {
-          color: theme.palette.divider
+          color: theme.palette.divider,
+          show: true
         },
         axisTicks: {
           color: theme.palette.divider,
           show: true
         },
-        categories: data.xaxis.dataPoints,
         labels: {
           style: {
             colors: theme.palette.text.secondary
           }
         }
       },
-      yaxis: [
-        {
-          axisBorder: {
-            color: theme.palette.divider,
-            show: true
-          },
-          axisTicks: {
-            color: theme.palette.divider,
-            show: true
-          },
-          labels: {
-            style: {
-              colors: theme.palette.text.secondary
-            }
+      {
+        axisTicks: {
+          color: theme.palette.divider,
+          show: true
+        },
+        axisBorder: {
+          color: theme.palette.divider,
+          show: true
+        },
+        labels: {
+          style: {
+            colors: theme.palette.text.secondary
           }
         },
-        {
-          axisTicks: {
-            color: theme.palette.divider,
-            show: true
-          },
-          axisBorder: {
-            color: theme.palette.divider,
-            show: true
-          },
-          labels: {
-            style: {
-              colors: theme.palette.text.secondary
-            }
-          },
-          opposite: true
-        }
-      ]
-    },
-    series: visibleSeries
+        opposite: true
+      }
+    ]
   };
 
   return (
@@ -250,8 +245,9 @@ const Chart7: FC = () => {
           </Box>
           <Chart
             height="350"
+            options={chartOptions}
+            series={chartSeries}
             type="line"
-            {...chart}
           />
         </CardContent>
       </Card>

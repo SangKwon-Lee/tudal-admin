@@ -1,14 +1,6 @@
 import { useRef, useState } from 'react';
-import type { FC, ChangeEvent } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  IconButton,
-  TextField,
-  Tooltip
-} from '@material-ui/core';
+import type { ChangeEvent, FC } from 'react';
+import { Box, Card, CardContent, Divider, IconButton, TextField, Tooltip } from '@material-ui/core';
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SendIcon from '@material-ui/icons/Send';
@@ -45,7 +37,7 @@ const SocialPostAdd: FC = (props) => {
           />
           <Tooltip title="Send">
             <IconButton
-              color={value ? 'primary' : 'default'}
+              color={value ? 'primary' : 'inherit'}
               component={value ? 'button' : 'span'}
               disabled={!value}
             >

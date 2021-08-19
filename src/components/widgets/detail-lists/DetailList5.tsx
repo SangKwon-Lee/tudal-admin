@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { FC, ChangeEvent } from 'react';
+import type { ChangeEvent, FC } from 'react';
 import { format } from 'date-fns';
 import numeral from 'numeral';
 import {

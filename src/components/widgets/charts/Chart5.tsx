@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { FC } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import {
   Box,
@@ -13,7 +14,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+import useMounted from '../../../hooks/useMounted';
 import ArrowRightIcon from '../../../icons/ArrowRight';
 
 const getRandomInt = (min: number, max: number): number => {
@@ -26,7 +27,7 @@ const getRandomInt = (min: number, max: number): number => {
 };
 
 const Chart5: FC = () => {
-  const isMountedRef = useIsMountedRef();
+  const mounted = useMounted();
   const theme = useTheme();
   const [data, setData] = useState<any[]>([
     163,
@@ -44,7 +45,7 @@ const Chart5: FC = () => {
   ]);
 
   const getData = useCallback(() => {
-    if (isMountedRef.current) {
+    if (mounted.current) {
       setData((prevData) => {
         const newData = [...prevData];
 
@@ -56,7 +57,7 @@ const Chart5: FC = () => {
     }
 
     setTimeout(() => {
-      if (isMountedRef.current) {
+      if (mounted.current) {
         setData((prevData) => {
           const newData = [...prevData];
           const random = getRandomInt(100, 200);
@@ -68,7 +69,7 @@ const Chart5: FC = () => {
         });
       }
     }, 500);
-  }, [isMountedRef]);
+  }, [mounted]);
 
   useEffect(() => {
     setInterval(() => getData(), 2000);
@@ -95,70 +96,69 @@ const Chart5: FC = () => {
     }
   ];
 
-  const chart = {
-    options: {
-      chart: {
-        background: 'transparent',
-        stacked: false,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#688dff'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: 'transparent',
+      stacked: false,
+      toolbar: {
         show: false
-      },
-      legend: {
-        show: false
-      },
-      plotOptions: {
-        bar: {
-          columnWidth: '40'
+      }
+    },
+    colors: ['#688dff'],
+    dataLabels: {
+      enabled: false
+    },
+    grid: {
+      show: false
+    },
+    legend: {
+      show: false
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '40'
+      }
+    },
+    states: {
+      active: {
+        filter: {
+          type: 'none'
         }
       },
-      states: {
-        active: {
-          filter: {
-            type: 'none'
-          }
-        },
-        hover: {
-          filter: {
-            type: 'none'
-          }
-        }
-      },
-      stroke: {
-        colors: ['transparent'],
-        show: true,
-        width: 2
-      },
-      theme: {
-        mode: theme.palette.mode
-      },
-      xaxis: {
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        categories: labels,
-        labels: {
-          show: false
-        }
-      },
-      yaxis: {
-        labels: {
-          show: false
+      hover: {
+        filter: {
+          type: 'none'
         }
       }
     },
-    series: [{ data }]
+    stroke: {
+      colors: ['transparent'],
+      show: true,
+      width: 2
+    },
+    theme: {
+      mode: theme.palette.mode
+    },
+    xaxis: {
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      },
+      categories: labels,
+      labels: {
+        show: false
+      }
+    },
+    yaxis: {
+      labels: {
+        show: false
+      }
+    }
   };
+
+  const chartSeries = [{ data }];
 
   return (
     <Box
@@ -208,8 +208,9 @@ const Chart5: FC = () => {
           />
           <Chart
             height="200"
+            options={chartOptions}
+            series={chartSeries}
             type="bar"
-            {...chart}
           />
           <List>
             {pages.map((page) => (

@@ -60,7 +60,7 @@ const DetailsList8: FC = () => (
                     href="#"
                     variant="subtitle2"
                   >
-                    Devias IO
+                    Devias
                   </Link>
                 </Typography>
               )}

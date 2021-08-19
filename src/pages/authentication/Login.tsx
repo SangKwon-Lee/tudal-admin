@@ -9,17 +9,15 @@ import {
   Container,
   Divider,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import {
-  LoginJWT
-} from '../../components/authentication/login';
+import { LoginJWT } from '../../components/authentication/login';
 import Logo from '../../components/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
 const platformIcons = {
-  JWT: '/static/icons/jwt.svg'
+  JWT: '/static/icons/jwt.svg',
 };
 
 const logoImage = '/static/logo.png';
@@ -41,18 +39,15 @@ const Login: FC = () => {
           backgroundColor: 'background.default',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh'
+          minHeight: '100vh',
         }}
       >
-        <Container
-          maxWidth="sm"
-          sx={{ py: '80px' }}
-        >
+        <Container maxWidth="sm" sx={{ py: '80px' }}>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              mb: 8
+              mb: 8,
             }}
           >
             <RouterLink to="/">
@@ -61,8 +56,8 @@ const Login: FC = () => {
                   height: 40,
                   '& > img': {
                     maxHeight: '100%',
-                    width: 'auto'
-                  }
+                    width: 'auto',
+                  },
                 }}
               >
                 <img src={logoImage} />
@@ -74,7 +69,7 @@ const Login: FC = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 4
+                p: 4,
               }}
             >
               <Box
@@ -82,7 +77,7 @@ const Login: FC = () => {
                   alignItems: 'center',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  mb: 3
+                  mb: 3,
                 }}
               >
                 <div>
@@ -98,7 +93,7 @@ const Login: FC = () => {
               <Box
                 sx={{
                   flexGrow: 1,
-                  mt: 3
+                  mt: 3,
                 }}
               >
                 {platform === 'JWT' && <LoginJWT />}
