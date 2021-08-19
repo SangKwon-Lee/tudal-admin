@@ -7,7 +7,9 @@ export async function getList(search: string) {
   if (search) {
     q._q = search;
   }
-  return await axios.get<Schedule[]>(`/schedules?${qs.stringify(q)}`);
+  return await axios.get<Schedule[]>(
+    `/schedules?_sort=updated_at:DESC&${qs.stringify(q)}`,
+  );
 }
 
 export async function create(schedule: IScheduleForm) {
