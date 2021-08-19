@@ -1,5 +1,4 @@
 import axios from 'axios';
-import AxiosMockAdapter from 'axios-mock-adapter';
 import dotenv from 'dotenv';
 dotenv.config();
 const {
