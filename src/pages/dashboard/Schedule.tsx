@@ -1,57 +1,77 @@
-import React, { useState, useEffect, useCallback } from "react"
-import { Link as RouterLink } from "react-router-dom"
-import { Helmet } from "react-helmet-async"
-import { Schedule } from "src/types/schedule"
-
-import axios from "src/lib/axios"
-import { Box, Breadcrumbs, Button, Container, Grid, Link, Typography } from "@material-ui/core"
-import { ScheduleForm } from "src/components/dashboard/schedule"
-import ChevronRightIcon from "../../icons/ChevronRight"
-import { ScheduleListTable } from "../../components/dashboard/schedule"
-import useSettings from "src/hooks/useSettings"
-import useAsync from "src/hooks/useAsync"
-import { APISchedule } from "src/lib/api"
+import React, { useState, useRef, useCallback } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Schedule } from 'src/types/schedule';
+import {
+  Box,
+  Breadcrumbs,
+  Container,
+  Grid,
+  Link,
+  Typography,
+} from '@material-ui/core';
+import toast, { Toaster } from 'react-hot-toast';
+import { ScheduleForm } from 'src/components/dashboard/schedule';
+import ChevronRightIcon from '../../icons/ChevronRight';
+import { ScheduleListTable } from '../../components/dashboard/schedule';
+import useSettings from 'src/hooks/useSettings';
+import useAsync from 'src/hooks/useAsync';
+import { APISchedule } from 'src/lib/api';
 
 const ScheduleList: React.FC = () => {
-  const { settings } = useSettings()
-  const [search, setSearch] = useState<string>("")
-
+  const { settings } = useSettings();
+  const scrollRef = useRef(null);
+  const [search, setSearch] = useState<string>('');
+  const [targetModify, setTargetModify] = useState<Schedule>(null);
   const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
     () => APISchedule.getList(search),
     [search],
-    []
-  )
+    [],
+  );
 
-  const { data: schedules, error: schedulesError, loading: schedulesLoading } = schedulesState
-  const reload = useCallback(() => refetchSchedule(), [])
+  const { data: schedules } = schedulesState;
+
+  const reload = useCallback(
+    () => refetchSchedule(),
+    [refetchSchedule],
+  );
 
   const postDelete = async (id: number) => {
     try {
-      const { status } = await APISchedule.deleteItem(id)
+      const { status } = await APISchedule.deleteItem(id);
       if (status === 200) {
-        reload()
+        reload();
       }
       if (status === 404) {
-        alert("존재하지 않는 스케줄입니다. 확인 부탁드립니다.")
+        toast.error('존재하지 않는 스케줄입니다. 확인 부탁드립니다.');
       }
     } catch (error) {
-      alert("삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.")
+      toast.error(
+        '삭제에 실패했습니다. 관리자에게 문의해주시길 바랍니다.',
+      );
     }
-  }
+  };
+
+  const clearTargetModify = () => {
+    setTargetModify(null);
+  };
 
   return (
     <>
       <Helmet>
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
+      <Toaster />
+
       <Box
         sx={{
-          backgroundColor: "background.default",
-          minHeight: "100%",
+          backgroundColor: 'background.default',
+          minHeight: '100%',
           py: 8,
         }}
+        ref={scrollRef}
       >
-        <Container maxWidth={settings.compact ? "xl" : false}>
+        <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
@@ -84,7 +104,11 @@ const ScheduleList: React.FC = () => {
               </Breadcrumbs>
             </Grid>
           </Grid>
-          <ScheduleForm reload={reload} />
+          <ScheduleForm
+            reload={reload}
+            targetModify={targetModify}
+            clearTargetModify={clearTargetModify}
+          />
           <Box sx={{ mt: 3 }}>
             <ScheduleListTable
               schedules={schedules}
@@ -92,12 +116,14 @@ const ScheduleList: React.FC = () => {
               search={search}
               setSearch={setSearch}
               postDelete={postDelete}
+              setTargetModify={setTargetModify}
+              scrollRef={scrollRef}
             />
           </Box>
         </Container>
       </Box>
     </>
-  )
-}
+  );
+};
 
-export default ScheduleList
+export default ScheduleList;

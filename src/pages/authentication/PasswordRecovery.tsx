@@ -7,11 +7,11 @@ import {
   Card,
   CardContent,
   Container,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import AuthBanner from '../../components/authentication/AuthBanner';
 import { PasswordRecoveryAmplify } from '../../components/authentication/password-recovery';
-import Logo from '../../components/Logo';
+import Logo from '../../components/common/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
@@ -19,7 +19,7 @@ const platformIcons = {
   Amplify: '/static/icons/amplify.svg',
   Auth0: '/static/icons/auth0.svg',
   Firebase: '/static/icons/firebase.svg',
-  JWT: '/static/icons/jwt.svg'
+  JWT: '/static/icons/jwt.svg',
 };
 
 const PasswordRecovery: FC = () => {
@@ -39,25 +39,22 @@ const PasswordRecovery: FC = () => {
           backgroundColor: 'background.default',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh'
+          minHeight: '100vh',
         }}
       >
         <AuthBanner />
-        <Container
-          maxWidth="sm"
-          sx={{ py: 10 }}
-        >
+        <Container maxWidth="sm" sx={{ py: 10 }}>
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
             <RouterLink to="/">
               <Logo
                 sx={{
                   height: 40,
-                  width: 40
+                  width: 40,
                 }}
               />
             </RouterLink>
@@ -66,7 +63,7 @@ const PasswordRecovery: FC = () => {
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              mb: 8
+              mb: 8,
             }}
           />
           <Card>
@@ -74,7 +71,7 @@ const PasswordRecovery: FC = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 4
+                p: 4,
               }}
             >
               <Box
@@ -82,7 +79,7 @@ const PasswordRecovery: FC = () => {
                   alignItems: 'center',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  mb: 3
+                  mb: 3,
                 }}
               >
                 <div>
@@ -93,10 +90,7 @@ const PasswordRecovery: FC = () => {
                   >
                     Password Recovery
                   </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="body2"
-                  >
+                  <Typography color="textSecondary" variant="body2">
                     Tell us your email so we can send you a reset link
                   </Typography>
                 </div>
@@ -105,8 +99,8 @@ const PasswordRecovery: FC = () => {
                     height: 32,
                     '& > img': {
                       maxHeight: '100%',
-                      width: 'auto'
-                    }
+                      width: 'auto',
+                    },
                   }}
                 >
                   <img
@@ -118,10 +112,12 @@ const PasswordRecovery: FC = () => {
               <Box
                 sx={{
                   flexGrow: 1,
-                  mt: 3
+                  mt: 3,
                 }}
               >
-                {platform === 'Amplify' && <PasswordRecoveryAmplify />}
+                {platform === 'Amplify' && (
+                  <PasswordRecoveryAmplify />
+                )}
               </Box>
             </CardContent>
           </Card>

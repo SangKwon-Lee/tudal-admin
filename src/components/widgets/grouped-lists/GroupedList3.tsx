@@ -1,5 +1,10 @@
 import type { FC } from 'react';
-import { addDays, addHours, differenceInDays, isAfter } from 'date-fns';
+import {
+  addDays,
+  addHours,
+  differenceInDays,
+  isAfter,
+} from 'date-fns';
 import {
   Avatar,
   AvatarGroup,
@@ -12,9 +17,9 @@ import {
   List,
   ListItem,
   ListItemText,
-  Tooltip
+  Tooltip,
 } from '@material-ui/core';
-import Scrollbar from '../../Scrollbar';
+import Scrollbar from '../../layout/Scrollbar';
 import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
 
 const now = new Date();
@@ -26,33 +31,37 @@ const tasks = [
     members: [
       {
         avatar: '/static/mock-images/avatars/avatar-marcus_finn.png',
-        name: 'Marcus Finn'
+        name: 'Marcus Finn',
       },
       {
-        avatar: '/static/mock-images/avatars/avatar-carson_darrin.png',
-        name: 'Carson Darrin'
-      }
+        avatar:
+          '/static/mock-images/avatars/avatar-carson_darrin.png',
+        name: 'Carson Darrin',
+      },
     ],
-    title: 'Update the API for the project'
+    title: 'Update the API for the project',
   },
   {
     id: '5eff24bb5bb3bd1beeddde78',
     deadline: addDays(addHours(now, 1), 2).getTime(),
     members: [
       {
-        avatar: '/static/mock-images/avatars/avatar-penjani_inyene.png',
-        name: 'Penjani Inyene'
+        avatar:
+          '/static/mock-images/avatars/avatar-penjani_inyene.png',
+        name: 'Penjani Inyene',
       },
       {
-        avatar: '/static/mock-images/avatars/avatar-jane_rotanson.png',
-        name: 'Jane Rotanson'
+        avatar:
+          '/static/mock-images/avatars/avatar-jane_rotanson.png',
+        name: 'Jane Rotanson',
       },
       {
-        avatar: '/static/mock-images/avatars/avatar-nasimiyu_danai.png',
-        name: 'Nasimiyu Danai'
-      }
+        avatar:
+          '/static/mock-images/avatars/avatar-nasimiyu_danai.png',
+        name: 'Nasimiyu Danai',
+      },
     ],
-    title: 'Redesign the landing page'
+    title: 'Redesign the landing page',
   },
   {
     id: '5eff24c019175119993fc1ff',
@@ -60,10 +69,10 @@ const tasks = [
     members: [
       {
         avatar: '/static/mock-images/avatars/avatar-miron_vitold.png',
-        name: 'Miron Vitold'
-      }
+        name: 'Miron Vitold',
+      },
     ],
-    title: 'Solve the bug for the showState'
+    title: 'Solve the bug for the showState',
   },
   {
     id: '5eff24c52ce9fdadffa11959',
@@ -71,14 +80,15 @@ const tasks = [
     members: [
       {
         avatar: '/static/mock-images/avatars/avatar-marcus_finn.png',
-        name: 'Marcus Finn'
+        name: 'Marcus Finn',
       },
       {
-        avatar: '/static/mock-images/avatars/avatar-siegbert_gottfried.png',
-        name: 'Siegbert Gottfried'
-      }
+        avatar:
+          '/static/mock-images/avatars/avatar-siegbert_gottfried.png',
+        name: 'Siegbert Gottfried',
+      },
     ],
-    title: 'Release v1.0 Beta'
+    title: 'Release v1.0 Beta',
   },
   {
     id: '5eff24ca3ffab939b667258b',
@@ -86,30 +96,32 @@ const tasks = [
     members: [
       {
         avatar: '/static/mock-images/avatars/avatar-jie_yan_song.png',
-        name: 'Jie Yan Song'
+        name: 'Jie Yan Song',
       },
       {
         avatar: '/static/mock-images/avatars/avatar-marcus_finn.png',
-        name: 'Marcus Finn'
+        name: 'Marcus Finn',
       },
       {
-        avatar: '/static/mock-images/avatars/avatar-jane_rotanson.png',
-        name: 'Jane Rotanson'
-      }
+        avatar:
+          '/static/mock-images/avatars/avatar-jane_rotanson.png',
+        name: 'Jane Rotanson',
+      },
     ],
-    title: 'GDPR Compliance'
+    title: 'GDPR Compliance',
   },
   {
     id: '5eff24cf8740fc9faca4e463',
     deadline: null,
     members: [
       {
-        avatar: '/static/mock-images/avatars/avatar-penjani_inyene.png',
-        name: 'Penjani Inyene'
-      }
+        avatar:
+          '/static/mock-images/avatars/avatar-penjani_inyene.png',
+        name: 'Penjani Inyene',
+      },
     ],
-    title: 'Redesign Landing Page'
-  }
+    title: 'Redesign Landing Page',
+  },
 ];
 
 const getDeadline = (task): string => {
@@ -118,8 +130,14 @@ const getDeadline = (task): string => {
   if (task.deadline) {
     const deadlineDate = task.deadline;
 
-    if (isAfter(deadlineDate, now) && differenceInDays(deadlineDate, now) < 3) {
-      deadline = `${differenceInDays(deadlineDate, now)} days remaining`;
+    if (
+      isAfter(deadlineDate, now) &&
+      differenceInDays(deadlineDate, now) < 3
+    ) {
+      deadline = `${differenceInDays(
+        deadlineDate,
+        now,
+      )} days remaining`;
     }
   }
 
@@ -130,16 +148,16 @@ const GroupedList3: FC = () => (
   <Box
     sx={{
       backgroundColor: 'background.default',
-      p: 3
+      p: 3,
     }}
   >
     <Card>
       <CardHeader
-        action={(
+        action={
           <IconButton>
             <DotsHorizontalIcon fontSize="small" />
           </IconButton>
-        )}
+        }
         title="Team Tasks"
       />
       <Divider />
@@ -147,12 +165,9 @@ const GroupedList3: FC = () => (
         <Box sx={{ minWidth: 400 }}>
           <List>
             {tasks.map((task, i) => (
-              <ListItem
-                key={task.id}
-                divider={i < tasks.length - 1}
-              >
+              <ListItem key={task.id} divider={i < tasks.length - 1}>
                 <ListItemText
-                  primary={(
+                  primary={
                     <Link
                       color="textPrimary"
                       noWrap
@@ -161,15 +176,12 @@ const GroupedList3: FC = () => (
                     >
                       {task.title}
                     </Link>
-                  )}
+                  }
                   secondary={getDeadline(task)}
                 />
                 <AvatarGroup max={3}>
                   {task.members.map((member) => (
-                    <Tooltip
-                      key={member.name}
-                      title="View"
-                    >
+                    <Tooltip key={member.name} title="View">
                       <Avatar src={member.avatar} />
                     </Tooltip>
                   ))}

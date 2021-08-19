@@ -1,8 +1,21 @@
 import axios from 'axios';
+import AxiosMockAdapter from 'axios-mock-adapter';
+import dotenv from 'dotenv';
+dotenv.config();
+const {
+  REACT_APP_CMS_TOKEN,
+  REACT_APP_CMS_URL,
+  REACT_APP_API_URL,
+  REACT_APP_DEV_CMS_URL,
+} = process.env;
 
-export const CMSURL = 'http://103.244.108.203:1337';
-export const CMS_TOKEN = 'sbcnepqm22@0';
-export const APIURL = 'http://103.244.108.41:3000/api';
+export const CMSURL =
+  process.env.NODE_ENV === 'development'
+    ? REACT_APP_DEV_CMS_URL
+    : REACT_APP_CMS_URL;
+
+export const CMS_TOKEN = REACT_APP_CMS_TOKEN;
+export const APIURL = REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
   baseURL: CMSURL,
@@ -16,6 +29,10 @@ axiosInstance.interceptors.response.use(
         `Something went wrong`,
     ),
 );
+
+export const mock = new AxiosMockAdapter(axiosInstance, {
+  delayResponse: 0,
+});
 
 export const apiServer = axios.create({
   baseURL: APIURL,

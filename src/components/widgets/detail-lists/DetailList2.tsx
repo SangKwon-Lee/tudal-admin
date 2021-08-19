@@ -9,9 +9,9 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import Label from '../../Label';
+import Label from '../Label';
 import LockIcon from '../../../icons/Lock';
 import UserIcon from '../../../icons/User';
 
@@ -20,7 +20,7 @@ const DetailsList2: FC = () => (
     sx={{
       backgroundColor: 'background.default',
       minHeight: '100%',
-      p: 3
+      p: 3,
     }}
   >
     <Card>
@@ -30,111 +30,73 @@ const DetailsList2: FC = () => (
         <TableBody>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 Email
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 miron.vitold@devias.io
               </Typography>
-              <Label color="success">
-                Email verified
-              </Label>
+              <Label color="success">Email verified</Label>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 Phone
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 +55 748 327 439
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 Country
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 USA
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 State/Region
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 New York
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 Address 1
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 Street John Wick, no. 7
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography
-                color="textPrimary"
-                variant="subtitle2"
-              >
+              <Typography color="textPrimary" variant="subtitle2">
                 Address 2
               </Typography>
             </TableCell>
             <TableCell>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
+              <Typography color="textSecondary" variant="body2">
                 House #25
               </Typography>
             </TableCell>
@@ -146,7 +108,7 @@ const DetailsList2: FC = () => (
           alignItems: 'flex-start',
           display: 'flex',
           flexDirection: 'column',
-          p: 1
+          p: 1,
         }}
       >
         <Button

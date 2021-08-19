@@ -9,11 +9,11 @@ import {
   Container,
   Divider,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import AuthBanner from '../../components/authentication/AuthBanner';
 import { VerifyCodeAmplify } from '../../components/authentication/verify-code';
-import Logo from '../../components/Logo';
+import Logo from '../../components/common/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
@@ -21,7 +21,7 @@ const platformIcons = {
   Amplify: '/static/icons/amplify.svg',
   Auth0: '/static/icons/auth0.svg',
   Firebase: '/static/icons/firebase.svg',
-  JWT: '/static/icons/jwt.svg'
+  JWT: '/static/icons/jwt.svg',
 };
 
 const VerifyCode: FC = () => {
@@ -41,25 +41,22 @@ const VerifyCode: FC = () => {
           backgroundColor: 'background.default',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh'
+          minHeight: '100vh',
         }}
       >
         <AuthBanner />
-        <Container
-          maxWidth="sm"
-          sx={{ py: 10 }}
-        >
+        <Container maxWidth="sm" sx={{ py: 10 }}>
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
             <RouterLink to="/">
               <Logo
                 sx={{
                   height: 40,
-                  width: 40
+                  width: 40,
                 }}
               />
             </RouterLink>
@@ -68,7 +65,7 @@ const VerifyCode: FC = () => {
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              mb: 8
+              mb: 8,
             }}
           />
           <Card>
@@ -76,7 +73,7 @@ const VerifyCode: FC = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 4
+                p: 4,
               }}
             >
               <Box
@@ -84,7 +81,7 @@ const VerifyCode: FC = () => {
                   alignItems: 'center',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  mb: 3
+                  mb: 3,
                 }}
               >
                 <div>
@@ -95,10 +92,7 @@ const VerifyCode: FC = () => {
                   >
                     Verify Code
                   </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="body2"
-                  >
+                  <Typography color="textSecondary" variant="body2">
                     Confirm registration using your verification code
                   </Typography>
                 </div>
@@ -107,8 +101,8 @@ const VerifyCode: FC = () => {
                     height: 32,
                     '& > img': {
                       maxHeight: '100%',
-                      width: 'auto'
-                    }
+                      width: 'auto',
+                    },
                   }}
                 >
                   <img
@@ -120,7 +114,7 @@ const VerifyCode: FC = () => {
               <Box
                 sx={{
                   flexGrow: 1,
-                  mt: 3
+                  mt: 3,
                 }}
               >
                 {platform === 'Amplify' && <VerifyCodeAmplify />}

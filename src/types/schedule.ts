@@ -1,16 +1,20 @@
 export interface Tag {
-  id: number
-  name: string
+  id: number;
+  name: string;
+  isNew?: boolean;
 }
 
 export interface Stock {
-  stockcode: number
-  stockname: string
+  code?: string;
+  name?: string;
+  stockcode?: string;
+  stockname?: string;
 }
 
 export interface Category {
-  id: number
-  name: string
+  id: number;
+  name: string;
+  isNew?: boolean;
 }
 
 export enum Priority {
@@ -19,36 +23,36 @@ export enum Priority {
   HIGH = 5,
 }
 export interface Schedule {
-  id: number
-  title: string
+  id: number;
+  title: string;
   author: {
-    id: number
-    email: string
-    username: string
-    avatar: string
-    blocked: boolean
-    confirmed: boolean
-    provider: string
-    role: number
-  }
-  comment?: string
-  priority: Priority
-  categories?: Category[]
-  keywords?: Tag[]
-  stocks?: Stock[]
-  startDate: Date
-  endDate: Date
-  publicDate: string
+    id: number;
+    email: string;
+    username: string;
+    avatar: string;
+    blocked: boolean;
+    confirmed: boolean;
+    provider: string;
+    role: number;
+  };
+  comment?: string;
+  priority: Priority;
+  categories?: Category[];
+  keywords?: Tag[];
+  stocks?: Stock[];
+  startDate: string;
+  endDate: string;
+  publicDate: string;
 }
 
 export interface IScheduleForm {
-  title: string
-  comment: string
-  stockCodes: number[]
-  author: string //id
-  keywords: number[]
-  categories: number[]
-  priority: Priority
-  startDate: string
-  endDate: string
+  title: string;
+  comment: string;
+  stockCodes: string[];
+  author: string; //id
+  keywords: number[];
+  categories: number[];
+  priority: Priority;
+  startDate: string;
+  endDate: string;
 }

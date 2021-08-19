@@ -5,9 +5,9 @@ import {
   Card,
   Grid,
   LinearProgress,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import Label from '../../Label';
+import Label from '../Label';
 import CurrencyDollarIcon from '../../../icons/CurrencyDollar';
 import FolderOpenIcon from '../../../icons/FolderOpen';
 
@@ -15,25 +15,17 @@ const QuickStats2: FC = () => (
   <Box
     sx={{
       backgroundColor: 'background.default',
-      p: 3
+      p: 3,
     }}
   >
-    <Grid
-      container
-      spacing={3}
-    >
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={3}
-      >
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6} lg={3}>
         <Card
           sx={{
             alignItems: 'center',
             display: 'flex',
             justifyContent: 'space-between',
-            p: 3
+            p: 3,
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -48,7 +40,7 @@ const QuickStats2: FC = () => (
               sx={{
                 alignItems: 'center',
                 display: 'flex',
-                flexWrap: 'wrap'
+                flexWrap: 'wrap',
               }}
             >
               <Typography
@@ -58,9 +50,7 @@ const QuickStats2: FC = () => (
               >
                 $24,000
               </Typography>
-              <Label color="success">
-                4%
-              </Label>
+              <Label color="success">4%</Label>
             </Box>
           </Box>
           <Avatar
@@ -68,25 +58,20 @@ const QuickStats2: FC = () => (
               backgroundColor: 'primary.main',
               color: 'primary.contrastText',
               height: 48,
-              width: 48
+              width: 48,
             }}
           >
             <CurrencyDollarIcon fontSize="small" />
           </Avatar>
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={3}
-      >
+      <Grid item xs={12} md={6} lg={3}>
         <Card
           sx={{
             alignItems: 'center',
             display: 'flex',
             justifyContent: 'space-between',
-            p: 3
+            p: 3,
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -101,7 +86,7 @@ const QuickStats2: FC = () => (
               sx={{
                 alignItems: 'center',
                 display: 'flex',
-                flexWrap: 'wrap'
+                flexWrap: 'wrap',
               }}
             >
               <Typography
@@ -111,9 +96,7 @@ const QuickStats2: FC = () => (
               >
                 12
               </Typography>
-              <Label color="error">
-                -10%
-              </Label>
+              <Label color="error">-10%</Label>
             </Box>
           </Box>
           <Avatar
@@ -121,19 +104,14 @@ const QuickStats2: FC = () => (
               backgroundColor: 'primary.main',
               color: 'primary.contrastText',
               height: 48,
-              width: 48
+              width: 48,
             }}
           >
             <FolderOpenIcon fontSize="small" />
           </Avatar>
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={3}
-      >
+      <Grid item xs={12} md={6} lg={3}>
         <Card sx={{ p: 3 }}>
           <Typography
             color="textSecondary"
@@ -146,7 +124,7 @@ const QuickStats2: FC = () => (
             sx={{
               alignItems: 'center',
               display: 'flex',
-              flexWrap: 'wrap'
+              flexWrap: 'wrap',
             }}
           >
             <Typography
@@ -166,12 +144,7 @@ const QuickStats2: FC = () => (
           </Box>
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={3}
-      >
+      <Grid item xs={12} md={6} lg={3}>
         <Card
           sx={{
             alignItems: 'center',
@@ -179,7 +152,7 @@ const QuickStats2: FC = () => (
             color: 'primary.contrastText',
             display: 'flex',
             justifyContent: 'space-between',
-            p: 3
+            p: 3,
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -194,13 +167,10 @@ const QuickStats2: FC = () => (
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                flexWrap: 'wrap'
+                flexWrap: 'wrap',
               }}
             >
-              <Typography
-                color="inherit"
-                variant="h5"
-              >
+              <Typography color="inherit" variant="h5">
                 $25.50
               </Typography>
             </Box>
@@ -210,7 +180,7 @@ const QuickStats2: FC = () => (
               backgroundColor: 'primary.contrastText',
               color: 'primary.main',
               height: 48,
-              width: 48
+              width: 48,
             }}
           >
             <CurrencyDollarIcon fontSize="small" />
