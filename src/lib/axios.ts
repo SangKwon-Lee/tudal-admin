@@ -29,10 +29,6 @@ axiosInstance.interceptors.response.use(
     ),
 );
 
-export const mock = new AxiosMockAdapter(axiosInstance, {
-  delayResponse: 0,
-});
-
 export const apiServer = axios.create({
   baseURL: APIURL,
 });
