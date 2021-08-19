@@ -316,33 +316,33 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                         {comment}
                       </pre>
                       <Box m={1} />
-                      <div className={classes.tags}>
-                        {keywords.map((keyword) => (
-                          <Chip
-                            key={keyword.id}
-                            color="default"
-                            label={keyword.name}
-                            size={'small'}
-                          />
-                        ))}
-                        {stocks.map((stock, i) => (
-                          <Chip
-                            size={'small'}
-                            key={i}
-                            color="primary"
-                            //@ts-ignore
-                            label={stock.name}
-                          />
-                        ))}
-                        {categories.map((category) => (
-                          <Chip
-                            size={'small'}
-                            key={category.id}
-                            color="secondary"
-                            label={category.name}
-                          />
-                        ))}
-                      </div>
+                      {/* <div className={classes.tags}> */}
+                      {keywords.map((keyword) => (
+                        <Chip
+                          key={keyword.id}
+                          color="default"
+                          label={keyword.name}
+                          size={'small'}
+                        />
+                      ))}
+                      {stocks.map((stock, i) => (
+                        <Chip
+                          size={'small'}
+                          key={i}
+                          color="primary"
+                          //@ts-ignore
+                          label={stock.name}
+                        />
+                      ))}
+                      {categories.map((category) => (
+                        <Chip
+                          size={'small'}
+                          key={category.id}
+                          color="secondary"
+                          label={category.name}
+                        />
+                      ))}
+                      {/* </div> */}
                     </TableCell>
                     <TableCell>
                       {getPriorityLabel(priority)}

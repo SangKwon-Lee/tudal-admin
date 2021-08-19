@@ -419,14 +419,14 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               getOptionLabel={(option) => {
                 return `${option.stockname}(${option.stockcode})`;
               }}
-              getOptionSelected={(option, value) =>
-                option.stockcode === value.stockcode
-              }
+              // getOptionSelected={(option, value) =>
+              //   option.stockcode === value.stockcode
+              // }
               onChange={(event, stocks: Stock[], reason, item) => {
-                if (reason === 'remove-option')
+                if (reason === 'removeOption')
                   handleDeleteStock(item.option.stockcode);
 
-                if (reason === 'select-option')
+                if (reason === 'selectOption')
                   handleAddStock(
                     item.option.stockcode,
                     item.option.stockname,
@@ -464,14 +464,14 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               autoHighlight
               options={tagList}
               value={commentForm.keywords}
-              getOptionSelected={(option, value) =>
-                option.id === value.id
-              }
+              // getOptionSelected={(option, value) =>
+              //   option.id === value.id
+              // }
               onChange={(event, keywords: Tag[], reason, item) => {
-                if (reason === 'remove-option')
+                if (reason === 'removeOption')
                   handleDeleteKeyword(item.option.id);
 
-                if (reason === 'select-option')
+                if (reason === 'selectOption')
                   handleAddKeyword(item.option);
 
                 if (reason === 'clear')
@@ -547,9 +547,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               data-testid="autocomplete-category"
               options={categoryList}
               value={commentForm.categories}
-              getOptionSelected={(option: Category, value) =>
-                option.id === value.id
-              }
+              // getOptionSelected={(option: Category, value) =>
+              //   option.id === value.id
+              // }
               getOptionLabel={(option: Category) => {
                 const label = option.name;
 
@@ -564,10 +564,10 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                 reason,
                 item,
               ) => {
-                if (reason === 'remove-option')
+                if (reason === 'removeOption')
                   handleDeleteCategory(item.option.id);
 
-                if (reason === 'select-option')
+                if (reason === 'selectOption')
                   handleAddCategory(item.option);
 
                 if (reason === 'clear')
@@ -663,9 +663,13 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             color="primary"
             type="submit"
             variant="contained"
-            onClick={() =>
-              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM })
-            }
+            onClick={() => {
+              if (commentForm.comment === '') {
+                alert('코멘트를 등록해주세요');
+                return;
+              }
+              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM });
+            }}
           >
             코멘트 등록
           </Button>
