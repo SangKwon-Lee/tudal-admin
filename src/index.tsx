@@ -13,8 +13,8 @@ import StyledEngineProvider from '@material-ui/core/StyledEngineProvider';
 import App from './App';
 import { AuthProvider } from './contexts/JWTContext';
 import { SettingsProvider } from './contexts/SettingsContext';
-import reportWebVitals from './reportWebVitals';
-import * as serviceWorker from './serviceWorker';
+// import reportWebVitals from './reportWebVitals';
+// import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <StrictMode>

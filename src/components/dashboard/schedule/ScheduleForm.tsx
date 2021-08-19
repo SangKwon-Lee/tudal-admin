@@ -422,9 +422,9 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               getOptionLabel={(option) =>
                 `${option.name}(${option.code})`
               }
-              getOptionSelected={(option, value) =>
-                option.code === value.code
-              }
+              // getOptionSelected={(option, value) =>
+              //   option.code === value.code
+              // }
               onChange={(event, stocks: Stock[]) => {
                 dispatch({
                   type: ScheduleActionKind.REPLACE_STOCK,
@@ -449,9 +449,9 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               autoHighlight
               options={tagList}
               value={newScheduleForm.keywords}
-              getOptionSelected={(option, value) =>
-                option.id === value.id
-              }
+              // getOptionSelected={(option, value) =>
+              //   option.id === value.id
+              // }
               onChange={(event, keywords: Tag[]) => {
                 dispatch({
                   type: ScheduleActionKind.REPLACE_KEYWORD,
@@ -515,9 +515,9 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               autoHighlight
               options={categoryList}
               value={newScheduleForm.categories}
-              getOptionSelected={(option, value) =>
-                option.id === value.id
-              }
+              // getOptionSelected={(option, value) =>
+              //   option.id === value.id
+              // }
               getOptionLabel={(option) => {
                 const label = option.name;
                 if (option.hasOwnProperty('isNew')) {
