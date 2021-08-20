@@ -1,12 +1,9 @@
 import {
   render,
   fireEvent,
-  waitFor,
   waitForElementToBeRemoved,
-  getByTestId,
   screen,
 } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import { Route, MemoryRouter } from 'react-router-dom';
 import NewsComment from './News';
 
