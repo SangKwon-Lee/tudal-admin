@@ -1,5 +1,17 @@
 import { INews } from './news';
 import { Tag } from './schedule';
+import { User } from './user';
+
+export interface IStockComment {
+  id: number;
+  message: string;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+  stock: IStockDetails;
+  author: User;
+}
 
 export interface IStockDetails {
   id: number;
@@ -34,6 +46,6 @@ export interface IStockDetailsWithTag extends IStockDetails {
 export interface IStockDetailsWithTagCommentNews
   extends IStockDetails {
   tags: Tag[];
-  comment: Comment[];
+  comments: IStockComment[];
   news: INews[];
 }
