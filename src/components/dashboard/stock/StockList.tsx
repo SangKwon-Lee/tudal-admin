@@ -72,7 +72,7 @@ const StockList: React.FC<StockListProps> = (props) => {
         minHeight: '100%',
         p: 3,
       }}
-      data-i="stock-lilist-rowst"
+      data-testid="stock-list-table"
     >
       <Box
         sx={{
@@ -141,44 +141,69 @@ const StockList: React.FC<StockListProps> = (props) => {
                     flexWrap: 'wrap',
                   }}
                 >
-                  {stock.tags.map((tag) => {
-                    return (
-                      <Chip
-                        // onDelete={(): void => {
-                        //   const newTags = values.tags.filter(
-                        //     (t) => t !== _tag,
-                        //   );
+                  {_.isEmpty(stock.tags) ? (
+                    <Box
+                      sx={{
+                        px: 3,
+                      }}
+                    >
+                      <Typography variant="body1" fontSize={15}>
+                        관련 키워드가 없습니다.
+                      </Typography>
+                    </Box>
+                  ) : (
+                    stock.tags.map((tag) => {
+                      return (
+                        <Chip
+                          // onDelete={(): void => {
+                          //   const newTags = values.tags.filter(
+                          //     (t) => t !== _tag,
+                          //   );
 
-                        //   setFieldValue('tags', newTags);
-                        // }}
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={tag.id}
-                        label={tag.name}
-                        sx={{
-                          '& + &': {
-                            ml: 1,
-                          },
-                        }}
-                        variant="outlined"
-                      />
-                    );
-                  })}
+                          //   setFieldValue('tags', newTags);
+                          // }}
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={tag.id}
+                          label={tag.name}
+                          sx={{
+                            '& + &': {
+                              ml: 1,
+                            },
+                          }}
+                          variant="outlined"
+                        />
+                      );
+                    })
+                  )}
                 </Box>
               </Box>
             }
             title={
-              <Typography
-                color="textPrimary"
-                sx={{ ml: 1 }}
-                variant="h5"
-                fontSize={20}
-              >
-                {`${stock.id} ${stock.name} (${stock.code})`}
-              </Typography>
+              <>
+                <Typography
+                  color="textPrimary"
+                  sx={{ ml: 1 }}
+                  variant="h5"
+                  fontSize={20}
+                >
+                  {`${stock.name} (${stock.code})`}
+                </Typography>
+                <Typography
+                  variant="overline"
+                  color="textSecondary"
+                  fontSize={15}
+                >
+                  키워드
+                </Typography>
+              </>
             }
           />
           <CardContent>
-            <Typography variant="h6" fontSize={18}>
+            <Typography
+              variant="overline"
+              color="textSecondary"
+              fontSize={15}
+            >
               관련 뉴스
             </Typography>
 
@@ -230,7 +255,12 @@ const StockList: React.FC<StockListProps> = (props) => {
                 })
             )}
 
-            <Typography variant="h6" fontSize={18}>
+            <Typography
+              variant="overline"
+              color="textSecondary"
+              fontSize={15}
+            >
+              {' '}
               코멘트
             </Typography>
             {_.isEmpty(stock.comments) ? (
@@ -254,10 +284,12 @@ const StockList: React.FC<StockListProps> = (props) => {
                       px: 3,
                     }}
                   >
+                    <pre>- {comment.message} </pre>
                     <Typography variant="body1" fontSize={15}>
-                      <pre>{comment.message} </pre>
                       {comment.author &&
-                        `by ${comment.author.username}`}
+                        `${dayjs(comment.updated_at).format(
+                          'YYYY-MM-DD HH:mm',
+                        )} | ${comment.author.username}`}
                     </Typography>
                   </Box>
                 );

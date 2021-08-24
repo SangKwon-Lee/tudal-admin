@@ -60,9 +60,10 @@ const handlers = [
       const query = req.url.searchParams;
       const start = query.get('_start');
 
-      const response = !start
-        ? FixtureStocks.summaries
-        : FixtureStocks.summary_next;
+      const response =
+        start === '0'
+          ? FixtureStocks.summaries
+          : FixtureStocks.summary_next;
       return res(ctx.status(200), ctx.json(response));
     },
   ),

@@ -203,7 +203,7 @@ const StockPage = () => {
                   컨텐츠관리
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  종
+                  종목 관리
                 </Typography>
               </Breadcrumbs>
             </Grid>

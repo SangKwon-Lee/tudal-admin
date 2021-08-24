@@ -26,7 +26,6 @@ describe('should have stock list and form modal', () => {
       getByTestId('stock-list-loading'),
     );
 
-    expect(getByTestId('stock-list')).toBeTruthy();
-    expect(getByText('삼성전자')).toBeTruthy();
+    expect(getByTestId('stock-list-table')).toBeInTheDocument();
   });
 });
