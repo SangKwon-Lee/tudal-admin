@@ -1,7 +1,7 @@
 import { Stock } from 'src/types/schedule';
 import { Tag } from 'src/types/schedule';
 
-export const list: Tag[] = [
+export const list = [
   {
     id: 1,
     name: '1인가구',
@@ -407,7 +407,7 @@ export const list: Tag[] = [
     name: '문재인',
   },
 ];
-export const searchResponse: Tag[] = [
+export const searchResponse = [
   {
     id: 154,
     name: '문재인',

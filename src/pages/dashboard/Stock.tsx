@@ -122,7 +122,6 @@ const StockPage = () => {
   const handlePageChange = (event: any, newPage: number): void => {
     if ((page + 1) * limit >= stockList.length - limit) {
       setShouldUpdate(true);
-      console.log(shouldUpdate);
     }
     setPage(newPage);
   };
@@ -130,10 +129,7 @@ const StockPage = () => {
   const loadStock = useCallback(async () => {
     dispatch({ type: StockActionKind.LOADING });
     try {
-      const { data } = await APIStock.getListDetails(
-        search,
-        stockList.length,
-      );
+      const { data } = await APIStock.getListDetails(search);
       dispatch({
         type: StockActionKind.LOAD_STOCK,
         payload: data,
@@ -142,25 +138,20 @@ const StockPage = () => {
       console.error(error);
       dispatch({ type: StockActionKind.ERROR, payload: error });
     }
-  }, [search, limit]);
+  }, [search]);
 
   const addStock = useCallback(async () => {
     if (!shouldUpdate) return;
-    console.log('add stock');
     try {
       const { data } = await APIStock.getListDetails(
         search,
-
         stockList.length,
       );
 
-      console.log('data');
-      console.log('list', stockState.stocks);
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
-      console.log('list', stockState.stocks);
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, limit, search, shouldUpdate]);
+  }, [page, stockList]);
 
   useEffect(() => {
     addStock();
@@ -188,7 +179,7 @@ const StockPage = () => {
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                뉴스 리스트
+                종목 리스트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -212,7 +203,7 @@ const StockPage = () => {
                   컨텐츠관리
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  뉴스 코멘트
+                  종
                 </Typography>
               </Breadcrumbs>
             </Grid>

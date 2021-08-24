@@ -15,36 +15,18 @@ export async function getList() {
   return { data, status };
 }
 
-export async function getListDetails(search: string, start: number) {
+export async function getListDetails(
+  search: string,
+  start: number = 0,
+) {
   let _query: any = { _start: start };
   if (search) {
     _query._q = search;
   }
 
-  console.log('start at-<', _query._start);
-
-  try {
-    const { data, status } = await cmsServer.get(
-      `/stocks?relations=tags&_limit=30&${qs.stringify(_query)}`,
-    );
-
-    if (status === 200) {
-      for (let i = 0; i < data.length; i++) {
-        const { data: comments } = await getStockComments(
-          data[i].code,
-        );
-        const { data: stockNews } = await getStockNews(data[i].code, {
-          _limit: 5,
-        });
-
-        data[i].news = stockNews.map((entity) => entity.news) || [];
-        data[i].comments = comments || [];
-      }
-    }
-    return { data, status };
-  } catch (error) {
-    console.log(error);
-  }
+  return await cmsServer.get(
+    `/stocks/summary?_limit=30&${qs.stringify(_query)}`,
+  );
 }
 
 export async function getStockComments(stockcode, query = {}) {

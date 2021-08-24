@@ -2,8 +2,8 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
+
 import '@testing-library/jest-dom/extend-expect';
-import '@testing-library/react/cleanup-after-each';
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -54,6 +54,22 @@ const handlers = [
       return res(ctx.status(200), ctx.json(FixtureCategory.list));
     },
   ),
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/stocks/summary`,
+    (req, res, ctx) => {
+      const query = req.url.searchParams;
+      const start = query.get('_start');
+
+      const response = !start
+        ? FixtureStocks.summaries
+        : FixtureStocks.summary_next;
+      return res(ctx.status(200), ctx.json(response));
+    },
+  ),
 ];
 
 const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
