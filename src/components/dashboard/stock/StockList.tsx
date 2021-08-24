@@ -6,20 +6,16 @@ import {
   Card,
   CardHeader,
   LinearProgress,
-  Link,
-  Rating,
   InputAdornment,
   TextField,
   Typography,
   TablePagination,
+  CardContent,
 } from '@material-ui/core';
 import SearchIcon from 'src/icons/Search';
-import {
-  applySort,
-  getComparator,
-  descendingComparator,
-  applyPagination,
-} from 'src/utils/pagination';
+import { applySort, applyPagination } from 'src/utils/pagination';
+import dayjs from 'dayjs';
+import * as _ from 'lodash';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 
 interface StockListProps {
@@ -67,6 +63,7 @@ const StockList: React.FC<StockListProps> = (props) => {
 
   const sortedList = applySort(list, sort);
   const paginatedList = applyPagination(sortedList, page, limit);
+  const handleSearch = _.debounce(setSearch, 300);
 
   return (
     <Box
@@ -75,7 +72,7 @@ const StockList: React.FC<StockListProps> = (props) => {
         minHeight: '100%',
         p: 3,
       }}
-      data-testid="stock-list"
+      data-i="stock-lilist-rowst"
     >
       <Box
         sx={{
@@ -105,7 +102,7 @@ const StockList: React.FC<StockListProps> = (props) => {
             }}
             name={'_q'}
             placeholder="제목 또는 요약본 검색 기능을 지원합니다."
-            // onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => handleSearch(event.target.value)}
             variant="outlined"
           />
         </Box>
@@ -124,6 +121,7 @@ const StockList: React.FC<StockListProps> = (props) => {
               mt: 2,
             },
           }}
+          data-testid={'stock-list-row'}
         >
           <CardHeader
             disableTypography
@@ -179,51 +177,93 @@ const StockList: React.FC<StockListProps> = (props) => {
               </Typography>
             }
           />
-          <Typography variant="h6" fontSize={18}>
-            관련 뉴스
-          </Typography>
+          <CardContent>
+            <Typography variant="h6" fontSize={18}>
+              관련 뉴스
+            </Typography>
 
-          {stock.news &&
-            stock.news.map((entity) => {
-              return (
-                <Box
-                  sx={{
-                    pb: 2,
-                    px: 3,
-                  }}
-                  key={entity.id}
-                >
-                  <Typography variant="h6" fontSize={15}>
-                    {entity.summarized}{' '}
-                  </Typography>
-                  <Typography variant="body1" fontSize={15}>
-                    {entity.summarized}{' '}
-                  </Typography>
-                </Box>
-              );
-            })}
+            {_.isEmpty(stock.news) ? (
+              <Box
+                sx={{
+                  pb: 2,
+                  px: 3,
+                }}
+              >
+                <Typography variant="body1" fontSize={15}>
+                  관련 뉴스가 없습니다.
+                </Typography>
+              </Box>
+            ) : (
+              stock.news
+                .filter((entity) => entity !== null)
+                .map((entity) => {
+                  return (
+                    <Box
+                      sx={{
+                        pb: 2,
+                        px: 3,
+                      }}
+                      key={entity.id}
+                    >
+                      <Typography
+                        variant="h6"
+                        fontSize={15}
+                        color="textPrimary"
+                      >
+                        <a
+                          href={entity.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            textDecoration: 'underline',
+                            color: 'inherit',
+                          }}
+                        >
+                          - {entity.title}{' '}
+                        </a>
+                      </Typography>
+                      <Typography variant="body1" fontSize={15}>
+                        {entity.summarized}{' '}
+                      </Typography>
+                    </Box>
+                  );
+                })
+            )}
 
-          <Typography variant="h6" fontSize={18}>
-            코멘트
-          </Typography>
-          {stock.comments &&
-            stock.comments.map((comment) => {
-              return (
-                <Box
-                  key={comment.id}
-                  sx={{
-                    pb: 2,
-                    px: 3,
-                  }}
-                >
-                  <Typography variant="body1" fontSize={15}>
-                    {comment.message}{' '}
-                    {comment.author &&
-                      `by ${comment.author.username}`}
-                  </Typography>
-                </Box>
-              );
-            })}
+            <Typography variant="h6" fontSize={18}>
+              코멘트
+            </Typography>
+            {_.isEmpty(stock.comments) ? (
+              <Box
+                sx={{
+                  pb: 2,
+                  px: 3,
+                }}
+              >
+                <Typography variant="body1" fontSize={15}>
+                  관련 코멘트가 없습니다.
+                </Typography>
+              </Box>
+            ) : (
+              stock.comments.map((comment) => {
+                return (
+                  <Box
+                    key={comment.id}
+                    sx={{
+                      pb: 2,
+                      px: 3,
+                    }}
+                  >
+                    <Typography variant="body1" fontSize={15}>
+                      <pre>{comment.message} </pre>
+                      {comment.author &&
+                        `by ${comment.author.username}`}
+                    </Typography>
+                  </Box>
+                );
+              })
+            )}
+          </CardContent>
         </Card>
       ))}
       <TablePagination
