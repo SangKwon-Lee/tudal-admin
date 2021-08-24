@@ -15,19 +15,17 @@ export async function getList() {
   return { data, status };
 }
 
-export async function getListDetails(
-  page: number,
-  limit: number,
-  search?: string,
-) {
-  let _query: any = { _start: (page + 1) * limit };
+export async function getListDetails(search: string, start: number) {
+  let _query: any = { _start: start };
   if (search) {
     _query._q = search;
   }
 
+  console.log('start at-<', _query._start);
+
   try {
     const { data, status } = await cmsServer.get(
-      `/stocks?relations=tags&_limit=60&${qs.stringify(_query)}`,
+      `/stocks?relations=tags&_limit=30&${qs.stringify(_query)}`,
     );
 
     if (status === 200) {

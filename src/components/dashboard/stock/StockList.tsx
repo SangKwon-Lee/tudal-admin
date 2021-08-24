@@ -34,13 +34,17 @@ interface StockListProps {
   reload: () => void;
 }
 
-type Sort = 'updated_at|desc';
+type Sort = 'id|asc' | 'updated_at|desc';
 
 interface SortOption {
   value: Sort;
   label: string;
 }
 const sortOptions: SortOption[] = [
+  {
+    label: '이름 순',
+    value: 'id|asc',
+  },
   {
     label: '최신 등록순',
     value: 'updated_at|desc',
@@ -171,7 +175,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                 variant="h5"
                 fontSize={20}
               >
-                {`${i} ${stock.name} (${stock.code})`}
+                {`${stock.id} ${stock.name} (${stock.code})`}
               </Typography>
             }
           />

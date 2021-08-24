@@ -67,13 +67,13 @@ const stockReducer = (
         ...state,
         loading: true,
       };
-    case StockActionKind.ADD_STOCK:
+    case StockActionKind.LOAD_STOCK:
       return {
         ...state,
         loading: false,
         stocks: payload,
       };
-    case StockActionKind.LOAD_STOCK:
+    case StockActionKind.ADD_STOCK:
       return {
         ...state,
         loading: false,
@@ -107,7 +107,7 @@ const StockPage = () => {
   );
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(20);
+  const [limit, setLimit] = useState<number>(10);
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
 
   const mounted = useMounted();
@@ -122,46 +122,53 @@ const StockPage = () => {
   const handlePageChange = (event: any, newPage: number): void => {
     if ((page + 1) * limit >= stockList.length - limit) {
       setShouldUpdate(true);
+      console.log(shouldUpdate);
     }
     setPage(newPage);
   };
 
-  const fetchList = useCallback(
-    async (add = false) => {
-      console.log(mounted.current);
-      if (!mounted && !shouldUpdate) {
-        return;
-      }
-      dispatch({ type: StockActionKind.LOADING });
-
-      const { data, status } = await APIStock.getListDetails(
-        page,
-        limit,
+  const loadStock = useCallback(async () => {
+    dispatch({ type: StockActionKind.LOADING });
+    try {
+      const { data } = await APIStock.getListDetails(
         search,
+        stockList.length,
       );
-      if (status === 200) {
-        if (add) {
-          dispatch({
-            type: StockActionKind.ADD_STOCK,
-            payload: data,
-          });
-        } else {
-          dispatch({
-            type: StockActionKind.LOAD_STOCK,
-            payload: data,
-          });
-        }
-      } else {
-        dispatch({ type: StockActionKind.ERROR, payload: data });
-      }
-    },
-    [page, limit, search],
-  );
+      dispatch({
+        type: StockActionKind.LOAD_STOCK,
+        payload: data,
+      });
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: StockActionKind.ERROR, payload: error });
+    }
+  }, [search, limit]);
+
+  const addStock = useCallback(async () => {
+    if (!shouldUpdate) return;
+    console.log('add stock');
+    try {
+      const { data } = await APIStock.getListDetails(
+        search,
+
+        stockList.length,
+      );
+
+      console.log('data');
+      console.log('list', stockState.stocks);
+      dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
+      console.log('list', stockState.stocks);
+      setShouldUpdate(false);
+    } catch (error) {}
+  }, [page, limit, search, shouldUpdate]);
 
   useEffect(() => {
-    const isAdd = shouldUpdate ? true : false;
-    fetchList(isAdd);
-  }, [fetchList, shouldUpdate]);
+    addStock();
+  }, [addStock]);
+
+  useEffect(() => {
+    loadStock();
+  }, [loadStock]);
 
   return (
     <>
@@ -220,7 +227,7 @@ const StockPage = () => {
               setLimit={setLimit}
               setPage={handlePageChange}
               setSearch={setSearch}
-              reload={fetchList}
+              reload={loadStock}
             />
           </Box>
         </Container>
