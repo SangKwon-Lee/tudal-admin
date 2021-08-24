@@ -29,7 +29,7 @@ import {
   Theme,
   makeStyles,
 } from '@material-ui/core/styles';
-
+import * as _ from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import Label from '../../widgets/Label';
@@ -137,12 +137,16 @@ const applySort = (schedules: Schedule[], sort: Sort): Schedule[] => {
 
 interface ScheduleListTableProps {
   schedules: Schedule[];
+  page: number;
+  limit: number;
   search: string;
-  setSearch: (value) => void;
+  scrollRef: RefObject<HTMLDivElement>;
+  handlePage: (event: any, newPage: number) => void;
+  handleLimit: (event: ChangeEvent<HTMLInputElement>) => void;
+  setSearch: (word: string) => void;
   postDelete: (id: number) => void;
   reload: () => void;
   setTargetModify: (target: Schedule) => void;
-  scrollRef: RefObject<HTMLDivElement>;
 }
 
 const applyPagination = (
@@ -173,25 +177,16 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
     setSearch,
     setTargetModify,
     scrollRef,
+    page,
+    limit,
+    handlePage,
+    handleLimit,
   } = props;
   const classes = useStyles();
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
   const [targetSchedule, setTargetDelete] = useState<Schedule>(null);
   const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
     useState<boolean>(false);
-
-  const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setLimit(parseInt(event.target.value, 10));
-  };
-
   const handleSort = (event): void => {
     setSort(event.target.value);
   };
@@ -308,7 +303,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                         underline="none"
                         variant="subtitle2"
                       >
-                        {schedule.title}
+                        {schedule.id} {schedule.title}
                       </Link>
                     </TableCell>
                     <TableCell>
@@ -384,11 +379,11 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
         <TablePagination
           component="div"
           count={schedules.length} //TODO
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleLimitChange}
+          onPageChange={handlePage}
+          onRowsPerPageChange={handleLimit}
           page={page}
           rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 50]}
         />
         {targetSchedule && (
           <Dialog

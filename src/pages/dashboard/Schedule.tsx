@@ -1,4 +1,11 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useReducer,
+  useEffect,
+  ChangeEvent,
+} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Schedule } from 'src/types/schedule';
@@ -17,24 +24,177 @@ import { ScheduleListTable } from '../../components/dashboard/schedule';
 import useSettings from 'src/hooks/useSettings';
 import useAsync from 'src/hooks/useAsync';
 import { APISchedule } from 'src/lib/api';
+import { AxiosError } from 'axios';
+import * as _ from 'lodash';
+import useMounted from 'src/hooks/useMounted';
+enum ScheduleActionKind {
+  LOADING = 'LOADING',
+  ADD_SCHEDULE = 'ADD_SCHEDULE',
+  LOAD_SCHEDULE = 'LOAD_SCHEDULE',
+  RELOAD_SCHEDULE = 'RELOAD_SCHEDULE',
+  SHOW_SELECT_CONFIRM = 'SHOW_SELECT_CONFIRM',
+  CLOSE_SELECT_CONFIRM = 'CLOSE_SELECT_CONFIRM',
+  ERROR = 'ERROR',
+}
+
+interface ScheduleAction {
+  type: ScheduleActionKind;
+  payload?: any;
+}
+
+interface scheduleState {
+  list: Schedule[];
+  loading: boolean;
+  isOpenConfirm: boolean;
+  error: AxiosError<any> | boolean;
+}
+
+const initialState: scheduleState = {
+  list: [],
+  loading: true,
+  error: null,
+  isOpenConfirm: false,
+};
+
+const scheduleReducer = (
+  state: scheduleState,
+  action: ScheduleAction,
+): scheduleState => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case ScheduleActionKind.LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ScheduleActionKind.LOAD_SCHEDULE:
+      return {
+        ...state,
+        loading: false,
+        list: payload,
+      };
+    case ScheduleActionKind.RELOAD_SCHEDULE:
+      return {
+        ...state,
+        loading: false,
+        list: payload,
+      };
+    case ScheduleActionKind.ADD_SCHEDULE:
+      return {
+        ...state,
+        loading: false,
+        list: [...state.list, ...payload],
+      };
+    case ScheduleActionKind.SHOW_SELECT_CONFIRM:
+      return {
+        ...state,
+        isOpenConfirm: true,
+      };
+    case ScheduleActionKind.CLOSE_SELECT_CONFIRM:
+      return {
+        ...state,
+        isOpenConfirm: false,
+      };
+
+    case ScheduleActionKind.ERROR:
+      return {
+        ...state,
+        error: payload,
+      };
+  }
+};
 
 const ScheduleList: React.FC = () => {
   const { settings } = useSettings();
   const scrollRef = useRef(null);
   const [search, setSearch] = useState<string>('');
+  const [page, setPage] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(50);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [targetModify, setTargetModify] = useState<Schedule>(null);
-  const [schedulesState, refetchSchedule] = useAsync<Schedule[]>(
-    () => APISchedule.getList(search),
-    [search],
-    [],
+  const [scheduleState, dispatch] = useReducer(
+    scheduleReducer,
+    initialState,
   );
+  const mounted = useMounted();
 
-  const { data: schedules } = schedulesState;
+  const { list } = scheduleState;
 
-  const reload = useCallback(
-    () => refetchSchedule(),
-    [refetchSchedule],
-  );
+  const handlePage = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    newPage: number,
+  ): void => {
+    if ((page + 1) * limit >= list.length - limit) {
+      setShouldUpdate(true);
+    }
+    setPage(newPage);
+  };
+
+  const handleLimit = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setLimit(parseInt(event.target.value, 10));
+  };
+  const getSchedule = useCallback(async () => {
+    dispatch({ type: ScheduleActionKind.LOADING });
+    try {
+      setPage(0);
+      const { data } = await APISchedule.getList(search);
+      dispatch({
+        type: ScheduleActionKind.LOAD_SCHEDULE,
+        payload: data,
+      });
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: ScheduleActionKind.ERROR, payload: error });
+    }
+  }, [search]);
+
+  const addSchedule = useCallback(async () => {
+    try {
+      const { data } = await APISchedule.getList(
+        search,
+        (page + 1) * limit,
+      );
+      dispatch({
+        type: ScheduleActionKind.ADD_SCHEDULE,
+        payload: data,
+      });
+      setShouldUpdate(false);
+    } catch (error) {}
+  }, [page, limit, search]);
+
+  const realodSchedule = useCallback(async () => {
+    try {
+      const { data } = await APISchedule.getList(
+        search,
+        1,
+        (page + 1) * limit,
+      );
+      dispatch({
+        type: ScheduleActionKind.RELOAD_SCHEDULE,
+        payload: data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [page, limit, search]);
+
+  useEffect(() => {
+    shouldUpdate && addSchedule();
+  }, [addSchedule, shouldUpdate]);
+
+  useEffect(() => {
+    mounted && getSchedule();
+  }, [getSchedule, mounted]);
+
+  useEffect(() => {
+    scrollRef &&
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [page]);
+
+  const reload = () => realodSchedule();
 
   const postDelete = async (id: number) => {
     try {
@@ -56,6 +216,8 @@ const ScheduleList: React.FC = () => {
     setTargetModify(null);
   };
 
+  const handleSearch = _.debounce(setSearch, 300);
+
   return (
     <>
       <Helmet>
@@ -69,9 +231,11 @@ const ScheduleList: React.FC = () => {
           minHeight: '100%',
           py: 8,
         }}
-        ref={scrollRef}
       >
-        <Container maxWidth={settings.compact ? 'xl' : false}>
+        <Container
+          maxWidth={settings.compact ? 'xl' : false}
+          ref={scrollRef}
+        >
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
@@ -111,10 +275,14 @@ const ScheduleList: React.FC = () => {
           />
           <Box sx={{ mt: 3 }}>
             <ScheduleListTable
-              schedules={schedules}
+              schedules={list}
               reload={reload}
               search={search}
-              setSearch={setSearch}
+              page={page}
+              limit={limit}
+              handlePage={handlePage}
+              handleLimit={handleLimit}
+              setSearch={handleSearch}
               postDelete={postDelete}
               setTargetModify={setTargetModify}
               scrollRef={scrollRef}
