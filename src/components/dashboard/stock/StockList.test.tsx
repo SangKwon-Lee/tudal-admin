@@ -1,10 +1,4 @@
-import {
-  fireEvent,
-  getByLabelText,
-  getByTestId,
-  render,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 
 import { FixtureStocks } from 'src/fixtures';
 
@@ -16,7 +10,7 @@ const mock = jest.fn();
 const LIMIT = 20;
 describe('Stock List Test', () => {
   it('should have values from API', () => {
-    const { getAllByText, getAllByTestId, debug } = render(
+    const { getAllByText } = render(
       <StockList
         //@ts-ignore
         list={FixtureStocks.summaries}
@@ -54,7 +48,7 @@ describe('Stock List Test', () => {
   });
 
   it('should be able to move next and previous page', () => {
-    const { getByTestId, getAllByText, debug } = render(
+    const { getByTestId, getAllByText } = render(
       <StockList
         //@ts-ignore
         list={FixtureStocks.summaries}
@@ -79,7 +73,7 @@ describe('Stock List Test', () => {
 
 describe('ASYNC TEST', () => {
   it('should be able to load more data from API', async () => {
-    const { getByTestId, getAllByText, debug } = render(
+    const { getByTestId, getAllByText } = render(
       <StockList
         //@ts-ignore
         list={FixtureStocks.summaries}

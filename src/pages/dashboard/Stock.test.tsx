@@ -31,13 +31,13 @@ describe('should have stock list and form modal', () => {
   });
 
   it('should open form modal', async () => {
-    const { getByTestId, getAllByLabelText } = renderStock();
+    const { getByTestId, getAllByText } = renderStock();
 
     await waitForElementToBeRemoved(() =>
       getByTestId('stock-list-loading'),
     );
 
-    const openDetailButtons = getAllByLabelText(/수정/);
+    const openDetailButtons = getAllByText(/수정/);
 
     fireEvent.click(openDetailButtons[0]);
 

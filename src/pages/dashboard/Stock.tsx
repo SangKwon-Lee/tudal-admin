@@ -183,9 +183,9 @@ const StockPage = () => {
           py: 8,
         }}
       >
-        {console.log(isOpenForm, targetStock)}
-        {isOpenForm && _.isEmpty(targetStock) && (
+        {isOpenForm && !_.isEmpty(targetStock) && (
           <StockFormModal
+            //@ts-ignore
             stock={targetStock}
             isOpen={isOpenForm}
             setClose={() =>
