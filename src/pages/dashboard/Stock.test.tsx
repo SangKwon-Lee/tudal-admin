@@ -1,4 +1,5 @@
 import {
+  fireEvent,
   render,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
@@ -27,5 +28,19 @@ describe('should have stock list and form modal', () => {
     );
 
     expect(getByTestId('stock-list-table')).toBeInTheDocument();
+  });
+
+  it('should open form modal', async () => {
+    const { getByTestId, getAllByLabelText } = renderStock();
+
+    await waitForElementToBeRemoved(() =>
+      getByTestId('stock-list-loading'),
+    );
+
+    const openDetailButtons = getAllByLabelText(/수정/);
+
+    fireEvent.click(openDetailButtons[0]);
+
+    expect(getByTestId('stock-form-modal')).toBeInTheDocument();
   });
 });

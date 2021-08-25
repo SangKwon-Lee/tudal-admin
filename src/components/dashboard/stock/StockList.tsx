@@ -11,6 +11,7 @@ import {
   Typography,
   TablePagination,
   CardContent,
+  Button,
 } from '@material-ui/core';
 import SearchIcon from 'src/icons/Search';
 import { applySort, applyPagination } from 'src/utils/pagination';
@@ -27,6 +28,8 @@ interface StockListProps {
   setPage: (event: any, newPage: number) => void;
   setLimit: (limit: number) => void;
   setSearch: (value) => void;
+  setTarget: (stock: IStockDetailsWithTagCommentNews) => void;
+  setOpen: () => void;
   reload: () => void;
 }
 
@@ -57,6 +60,8 @@ const StockList: React.FC<StockListProps> = (props) => {
     setPage,
     setLimit,
     setSearch,
+    setTarget,
+    setOpen,
     reload,
   } = props;
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
@@ -194,6 +199,9 @@ const StockList: React.FC<StockListProps> = (props) => {
                   fontSize={15}
                 >
                   키워드
+                </Typography>{' '}
+                <Typography variant="overline" color="textSecondary">
+                  (최신 업데이트 순)
                 </Typography>
               </>
             }
@@ -205,6 +213,9 @@ const StockList: React.FC<StockListProps> = (props) => {
               fontSize={15}
             >
               관련 뉴스
+            </Typography>
+            <Typography variant="overline" color="textSecondary">
+              (선택 뉴스, 최신 순)
             </Typography>
 
             {_.isEmpty(stock.news) ? (
@@ -261,8 +272,12 @@ const StockList: React.FC<StockListProps> = (props) => {
               fontSize={15}
             >
               {' '}
-              코멘트
+              코멘트{' '}
             </Typography>
+            <Typography variant="overline" color="textSecondary">
+              (최신 순)
+            </Typography>
+
             {_.isEmpty(stock.comments) ? (
               <Box
                 sx={{
@@ -295,6 +310,17 @@ const StockList: React.FC<StockListProps> = (props) => {
                 );
               })
             )}
+            <Button
+              color="primary"
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                setOpen();
+                setTarget(stock);
+              }}
+            >
+              수정
+            </Button>
           </CardContent>
         </Card>
       ))}

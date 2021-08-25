@@ -19,20 +19,22 @@ import { Helmet } from 'react-helmet-async';
 import ChevronRightIcon from 'src/icons/ChevronRight';
 import useSettings from 'src/hooks/useSettings';
 import useAuth from 'src/hooks/useAuth';
-import useMounted from 'src/hooks/useMounted';
-
+import * as _ from 'lodash';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import { APIStock } from 'src/lib/api';
-import { StockList, StockForm } from 'src/components/dashboard/stock';
-import useAsync from 'src/hooks/useAsync';
+import {
+  StockList,
+  StockFormModal,
+} from 'src/components/dashboard/stock';
 import { AxiosError } from 'axios';
 
 enum StockActionKind {
   LOADING = 'LOADING',
   ADD_STOCK = 'ADD_STOCK', // add stocks to existing news
   LOAD_STOCK = 'LOAD_STOCK', // first request || reload
-  SHOW_SELECT_CONFIRM = 'SHOW_SELECT_CONFIRM',
-  CLOSE_SELECT_CONFIRM = 'CLOSE_SELECT_CONFIRM',
+  SHOW_FORM = 'SHOW_FORM',
+  CLOSE_FORM = 'CLOSE_FORM',
+  SET_TARGET = 'SET_TARGET',
   ERROR = 'ERROR',
 }
 
@@ -43,16 +45,18 @@ interface StockAction {
 
 interface stockState {
   stocks: IStockDetailsWithTagCommentNews[];
+  targetStock: IStockDetailsWithTagCommentNews;
   loading: boolean;
-  isOpenConfirm: boolean;
+  isOpenForm: boolean;
   error: AxiosError<any> | boolean;
 }
 
 const initialState: stockState = {
   stocks: [],
+  targetStock: null,
+  isOpenForm: false,
   loading: true,
   error: null,
-  isOpenConfirm: false,
 };
 
 const stockReducer = (
@@ -79,15 +83,21 @@ const stockReducer = (
         loading: false,
         stocks: [...state.stocks, ...payload],
       };
-    case StockActionKind.SHOW_SELECT_CONFIRM:
+
+    case StockActionKind.SET_TARGET:
       return {
         ...state,
-        isOpenConfirm: true,
+        targetStock: payload,
       };
-    case StockActionKind.CLOSE_SELECT_CONFIRM:
+    case StockActionKind.SHOW_FORM:
       return {
         ...state,
-        isOpenConfirm: false,
+        isOpenForm: true,
+      };
+    case StockActionKind.CLOSE_FORM:
+      return {
+        ...state,
+        isOpenForm: false,
       };
 
     case StockActionKind.ERROR:
@@ -110,13 +120,12 @@ const StockPage = () => {
   const [limit, setLimit] = useState<number>(10);
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
 
-  const mounted = useMounted();
-
   const {
     stocks: stockList,
     loading: stockListLoading,
+    targetStock,
     error,
-    isOpenConfirm,
+    isOpenForm,
   } = stockState;
 
   const handlePageChange = (event: any, newPage: number): void => {
@@ -174,7 +183,16 @@ const StockPage = () => {
           py: 8,
         }}
       >
-        {false && <StockForm></StockForm>}
+        {console.log(isOpenForm, targetStock)}
+        {isOpenForm && _.isEmpty(targetStock) && (
+          <StockFormModal
+            stock={targetStock}
+            isOpen={isOpenForm}
+            setClose={() =>
+              dispatch({ type: StockActionKind.CLOSE_FORM })
+            }
+          />
+        )}
         <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
@@ -219,6 +237,15 @@ const StockPage = () => {
               setPage={handlePageChange}
               setSearch={setSearch}
               reload={loadStock}
+              setOpen={() =>
+                dispatch({ type: StockActionKind.SHOW_FORM })
+              }
+              setTarget={(target: IStockDetailsWithTagCommentNews) =>
+                dispatch({
+                  type: StockActionKind.SET_TARGET,
+                  payload: target,
+                })
+              }
             />
           </Box>
         </Container>
