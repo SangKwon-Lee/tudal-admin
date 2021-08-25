@@ -169,7 +169,7 @@ const ScheduleList: React.FC = () => {
     try {
       const { data } = await APISchedule.getList(
         search,
-        1,
+        0,
         (page + 1) * limit,
       );
       dispatch({

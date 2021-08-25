@@ -4,7 +4,7 @@ import { Schedule, IScheduleForm } from 'src/types/schedule';
 
 export async function getList(
   search: string,
-  start: number = 1,
+  start: number = 0,
   limit: number = 100,
 ) {
   let q: any = {};
