@@ -12,6 +12,7 @@ import {
   TablePagination,
   CardContent,
   Button,
+  Divider,
 } from '@material-ui/core';
 import SearchIcon from 'src/icons/Search';
 import { applySort, applyPagination } from 'src/utils/pagination';
@@ -120,7 +121,7 @@ const StockList: React.FC<StockListProps> = (props) => {
       )}
       {paginatedList.map((stock, i) => (
         <Card
-          key={stock.code}
+          key={i}
           sx={{
             '& + &': {
               mt: 2,
@@ -157,28 +158,33 @@ const StockList: React.FC<StockListProps> = (props) => {
                       </Typography>
                     </Box>
                   ) : (
-                    stock.tags.map((tag) => {
-                      return (
-                        <Chip
-                          // onDelete={(): void => {
-                          //   const newTags = values.tags.filter(
-                          //     (t) => t !== _tag,
-                          //   );
-
-                          //   setFieldValue('tags', newTags);
-                          // }}
-                          // eslint-disable-next-line react/no-array-index-key
-                          key={tag.id}
-                          label={tag.name}
-                          sx={{
-                            '& + &': {
-                              ml: 1,
-                            },
-                          }}
-                          variant="outlined"
-                        />
-                      );
-                    })
+                    <>
+                      <Divider />
+                      <Box
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          p: 2,
+                        }}
+                      >
+                        {stock.tags.map((tag, i) => {
+                          return (
+                            <Chip
+                              key={i}
+                              label={tag.name}
+                              sx={{
+                                '& + &': {
+                                  ml: 1,
+                                },
+                              }}
+                              variant="outlined"
+                            />
+                          );
+                        })}
+                      </Box>
+                      <Divider />
+                    </>
                   )}
                 </Box>
               </Box>
@@ -187,7 +193,6 @@ const StockList: React.FC<StockListProps> = (props) => {
               <>
                 <Typography
                   color="textPrimary"
-                  sx={{ ml: 1 }}
                   variant="h5"
                   fontSize={20}
                 >
@@ -232,14 +237,14 @@ const StockList: React.FC<StockListProps> = (props) => {
             ) : (
               stock.news
                 .filter((entity) => entity !== null)
-                .map((entity) => {
+                .map((entity, i) => {
                   return (
                     <Box
+                      key={i}
                       sx={{
                         pb: 2,
                         px: 3,
                       }}
-                      key={entity.id}
                     >
                       <Typography
                         variant="h6"
@@ -300,7 +305,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                     }}
                   >
                     <pre>- {comment.message} </pre>
-                    <Typography variant="body1" fontSize={15}>
+                    <Typography color="textSecondary" variant="body2">
                       {comment.author &&
                         `${dayjs(comment.updated_at).format(
                           'YYYY-MM-DD HH:mm',
@@ -313,7 +318,7 @@ const StockList: React.FC<StockListProps> = (props) => {
             <Button
               color="primary"
               size="small"
-              variant="outlined"
+              variant="contained"
               onClick={() => {
                 setOpen();
                 setTarget(stock);
