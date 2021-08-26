@@ -134,6 +134,7 @@ const News: React.FC = () => {
   }, [newsState.isOpenConfirm]);
 
   const getNews = useCallback(async () => {
+    console.log('reaload 실행');
     dispatch({ type: NewsActionKind.LOADING });
     try {
       const { data } = await APINews.getList(search);
