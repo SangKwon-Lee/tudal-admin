@@ -32,6 +32,7 @@ enum StockActionKind {
   LOADING = 'LOADING',
   ADD_STOCK = 'ADD_STOCK', // add stocks to existing news
   LOAD_STOCK = 'LOAD_STOCK', // first request || reload
+  RELOAD_STOCK = 'RELOAD_STOCK', // first request || reload
   SHOW_FORM = 'SHOW_FORM',
   CLOSE_FORM = 'CLOSE_FORM',
   SET_TARGET = 'SET_TARGET',
@@ -76,6 +77,16 @@ const stockReducer = (
         ...state,
         loading: false,
         stocks: payload,
+      };
+    case StockActionKind.RELOAD_STOCK:
+      return {
+        ...state,
+        loading: false,
+        stocks: state.stocks.map((stock) => {
+          if (stock.code === payload.code) return payload;
+          return stock;
+        }),
+        targetStock: payload,
       };
     case StockActionKind.ADD_STOCK:
       return {
@@ -162,6 +173,28 @@ const StockPage = () => {
     } catch (error) {}
   }, [page, stockList]);
 
+  const reloadStock = useCallback(async (stockCode) => {
+    try {
+      const { data } = await APIStock.getDetails(stockCode);
+      console.log('reaload stock', data);
+      dispatch({ type: StockActionKind.RELOAD_STOCK, payload: data });
+      setShouldUpdate(false);
+    } catch (error) {}
+  }, []);
+
+  const postStockComment = async (message, stock) => {
+    const { data, status } = await APIStock.postStockComment(
+      message,
+      stock,
+      user.id,
+    );
+
+    if (status === 200) {
+      alert('success');
+      reloadStock(stock);
+    }
+  };
+
   useEffect(() => {
     addStock();
   }, [addStock]);
@@ -188,6 +221,8 @@ const StockPage = () => {
             //@ts-ignore
             stock={targetStock}
             isOpen={isOpenForm}
+            postStockComment={postStockComment}
+            reloadElement={reloadStock}
             setClose={() =>
               dispatch({ type: StockActionKind.CLOSE_FORM })
             }

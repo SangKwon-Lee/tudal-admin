@@ -1,7 +1,6 @@
 import qs from 'qs';
 import { cmsServer, apiServer } from 'src/lib/axios';
 import { Stock } from 'src/types/schedule';
-import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 
 export async function getList() {
   const { data, status } = await apiServer.get<Stock[]>(
@@ -15,6 +14,10 @@ export async function getList() {
   return { data, status };
 }
 
+export async function getDetails(stockcode: string) {
+  console.log('stockcode', stockcode);
+  return await cmsServer.get(`/stocks/summary/${stockcode}`);
+}
 export async function getListDetails(
   search: string,
   start: number = 0,
@@ -41,4 +44,18 @@ export async function getStockNews(stockcode, query = {}) {
   return await cmsServer.get(
     `/stock-news-detail?_where[stockcode]=${stockcode}&${_query}`,
   );
+}
+
+export async function updateStockTag(stockcode, tagName) {
+  return await cmsServer.post(`/stocks/code/${stockcode}/tag`, {
+    tagName: tagName,
+  });
+}
+
+export async function postStockComment(message, stockcode, author) {
+  return await cmsServer.post(`/stock-comments`, {
+    message,
+    stock: stockcode,
+    author,
+  });
 }

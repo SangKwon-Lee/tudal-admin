@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Card,
-  CardHeader,
-  Paper,
   Button,
   Grid,
   Box,
@@ -16,20 +13,19 @@ import {
   LinearProgress,
   Chip,
   Typography,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  ListItem,
-  Badge,
-  List,
 } from '@material-ui/core';
 import { formatDistanceToNowStrict } from 'date-fns';
+import {
+  tokenize,
+  extractStocks,
+  extractKeywords,
+} from 'src/utils/extractKeywords';
 
 import * as _ from 'lodash';
 import { FixtureStocks } from 'src/fixtures';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
-import { APITag } from 'src/lib/api';
+import { APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
@@ -40,16 +36,18 @@ const tagFilter = createFilterOptions<any>();
 interface StockFormProps {
   stock: IStockDetailsWithTagCommentNews;
   isOpen: boolean;
+  postStockComment: (message: string, stock: string) => void;
+  reloadElement: (id: string) => void;
   setClose: () => void;
 }
 
-const StockForm: React.FC = (props) => {
-  // const StockForm: React.FC = (props) => {
-  // const { stock, isOpen, setClose } = props;
+const StockForm: React.FC<StockFormProps> = (props) => {
+  const { stock, isOpen, setClose, reloadElement, postStockComment } =
+    props;
+  console.log(stock.tags);
+  const [comment, setComment] = useState('');
   const { user } = useAuth();
   const [tagInput, setTagInput] = useState('');
-
-  const stock = FixtureStocks.summaries[0];
 
   const [{ data: tagList, loading: tagLoading }] = useAsync<Tag[]>(
     () => APITag.getList(tagInput),
@@ -57,10 +55,40 @@ const StockForm: React.FC = (props) => {
     [],
   );
 
+  const handleExtract = useCallback(
+    async (sentence) => {
+      try {
+        const tokens = tokenize(sentence);
+        if (!tokens) return;
+
+        const tags = await extractKeywords(tokens);
+        tags.forEach((tag) => {
+          postNewTag(stock, tag);
+        });
+        reloadElement(stock.code);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [reloadElement, stock],
+  );
+
+  const postNewTag = async (stock, tag) => {
+    const { data, status } = await APIStock.updateStockTag(
+      stock.code,
+      tag.name,
+    );
+    reloadElement(stock.code);
+
+    if (status === 200) {
+      alert('성공하였습니다');
+    }
+  };
+
   return (
     <Dialog
-      open={true}
-      onClose={() => console.log('herllo')}
+      open={isOpen}
+      onClose={setClose}
       data-testid="stock-form-modal"
     >
       <DialogTitle data-testid="news-comment-add-dialog">
@@ -110,7 +138,8 @@ const StockForm: React.FC = (props) => {
                 }
 
                 if (reason === 'selectOption') {
-                  // handleAddKeyword(item.option);
+                  console.log(stock.code, item.option.name);
+                  postNewTag(stock, item.option);
                 }
 
                 if (reason === 'clear') {
@@ -184,14 +213,19 @@ const StockForm: React.FC = (props) => {
               label="코멘트"
               variant="outlined"
               helperText="줄 바꾸기 enter"
-              onChange={(event) => console.log(event)}
+              onChange={(event) => setComment(event.target.value)}
               onBlur={(e) => {
-                // handleExtract(e.target.value);
+                handleExtract(e.target.value);
               }}
             />
           </Grid>
           <Box m={4}>
-            <Button color="primary" size="medium" variant="contained">
+            <Button
+              color="primary"
+              size="medium"
+              variant="contained"
+              onClick={() => postStockComment(comment, stock.code)}
+            >
               추가
             </Button>
           </Box>
