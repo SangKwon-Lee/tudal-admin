@@ -67,3 +67,11 @@ export async function createStockNews(
 export async function update(id, body) {
   return await axios.put(`/general-news/${id}`, body);
 }
+
+export async function postOrSelectCustomNews(url, stockcode, author) {
+  return await axios.post(`/general-news/custom`, {
+    url,
+    stockcode,
+    author,
+  });
+}

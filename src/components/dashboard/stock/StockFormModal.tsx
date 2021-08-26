@@ -13,6 +13,7 @@ import {
   LinearProgress,
   Chip,
   Typography,
+  Input,
 } from '@material-ui/core';
 import { formatDistanceToNowStrict } from 'date-fns';
 import {
@@ -25,7 +26,7 @@ import * as _ from 'lodash';
 import { FixtureStocks } from 'src/fixtures';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
-import { APIStock, APITag } from 'src/lib/api';
+import { APINews, APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
@@ -42,12 +43,12 @@ interface StockFormProps {
 }
 
 const StockForm: React.FC<StockFormProps> = (props) => {
+  const { user } = useAuth();
   const { stock, isOpen, setClose, reloadElement, postStockComment } =
     props;
-  console.log(stock.tags);
   const [comment, setComment] = useState('');
-  const { user } = useAuth();
   const [tagInput, setTagInput] = useState('');
+  const [newsUrl, setNewsUrl] = useState('');
 
   const [{ data: tagList, loading: tagLoading }] = useAsync<Tag[]>(
     () => APITag.getList(tagInput),
@@ -63,7 +64,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
         const tags = await extractKeywords(tokens);
         tags.forEach((tag) => {
-          postNewTag(stock, tag);
+          createOrUpdateTag(stock, tag);
         });
         reloadElement(stock.code);
       } catch (error) {
@@ -73,7 +74,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     [reloadElement, stock],
   );
 
-  const postNewTag = async (stock, tag) => {
+  const createOrUpdateTag = async (stock, tag) => {
     const { data, status } = await APIStock.updateStockTag(
       stock.code,
       tag.name,
@@ -82,6 +83,30 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
     if (status === 200) {
       alert('성공하였습니다');
+    }
+  };
+
+  const createOrSelectNews = async () => {
+    try {
+      const { data, status } = await APINews.postOrSelectCustomNews(
+        newsUrl,
+        stock.code,
+        user.id,
+      );
+
+      if (status === 200) {
+        console.log(data);
+        if (data.isExisted) {
+          alert(
+            '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
+          );
+        } else {
+          alert('등록되었습니다');
+        }
+      }
+      setNewsUrl('');
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -104,12 +129,12 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         >
           <Grid item md={12} xs={12}>
             {stock.tags &&
-              stock.tags.map((tag) => {
+              stock.tags.map((tag, i) => {
                 return (
                   <Chip
-                    onClick={() => console.log('click')}
+                    onClick={() => createOrUpdateTag(stock, tag)}
                     onDelete={() => console.log('delete')}
-                    key={tag.id}
+                    key={i}
                     label={tag.name}
                     sx={{
                       '& + &': {
@@ -139,7 +164,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
                 if (reason === 'selectOption') {
                   console.log(stock.code, item.option.name);
-                  postNewTag(stock, item.option);
+                  createOrUpdateTag(stock, item.option);
                 }
 
                 if (reason === 'clear') {
@@ -215,7 +240,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
               helperText="줄 바꾸기 enter"
               onChange={(event) => setComment(event.target.value)}
               onBlur={(e) => {
-                handleExtract(e.target.value);
+                // handleExtract(e.target.value);
               }}
             />
           </Grid>
@@ -224,7 +249,10 @@ const StockForm: React.FC<StockFormProps> = (props) => {
               color="primary"
               size="medium"
               variant="contained"
-              onClick={() => postStockComment(comment, stock.code)}
+              onClick={() => {
+                postStockComment(comment, stock.code);
+                handleExtract(comment);
+              }}
             >
               추가
             </Button>
@@ -242,12 +270,12 @@ const StockForm: React.FC<StockFormProps> = (props) => {
             </Typography>
 
             {stock.comments &&
-              stock.comments.map((comment, index) => (
+              stock.comments.map((comment, i) => (
                 <Box
                   sx={{
                     pb: 2,
                   }}
-                  key={comment.id}
+                  key={i}
                 >
                   <Typography
                     variant="h6"
@@ -274,14 +302,37 @@ const StockForm: React.FC<StockFormProps> = (props) => {
             (선택 뉴스, 최신 순)
           </Typography>
 
+          <Grid item md={9} xs={9}>
+            <TextField
+              fullWidth
+              name="news"
+              id="news"
+              label="기사 직접 등록"
+              variant="outlined"
+              value={newsUrl}
+              onChange={(event) => setNewsUrl(event.target.value)}
+            />
+          </Grid>
+          <Box m={4}>
+            <Button
+              color="primary"
+              size="medium"
+              variant="contained"
+              onClick={() => {
+                createOrSelectNews();
+              }}
+            >
+              추가
+            </Button>
+          </Box>
           {stock.news &&
-            stock.news.map((news) => {
+            stock.news.map((news, i) => {
               return (
                 <Box
                   sx={{
                     pb: 2,
                   }}
-                  key={news.id}
+                  key={i}
                 >
                   <Typography
                     variant="h6"
