@@ -1,6 +1,7 @@
 import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
+import { Category, Tag } from 'src/types/schedule';
 
 export async function getNews(newsId) {
   return await axios.get<INews>(
@@ -65,6 +66,18 @@ export async function createStockNews(
     newsId,
     stockcode,
     keyword: stockname,
+  });
+}
+
+export async function addTags(id, tagIds: number[]) {
+  return await axios.put(`/general-news/tags/${id}`, {
+    tags: tagIds,
+  });
+}
+
+export async function addCategories(id, categories: number[]) {
+  return await axios.put(`/general-news/categories/${id}`, {
+    categories,
   });
 }
 

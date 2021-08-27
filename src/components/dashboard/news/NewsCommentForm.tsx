@@ -51,7 +51,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const { isOpen, setOpen, news, reload } = props;
   const [comment, setComment] = useState<string>('');
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [submit, setSubmit] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<boolean>(false);
   const tagInput = useRef(null);
 
@@ -104,7 +104,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         stockcode,
         news.id,
       );
-
       if (data[0].newsId === news.id) {
         toast.success('삭제되었습니다.');
         reload();
@@ -152,6 +151,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         setLoading(true);
         if (tag.isNew) {
           const { data, status } = await APITag.postItem(tag.name);
+          console.log(data);
           if (status !== 200) {
             toast.error(
               `${tag.name} 등록에 실패하였습니다. 지속 발생 시 관리자에게 문의 바랍니다.`,
@@ -166,13 +166,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           return;
         }
 
-        const updateTags = news.tags.map((tag) => tag.id);
-        updateTags.push(tag.id);
-
-        const { data, status } = await APINews.update(news.id, {
-          tags: updateTags,
-        });
-        console.log(data);
+        const { status } = await APINews.addTags(news.id, [tag.id]);
 
         if (status === 200) {
           toast.success(`${tag.name} 이(가) 추가되었습니다.`);
@@ -229,16 +223,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         toast.success(`카테고리 '${category.name}' 이미 존재합니다.`);
         return;
       }
-      const newCategories = news.categories.map(
-        (category) => category.id,
-      );
-      newCategories.push(category.id);
 
-      const { data, status } = await APINews.update(news.id, {
-        categories: newCategories,
-      });
+      const { data, status } = await APINews.addCategories(news.id, [
+        category.id,
+      ]);
 
-      console.log(data);
       if (status === 200) {
         toast.success(`${category.name} 이(가) 추가되었습니다.`);
         reload();
@@ -274,6 +263,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
   const handleExtract = useCallback(
     async (sentence) => {
+      setLoading(true);
       try {
         const tokens = tokenize(sentence);
         if (!tokens) return;
@@ -282,18 +272,30 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
         const tags = await extractKeywords(afterStock);
 
-        stocks.forEach((stock) => {
-          handleAddStock(stock.code, stock.name);
+        // 종목 등록
+        stocks.forEach(async (stock) => {
+          await handleAddStock(stock.code, stock.name);
         });
 
-        tags.forEach((tag) => {
-          handleAddKeyword(tag);
-        });
+        // 키워드 등록
+        if (tags) {
+          const tagIds = tags.map((el) => el.id);
+          const { status, data } = await APINews.addTags(
+            news.id,
+            tagIds,
+          );
+          if (status === 200) {
+            toast.success('키워드 추출이 성공적으로 완료되었습니다.');
+            reload();
+          }
+        }
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     },
-    [stockList, handleAddKeyword, handleAddStock],
+    [handleAddStock, news.id, reload, stockList],
   );
 
   return (
