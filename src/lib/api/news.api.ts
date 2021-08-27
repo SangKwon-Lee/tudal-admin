@@ -2,6 +2,12 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
 
+export async function getNews(newsId) {
+  return await axios.get<INews>(
+    `/general-news-with-stocks?_where[id]=${newsId}`,
+  );
+}
+
 export async function getList(search: string, start?: number) {
   let q: any = {};
   if (search) {
@@ -10,13 +16,11 @@ export async function getList(search: string, start?: number) {
   if (start) {
     q._start = start;
   }
-  const response = await axios.get<INews[]>(
+  return await axios.get<INews[]>(
     `/general-news-with-stocks?_sort=publishDate:DESC&${qs.stringify(
       q,
     )}`,
   );
-
-  return response;
 }
 
 export async function getComments(newsId: number) {
