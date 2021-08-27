@@ -33,133 +33,26 @@ import {
   extractStocks,
   extractKeywords,
 } from 'src/utils/extractKeywords';
-import { getByTestId } from '@testing-library/react';
-import { FixtureNews, FixtureStocks } from 'src/fixtures';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import useAuth from 'src/hooks/useAuth';
-import { createComment } from 'src/lib/api/news.api';
 
 const keywordFilter = createFilterOptions<any>();
 const categoryFilter = createFilterOptions<any>();
 
 interface NewsCommentFormProps {
   isOpen: boolean;
-  setOpen: (isOpen) => void;
   news: INews;
+  setOpen: (isOpen) => void;
   reload: () => void;
 }
-
-enum NewsCommentActionType {
-  CLEAR = 'CLEAR',
-  ADD_STOCK = 'ADD_STOCK',
-  ADD_KEYWORD = 'ADD_KEYWORD',
-  REPLACE_STOCK = 'REPLACE_STOCK',
-  REPLACE_KEYWORD = 'REPLACE_KEYWORD',
-  ADD_CATEGORY = 'ADD_CATEGORY',
-  REPLACE_CATEGORY = 'REPLACE_CATEGORY',
-  REPLACE_DATES = 'REPLACE_DATES',
-  HANDLE_CHANGES = 'HANDLE_CHANGES',
-
-  SHOW_CONFIRM = 'SHOW_CONFIRM',
-  CLOSE_CONFIRM = 'CLOSE_CONFIRM',
-  SUBMIT = 'SUBMIT',
-}
-
-interface INewsCommentFormState {
-  comment: string;
-  categories: Category[];
-  stocks: Stock[];
-  keywords: Tag[];
-  showConfirm: boolean;
-  submitForm: boolean;
-}
-
-const initialNewsCommentForm: INewsCommentFormState = {
-  comment: '',
-  categories: [],
-  stocks: [],
-  keywords: [],
-  showConfirm: false,
-  submitForm: false,
-};
-
-interface ScheduleAction {
-  type: NewsCommentActionType;
-  payload?: any;
-}
-
-const scheduleFormReducer = (
-  state: INewsCommentFormState,
-  action: ScheduleAction,
-): INewsCommentFormState => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case NewsCommentActionType.CLEAR:
-      return initialNewsCommentForm;
-
-    case NewsCommentActionType.HANDLE_CHANGES:
-      const { name, value } = payload.target;
-      return { ...state, [name]: value };
-
-    case NewsCommentActionType.ADD_STOCK:
-      if (_.find(state.stocks, ['stockcode', payload.stockcode])) {
-        return state;
-      }
-      return { ...state, stocks: [...state.stocks, action.payload] };
-
-    case NewsCommentActionType.REPLACE_STOCK:
-      return { ...state, stocks: payload };
-
-    case NewsCommentActionType.ADD_KEYWORD:
-      console.log('ADD KEYWORD', payload, state.keywords);
-      if (_.find(state.keywords, ['id', payload.id])) {
-        return state;
-      }
-      return {
-        ...state,
-        keywords: [...state.keywords, action.payload],
-      };
-
-    case NewsCommentActionType.REPLACE_KEYWORD:
-      return { ...state, keywords: payload };
-
-    case NewsCommentActionType.ADD_CATEGORY:
-      if (_.find(state.categories, ['id', payload.id])) {
-        return state;
-      }
-      return {
-        ...state,
-        categories: [...state.categories, action.payload],
-      };
-
-    case NewsCommentActionType.REPLACE_CATEGORY:
-      return { ...state, categories: payload };
-
-    case NewsCommentActionType.SHOW_CONFIRM: {
-      return { ...state, showConfirm: true };
-    }
-
-    case NewsCommentActionType.CLOSE_CONFIRM: {
-      return { ...state, showConfirm: false, submitForm: false };
-    }
-
-    case NewsCommentActionType.SUBMIT: {
-      return { ...state, submitForm: true };
-    }
-  }
-};
 
 const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const { user } = useAuth();
   const { isOpen, setOpen, news, reload } = props;
-
+  const [comment, setComment] = useState<string>('');
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [submit, setSubmit] = useState<boolean>(false);
   const tagInput = useRef(null);
-
-  const [commentForm, dispatch] = useReducer(
-    scheduleFormReducer,
-    initialNewsCommentForm,
-  );
 
   const [{ data: stockList, loading: stockLoading }] = useAsync<
     Stock[]
@@ -184,11 +77,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const handleTagChange = _.debounce(refetchTag, 300);
 
   const handleSubmit = useCallback(async () => {
-    if (!commentForm.submitForm) {
+    if (!submit) {
       return;
     }
     const data: any = {
-      comment: commentForm.comment,
+      comment: comment,
       author: user.id,
       general_news: news.id,
     };
@@ -197,34 +90,16 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       const { status } = await APINews.createComment(data);
       if (status === 200) {
         refetchComment();
-        dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM });
-        dispatch({ type: NewsCommentActionType.CLEAR });
+        setShowConfirm(false);
       }
     } catch (error) {
       console.error(error);
     }
-  }, [commentForm, user, news, refetchComment]);
+  }, [user, news, comment, submit, refetchComment]);
 
   useEffect(() => {
-    commentForm.submitForm && handleSubmit();
-  }, [commentForm.submitForm, handleSubmit]);
-
-  useEffect(() => {
-    const { stocks, tags, categories } = props.news;
-    console.log('useEffect!!!!', tags);
-    dispatch({
-      type: NewsCommentActionType.REPLACE_STOCK,
-      payload: stocks,
-    });
-    dispatch({
-      type: NewsCommentActionType.REPLACE_KEYWORD,
-      payload: tags,
-    });
-    dispatch({
-      type: NewsCommentActionType.REPLACE_CATEGORY,
-      payload: categories,
-    });
-  }, [props.news]);
+    submit && handleSubmit();
+  }, [submit, handleSubmit]);
 
   const handleDeleteStock = async (stockcode) => {
     try {
@@ -234,8 +109,8 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       );
 
       if (data[0].newsId === news.id) {
-        reload();
         toast.success('삭제되었습니다.');
+        reload();
       } else {
         toast.error('에러가 발생했습니다.');
       }
@@ -247,13 +122,18 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const handleAddStock = useCallback(
     async (stockcode, stockname) => {
       try {
+        if (_.find(news.stocks, ['stockcode', String(stockcode)])) {
+          toast.success(`종목 '${stockname}' 이미 존재합니다.`);
+          return;
+        }
+
         const { data, status } = await APINews.createStockNews(
           stockcode,
           stockname,
           news.id,
         );
         if (status === 200) {
-          toast.success('추가 되었습니다.');
+          toast.success(`${stockname} 이(가) 추가되었습니다.`);
           reload();
         }
       } catch (error) {
@@ -264,8 +144,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   );
 
   const handleAddKeyword = useCallback(
-    async (tag) => {
+    async (tag: Tag) => {
       try {
+        // 신규 추가하는 경우
         if (tag.isNew) {
           const { data, status } = await APITag.postItem(tag.name);
           if (status !== 200) {
@@ -273,47 +154,45 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               `${tag.name} 등록에 실패하였습니다. 지속 발생 시 관리자에게 문의 바랍니다.`,
             );
             return;
+          } else {
+            tag = data;
           }
-          tag = data;
         }
-
-        if (_.find(commentForm.keywords, ['id', tag.id])) {
-          toast.success(`${tag.name} 이미 등록된 키워드 입니다.`);
+        if (_.find(news.tags, ['id', tag.id])) {
+          toast.success(`키워드 '${tag.name}' 이미 존재합니다.`);
           return;
         }
 
-        console.log('@@@@@@@', commentForm.keywords);
-        const updateTags = commentForm.keywords.map((tag) => tag.id);
+        const updateTags = news.tags.map((tag) => tag.id);
         updateTags.push(tag.id);
 
         const { data, status } = await APINews.update(news.id, {
           tags: updateTags,
         });
+        console.log(data);
 
         if (status === 200) {
-          dispatch({
-            type: NewsCommentActionType.REPLACE_KEYWORD,
-            payload: data.tags,
-          });
-
-          toast.success('추가되었습니다.');
+          toast.success(`${tag.name} 이(가) 추가되었습니다.`);
           reload();
         }
       } catch (error) {
         console.log(error);
       }
     },
-    [news, reload, commentForm],
+    [news, reload],
   );
 
-  const handleDeleteKeyword = async (tagId) => {
+  const handleDeleteKeyword = async (tag) => {
     try {
-      const updateTags = commentForm.keywords
-        .filter((tag) => tag.id !== tagId)
+      const { id } = tag;
+      const updateTags = news.tags
+        .filter((tag) => tag.id !== id)
         .map((tag) => tag.id);
+
       const { status } = await APINews.update(news.id, {
         tags: updateTags,
       });
+
       if (status === 200) {
         toast.success('삭제되었습니다.');
         reload();
@@ -325,6 +204,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
   const handleAddCategory = async (category: Category) => {
     try {
+      // 신규 카테고리 추가하는 경우
       if (category.isNew) {
         const { data, status } = await APICategory.postItem(
           category.name,
@@ -336,7 +216,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         category = data;
       }
 
-      const newCategories = commentForm.categories.map(
+      if (_.find(news.categories, ['id', category.id])) {
+        toast.success(`카테고리 '${category.name}' 이미 존재합니다.`);
+        return;
+      }
+      const newCategories = news.categories.map(
         (category) => category.id,
       );
       newCategories.push(category.id);
@@ -345,13 +229,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         categories: newCategories,
       });
 
+      console.log(data);
       if (status === 200) {
-        dispatch({
-          type: NewsCommentActionType.REPLACE_CATEGORY,
-          payload: data.categories,
-        });
-
-        toast.success('추가되었습니다.');
+        toast.success(`${category.name} 이(가) 추가되었습니다.`);
         reload();
       }
     } catch (error) {
@@ -361,7 +241,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
   const handleDeleteCategory = async (categoryId) => {
     try {
-      const newCategories = commentForm.categories
+      const newCategories = news.categories
         .filter((category) => category.id !== categoryId)
         .map((category) => category.id);
 
@@ -386,19 +266,12 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           extractStocks(stockList, tokens);
 
         const tags = await extractKeywords(afterStock);
+
         stocks.forEach((stock) => {
-          dispatch({
-            type: NewsCommentActionType.ADD_STOCK,
-            payload: stock,
-          });
           handleAddStock(stock.code, stock.name);
         });
 
         tags.forEach((tag) => {
-          dispatch({
-            type: NewsCommentActionType.ADD_KEYWORD,
-            payload: tag,
-          });
           handleAddKeyword(tag);
         });
       } catch (error) {
@@ -423,14 +296,14 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       <DialogContent>
         <Grid container spacing={3}>
           <Grid item md={12} xs={12}>
-            {console.log(commentForm.stocks)}
             <Autocomplete
               multiple
               fullWidth
               autoHighlight
+              disableClearable
               options={stockList}
               data-testid="autocomplete"
-              value={commentForm.stocks}
+              value={news.stocks}
               getOptionLabel={(option) => {
                 //@ts-ignore
                 return `${option.stockname || option.keyword}(${
@@ -446,15 +319,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                     item.option.stockcode,
                     item.option.stockname,
                   );
-                if (reason === 'clear')
-                  commentForm.stocks.forEach((stock) =>
-                    handleDeleteStock(stock.stockcode),
-                  );
-
-                dispatch({
-                  type: NewsCommentActionType.REPLACE_STOCK,
-                  payload: stocks,
-                });
               }}
               renderInput={(params) => (
                 <TextField
@@ -477,23 +341,15 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               multiple
               fullWidth
               autoHighlight
+              disableClearable
               options={tagList}
-              value={commentForm.keywords}
-              onChange={(event, keywords: Tag[], reason, item) => {
+              value={news.tags}
+              onChange={(event, tags: Tag[], reason, item) => {
                 if (reason === 'removeOption')
-                  handleDeleteKeyword(item.option.id);
+                  handleDeleteKeyword(item.option);
 
                 if (reason === 'selectOption')
                   handleAddKeyword(item.option);
-
-                if (reason === 'clear')
-                  commentForm.keywords.forEach((tag) =>
-                    handleDeleteKeyword(tag.id),
-                  );
-                dispatch({
-                  type: NewsCommentActionType.REPLACE_KEYWORD,
-                  payload: keywords,
-                });
               }}
               getOptionLabel={(option) => {
                 const label = option.name;
@@ -504,7 +360,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               }}
               filterOptions={(options, params) => {
                 const filtered = keywordFilter(options, params);
-
                 if (
                   user.role.type !== IRoleType.Author &&
                   filtered.length === 0 &&
@@ -557,12 +412,10 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
               multiple
               fullWidth
               autoHighlight
+              disableClearable
               data-testid="autocomplete-category"
               options={categoryList}
-              value={commentForm.categories}
-              // getOptionSelected={(option: Category, value) =>
-              //   option.id === value.id
-              // }
+              value={news.categories}
               getOptionLabel={(option: Category) => {
                 const label = option.name;
 
@@ -582,16 +435,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
                 if (reason === 'selectOption')
                   handleAddCategory(item.option);
-
-                if (reason === 'clear')
-                  commentForm.categories.forEach((category) =>
-                    handleDeleteCategory(category.id),
-                  );
-
-                dispatch({
-                  type: NewsCommentActionType.REPLACE_CATEGORY,
-                  payload: categories,
-                });
               }}
               filterOptions={(options, params) => {
                 const filtered = categoryFilter(options, params);
@@ -617,7 +460,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
                   name="category"
                   variant="outlined"
                   helperText="신규 생성 권한은 관리자에게 문의 바랍니다."
-                  onClick={() => console.log('hello')}
                 />
               )}
             />
@@ -630,22 +472,16 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         </Grid>
         <Dialog
           aria-labelledby="ConfirmModal"
-          open={commentForm.showConfirm}
-          onClose={() =>
-            dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM })
-          }
+          open={showConfirm}
+          onClose={() => setShowConfirm(false)}
         >
           <ConfirmModal
             title={'뉴스 코멘트 추가'}
             content={'뉴스 코멘트를 추가하시겠습니까?'}
             confirmTitle={'추가'}
             type={'CONFIRM'}
-            handleOnClick={() =>
-              dispatch({ type: NewsCommentActionType.SUBMIT })
-            }
-            handleOnCancel={() =>
-              dispatch({ type: NewsCommentActionType.CLOSE_CONFIRM })
-            }
+            handleOnClick={() => setSubmit(true)}
+            handleOnCancel={() => setShowConfirm(false)}
           />
         </Dialog>
         <Box m={5} />
@@ -656,15 +492,10 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             name="comment"
             id="comment"
             label="코멘트"
-            value={commentForm.comment}
+            value={comment}
             variant="outlined"
             helperText="줄 바꾸기 enter"
-            onChange={(event) =>
-              dispatch({
-                type: NewsCommentActionType.HANDLE_CHANGES,
-                payload: event,
-              })
-            }
+            onChange={(event) => setComment(event.target.value)}
             onBlur={(e) => {
               handleExtract(e.target.value);
             }}
@@ -677,11 +508,11 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
             type="submit"
             variant="contained"
             onClick={() => {
-              if (commentForm.comment === '') {
+              if (comment === '') {
                 alert('코멘트를 등록해주세요');
                 return;
               }
-              dispatch({ type: NewsCommentActionType.SHOW_CONFIRM });
+              setShowConfirm(true);
             }}
           >
             코멘트 등록
