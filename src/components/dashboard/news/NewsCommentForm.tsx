@@ -52,6 +52,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const [comment, setComment] = useState<string>('');
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [submit, setSubmit] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const tagInput = useRef(null);
 
   const [{ data: stockList, loading: stockLoading }] = useAsync<
@@ -77,9 +78,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const handleTagChange = _.debounce(refetchTag, 300);
 
   const handleSubmit = useCallback(async () => {
-    if (!submit) {
-      return;
-    }
     const data: any = {
       comment: comment,
       author: user.id,
@@ -91,18 +89,17 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       if (status === 200) {
         refetchComment();
         setShowConfirm(false);
+        setComment('');
+        toast.success('코멘트가 추가되었습니다.');
       }
     } catch (error) {
       console.error(error);
     }
-  }, [user, news, comment, submit, refetchComment]);
-
-  useEffect(() => {
-    submit && handleSubmit();
-  }, [submit, handleSubmit]);
+  }, [user, news, comment, refetchComment]);
 
   const handleDeleteStock = async (stockcode) => {
     try {
+      setLoading(true);
       const { data } = await APINews.deleteByStockAndNews(
         stockcode,
         news.id,
@@ -116,12 +113,15 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddStock = useCallback(
     async (stockcode, stockname) => {
       try {
+        setLoading(true);
         if (_.find(news.stocks, ['stockcode', String(stockcode)])) {
           toast.success(`종목 '${stockname}' 이미 존재합니다.`);
           return;
@@ -138,6 +138,8 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     },
     [news, reload],
@@ -147,6 +149,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     async (tag: Tag) => {
       try {
         // 신규 추가하는 경우
+        setLoading(true);
         if (tag.isNew) {
           const { data, status } = await APITag.postItem(tag.name);
           if (status !== 200) {
@@ -177,6 +180,8 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     },
     [news, reload],
@@ -184,6 +189,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
 
   const handleDeleteKeyword = async (tag) => {
     try {
+      setLoading(true);
       const { id } = tag;
       const updateTags = news.tags
         .filter((tag) => tag.id !== id)
@@ -199,11 +205,14 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddCategory = async (category: Category) => {
     try {
+      setLoading(true);
       // 신규 카테고리 추가하는 경우
       if (category.isNew) {
         const { data, status } = await APICategory.postItem(
@@ -236,11 +245,15 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteCategory = async (categoryId) => {
     try {
+      setLoading(true);
+
       const newCategories = news.categories
         .filter((category) => category.id !== categoryId)
         .map((category) => category.id);
@@ -254,6 +267,8 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -290,6 +305,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
       <div>
         <Toaster />
       </div>
+      {loading && <LinearProgress style={{ height: 10 }} />}
       <DialogTitle data-testid="news-comment-add-dialog">
         {news.title}
       </DialogTitle>
@@ -473,14 +489,14 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         <Dialog
           aria-labelledby="ConfirmModal"
           open={showConfirm}
-          onClose={() => setShowConfirm(false)}
+          onClose={() => setShowConfirm(true)}
         >
           <ConfirmModal
             title={'뉴스 코멘트 추가'}
             content={'뉴스 코멘트를 추가하시겠습니까?'}
             confirmTitle={'추가'}
             type={'CONFIRM'}
-            handleOnClick={() => setSubmit(true)}
+            handleOnClick={() => handleSubmit()}
             handleOnCancel={() => setShowConfirm(false)}
           />
         </Dialog>
