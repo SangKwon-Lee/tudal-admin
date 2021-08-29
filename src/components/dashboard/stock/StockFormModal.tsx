@@ -293,6 +293,16 @@ const StockForm: React.FC<StockFormProps> = (props) => {
             </Box>
             <Box>
               <Grid item md={12} xs={12}>
+                <Typography
+                  variant="overline"
+                  color="textSecondary"
+                  fontSize={15}
+                >
+                  종목 코멘트
+                </Typography>
+                <Typography variant="overline" color="textSecondary">
+                  (최신 순)
+                </Typography>
                 {stock.comments &&
                   stock.comments.map((comment, i) => (
                     <Box
@@ -301,19 +311,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                       }}
                       key={i}
                     >
-                      <Typography
-                        variant="overline"
-                        color="textSecondary"
-                        fontSize={15}
-                      >
-                        종목 코멘트
-                      </Typography>
-                      <Typography
-                        variant="overline"
-                        color="textSecondary"
-                      >
-                        (최신 순)
-                      </Typography>
                       <Typography
                         variant="h6"
                         fontSize={12}
