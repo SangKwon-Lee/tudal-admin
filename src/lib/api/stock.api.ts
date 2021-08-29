@@ -16,7 +16,9 @@ export async function getList() {
 
 export async function getDetails(stockcode: string) {
   console.log('stockcode', stockcode);
-  return await cmsServer.get(`/stocks/summary/${stockcode}`);
+  return await cmsServer.get(
+    `/stocks/summary?_where[code]=${stockcode}`,
+  );
 }
 export async function getListDetails(
   search: string,

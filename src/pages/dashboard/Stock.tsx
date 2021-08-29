@@ -177,7 +177,11 @@ const StockPage = () => {
     try {
       const { data } = await APIStock.getDetails(stockCode);
       console.log('reaload stock', data);
-      dispatch({ type: StockActionKind.RELOAD_STOCK, payload: data });
+      dispatch({
+        type: StockActionKind.RELOAD_STOCK,
+        payload: data[0],
+      });
+      console.log('heter');
       setShouldUpdate(false);
     } catch (error) {}
   }, []);

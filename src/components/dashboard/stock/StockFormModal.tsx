@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import {
   Dialog,
-  Paper,
   Divider,
   Button,
   Grid,
@@ -13,7 +12,7 @@ import {
   LinearProgress,
   Chip,
   Typography,
-  Input,
+  Paper,
   Card,
   CardHeader,
   CardContent,
@@ -82,10 +81,10 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       stock.code,
       tag.name,
     );
-    reloadElement(stock.code);
 
     if (status === 200) {
       alert('성공하였습니다');
+      reloadElement(stock.code);
     }
   };
 
@@ -121,6 +120,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       open={isOpen}
       onClose={setClose}
       data-testid="stock-form-modal"
+      maxWidth="lg"
     >
       <Paper>
         <Card>
