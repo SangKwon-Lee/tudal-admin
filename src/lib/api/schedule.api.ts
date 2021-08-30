@@ -2,11 +2,23 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Schedule, IScheduleForm } from 'src/types/schedule';
 
-export async function getList(search: string) {
+export async function getList(
+  search: string,
+  start: number = 0,
+  limit: number = 100,
+) {
   let q: any = {};
   if (search) {
     q._q = search;
   }
+  if (start) {
+    q._start = start;
+  }
+
+  if (limit) {
+    q._limit = limit;
+  }
+
   return await axios.get<Schedule[]>(
     `/schedules?_sort=updated_at:DESC&${qs.stringify(q)}`,
   );

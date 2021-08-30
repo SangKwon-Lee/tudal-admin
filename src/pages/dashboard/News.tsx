@@ -35,6 +35,7 @@ enum NewsActionKind {
   LOADING = 'LOADING',
   ADD_NEWS = 'ADD_NEWS',
   RELOAD_NEWS = 'RELOAD_NEWS',
+  SET_TARGET_NEWS = 'SET_TARGET_NEWS',
   SHOW_SELECT_CONFIRM = 'SHOW_SELECT_CONFIRM',
   CLOSE_SELECT_CONFIRM = 'CLOSE_SELECT_CONFIRM',
   ERROR = 'ERROR',
@@ -47,6 +48,7 @@ interface NewsAction {
 
 interface newsState {
   news: INews[];
+  targetNews: INews;
   loading: boolean;
   isOpenConfirm: boolean;
   error: AxiosError<any> | boolean;
@@ -54,6 +56,7 @@ interface newsState {
 
 const initialState: newsState = {
   news: [],
+  targetNews: null,
   loading: true,
   error: null,
   isOpenConfirm: false,
@@ -82,6 +85,16 @@ const newsReducer = (
         ...state,
         loading: false,
         news: [...state.news, ...payload],
+      };
+    case NewsActionKind.SET_TARGET_NEWS:
+      console.log('reducer', payload);
+      return {
+        ...state,
+        news: state.news.map((news) => {
+          if (news.id === payload.id) return payload;
+          return news;
+        }),
+        targetNews: payload,
       };
     case NewsActionKind.SHOW_SELECT_CONFIRM:
       return {
@@ -113,10 +126,13 @@ const News: React.FC = () => {
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
-  const [targetNews, setTargetNews] = useState<INews>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { news: newsList, loading: newsLoading } = newsState;
+  const {
+    news: newsList,
+    targetNews,
+    loading: newsLoading,
+  } = newsState;
 
   const handleSearch = _.debounce(setSearch, 300);
 
@@ -133,7 +149,7 @@ const News: React.FC = () => {
     }
   }, [newsState.isOpenConfirm]);
 
-  const getNews = useCallback(async () => {
+  const getNewsList = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
       const { data } = await APINews.getList(search);
@@ -146,6 +162,25 @@ const News: React.FC = () => {
       dispatch({ type: NewsActionKind.ERROR, payload: error });
     }
   }, [search]);
+
+  const getNews = useCallback(async () => {
+    try {
+      console.log('RELOAD NEWS');
+      const { data, status } = await APINews.getNews(targetNews.id);
+
+      console.log('data', data[0].tags);
+
+      if (status === 200) {
+        dispatch({
+          type: NewsActionKind.SET_TARGET_NEWS,
+          payload: data[0],
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: NewsActionKind.ERROR, payload: error });
+    }
+  }, [targetNews]);
 
   const addNews = useCallback(async () => {
     if (!shouldUpdate) return;
@@ -170,20 +205,20 @@ const News: React.FC = () => {
   }, [tick, minutesRefresh]);
 
   useEffect(() => {
-    getNews();
-  }, [getNews]);
+    getNewsList();
+  }, [getNewsList]);
 
   useEffect(() => {
     addNews();
   }, [addNews]);
 
   useEffect(() => {
-    toast.promise(getNews(), {
+    toast.promise(getNewsList(), {
       loading: '뉴스 업데이트 중입니다.',
       success: '완료했습니다 :)',
       error: '처리하는 도중 에러가 발생했습니다. :(',
     });
-  }, [tick, getNews]);
+  }, [tick, getNewsList]);
 
   useEffect(() => {
     scrollRef &&
@@ -198,7 +233,7 @@ const News: React.FC = () => {
     );
     dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM });
 
-    getNews();
+    getNewsList();
   };
 
   const handlePageChange = (event: any, newPage: number): void => {
@@ -221,7 +256,7 @@ const News: React.FC = () => {
           py: 8,
         }}
       >
-        {isOpen && targetNews.id && (
+        {isOpen && (
           <NewsCommentForm
             isOpen={isOpen}
             setOpen={handleOpenForm}
@@ -270,7 +305,7 @@ const News: React.FC = () => {
               newsList={newsList}
               search={search}
               setSearch={handleSearch}
-              reload={getNews}
+              reload={getNewsList}
               isLoading={newsLoading}
               setOpenConfirm={handleConfirmModal}
               page={page}
@@ -279,7 +314,12 @@ const News: React.FC = () => {
               setLimit={setLimit}
               isOpenForm={isOpen}
               setOpenForm={handleOpenForm}
-              setTargetNews={setTargetNews}
+              setTargetNews={(target) =>
+                dispatch({
+                  type: NewsActionKind.SET_TARGET_NEWS,
+                  payload: target,
+                })
+              }
               setMinutesRefresh={setMinutesRefresh}
               minutesRefresh={minutesRefresh}
             />
