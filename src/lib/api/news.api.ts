@@ -2,14 +2,6 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
 
-export async function createAndSelect(news, author) {
-  return await axios.post<INews>('/general-news', {
-    ...news,
-    isSelected: true,
-    isSelectedBy: author,
-  });
-}
-
 export async function getList(search: string, start?: number) {
   let q: any = {};
   if (search) {
@@ -52,7 +44,7 @@ export async function createComment(comment) {
 }
 
 export async function deleteByStockAndNews(
-  stockcode: number,
+  stockcode: string,
   newsId: number,
 ) {
   return await axios.delete(
@@ -76,7 +68,15 @@ export async function update(id, body) {
   return await axios.put(`/general-news/${id}`, body);
 }
 
-export async function postOrSelectCustomNews(
+export async function createAndSelectByHand(news, author) {
+  return await axios.post<INews>('/general-news', {
+    ...news,
+    isSelected: true,
+    isSelectedBy: author,
+  });
+}
+
+export async function createAndSelectByURL(
   url,
   publishDate,
   stockcode,

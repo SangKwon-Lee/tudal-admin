@@ -70,15 +70,6 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const styles = {
-  text: {
-    width: '500px',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-};
-
 const useStyles = makeStyles({
   text: {
     cursor: 'pointer',
@@ -107,12 +98,11 @@ const StockList: React.FC<StockListProps> = (props) => {
     setOpen,
     reload,
   } = props;
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
+
   const [commentPage, setCommentPage] = useState<number>(0);
   const [newsPage, setNewsPage] = useState<number>(0);
 
-  const sortedList = applySort(list, sort);
-  const paginatedList = applyPagination(sortedList, page, limit);
+  const paginatedList = applyPagination(list, page, limit);
   const handleSearch = _.debounce(setSearch, 300);
 
   return (
@@ -163,216 +153,6 @@ const StockList: React.FC<StockListProps> = (props) => {
           <LinearProgress />
         </div>
       )}
-      {/* {paginatedList.map((stock, i) => (
-        <Card
-          key={i}
-          sx={{
-            '& + &': {
-              mt: 2,
-            },
-          }}
-          data-testid={'stock-list-row'}
-        >
-          <CardHeader
-            disableTypography
-            subheader={
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  mt: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  {_.isEmpty(stock.tags) ? (
-                    <Box
-                      sx={{
-                        px: 3,
-                      }}
-                    >
-                      <Typography variant="body1" fontSize={15}>
-                        관련 키워드가 없습니다.
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <>
-                      <Divider />
-                      <Box
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          p: 2,
-                        }}
-                      >
-                        {stock.tags.map((tag, i) => {
-                          return (
-                            <Chip
-                              key={i}
-                              label={tag.name}
-                              sx={{
-                                '& + &': {
-                                  ml: 1,
-                                },
-                              }}
-                              variant="outlined"
-                            />
-                          );
-                        })}
-                      </Box>
-                      <Divider />
-                    </>
-                  )}
-                </Box>
-              </Box>
-            }
-            title={
-              <>
-                <Typography
-                  color="textPrimary"
-                  variant="h5"
-                  fontSize={20}
-                >
-                  {`${stock.name} (${stock.code})`}
-                </Typography>
-                <Typography
-                  variant="overline"
-                  color="textSecondary"
-                  fontSize={15}
-                >
-                  키워드
-                </Typography>{' '}
-                <Typography variant="overline" color="textSecondary">
-                  (최신 업데이트 순)
-                </Typography>
-              </>
-            }
-          />
-          <CardContent>
-            <Typography
-              variant="overline"
-              color="textSecondary"
-              fontSize={15}
-            >
-              관련 뉴스
-            </Typography>
-            <Typography variant="overline" color="textSecondary">
-              (선택 뉴스, 최신 순)
-            </Typography>
-
-            {_.isEmpty(stock.news) ? (
-              <Box
-                sx={{
-                  pb: 2,
-                  px: 3,
-                }}
-              >
-                <Typography variant="body1" fontSize={15}>
-                  관련 뉴스가 없습니다.
-                </Typography>
-              </Box>
-            ) : (
-              stock.news
-                .filter((entity) => entity !== null)
-                .map((entity, i) => {
-                  return (
-                    <Box
-                      key={i}
-                      sx={{
-                        pb: 2,
-                        px: 3,
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        fontSize={15}
-                        color="textPrimary"
-                      >
-                        <a
-                          href={entity.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{
-                            textDecoration: 'underline',
-                            color: 'inherit',
-                          }}
-                        >
-                          - {entity.title}{' '}
-                        </a>
-                      </Typography>
-                      <Typography variant="body1" fontSize={15}>
-                        {entity.summarized}{' '}
-                      </Typography>
-                    </Box>
-                  );
-                })
-            )}
-
-            <Typography
-              variant="overline"
-              color="textSecondary"
-              fontSize={15}
-            >
-              {' '}
-              코멘트{' '}
-            </Typography>
-            <Typography variant="overline" color="textSecondary">
-              (최신 순)
-            </Typography>
-
-            {_.isEmpty(stock.comments) ? (
-              <Box
-                sx={{
-                  pb: 2,
-                  px: 3,
-                }}
-              >
-                <Typography variant="body1" fontSize={15}>
-                  관련 코멘트가 없습니다.
-                </Typography>
-              </Box>
-            ) : (
-              stock.comments.map((comment) => {
-                return (
-                  <Box
-                    key={comment.id}
-                    sx={{
-                      pb: 2,
-                      px: 3,
-                    }}
-                  >
-                    <pre>- {comment.message} </pre>
-                    <Typography color="textSecondary" variant="body2">
-                      {comment.author &&
-                        `${dayjs(comment.updated_at).format(
-                          'YYYY-MM-DD HH:mm',
-                        )} | ${comment.author.username}`}
-                    </Typography>
-                  </Box>
-                );
-              })
-            )}
-            <Button
-              color="primary"
-              size="small"
-              variant="contained"
-              onClick={() => {
-                setOpen();
-                setTarget(stock);
-              }}
-            >
-              수정
-            </Button>
-          </CardContent>
-        </Card>
-      ))} */}
 
       {paginatedList.map((stock, i) => {
         const paginatedComments = applyPagination(
@@ -473,7 +253,9 @@ const StockList: React.FC<StockListProps> = (props) => {
                                 </Typography>
                               </TableCell>
                               <TableCell>
-                                {item.author.username}
+                                {item.author
+                                  ? item.author.username
+                                  : 'NA'}
                               </TableCell>
                               <TableCell>{item.updated_at}</TableCell>
                             </TableRow>

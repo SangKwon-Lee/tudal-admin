@@ -25,6 +25,7 @@ import {
   TablePagination,
   FormControlLabel,
   Switch,
+  CardActions,
 } from '@material-ui/core';
 
 import Scrollbar from '../../layout/Scrollbar';
@@ -42,13 +43,14 @@ import {
 import * as _ from 'lodash';
 import { FixtureStocks } from 'src/fixtures';
 import useAsync from 'src/hooks/useAsync';
-import { Tag } from 'src/types/schedule';
+import { Stock, Tag } from 'src/types/schedule';
 import { APINews, APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
 import dayjs, { Dayjs } from 'dayjs';
 import { applyPagination } from 'src/utils/pagination';
+import { Action } from 'history';
 
 const tagFilter = createFilterOptions<any>();
 
@@ -110,6 +112,71 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     [],
   );
 
+  const createOrUpdateTag = useCallback(
+    async (stock, tag) => {
+      const { data, status } = await APIStock.updateStockTag(
+        stock.code,
+        tag.name,
+      );
+
+      if (status === 200) {
+        alert('성공하였습니다');
+        reloadElement(stock.code);
+      }
+    },
+    [reloadElement],
+  );
+
+  const createOrSelectByUrl = async () => {
+    try {
+      const { data, status } = await APINews.createAndSelectByURL(
+        newsUrl,
+        newsPubDate.toISOString(),
+        stock.code,
+        user.id,
+      );
+
+      if (status === 200) {
+        if (data.isExisted) {
+          alert(
+            '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
+          );
+        } else {
+          alert('등록되었습니다');
+        }
+        reloadElement(stock.code);
+      }
+      setNewsUrl('');
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
+    }
+  };
+
+  const createAndSelectByHand = async () => {
+    try {
+      const { data: news } = await APINews.createAndSelectByHand(
+        newsManualForm,
+        user.id,
+      );
+
+      if (news && news.id) {
+        const { status } = await APINews.createStockNews(
+          stock.code,
+          stock.name,
+          news.id,
+        );
+        if (status === 200) {
+          alert('등록되었습니다');
+          setNewsManualForm(newsManualFormInit);
+          reloadElement(stock.code);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleExtract = useCallback(
     async (sentence) => {
       try {
@@ -125,71 +192,8 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         console.error(error);
       }
     },
-    [reloadElement, stock],
+    [reloadElement, stock, createOrUpdateTag],
   );
-
-  const createOrUpdateTag = async (stock, tag) => {
-    const { data, status } = await APIStock.updateStockTag(
-      stock.code,
-      tag.name,
-    );
-
-    if (status === 200) {
-      alert('성공하였습니다');
-      reloadElement(stock.code);
-    }
-  };
-
-  const createOrSelectNews = async () => {
-    try {
-      // 자동등록
-      if (newsFormType) {
-        console.log('here');
-        const { data, status } = await APINews.postOrSelectCustomNews(
-          newsUrl,
-          newsPubDate.toISOString(),
-          stock.code,
-          user.id,
-        );
-
-        if (status === 200) {
-          if (data.isExisted) {
-            alert(
-              '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
-            );
-          } else {
-            alert('등록되었습니다');
-          }
-
-          reloadElement(stock.code);
-        }
-        setNewsUrl('');
-      } else {
-        const { data: news } = await APINews.createAndSelect(
-          newsManualForm,
-          user.id,
-        );
-
-        if (news && news.id) {
-          const { data, status } = await APINews.createStockNews(
-            stock.code,
-            stock.name,
-            news.id,
-          );
-          if (status === 200) {
-            alert('등록되었습니다');
-            setNewsManualForm(newsManualFormInit);
-          }
-        } else {
-          throw new Error();
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      alert(error.message);
-    }
-  };
-
   const handleFormChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -197,6 +201,17 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       ...state,
       [event.target.name]: event.target.value,
     }));
+  };
+
+  const deleteStockTag = async (stock, tag) => {
+    const { status } = await APIStock.deleteTag(
+      stock.code,
+      tag.tag_id,
+    );
+    if (status === 200) {
+      alert('성공적으로 삭제되었습니다.');
+      reloadElement(stock.code);
+    }
   };
 
   const paginatedComments = applyPagination(
@@ -246,6 +261,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 stock.tags.map((tag, i) => {
                   return (
                     <Chip
+                      onDelete={() => deleteStockTag(stock, tag)}
                       key={i}
                       onClick={() => createOrUpdateTag(stock, tag)}
                       label={tag.name}
@@ -413,6 +429,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     id="comment"
                     label="코멘트 (줄 바꾸기 Enter)"
                     variant="outlined"
+                    value={comment}
                     onChange={(event) =>
                       setComment(event.target.value)
                     }
@@ -423,10 +440,10 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                   <TextField
                     id="date"
                     type="date"
+                    value={commentDate.format('YYYY-MM-DD')}
                     onChange={(event) =>
                       setCommentDate(dayjs(event.target.value))
                     }
-                    defaultValue={commentDate.format('YYYY-MM-DD')}
                   />
 
                   <Button
@@ -435,6 +452,10 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     size="medium"
                     variant="contained"
                     onClick={() => {
+                      if (!comment) {
+                        alert('입력해주세요');
+                        return;
+                      }
                       postStockComment(
                         comment,
                         stock.code,
@@ -447,32 +468,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                   </Button>
                 </Box>
               </Box>
-              {/* {stock.comments &&
-                  stock.comments.map((comment, i) => (
-                    <Box
-                      sx={{
-                        pb: 2,
-                      }}
-                      key={i}
-                    >
-                      <Typography
-                        variant="h6"
-                        fontSize={12}
-                        color="textPrimary"
-                      >
-                        <Box sx={{ p: 3 }}>
-                          <pre>{comment.message} </pre>
-                        </Box>
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        variant="body2"
-                      >
-                        {comment.updated_at}{' '}
-                      </Typography>
-                    </Box>
-                  ))}
-              </Grid> */}
 
               <Box>
                 <Typography
@@ -580,7 +575,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 <Box width={'100%'}>
                   <FormControlLabel
                     style={{ marginBottom: '10px' }}
-                    label={newsFormType ? '자동등록' : '수동등록'}
+                    label={newsFormType ? '자동 등록' : '수기 등록'}
                     control={
                       <Switch
                         checked={newsFormType}
@@ -616,81 +611,100 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                         setNewsPubDate(dayjs(event.target.value))
                       }
                     />
+                    <Button
+                      color="primary"
+                      size="medium"
+                      variant="contained"
+                      onClick={createOrSelectByUrl}
+                    >
+                      추가
+                    </Button>
                   </>
                 ) : (
                   <Box width="100%">
-                    <Grid container spacing={3}>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="제목"
-                          name="title"
-                          value={newsManualForm.title}
-                          required
-                          onChange={handleFormChange}
-                          variant="outlined"
-                        />
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        createAndSelectByHand();
+                      }}
+                    >
+                      <Grid container spacing={3}>
+                        <Grid item md={6} xs={12}>
+                          <TextField
+                            fullWidth
+                            label="제목"
+                            name="title"
+                            value={newsManualForm.title}
+                            required
+                            onChange={handleFormChange}
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                          <TextField
+                            fullWidth
+                            label="url"
+                            name="url"
+                            value={newsManualForm.url}
+                            required
+                            onChange={handleFormChange}
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                          <TextField
+                            fullWidth
+                            label="신문사"
+                            name="mediaName"
+                            value={newsManualForm.mediaName}
+                            required
+                            onChange={handleFormChange}
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                          <TextField
+                            fullWidth
+                            label="발행일"
+                            name="publishDate"
+                            type="date"
+                            value={newsManualForm.publishDate.format(
+                              'YYYY-MM-DD',
+                            )}
+                            required
+                            onChange={handleFormChange}
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item md={12} xs={12}>
+                          <TextField
+                            fullWidth
+                            label="요약"
+                            required
+                            name="summarized"
+                            variant="outlined"
+                            onChange={handleFormChange}
+                            value={newsManualForm.summarized}
+                          />
+                        </Grid>
                       </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="url"
-                          name="url"
-                          value={newsManualForm.url}
-                          required
-                          onChange={handleFormChange}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="신문사"
-                          name="mediaName"
-                          value={newsManualForm.mediaName}
-                          required
-                          onChange={handleFormChange}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="발행일"
-                          name="publishDate"
-                          type="date"
-                          value={newsManualForm.publishDate.format(
-                            'YYYY-MM-DD',
-                          )}
-                          required
-                          onChange={handleFormChange}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item md={12} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="요약"
-                          name="summarized"
-                          variant="outlined"
-                          onChange={handleFormChange}
-                          value={newsManualForm.summarized}
-                        />
-                      </Grid>
-                    </Grid>
+                      <CardActions
+                        sx={{
+                          justifyContent: 'flex-end',
+                          p: 2,
+                        }}
+                      >
+                        <Button
+                          color="primary"
+                          type="submit"
+                          variant="contained"
+                        >
+                          추가
+                        </Button>
+                      </CardActions>
+                    </form>
                   </Box>
                 )}
-
-                <Button
-                  color="primary"
-                  size="medium"
-                  variant="contained"
-                  onClick={() => {
-                    createOrSelectNews();
-                  }}
-                >
-                  추가
-                </Button>
               </Box>
             </Box>
           </CardContent>

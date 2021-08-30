@@ -67,3 +67,7 @@ export async function postStockComment(
     datetime,
   });
 }
+
+export async function deleteTag(code: string, tagId: number) {
+  return await cmsServer.delete(`/stocks/code/${code}/tag/${tagId}`);
+}
