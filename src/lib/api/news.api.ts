@@ -87,5 +87,6 @@ export async function createAndSelectByURL(
     publishDate,
     stockcode,
     author,
+    source: 'manual',
   });
 }

@@ -186,20 +186,6 @@ const StockPage = () => {
     } catch (error) {}
   }, []);
 
-  const postStockComment = async (message, stock, dateTime) => {
-    const { data, status } = await APIStock.postStockComment(
-      message,
-      stock,
-      user.id,
-      dateTime,
-    );
-
-    if (status === 200) {
-      alert('success');
-      reloadStock(stock);
-    }
-  };
-
   useEffect(() => {
     addStock();
   }, [addStock]);
@@ -226,8 +212,7 @@ const StockPage = () => {
             //@ts-ignore
             stock={targetStock}
             isOpen={isOpenForm}
-            postStockComment={postStockComment}
-            reloadElement={reloadStock}
+            reloadStock={reloadStock}
             setClose={() =>
               dispatch({ type: StockActionKind.CLOSE_FORM })
             }

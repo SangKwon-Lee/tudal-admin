@@ -41,28 +41,25 @@ import {
 } from 'src/utils/extractKeywords';
 
 import * as _ from 'lodash';
-import { FixtureStocks } from 'src/fixtures';
+import toast, { Toaster } from 'react-hot-toast';
+import dayjs from 'dayjs';
+
 import useAsync from 'src/hooks/useAsync';
-import { Stock, Tag } from 'src/types/schedule';
+import { Tag } from 'src/types/schedule';
 import { APINews, APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
-import dayjs, { Dayjs } from 'dayjs';
 import { applyPagination } from 'src/utils/pagination';
-import { Action } from 'history';
+import { FormatColorResetTwoTone } from '@material-ui/icons';
 
 const tagFilter = createFilterOptions<any>();
 
 interface StockFormProps {
   stock: IStockDetailsWithTagCommentNews;
   isOpen: boolean;
-  postStockComment: (
-    message: string,
-    stock: string,
-    dateTime: string,
-  ) => void;
-  reloadElement: (id: string) => void;
+
+  reloadStock: (id: string) => void;
   setClose: () => void;
 }
 
@@ -88,15 +85,12 @@ const newsManualFormInit = {
 };
 const StockForm: React.FC<StockFormProps> = (props) => {
   const { user } = useAuth();
-  const { stock, isOpen, setClose, reloadElement, postStockComment } =
-    props;
+  const { stock, isOpen, setClose, reloadStock } = props;
   const [comment, setComment] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [newsUrl, setNewsUrl] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const [newsManualForm, setNewsManualForm] = useState(
-    newsManualFormInit,
-  );
   const [newsFormType, setNewsFormType] = useState(true); // false: 자동등록, true: 수동등록
 
   const [commentDate, setCommentDate] = useState(dayjs());
@@ -104,6 +98,9 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const [commentPage, setCommentPage] = useState<number>(0);
   const [newsPage, setNewsPage] = useState<number>(0);
 
+  const [newsManualForm, setNewsManualForm] = useState(
+    newsManualFormInit,
+  );
   const classes = useStyles();
 
   const [{ data: tagList, loading: tagLoading }] = useAsync<Tag[]>(
@@ -114,21 +111,29 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
   const createOrUpdateTag = useCallback(
     async (stock, tag) => {
-      const { data, status } = await APIStock.updateStockTag(
-        stock.code,
-        tag.name,
-      );
+      setLoading(true);
+      try {
+        const { status } = await APIStock.updateStockTag(
+          stock.code,
+          tag.name,
+        );
 
-      if (status === 200) {
-        alert('성공하였습니다');
-        reloadElement(stock.code);
+        if (status === 200) {
+          toast.success(`${tag.name} 이 추가되었습니다.`);
+          reloadStock(stock.code);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     },
-    [reloadElement],
+    [reloadStock],
   );
 
   const createOrSelectByUrl = async () => {
     try {
+      setLoading(true);
       const { data, status } = await APINews.createAndSelectByURL(
         newsUrl,
         newsPubDate.toISOString(),
@@ -138,23 +143,23 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
       if (status === 200) {
         if (data.isExisted) {
-          alert(
-            '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
-          );
+          toast.success('기존에 저장되어있던 뉴스를 가져옵니다.');
         } else {
-          alert('등록되었습니다');
+          toast.success('등록되었습니다.');
         }
-        reloadElement(stock.code);
+        reloadStock(stock.code);
       }
       setNewsUrl('');
     } catch (error) {
-      console.log(error);
-      alert(error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const createAndSelectByHand = async () => {
     try {
+      setLoading(true);
       const { data: news } = await APINews.createAndSelectByHand(
         newsManualForm,
         user.id,
@@ -167,19 +172,22 @@ const StockForm: React.FC<StockFormProps> = (props) => {
           news.id,
         );
         if (status === 200) {
-          alert('등록되었습니다');
+          toast.success('뉴스가 등록되었습니다.');
           setNewsManualForm(newsManualFormInit);
-          reloadElement(stock.code);
+          reloadStock(stock.code);
         }
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleExtract = useCallback(
     async (sentence) => {
       try {
+        setLoading(true);
         const tokens = tokenize(sentence);
         if (!tokens) return;
 
@@ -187,12 +195,14 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         tags.forEach((tag) => {
           createOrUpdateTag(stock, tag);
         });
-        reloadElement(stock.code);
+        reloadStock(stock.code);
       } catch (error) {
-        console.error(error);
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
       }
     },
-    [reloadElement, stock, createOrUpdateTag],
+    [reloadStock, stock, createOrUpdateTag],
   );
   const handleFormChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -204,13 +214,47 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   };
 
   const deleteStockTag = async (stock, tag) => {
-    const { status } = await APIStock.deleteTag(
-      stock.code,
-      tag.tag_id,
-    );
-    if (status === 200) {
-      alert('성공적으로 삭제되었습니다.');
-      reloadElement(stock.code);
+    try {
+      setLoading(true);
+      if (user.role && user.role.type === IRoleType.Author) {
+        toast.error('해당 계정으로는 키워드를 삭제할 수 없습니다.');
+        return;
+      }
+      const { status } = await APIStock.deleteTag(
+        stock.code,
+        tag.tag_id,
+      );
+      if (status === 200) {
+        toast.success('삭제되었습니다.');
+        reloadStock(stock.code);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const postStockComment = async (message, stock, dateTime) => {
+    try {
+      setLoading(true);
+
+      const { status } = await APIStock.postStockComment(
+        message,
+        stock,
+        user.id,
+        dateTime,
+      );
+
+      if (status === 200) {
+        toast.success('코멘트가 추가되었습니다.');
+        setComment('');
+        reloadStock(stock);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -229,8 +273,12 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       data-testid="stock-form-modal"
       maxWidth="lg"
     >
+      <Toaster />
+
       <Paper>
         <Card>
+          {loading && <LinearProgress />}
+
           <CardHeader
             subheader={
               <Typography color="textPrimary" variant="h4">
@@ -433,9 +481,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     onChange={(event) =>
                       setComment(event.target.value)
                     }
-                    onBlur={(e) => {
-                      handleExtract(e.target.value);
-                    }}
                   />
                   <TextField
                     id="date"
@@ -452,10 +497,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     size="medium"
                     variant="contained"
                     onClick={() => {
-                      if (!comment) {
-                        alert('입력해주세요');
-                        return;
-                      }
                       postStockComment(
                         comment,
                         stock.code,

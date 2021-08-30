@@ -27,8 +27,6 @@ import { applySort, applyPagination } from 'src/utils/pagination';
 import dayjs from 'dayjs';
 import * as _ from 'lodash';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
-import Table11 from 'src/components/widgets/tables/Table11';
-import Table7 from 'src/components/widgets/tables/Table7';
 import ExternalLinkIcon from '../../../icons/ExternalLink';
 import InformationCircleIcon from '../../../icons/InformationCircle';
 
@@ -167,7 +165,12 @@ const StockList: React.FC<StockListProps> = (props) => {
           3,
         );
         return (
-          <Box display="flex" justifyContent="space-between" mb={10}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            mb={10}
+            key={i}
+          >
             <Box style={{ flexBasis: '20%' }}>
               <Card style={{ height: '100%' }}>
                 <CardHeader title={`${stock.name} (${stock.code})`} />
@@ -186,7 +189,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                           key={i}
                           label={tag.name}
                           sx={{
-                            ':first-child': {
+                            ':first-of-type': {
                               mr: 1,
                             },
                             '& + &': {
@@ -241,8 +244,8 @@ const StockList: React.FC<StockListProps> = (props) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {paginatedComments.map((item) => (
-                            <TableRow key={item.id}>
+                          {paginatedComments.map((item, i) => (
+                            <TableRow key={i}>
                               <TableCell>
                                 <Typography
                                   color="textPrimary"
@@ -287,9 +290,9 @@ const StockList: React.FC<StockListProps> = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedNews.map((item) => (
+                      {paginatedNews.map((item, i) => (
                         <TableRow
-                          key={item.id}
+                          key={i}
                           sx={{
                             '&:last-child td': {
                               border: 0,
@@ -321,19 +324,15 @@ const StockList: React.FC<StockListProps> = (props) => {
                                 color="textPrimary"
                                 sx={{ ml: 2 }}
                                 variant="body2"
-                                style={{
-                                  width: '100%',
-                                  textOverflow: 'ellipsis',
-                                }}
                               >
-                                <TableCell>{item.title}</TableCell>
+                                {item.title}
                               </Typography>
                             </Box>
                           </TableCell>
                           <TableCell>
                             <Typography
                               color="textPrimary"
-                              variant="subtitle2"
+                              variant="body2"
                               className={classes.text}
                             >
                               {item.summarized}
