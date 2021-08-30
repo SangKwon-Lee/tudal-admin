@@ -9,7 +9,6 @@ import dayjs from 'dayjs';
 import {
   Box,
   Card,
-  Checkbox,
   IconButton,
   InputAdornment,
   Link,
@@ -20,15 +19,10 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  CircularProgress,
   Dialog,
   Chip,
 } from '@material-ui/core';
-import {
-  createStyles,
-  Theme,
-  makeStyles,
-} from '@material-ui/core/styles';
+
 import * as _ from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
@@ -63,84 +57,15 @@ const getPriorityLabel = (priority) => {
   return <Label color={color}>{text}</Label>;
 };
 
-type Sort =
-  | 'updated_at|desc'
-  | 'updated_at|asc'
-  | 'startDate|desc'
-  | 'startDate|asc'
-  | 'author|desc'
-  | 'priority|desc';
-
-interface SortOption {
-  value: Sort;
-  label: string;
-}
-const sortOptions: SortOption[] = [
-  {
-    label: '최신 등록순',
-    value: 'updated_at|desc',
-  },
-  {
-    label: '오래된 등록순',
-    value: 'updated_at|asc',
-  },
-  {
-    label: '시작일자 내림차순',
-    value: 'startDate|desc',
-  },
-  {
-    label: '시작일자 오름차순',
-    value: 'startDate|asc',
-  },
-  {
-    label: '작성자 내림차순',
-    value: 'author|desc',
-  },
-  {
-    label: '중요도 내림차순',
-    value: 'priority|desc',
-  },
-];
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-const getComparator = (order: 'asc' | 'desc', orderBy: string) => {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-};
-const applySort = (schedules: Schedule[], sort: Sort): Schedule[] => {
-  const [orderBy, order] = sort.split('|') as [
-    string,
-    'asc' | 'desc',
-  ];
-  const comparator = getComparator(order, orderBy);
-  const stabilizedThis = schedules.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    // @ts-ignore
-    return a[1] - b[1];
-  });
-  // @ts-ignore
-  return stabilizedThis.map((el) => el[0]);
-};
-
 interface ScheduleListTableProps {
   schedules: Schedule[];
   page: number;
   limit: number;
   search: string;
+  sort: string;
+  sortOptions: Array<{ value: string; label: string }>;
   scrollRef: RefObject<HTMLDivElement>;
+  handleSort: (event: any) => void;
   handlePage: (event: any, newPage: number) => void;
   handleLimit: (event: ChangeEvent<HTMLInputElement>) => void;
   setSearch: (word: string) => void;
@@ -155,19 +80,6 @@ const applyPagination = (
   limit: number,
 ): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    tags: {
-      display: 'flex',
-      justifyContent: 'start',
-      flexWrap: 'wrap',
-      '& > *': {
-        margin: theme.spacing(0.2),
-      },
-    },
-  }),
-);
-
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
@@ -179,29 +91,22 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
     scrollRef,
     page,
     limit,
+    sort,
+    sortOptions,
+    handleSort,
     handlePage,
     handleLimit,
   } = props;
-  const classes = useStyles();
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
   const [targetSchedule, setTargetDelete] = useState<Schedule>(null);
   const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
     useState<boolean>(false);
-  const handleSort = (event): void => {
-    setSort(event.target.value);
-  };
 
   const scrollToTop = () => {
     scrollRef.current &&
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const sortedSchedules = applySort(schedules, sort);
-  const paginatedSchedule = applyPagination(
-    sortedSchedules,
-    page,
-    limit,
-  );
+  const paginatedSchedule = applyPagination(schedules, page, limit);
 
   return (
     <Box
@@ -253,7 +158,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               label="정렬"
               name="priority"
               select
-              onChange={(event) => handleSort(event)}
+              onChange={(event) => handleSort(event.target.value)}
               SelectProps={{ native: true }}
               variant="outlined"
             >

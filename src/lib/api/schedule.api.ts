@@ -4,6 +4,7 @@ import { Schedule, IScheduleForm } from 'src/types/schedule';
 
 export async function getList(
   search: string,
+  sort,
   start: number = 0,
   limit: number = 100,
 ) {
@@ -20,7 +21,7 @@ export async function getList(
   }
 
   return await axios.get<Schedule[]>(
-    `/schedules?_sort=updated_at:DESC&${qs.stringify(q)}`,
+    `/schedules?_sort=${sort}&${qs.stringify(q)}`,
   );
 }
 
