@@ -2,6 +2,13 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
 
+export async function createAndSelect(news, author) {
+  return await axios.post<INews>('/general-news', {
+    ...news,
+    author,
+  });
+}
+
 export async function getList(search: string, start?: number) {
   let q: any = {};
   if (search) {
@@ -68,9 +75,15 @@ export async function update(id, body) {
   return await axios.put(`/general-news/${id}`, body);
 }
 
-export async function postOrSelectCustomNews(url, stockcode, author) {
+export async function postOrSelectCustomNews(
+  url,
+  publishDate,
+  stockcode,
+  author,
+) {
   return await axios.post(`/general-news/custom`, {
     url,
+    publishDate,
     stockcode,
     author,
   });

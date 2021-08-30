@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, ChangeEvent } from 'react';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import {
   Dialog,
@@ -16,8 +16,23 @@ import {
   Card,
   CardHeader,
   CardContent,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  Tooltip,
+  TableBody,
+  TablePagination,
+  FormControlLabel,
+  Switch,
 } from '@material-ui/core';
-import { formatDistanceToNowStrict } from 'date-fns';
+
+import Scrollbar from '../../layout/Scrollbar';
+import InformationCircleIcon from '../../../icons/InformationCircle';
+import ExternalLinkIcon from '../../../icons/ExternalLink';
+
+import { makeStyles } from '@material-ui/core/styles';
+
 import {
   tokenize,
   extractStocks,
@@ -32,18 +47,43 @@ import { APINews, APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import { applyPagination } from 'src/utils/pagination';
 
 const tagFilter = createFilterOptions<any>();
 
 interface StockFormProps {
   stock: IStockDetailsWithTagCommentNews;
   isOpen: boolean;
-  postStockComment: (message: string, stock: string) => void;
+  postStockComment: (
+    message: string,
+    stock: string,
+    dateTime: string,
+  ) => void;
   reloadElement: (id: string) => void;
   setClose: () => void;
 }
 
+const useStyles = makeStyles({
+  text: {
+    cursor: 'pointer',
+    width: '500px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    '&:hover': {
+      whiteSpace: 'pre',
+    },
+  },
+});
+
+const newsManualFormInit = {
+  title: '',
+  url: '',
+  mediaName: '',
+  publishDate: dayjs(),
+  summarized: '',
+};
 const StockForm: React.FC<StockFormProps> = (props) => {
   const { user } = useAuth();
   const { stock, isOpen, setClose, reloadElement, postStockComment } =
@@ -51,6 +91,18 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const [comment, setComment] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [newsUrl, setNewsUrl] = useState('');
+
+  const [newsManualForm, setNewsManualForm] = useState(
+    newsManualFormInit,
+  );
+  const [newsFormType, setNewsFormType] = useState(true); // false: 자동등록, true: 수동등록
+
+  const [commentDate, setCommentDate] = useState(dayjs());
+  const [newsPubDate, setNewsPubDate] = useState(dayjs());
+  const [commentPage, setCommentPage] = useState<number>(0);
+  const [newsPage, setNewsPage] = useState<number>(0);
+
+  const classes = useStyles();
 
   const [{ data: tagList, loading: tagLoading }] = useAsync<Tag[]>(
     () => APITag.getList(tagInput),
@@ -90,30 +142,70 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
   const createOrSelectNews = async () => {
     try {
-      const { data, status } = await APINews.postOrSelectCustomNews(
-        newsUrl,
-        stock.code,
-        user.id,
-      );
+      // 자동등록
+      if (newsFormType) {
+        console.log('here');
+        const { data, status } = await APINews.postOrSelectCustomNews(
+          newsUrl,
+          newsPubDate.toISOString(),
+          stock.code,
+          user.id,
+        );
 
-      if (status === 200) {
-        console.log(data);
-        if (data.isExisted) {
-          alert(
-            '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
-          );
-        } else {
-          alert('등록되었습니다');
+        if (status === 200) {
+          if (data.isExisted) {
+            alert(
+              '기존에 등록되어 있던 뉴스입니다. 기존 뉴스를 선택합니다.',
+            );
+          } else {
+            alert('등록되었습니다');
+          }
+
+          reloadElement(stock.code);
         }
+        setNewsUrl('');
+      } else {
+        const { data: news } = await APINews.createAndSelect(
+          newsManualForm,
+          user.id,
+        );
 
-        reloadElement(stock.code);
+        if (news && news.id) {
+          const { data, status } = await APINews.createStockNews(
+            stock.code,
+            stock.name,
+            news.id,
+          );
+          if (status === 200) {
+            alert('등록되었습니다');
+            setNewsManualForm(newsManualFormInit);
+          }
+        } else {
+          throw new Error();
+        }
       }
-      setNewsUrl('');
     } catch (error) {
       console.log(error);
       alert(error.message);
     }
   };
+
+  const handleFormChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewsManualForm((state) => ({
+      ...state,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const paginatedComments = applyPagination(
+    stock.comments,
+    commentPage,
+    3,
+  );
+
+  const paginatedNews = applyPagination(stock.news, newsPage, 3);
 
   return (
     <Dialog
@@ -185,23 +277,8 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 autoHighlight
                 options={tagList}
                 onChange={(event, keywords: Tag[], reason, item) => {
-                  if (reason === 'removeOption') {
-                    // handleDeleteKeyword(item.option.id);
-                  }
-
                   if (reason === 'selectOption') {
-                    console.log(stock.code, item.option.name);
                     createOrUpdateTag(stock, item.option);
-                  }
-
-                  if (reason === 'clear') {
-                    // commentForm.keywords.forEach((tag) =>
-                    //   handleDeleteKeyword(tag.id),
-                    // );
-                    // dispatch({
-                    //   type: NewsCommentActionType.REPLACE_KEYWORD,
-                    //   payload: keywords,
-                    // });
                   }
                 }}
                 getOptionLabel={(option) => {
@@ -257,53 +334,120 @@ const StockForm: React.FC<StockFormProps> = (props) => {
               />
             </Grid>
 
-            <Box
-              sx={{
-                justifyContent: 'flex-end',
-                alignItems: 'flex-end',
-                display: 'flex',
-                flexWrap: 'wrap',
-                paddingTop: 2,
-              }}
-            >
-              <TextField
-                fullWidth
-                multiline
-                name="comment"
-                id="comment"
-                label="코멘트"
-                variant="outlined"
-                helperText="줄 바꾸기 enter"
-                onChange={(event) => setComment(event.target.value)}
-                onBlur={(e) => {
-                  // handleExtract(e.target.value);
-                }}
-              />
-              <Button
-                color="primary"
-                size="medium"
-                variant="contained"
-                onClick={() => {
-                  postStockComment(comment, stock.code);
-                  handleExtract(comment);
-                }}
-              >
-                추가
-              </Button>
-            </Box>
             <Box>
-              <Grid item md={12} xs={12}>
-                <Typography
-                  variant="overline"
-                  color="textSecondary"
-                  fontSize={15}
+              <Typography
+                variant="overline"
+                color="textSecondary"
+                fontSize={18}
+              >
+                종목 코멘트
+              </Typography>
+              <Typography variant="overline" color="textSecondary">
+                (최신 순)
+              </Typography>
+
+              <Box mb={3}>
+                <Card>
+                  <Divider />
+                  <Scrollbar>
+                    <Box sx={{ minWidth: 700 }}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>
+                              코멘트{' '}
+                              <Tooltip title="커서를 올리면 본문이 확인됩니다.">
+                                <InformationCircleIcon fontSize="small" />
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>작성자</TableCell>
+                            <TableCell>작성일</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {paginatedComments.map((item) => (
+                            <TableRow key={item.id}>
+                              <TableCell>
+                                <Typography
+                                  color="textPrimary"
+                                  variant="subtitle2"
+                                  className={classes.text}
+                                >
+                                  {item.message}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                {item.author.username}
+                              </TableCell>
+                              <TableCell>{item.updated_at}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </Box>
+                  </Scrollbar>
+                  <TablePagination
+                    component="div"
+                    count={stock.comments.length}
+                    onPageChange={(event, value) =>
+                      setCommentPage(value)
+                    }
+                    page={commentPage}
+                    rowsPerPage={3}
+                    rowsPerPageOptions={[3]}
+                  />
+                </Card>{' '}
+                <Box
+                  sx={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    paddingTop: 3,
+                  }}
                 >
-                  종목 코멘트
-                </Typography>
-                <Typography variant="overline" color="textSecondary">
-                  (최신 순)
-                </Typography>
-                {stock.comments &&
+                  <TextField
+                    multiline
+                    style={{ width: '70%' }}
+                    name="comment"
+                    id="comment"
+                    label="코멘트 (줄 바꾸기 Enter)"
+                    variant="outlined"
+                    onChange={(event) =>
+                      setComment(event.target.value)
+                    }
+                    onBlur={(e) => {
+                      handleExtract(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    id="date"
+                    type="date"
+                    onChange={(event) =>
+                      setCommentDate(dayjs(event.target.value))
+                    }
+                    defaultValue={commentDate.format('YYYY-MM-DD')}
+                  />
+
+                  <Button
+                    style={{ marginLeft: '10px' }}
+                    color="primary"
+                    size="medium"
+                    variant="contained"
+                    onClick={() => {
+                      postStockComment(
+                        comment,
+                        stock.code,
+                        commentDate.toISOString(),
+                      );
+                      handleExtract(comment);
+                    }}
+                  >
+                    추가
+                  </Button>
+                </Box>
+              </Box>
+              {/* {stock.comments &&
                   stock.comments.map((comment, i) => (
                     <Box
                       sx={{
@@ -328,27 +472,215 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                       </Typography>
                     </Box>
                   ))}
-              </Grid>
+              </Grid> */}
+
+              <Box>
+                <Typography
+                  variant="overline"
+                  color="textSecondary"
+                  fontSize={18}
+                >
+                  종목 뉴스
+                </Typography>
+                <Typography variant="overline" color="textSecondary">
+                  (최신 순)
+                </Typography>
+                <Card>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>뉴스 제목</TableCell>
+                        <TableCell>요약</TableCell>
+                        <TableCell>발행 일시</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {paginatedNews.map((item) => (
+                        <TableRow
+                          key={item.id}
+                          sx={{
+                            '&:last-child td': {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ textDecoration: 'none' }}
+                              >
+                                <ExternalLinkIcon
+                                  fontSize="small"
+                                  sx={{
+                                    color: 'text.secondary',
+                                    cursor: 'pointer',
+                                  }}
+                                />
+                              </a>
+                              <Typography
+                                color="textPrimary"
+                                sx={{ ml: 2 }}
+                                style={{
+                                  width: '100%',
+                                  textOverflow: 'ellipsis',
+                                }}
+                              >
+                                <TableCell>{item.title}</TableCell>
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Typography
+                              color="textPrimary"
+                              variant="subtitle2"
+                              className={classes.text}
+                            >
+                              {item.summarized}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            {dayjs(item.updated_at).format(
+                              'YYYY-MM-DD HH:mm',
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <TablePagination
+                    component="div"
+                    count={stock.news.length}
+                    onPageChange={(event, value): void =>
+                      setNewsPage(value)
+                    }
+                    page={newsPage}
+                    rowsPerPage={3}
+                    rowsPerPageOptions={[3]}
+                  />
+                </Card>
+              </Box>
 
               <Box
                 sx={{
-                  justifyContent: 'flex-end',
-                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                   display: 'flex',
                   flexWrap: 'wrap',
                   paddingTop: 2,
                 }}
               >
-                <TextField
-                  fullWidth
-                  name="news"
-                  id="news"
-                  label="기사 직접 등록"
-                  variant="outlined"
-                  value={newsUrl}
-                  helperText="*네이버 뉴스를 지원합니다."
-                  onChange={(event) => setNewsUrl(event.target.value)}
-                />
+                <Box width={'100%'}>
+                  <FormControlLabel
+                    style={{ marginBottom: '10px' }}
+                    label={newsFormType ? '자동등록' : '수동등록'}
+                    control={
+                      <Switch
+                        checked={newsFormType}
+                        onChange={(event) =>
+                          setNewsFormType(event.target.checked)
+                        }
+                        name="수동 등록"
+                        color="primary"
+                      />
+                    }
+                  />
+                </Box>
+
+                {newsFormType ? (
+                  <>
+                    <TextField
+                      name="news"
+                      id="news"
+                      style={{ width: '70%' }}
+                      label="*자동 등록은 네이버 뉴스를 지원합니다."
+                      variant="outlined"
+                      value={newsUrl}
+                      onChange={(event) =>
+                        setNewsUrl(event.target.value)
+                      }
+                    />
+                    <TextField
+                      id="date"
+                      type="date"
+                      label="발행일"
+                      defaultValue={newsPubDate.format('YYYY-MM-DD')}
+                      onChange={(event) =>
+                        setNewsPubDate(dayjs(event.target.value))
+                      }
+                    />
+                  </>
+                ) : (
+                  <Box width="100%">
+                    <Grid container spacing={3}>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="제목"
+                          name="title"
+                          value={newsManualForm.title}
+                          required
+                          onChange={handleFormChange}
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="url"
+                          name="url"
+                          value={newsManualForm.url}
+                          required
+                          onChange={handleFormChange}
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="신문사"
+                          name="mediaName"
+                          value={newsManualForm.mediaName}
+                          required
+                          onChange={handleFormChange}
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="발행일"
+                          name="publishDate"
+                          type="date"
+                          value={newsManualForm.publishDate.format(
+                            'YYYY-MM-DD',
+                          )}
+                          required
+                          onChange={handleFormChange}
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item md={12} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="요약"
+                          name="summarized"
+                          variant="outlined"
+                          onChange={handleFormChange}
+                          value={newsManualForm.summarized}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
+
                 <Button
                   color="primary"
                   size="medium"
@@ -359,52 +691,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 >
                   추가
                 </Button>
-                {stock.news &&
-                  stock.news.map((news, i) => {
-                    return (
-                      <Box
-                        sx={{
-                          pb: 2,
-                        }}
-                        key={i}
-                      >
-                        <Typography
-                          variant="overline"
-                          color="textSecondary"
-                          fontSize={15}
-                        >
-                          관련 뉴스
-                        </Typography>
-                        <Typography
-                          variant="overline"
-                          color="textSecondary"
-                        >
-                          (선택 뉴스, 최신 순)
-                        </Typography>
-
-                        <Typography
-                          variant="h6"
-                          fontSize={15}
-                          color="textPrimary"
-                        >
-                          <a
-                            href={news.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{
-                              textDecoration: 'underline',
-                              color: 'inherit',
-                            }}
-                          >
-                            - {news.title}{' '}
-                          </a>
-                        </Typography>
-                        <Typography variant="body1" fontSize={15}>
-                          {news.summarized}{' '}
-                        </Typography>
-                      </Box>
-                    );
-                  })}
               </Box>
             </Box>
           </CardContent>

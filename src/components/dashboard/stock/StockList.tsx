@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { formatDistanceToNowStrict, subHours } from 'date-fns';
 import {
   Chip,
   Box,
@@ -13,12 +12,6 @@ import {
   CardContent,
   Button,
   Divider,
-  Collapse,
-  Link,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   TableCell,
   TableRow,
   Table,
@@ -115,6 +108,8 @@ const StockList: React.FC<StockListProps> = (props) => {
     reload,
   } = props;
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
+  const [commentPage, setCommentPage] = useState<number>(0);
+  const [newsPage, setNewsPage] = useState<number>(0);
 
   const sortedList = applySort(list, sort);
   const paginatedList = applyPagination(sortedList, page, limit);
@@ -380,6 +375,17 @@ const StockList: React.FC<StockListProps> = (props) => {
       ))} */}
 
       {paginatedList.map((stock, i) => {
+        const paginatedComments = applyPagination(
+          stock.comments,
+          commentPage,
+          3,
+        );
+
+        const paginatedNews = applyPagination(
+          stock.news,
+          newsPage,
+          3,
+        );
         return (
           <Box display="flex" justifyContent="space-between" mb={10}>
             <Box style={{ flexBasis: '20%' }}>
@@ -387,7 +393,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                 <CardHeader title={`${stock.name} (${stock.code})`} />
                 <Divider />
                 <CardContent style={{ lineHeight: 3 }}>
-                  {_.isEmpty(stock.news) ? (
+                  {_.isEmpty(stock.tags) ? (
                     <Box style={{ height: '100%' }}>
                       <Typography variant="body1" fontSize={15}>
                         관련 키워드가 없습니다.
@@ -455,7 +461,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {stock.comments.map((item) => (
+                          {paginatedComments.map((item) => (
                             <TableRow key={item.id}>
                               <TableCell>
                                 <Typography
@@ -478,12 +484,13 @@ const StockList: React.FC<StockListProps> = (props) => {
                   </Scrollbar>
                   <TablePagination
                     component="div"
-                    count={[1, 2, 3].length}
-                    onPageChange={(): void => {}}
-                    onRowsPerPageChange={(): void => {}}
-                    page={0}
-                    rowsPerPage={5}
-                    rowsPerPageOptions={[5, 10, 25]}
+                    count={stock.comments.length}
+                    onPageChange={(event, value) =>
+                      setCommentPage(value)
+                    }
+                    page={commentPage}
+                    rowsPerPage={3}
+                    rowsPerPageOptions={[3]}
                   />
                 </Card>{' '}
               </Box>
@@ -498,7 +505,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {stock.news.map((item) => (
+                      {paginatedNews.map((item) => (
                         <TableRow
                           key={item.id}
                           sx={{
@@ -561,12 +568,13 @@ const StockList: React.FC<StockListProps> = (props) => {
                   </Table>
                   <TablePagination
                     component="div"
-                    count={[1, 2, 3].length}
-                    onPageChange={(): void => {}}
-                    onRowsPerPageChange={(): void => {}}
-                    page={0}
-                    rowsPerPage={5}
-                    rowsPerPageOptions={[5, 10, 25]}
+                    count={stock.news.length}
+                    onPageChange={(event, value): void =>
+                      setNewsPage(value)
+                    }
+                    page={newsPage}
+                    rowsPerPage={3}
+                    rowsPerPageOptions={[3]}
                   />
                 </Card>
               </Box>
@@ -578,10 +586,9 @@ const StockList: React.FC<StockListProps> = (props) => {
         component="div"
         count={list.length}
         onPageChange={setPage}
-        onRowsPerPageChange={() => console.log('hell')}
         page={page}
         rowsPerPage={limit}
-        rowsPerPageOptions={[10, 20, 50]}
+        rowsPerPageOptions={[10]}
       />
     </Box>
   );

@@ -54,10 +54,16 @@ export async function updateStockTag(stockcode, tagName) {
   });
 }
 
-export async function postStockComment(message, stockcode, author) {
+export async function postStockComment(
+  message,
+  stockcode,
+  author,
+  datetime,
+) {
   return await cmsServer.post(`/stock-comments`, {
     message,
     stock: stockcode,
     author,
+    datetime,
   });
 }

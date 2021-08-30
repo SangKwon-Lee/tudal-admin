@@ -186,11 +186,12 @@ const StockPage = () => {
     } catch (error) {}
   }, []);
 
-  const postStockComment = async (message, stock) => {
+  const postStockComment = async (message, stock, dateTime) => {
     const { data, status } = await APIStock.postStockComment(
       message,
       stock,
       user.id,
+      dateTime,
     );
 
     if (status === 200) {
