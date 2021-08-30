@@ -1,5 +1,8 @@
 import React, { useState, useCallback, ChangeEvent } from 'react';
-import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
+import {
+  IStockComment,
+  IStockDetailsWithTagCommentNews,
+} from 'src/types/stock';
 import {
   Dialog,
   Divider,
@@ -31,14 +34,11 @@ import {
 import Scrollbar from '../../layout/Scrollbar';
 import InformationCircleIcon from '../../../icons/InformationCircle';
 import ExternalLinkIcon from '../../../icons/ExternalLink';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import {
-  tokenize,
-  extractStocks,
-  extractKeywords,
-} from 'src/utils/extractKeywords';
+import { tokenize, extractKeywords } from 'src/utils/extractKeywords';
 
 import * as _ from 'lodash';
 import toast, { Toaster } from 'react-hot-toast';
@@ -51,7 +51,8 @@ import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
 import { applyPagination } from 'src/utils/pagination';
-import { FormatColorResetTwoTone } from '@material-ui/icons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import BuildIcon from '@material-ui/icons/Build';
 
 const tagFilter = createFilterOptions<any>();
 
@@ -89,14 +90,21 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const [comment, setComment] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [newsUrl, setNewsUrl] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(false);
+  // page
+  const [commentPage, setCommentPage] = useState(0);
+  const [newsPage, setNewsPage] = useState(0);
 
+  // news
   const [newsFormType, setNewsFormType] = useState(true); // false: 자동등록, true: 수동등록
-
   const [commentDate, setCommentDate] = useState(dayjs());
   const [newsPubDate, setNewsPubDate] = useState(dayjs());
-  const [commentPage, setCommentPage] = useState<number>(0);
-  const [newsPage, setNewsPage] = useState<number>(0);
+
+  // target
+  const [targetComment, setTargetComment] = useState<number>(null);
+
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
 
   const [newsManualForm, setNewsManualForm] = useState(
     newsManualFormInit,
@@ -113,7 +121,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     async (stock, tag) => {
       setLoading(true);
       try {
-        const { status } = await APIStock.updateStockTag(
+        const { status } = await APIStock.updateTag(
           stock.code,
           tag.name,
         );
@@ -239,7 +247,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     try {
       setLoading(true);
 
-      const { status } = await APIStock.postStockComment(
+      const { status } = await APIStock.postComment(
         message,
         stock,
         user.id,
@@ -250,6 +258,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         toast.success('코멘트가 추가되었습니다.');
         setComment('');
         reloadStock(stock);
+        handleExtract(comment);
       }
     } catch (error) {
       toast.error(error.message);
@@ -257,6 +266,31 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       setLoading(false);
     }
   };
+
+  const updateComment = useCallback(async () => {
+    const { status } = await APIStock.updateComment(targetComment, {
+      message: comment,
+      datetime: commentDate,
+    });
+    if (status === 200) {
+      toast.success('코멘트가 업데이트 되었습니다.');
+      setOpenConfirm(false);
+      setIsUpdating(false);
+      reloadStock(stock.code);
+      setTargetComment(null);
+      setComment('');
+      setCommentDate(dayjs());
+    }
+  }, [targetComment, comment, commentDate, reloadStock, stock.code]);
+
+  const deleteComment = useCallback(async () => {
+    const { status } = await APIStock.deleteComment(targetComment);
+    if (status === 200) {
+      toast.success('코멘트가 제거되었습니다.');
+      setOpenConfirm(false);
+      reloadStock(stock.code);
+    }
+  }, [targetComment, reloadStock, stock.code]);
 
   const paginatedComments = applyPagination(
     stock.comments,
@@ -274,7 +308,20 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       maxWidth="lg"
     >
       <Toaster />
-
+      <Dialog
+        aria-labelledby="ConfirmModal"
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+      >
+        <ConfirmModal
+          title={'코멘트 제거'}
+          content={'코멘트를 제거하시겠습니까?'}
+          confirmTitle={'제거'}
+          type={'ERROR'}
+          handleOnClick={deleteComment}
+          handleOnCancel={() => setOpenConfirm(false)}
+        />
+      </Dialog>
       <Paper>
         <Card>
           {loading && <LinearProgress />}
@@ -425,12 +472,14 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                               </Tooltip>
                             </TableCell>
                             <TableCell>작성자</TableCell>
-                            <TableCell>작성일</TableCell>
+                            <TableCell>일자</TableCell>
+                            <TableCell>수정</TableCell>
+                            <TableCell>삭제</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {paginatedComments.map((item) => (
-                            <TableRow key={item.id}>
+                          {paginatedComments.map((item, i) => (
+                            <TableRow key={i}>
                               <TableCell>
                                 <Typography
                                   color="textPrimary"
@@ -443,7 +492,33 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                               <TableCell>
                                 {item.author.username}
                               </TableCell>
-                              <TableCell>{item.updated_at}</TableCell>
+                              <TableCell>
+                                {dayjs(item.datetime).format(
+                                  'YYYY-MM-DD',
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <BuildIcon
+                                  style={{ cursor: 'pointer' }}
+                                  onClick={() => {
+                                    setIsUpdating(true);
+                                    setTargetComment(item.id);
+                                    setComment(item.message);
+                                    setCommentDate(
+                                      dayjs(item.datetime),
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <DeleteIcon
+                                  style={{ cursor: 'pointer' }}
+                                  onClick={() => {
+                                    setTargetComment(item.id);
+                                    setOpenConfirm(true);
+                                  }}
+                                />
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -497,15 +572,16 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     size="medium"
                     variant="contained"
                     onClick={() => {
-                      postStockComment(
-                        comment,
-                        stock.code,
-                        commentDate.toISOString(),
-                      );
-                      handleExtract(comment);
+                      isUpdating
+                        ? updateComment()
+                        : postStockComment(
+                            comment,
+                            stock.code,
+                            commentDate.toISOString(),
+                          );
                     }}
                   >
-                    추가
+                    {isUpdating ? '수정' : '추가'}
                   </Button>
                 </Box>
               </Box>
@@ -525,15 +601,15 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>뉴스 제목</TableCell>
+                        <TableCell>제목</TableCell>
                         <TableCell>요약</TableCell>
                         <TableCell>발행 일시</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedNews.map((item) => (
+                      {paginatedNews.map((item, i) => (
                         <TableRow
-                          key={item.id}
+                          key={i}
                           sx={{
                             '&:last-child td': {
                               border: 0,
@@ -569,7 +645,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                                   textOverflow: 'ellipsis',
                                 }}
                               >
-                                <TableCell>{item.title}</TableCell>
+                                {item.title}
                               </Typography>
                             </Box>
                           </TableCell>

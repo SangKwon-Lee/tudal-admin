@@ -149,7 +149,7 @@ const StockPage = () => {
   const loadStock = useCallback(async () => {
     dispatch({ type: StockActionKind.LOADING });
     try {
-      const { data } = await APIStock.getListDetails(search);
+      const { data } = await APIStock.getDetailList(search);
       dispatch({
         type: StockActionKind.LOAD_STOCK,
         payload: data,
@@ -163,11 +163,10 @@ const StockPage = () => {
   const addStock = useCallback(async () => {
     if (!shouldUpdate) return;
     try {
-      const { data } = await APIStock.getListDetails(
+      const { data } = await APIStock.getDetailList(
         search,
         stockList.length,
       );
-
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
       setShouldUpdate(false);
     } catch (error) {}
@@ -175,14 +174,13 @@ const StockPage = () => {
 
   const reloadStock = useCallback(async (stockCode) => {
     try {
-      const { data } = await APIStock.getDetails(stockCode);
+      const { data } = await APIStock.getDetail(stockCode);
       console.log('reaload stock', data);
       dispatch({
         type: StockActionKind.RELOAD_STOCK,
-        payload: data[0],
+        payload: data,
       });
       console.log('heter');
-      setShouldUpdate(false);
     } catch (error) {}
   }, []);
 

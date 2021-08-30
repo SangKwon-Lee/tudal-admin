@@ -5,6 +5,7 @@ import { User } from './user';
 export interface IStockComment {
   id: number;
   message: string;
+  datetime: string;
   created_by: string;
   updated_by: string;
   created_at: string;

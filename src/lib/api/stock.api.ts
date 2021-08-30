@@ -14,13 +14,11 @@ export async function getList() {
   return { data, status };
 }
 
-export async function getDetails(stockcode: string) {
-  console.log('stockcode', stockcode);
-  return await cmsServer.get(
-    `/stocks/summary?_where[code]=${stockcode}`,
-  );
+/** 종목 디테일 */
+export async function getDetail(stockcode: string) {
+  return await cmsServer.get(`/stocks/detail/${stockcode}`);
 }
-export async function getListDetails(
+export async function getDetailList(
   search: string,
   start: number = 0,
 ) {
@@ -30,14 +28,7 @@ export async function getListDetails(
   }
 
   return await cmsServer.get(
-    `/stocks/summary?_limit=30&${qs.stringify(_query)}`,
-  );
-}
-
-export async function getStockComments(stockcode, query = {}) {
-  const _query = qs.stringify(query);
-  return await cmsServer.get(
-    `/stock-comments?_where[stock]=${stockcode}&${_query}`,
+    `/stocks/detail?_limit=30&${qs.stringify(_query)}`,
   );
 }
 
@@ -48,13 +39,8 @@ export async function getStockNews(stockcode, query = {}) {
   );
 }
 
-export async function updateStockTag(stockcode, tagName) {
-  return await cmsServer.post(`/stocks/code/${stockcode}/tag`, {
-    tagName: tagName,
-  });
-}
-
-export async function postStockComment(
+/** 종목 코멘트 */
+export async function postComment(
   message,
   stockcode,
   author,
@@ -65,6 +51,21 @@ export async function postStockComment(
     stock: stockcode,
     author,
     datetime,
+  });
+}
+
+export async function updateComment(id, body) {
+  return await cmsServer.put(`/stock-comments/${id}`, body);
+}
+
+export async function deleteComment(id) {
+  return await cmsServer.delete(`/stock-comments/${id}`);
+}
+
+/** 종목 태그 */
+export async function updateTag(stockcode, tagName) {
+  return await cmsServer.post(`/stocks/code/${stockcode}/tag`, {
+    tagName: tagName,
   });
 }
 

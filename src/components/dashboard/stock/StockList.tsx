@@ -23,19 +23,13 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 
 import SearchIcon from 'src/icons/Search';
-import { applySort, applyPagination } from 'src/utils/pagination';
+import { applyPagination } from 'src/utils/pagination';
 import dayjs from 'dayjs';
 import * as _ from 'lodash';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import ExternalLinkIcon from '../../../icons/ExternalLink';
 import InformationCircleIcon from '../../../icons/InformationCircle';
-
-import AcademicCapIcon from '../../../icons/AcademicCap';
-import BriefcaseIcon from '../../../icons/Briefcase';
-import HomeIcon from '../../../icons/Home';
-import MailIcon from '../../../icons/Mail';
 import Scrollbar from '../../layout/Scrollbar';
-import { lineHeight } from '@material-ui/system';
 
 interface StockListProps {
   page: number;
@@ -86,15 +80,12 @@ const StockList: React.FC<StockListProps> = (props) => {
   const {
     list,
     loading,
-    search,
     limit,
     page,
     setPage,
-    setLimit,
     setSearch,
     setTarget,
     setOpen,
-    reload,
   } = props;
 
   const [commentPage, setCommentPage] = useState<number>(0);

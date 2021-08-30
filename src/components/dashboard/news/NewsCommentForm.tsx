@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-  useCallback,
-} from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import * as _ from 'lodash';
 import toast, { Toaster } from 'react-hot-toast';
 import { INews, INewsComment } from 'src/types/news';
