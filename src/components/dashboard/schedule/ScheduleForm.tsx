@@ -334,7 +334,14 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     }
 
     submitForm && handleSubmit();
-  }, [submitForm, newScheduleForm]);
+  }, [
+    submitForm,
+    newScheduleForm,
+    clearTargetModify,
+    reload,
+    targetModify,
+    user.id,
+  ]);
 
   const handleExtract = useCallback(
     _.debounce(async (sentence) => {

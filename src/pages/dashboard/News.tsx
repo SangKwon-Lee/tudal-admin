@@ -87,7 +87,6 @@ const newsReducer = (
         news: [...state.news, ...payload],
       };
     case NewsActionKind.SET_TARGET_NEWS:
-      console.log('reducer', payload);
       return {
         ...state,
         news: state.news.map((news) => {
@@ -165,11 +164,7 @@ const News: React.FC = () => {
 
   const getNews = useCallback(async () => {
     try {
-      console.log('RELOAD NEWS');
       const { data, status } = await APINews.getNews(targetNews.id);
-
-      console.log('data', data[0].tags);
-
       if (status === 200) {
         dispatch({
           type: NewsActionKind.SET_TARGET_NEWS,

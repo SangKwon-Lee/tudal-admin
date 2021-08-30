@@ -105,7 +105,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         toast.error('에러가 발생했습니다.');
       }
     } catch (error) {
-      console.log(error);
+      toast.error(
+        '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+      );
     } finally {
       setLoading(false);
     }
@@ -130,7 +132,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           reload();
         }
       } catch (error) {
-        console.log(error);
+        toast.error(
+          '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+        );
       } finally {
         setLoading(false);
       }
@@ -145,7 +149,6 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         setLoading(true);
         if (tag.isNew) {
           const { data, status } = await APITag.postItem(tag.name);
-          console.log(data);
           if (status !== 200) {
             toast.error(
               `${tag.name} 등록에 실패하였습니다. 지속 발생 시 관리자에게 문의 바랍니다.`,
@@ -167,7 +170,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
           reload();
         }
       } catch (error) {
-        console.log(error);
+        toast.error(
+          '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+        );
       } finally {
         setLoading(false);
       }
@@ -192,7 +197,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         reload();
       }
     } catch (error) {
-      console.log(error);
+      toast.error(
+        '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+      );
     } finally {
       setLoading(false);
     }
@@ -227,7 +234,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         reload();
       }
     } catch (error) {
-      console.log(error);
+      toast.error(
+        '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+      );
     } finally {
       setLoading(false);
     }
@@ -249,7 +258,9 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         reload();
       }
     } catch (error) {
-      console.log(error);
+      toast.error(
+        '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
+      );
     } finally {
       setLoading(false);
     }

@@ -121,7 +121,6 @@ const stockReducer = (
 
 const StockPage = () => {
   const { settings } = useSettings();
-  const { user } = useAuth();
   const [stockState, dispatch] = useReducer(
     stockReducer,
     initialState,
@@ -135,7 +134,6 @@ const StockPage = () => {
     stocks: stockList,
     loading: stockListLoading,
     targetStock,
-    error,
     isOpenForm,
   } = stockState;
 
@@ -170,17 +168,15 @@ const StockPage = () => {
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, stockList]);
+  }, [page, stockList, search, shouldUpdate]);
 
   const reloadStock = useCallback(async (stockCode) => {
     try {
       const { data } = await APIStock.getDetail(stockCode);
-      console.log('reaload stock', data);
       dispatch({
         type: StockActionKind.RELOAD_STOCK,
         payload: data,
       });
-      console.log('heter');
     } catch (error) {}
   }, []);
 
