@@ -5,7 +5,8 @@ import { INews, INewsComment } from 'src/types/news';
 export async function createAndSelect(news, author) {
   return await axios.post<INews>('/general-news', {
     ...news,
-    author,
+    isSelected: true,
+    isSelectedBy: author,
   });
 }
 
