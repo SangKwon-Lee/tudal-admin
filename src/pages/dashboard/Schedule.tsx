@@ -159,7 +159,6 @@ const ScheduleList: React.FC = () => {
     initialState,
   );
 
-  console.log('sort!!', sort);
   const mounted = useMounted();
 
   const { list, loading } = scheduleState;
@@ -215,7 +214,7 @@ const ScheduleList: React.FC = () => {
         search,
         sort,
         0,
-        (page + 1) * limit,
+        (page + 2) * limit,
       );
       dispatch({
         type: ScheduleActionKind.RELOAD_SCHEDULE,
