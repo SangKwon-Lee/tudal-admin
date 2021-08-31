@@ -16,7 +16,7 @@ export async function getList() {
 
 /** 종목 디테일 */
 export async function getDetail(stockcode: string) {
-  return await cmsServer.get(`/stocks/summary/${stockcode}`);
+  return await cmsServer.get(`/stocks/detail/${stockcode}`);
 }
 export async function getDetailList(
   search: string,
@@ -28,7 +28,7 @@ export async function getDetailList(
   }
 
   return await cmsServer.get(
-    `/stocks/summary?_limit=30&${qs.stringify(_query)}`,
+    `/stocks/detail?_limit=30&${qs.stringify(_query)}`,
   );
 }
 
