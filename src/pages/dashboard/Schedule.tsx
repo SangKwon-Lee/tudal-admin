@@ -158,6 +158,8 @@ const ScheduleList: React.FC = () => {
     scheduleReducer,
     initialState,
   );
+
+  console.log('sort!!', sort);
   const mounted = useMounted();
 
   const { list, loading } = scheduleState;
@@ -211,6 +213,7 @@ const ScheduleList: React.FC = () => {
     try {
       const { data } = await APISchedule.getList(
         search,
+        sort,
         0,
         (page + 1) * limit,
       );
@@ -221,7 +224,7 @@ const ScheduleList: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [page, limit, search]);
+  }, [page, limit, search, sort]);
 
   useEffect(() => {
     shouldUpdate && addSchedule();
