@@ -327,16 +327,26 @@ const News: React.FC = () => {
             dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
           }
         >
-          <ConfirmModal
-            title={'뉴스 선택'}
-            content={'뉴스를 선택하시겠습니까?'}
-            confirmTitle={'추가'}
-            type={'CONFIRM'}
-            handleOnClick={() => updateSelect()}
-            handleOnCancel={() =>
-              dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
-            }
-          />
+          {targetNews && (
+            <ConfirmModal
+              title={
+                targetNews.isSelected ? '뉴스 선택 취소' : '뉴스 선택'
+              }
+              content={
+                targetNews.isSelected
+                  ? '뉴스 선택을 취소하시겠습니까?'
+                  : '뉴스를 선택하시겠습니까?'
+              }
+              confirmTitle={targetNews.isSelected ? '취소' : '추가'}
+              type={targetNews.isSelected ? 'ERROR' : 'CONFIRM'}
+              handleOnClick={() => updateSelect()}
+              handleOnCancel={() =>
+                dispatch({
+                  type: NewsActionKind.CLOSE_SELECT_CONFIRM,
+                })
+              }
+            />
+          )}
         </Dialog>
       </Box>
     </>

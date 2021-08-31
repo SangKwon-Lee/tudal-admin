@@ -149,6 +149,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         user.id,
       );
 
+      console.log(data);
       if (status === 200) {
         if (data.isExisted) {
           toast.success('기존에 저장되어있던 뉴스를 가져옵니다.');

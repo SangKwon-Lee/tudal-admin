@@ -98,16 +98,12 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
         stockcode,
         news.id,
       );
-      if (data[0].newsId === news.id) {
+      if (data) {
         toast.success('삭제되었습니다.');
         reload();
-      } else {
-        toast.error('에러가 발생했습니다.');
       }
     } catch (error) {
-      toast.error(
-        '에러가 발생했습니다. 지속 발생할 시 관리자에게 문의 해주시길 바랍니다.',
-      );
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

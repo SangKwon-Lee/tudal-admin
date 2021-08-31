@@ -168,7 +168,7 @@ const StockPage = () => {
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, stockList, search, shouldUpdate]);
+  }, [page, stockList, search, shouldUpdate, page]);
 
   const reloadStock = useCallback(async (stockCode) => {
     try {
