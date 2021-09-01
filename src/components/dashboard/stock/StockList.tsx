@@ -226,9 +226,11 @@ const StockList: React.FC<StockListProps> = (props) => {
                         </TableHead>
                         <TableBody>
                           {_.isEmpty(paginatedComments) ? (
-                            <Typography variant={'body1'}>
-                              {'작성된 코멘트가 없습니다.'}
-                            </Typography>
+                            <Box ml={3} mt={3}>
+                              <Typography variant={'body1'}>
+                                {'작성된 코멘트가 없습니다.'}
+                              </Typography>
+                            </Box>
                           ) : (
                             paginatedComments.map((item, i) => (
                               <TableRow key={i}>

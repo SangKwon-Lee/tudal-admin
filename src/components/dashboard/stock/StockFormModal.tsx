@@ -305,6 +305,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       open={isOpen}
       onClose={setClose}
       data-testid="stock-form-modal"
+      fullWidth
       maxWidth="lg"
     >
       <Toaster />
