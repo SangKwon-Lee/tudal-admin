@@ -14,44 +14,11 @@ import {
   FixtureTags,
 } from 'src/fixtures';
 
-const handlers = [
+const stockHandlers = [
   rest.get(
     `${process.env.REACT_APP_API_URL}/stocks/stkNmCd`,
     async (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(FixtureStocks.list));
-    },
-  ),
-
-  rest.get(
-    `${process.env.REACT_APP_CMS_URL}/general-news`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(FixtureNews.list));
-    },
-  ),
-
-  rest.get(
-    `${process.env.REACT_APP_CMS_URL}/tags-excluded`,
-    (req, res, ctx) => {
-      const query = req.url.searchParams;
-      const name = query.get('_where[name]');
-      if (name === '문재인') {
-        return res(
-          ctx.status(200),
-          ctx.json(FixtureTags.searchResponse),
-        );
-      }
-    },
-  ),
-  rest.get(
-    `${process.env.REACT_APP_CMS_URL}/tags`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(FixtureTags.list));
-    },
-  ),
-  rest.get(
-    `${process.env.REACT_APP_CMS_URL}/categories`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(FixtureCategory.list));
     },
   ),
   rest.get(
@@ -67,9 +34,93 @@ const handlers = [
       return res(ctx.status(200), ctx.json(response));
     },
   ),
+  rest.post(
+    `${process.env.REACT_APP_CMS_URL}/stocks/code/:stockcode/tag`,
+    (req, res, ctx) => {
+      const tagName = req.body['tagName'];
+      const code = req.params.stockcode;
+      const result = tagName && code ? 'true' : 'false';
+      return res(ctx.status(200), ctx.text(result));
+    },
+  ),
+
+  rest.delete(
+    `${process.env.REACT_APP_CMS_URL}/stocks/code/:code/tag/:tagId`,
+    (req, res, ctx) => {
+      const { code, tagId } = req.params;
+      const result = tagId && code ? 'true' : 'false';
+      return res(ctx.status(200), ctx.text(result));
+    },
+  ),
 ];
 
-const server = setupServer(...handlers);
+const newHandler = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/general-news`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(FixtureNews.list));
+    },
+  ),
+  rest.post(
+    `${process.env.REACT_APP_CMS_URL}/general-news`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ news: { id: 1 } }));
+    },
+  ),
+
+  rest.post(
+    `${process.env.REACT_APP_CMS_URL}/stock-news-original`,
+    (req, res, ctx) => {
+      return res(ctx.status(200));
+    },
+  ),
+
+  rest.post(
+    `${process.env.REACT_APP_CMS_URL}/general-news/custom`,
+    (req, res, ctx) => {
+      return res(ctx.status(200));
+    },
+  ),
+];
+
+const tagHandler = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tags-excluded`,
+    (req, res, ctx) => {
+      const query = req.url.searchParams;
+      const name = query.get('_where[name]');
+      if (name) {
+        return res(
+          ctx.status(200),
+          ctx.json(FixtureTags.searchResponse(name)),
+        );
+      }
+    },
+  ),
+
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tags`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(FixtureTags.list));
+    },
+  ),
+];
+
+const categoryHandler = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/categories`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(FixtureCategory.list));
+    },
+  ),
+];
+
+const server = setupServer(
+  ...stockHandlers,
+  ...newHandler,
+  ...tagHandler,
+  ...categoryHandler,
+);
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());

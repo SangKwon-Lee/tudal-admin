@@ -407,9 +407,9 @@ export const list = [
     name: '문재인',
   },
 ];
-export const searchResponse = [
+export const searchResponse = (name) => [
   {
     id: 154,
-    name: '문재인',
+    name: name,
   },
 ];
