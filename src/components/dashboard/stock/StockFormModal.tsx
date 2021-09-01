@@ -325,7 +325,11 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       </Dialog>
       <Paper>
         <Card>
-          {loading && <LinearProgress />}
+          {loading && (
+            <div data-testid="stock-form-modal-loading">
+              <LinearProgress />
+            </div>
+          )}
 
           <CardHeader
             subheader={
@@ -491,7 +495,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                                 </Typography>
                               </TableCell>
                               <TableCell>
-                                {item.author.username}
+                                {item.author && item.author.username}
                               </TableCell>
                               <TableCell>
                                 {dayjs(item.datetime).format(

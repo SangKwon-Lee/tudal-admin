@@ -45,23 +45,6 @@ interface StockListProps {
   reload: () => void;
 }
 
-type Sort = 'id|asc' | 'updated_at|desc';
-
-interface SortOption {
-  value: Sort;
-  label: string;
-}
-const sortOptions: SortOption[] = [
-  {
-    label: '이름 순',
-    value: 'id|asc',
-  },
-  {
-    label: '최신 등록순',
-    value: 'updated_at|desc',
-  },
-];
-
 const useStyles = makeStyles({
   text: {
     cursor: 'pointer',
@@ -161,6 +144,7 @@ const StockList: React.FC<StockListProps> = (props) => {
             justifyContent="space-between"
             mb={10}
             key={i}
+            data-testid={`stock-list-${stock.code}`}
           >
             <Box style={{ flexBasis: '20%' }}>
               <Card style={{ height: '100%' }}>
@@ -178,6 +162,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                       return (
                         <Chip
                           key={i}
+                          data-testid="stock-list-keyword"
                           label={tag.name}
                           sx={{
                             ':first-of-type': {
@@ -242,6 +227,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                                   color="textPrimary"
                                   variant="subtitle2"
                                   className={classes.text}
+                                  data-testid="stock-list-comment-row"
                                 >
                                   {item.message}
                                 </Typography>
@@ -284,6 +270,7 @@ const StockList: React.FC<StockListProps> = (props) => {
                       {paginatedNews.map((item, i) => (
                         <TableRow
                           key={i}
+                          data-testid="stock-list-news-row"
                           sx={{
                             '&:last-child td': {
                               border: 0,

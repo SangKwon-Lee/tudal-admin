@@ -1,4 +1,9 @@
-import { fireEvent, render } from '@testing-library/react';
+import {
+  fireEvent,
+  within,
+  render,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 
 import { FixtureStocks } from 'src/fixtures';
 
@@ -28,8 +33,8 @@ describe('Stock List Test', () => {
     expect(getAllByText('삼성전자')).toBeTruthy();
   });
 
-  it('should have list length of limit', () => {
-    const { getAllByTestId } = render(
+  it('should have chip. comment, news list length of limit', async () => {
+    const { getAllByTestId, getByTestId, debug } = render(
       <StockList
         //@ts-ignore
         list={FixtureStocks.summaries}
@@ -44,11 +49,38 @@ describe('Stock List Test', () => {
       />,
     );
 
-    expect(getAllByTestId('stock-list-row').length).toEqual(LIMIT);
+    const Samsung = getByTestId(`stock-list-005930`);
+
+    const comments = within(Samsung).getAllByTestId(
+      'stock-list-comment-row',
+    );
+
+    const commentsTotalLength =
+      FixtureStocks.summaries[0].comments.length;
+    const commentMax =
+      commentsTotalLength >= 3 ? 3 : commentsTotalLength;
+
+    expect(comments.length).toEqual(commentMax);
+
+    const news = within(Samsung).getAllByTestId(
+      'stock-list-comment-row',
+    );
+    const newsLength = FixtureStocks.summaries[0].news.length;
+    const newsMaxLength = newsLength >= 3 ? 3 : newsLength;
+
+    expect(news.length).toEqual(newsMaxLength);
+
+    const keywords = within(Samsung).getAllByTestId(
+      'stock-list-keyword',
+    );
+
+    expect(keywords.length).toEqual(
+      FixtureStocks.summaries[0].tags.length,
+    );
   });
 
-  it('should be able to move next and previous page', () => {
-    const { getByTestId, getAllByText } = render(
+  it('should go prev, next page of comment and news', async () => {
+    const { getAllByTestId, getByTestId, findAllByText } = render(
       <StockList
         //@ts-ignore
         list={FixtureStocks.summaries}
@@ -63,32 +95,25 @@ describe('Stock List Test', () => {
       />,
     );
 
-    fireEvent.click(getByTestId('KeyboardArrowRightIcon'));
-    expect(getAllByText('셀트리온')).toBeTruthy();
+    const Samsung = getByTestId(`stock-list-005930`);
 
-    fireEvent.click(getByTestId('KeyboardArrowLeftIcon'));
-    expect(getAllByText('삼성전자')).toBeTruthy();
-  });
-});
+    const commentNextButton = within(Samsung).getAllByTestId(
+      'KeyboardArrowRightIcon',
+    )[0];
 
-describe('ASYNC TEST', () => {
-  it('should be able to load more data from API', async () => {
-    const { getByTestId, getAllByText } = render(
-      <StockList
-        //@ts-ignore
-        list={FixtureStocks.summaries}
-        limit={20}
-        loading={false}
-        page={0}
-        reload={mock}
-        search={''}
-        setPage={mock}
-        setLimit={mock}
-        setSearch={mock}
-      />,
-    );
+    const newsNextButton = within(Samsung).getAllByTestId(
+      'KeyboardArrowRightIcon',
+    )[1];
 
-    fireEvent.click(getByTestId('KeyboardArrowRightIcon'));
-    expect(getAllByText(/삼성물산/)).toBeTruthy();
+    fireEvent.click(commentNextButton);
+
+    const targetComment =
+      FixtureStocks.summaries[0].comments[4].message;
+    console.log(targetComment);
+    expect(findAllByText(targetComment)).toBeTruthy();
+
+    fireEvent.click(newsNextButton);
+    const targetNews = FixtureStocks.summaries[0].news[4].title;
+    expect(findAllByText(targetNews)).toBeTruthy();
   });
 });

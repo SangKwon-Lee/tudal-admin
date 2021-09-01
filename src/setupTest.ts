@@ -55,7 +55,7 @@ const handlers = [
     },
   ),
   rest.get(
-    `${process.env.REACT_APP_CMS_URL}/stocks/summary`,
+    `${process.env.REACT_APP_CMS_URL}/stocks/detail`,
     (req, res, ctx) => {
       const query = req.url.searchParams;
       const start = query.get('_start');

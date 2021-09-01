@@ -21,7 +21,7 @@ function renderStock() {
 
 describe('should have stock list and form modal', () => {
   it('should have stock list entity', async () => {
-    const { getByTestId, getByText, debug } = renderStock();
+    const { getByTestId } = renderStock();
 
     await waitForElementToBeRemoved(() =>
       getByTestId('stock-list-loading'),
@@ -41,6 +41,10 @@ describe('should have stock list and form modal', () => {
 
     fireEvent.click(openDetailButtons[0]);
 
+    // modal open confirmed
     expect(getByTestId('stock-form-modal')).toBeInTheDocument();
+
+    // loading for tag from API confirmed
+    await waitForElementToBeRemoved(() => getByTestId('tag-loading'));
   });
 });
