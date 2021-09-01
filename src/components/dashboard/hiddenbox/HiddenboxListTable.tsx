@@ -714,9 +714,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               />
             ))
           ) : (
-            <Typography variant={'body1'}>
-              {'작성된 댓글이 없습니다.'}
-            </Typography>
+            <Box ml={3} mt={3}>
+              <Typography variant={'body1'}>
+                {'작성된 댓글이 없습니다.'}
+              </Typography>
+            </Box>
           )}
           <Divider sx={{ my: 2 }} />
           <SocialPostCommentAdd

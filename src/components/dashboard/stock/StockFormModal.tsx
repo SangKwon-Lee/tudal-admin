@@ -305,6 +305,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
       open={isOpen}
       onClose={setClose}
       data-testid="stock-form-modal"
+      fullWidth
       maxWidth="lg"
     >
       <Toaster />
@@ -348,7 +349,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
             <Divider />
             <Box
               sx={{
-                alignItems: 'center',
+                alignItems: 'stretch',
                 display: 'flex',
                 flexWrap: 'wrap',
                 paddingTop: 2,
@@ -360,13 +361,17 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 stock.tags.map((tag, i) => {
                   return (
                     <Chip
-                      onDelete={() => deleteStockTag(stock, tag)}
                       key={i}
-                      onClick={() => createOrUpdateTag(stock, tag)}
                       label={tag.name}
+                      onDelete={() => deleteStockTag(stock, tag)}
+                      onClick={() => createOrUpdateTag(stock, tag)}
                       sx={{
+                        ':first-of-type': {
+                          mr: 1,
+                        },
                         '& + &': {
-                          ml: 1,
+                          mr: 1,
+                          mb: 1,
                         },
                       }}
                       variant="outlined"
@@ -551,7 +556,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 >
                   <TextField
                     multiline
-                    style={{ width: '70%' }}
+                    style={{ width: '60%' }}
                     name="comment"
                     id="comment"
                     label="코멘트 (줄 바꾸기 Enter)"
@@ -715,7 +720,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     <TextField
                       name="news"
                       id="news"
-                      style={{ width: '70%' }}
+                      style={{ width: '60%' }}
                       label="*자동 등록은 네이버 뉴스를 지원합니다."
                       variant="outlined"
                       value={newsUrl}

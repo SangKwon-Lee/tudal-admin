@@ -175,7 +175,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
           sx={{
             m: 1,
             maxWidth: '100%',
-            width: 500,
+            width: 600,
           }}
         >
           <TextField
@@ -192,6 +192,9 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             name={'_q'}
             placeholder="제목 또는 요약본 검색 기능을 지원합니다."
             variant="outlined"
+            onKeyPress={(e) => {
+              e.key === 'Enter' && reload();
+            }}
           />
         </Box>
         <Box>
