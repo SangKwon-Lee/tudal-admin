@@ -15,7 +15,7 @@ export default class {
     this.reconnectionCount = 0;
     this.isConnecting = false;
     this.queryManager = null;
-    this.setSSL = true;
+
     var self = this;
   }
 
@@ -44,6 +44,7 @@ export default class {
       if (protocol === 'wss') {
         bSSL = true;
       }
+
 
       // var nio = new KVWebsocketIO(this.queryManager, bSSL);
       // nio.protocols = 'wsmw-protocol';

@@ -38,10 +38,60 @@ const TodayKeywordViewer: FC = () => {
   const tagData = useRef({});
   const [tagArray, setTagArray] = useState<TagData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [screenSize, setScreenSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
+    const { width, height } = getWindowDimensions();
+    setScreenSize({ width, height });
   }, []);
+
+  useEffect(() => {
+    const getTodayRanking = async () => {
+      try {
+        setLoading(true);
+        queryManager.current.sendProcessByName(
+          'i0043',
+          function (queryData) {
+            if (!queryData) {
+              return;
+            }
+
+            var block = queryData.getBlockData('InBlock1')[0];
+            // 0: 전체, 1: 코스피, 2: 코스닥
+            block['exc_tp'] = '0';
+            // 1:거래상위 2:상승률 3:하락률 4:시가총액상위
+            block['gbn'] = '2';
+            block['req_cnt'] = '20';
+            block['req_page'] = '1';
+          },
+          function (queryData) {
+            if (!queryData) {
+              setShowKeyword(false);
+              return;
+            }
+
+            let result1 = queryData.getBlockData('OutBlock1');
+            let result2 = queryData.getBlockData('OutBlock2');
+            if (result2 && result2.length >= 20) {
+              setList([...result2]);
+            }
+          },
+        );
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (screenSize.width !== 0 && screenSize.height !== 0) {
+      getTodayRanking();
+    }
+  }, [screenSize]);
 
   useEffect(() => {
     if (list.length === 20) {
@@ -50,49 +100,12 @@ const TodayKeywordViewer: FC = () => {
   }, [list]);
 
   const getWindowDimensions = () => {
-    const { innerWidth: width, innerHeight: height } = window;
+    const width = window.screen.width;
+    const height = window.screen.height;
     return {
       width,
       height,
     };
-  };
-
-  const getTodayRanking = async () => {
-    try {
-      setLoading(true);
-      queryManager.current.sendProcessByName(
-        'i0043',
-        function (queryData) {
-          if (!queryData) {
-            return;
-          }
-
-          var block = queryData.getBlockData('InBlock1')[0];
-          // 0: 전체, 1: 코스피, 2: 코스닥
-          block['exc_tp'] = '0';
-          // 1:거래상위 2:상승률 3:하락률 4:시가총액상위
-          block['gbn'] = '2';
-          block['req_cnt'] = '20';
-          block['req_page'] = '1';
-        },
-        function (queryData) {
-          if (!queryData) {
-            setShowKeyword(false);
-            return;
-          }
-
-          let result1 = queryData.getBlockData('OutBlock1');
-          let result2 = queryData.getBlockData('OutBlock2');
-          if (result2 && result2.length >= 20) {
-            setList([...result2]);
-          }
-        },
-      );
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   useEffect(() => {
@@ -147,17 +160,14 @@ const TodayKeywordViewer: FC = () => {
   };
 
   useEffect(() => {
-    getTodayRanking();
-  }, []);
-
-  useEffect(() => {
     if (tagArray.length >= 10) {
       setShowKeyword(true);
     }
   }, [tagArray]);
 
-  const { width, height } = getWindowDimensions();
-  const chartWidth = width > 400 ? 400 : width;
+  console.log('Screen', screenSize);
+  const chartWidth =
+    screenSize.width > 400 ? 400 - 40 : screenSize.width - 40;
   const chartHeight = (chartWidth * 3) / 4;
 
   return (
@@ -168,9 +178,10 @@ const TodayKeywordViewer: FC = () => {
       <Box
         sx={{
           backgroundColor: 'white',
-          height: 400,
+          height: screenSize.height,
           maxHeight: 400,
-          width: 500,
+          width: screenSize.width,
+          maxWidth: 400,
           py: 3,
         }}
       >
@@ -187,15 +198,16 @@ const TodayKeywordViewer: FC = () => {
               sx={{
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: 300,
-                width: 400,
                 flex: 1,
+                height: chartHeight,
+                width: chartWidth,
               }}
             >
               <Typography
                 variant="body1"
                 textAlign={'center'}
                 lineHeight={'300px'}
+                fontSize={screenSize.width < 400 ? '12px' : '14px'}
               >
                 {'투데이키워드는 오전 9시부터 제공됩니다.'}
               </Typography>
