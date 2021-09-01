@@ -551,7 +551,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 >
                   <TextField
                     multiline
-                    style={{ width: '70%' }}
+                    style={{ width: '60%' }}
                     name="comment"
                     id="comment"
                     label="코멘트 (줄 바꾸기 Enter)"
@@ -715,7 +715,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                     <TextField
                       name="news"
                       id="news"
-                      style={{ width: '70%' }}
+                      style={{ width: '60%' }}
                       label="*자동 등록은 네이버 뉴스를 지원합니다."
                       variant="outlined"
                       value={newsUrl}
