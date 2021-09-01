@@ -2,6 +2,8 @@ export interface Tag {
   id: number;
   name: string;
   isNew?: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Stock {

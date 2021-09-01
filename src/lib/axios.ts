@@ -8,7 +8,6 @@ export const CMSURL = REACT_APP_CMS_URL;
 export const CMS_TOKEN = REACT_APP_CMS_TOKEN;
 export const APIURL = REACT_APP_API_URL;
 
-console.log('CMS URL', CMSURL);
 const axiosInstance = axios.create({
   baseURL: CMSURL,
 });
