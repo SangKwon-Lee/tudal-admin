@@ -54,6 +54,11 @@ const sections = [
         icon: <CalendarIcon fontSize="small" />,
       },
       {
+        title: '종목',
+        path: '/dashboard/stock',
+        icon: <CalendarIcon fontSize="small" />,
+      },
+      {
         title: '뉴스',
         path: '/dashboard/news-comments',
         icon: <DeviceTabletIcon fontSize="small" />,

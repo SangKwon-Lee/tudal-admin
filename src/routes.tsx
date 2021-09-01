@@ -7,6 +7,7 @@ import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
 import News from './pages/dashboard/News';
+import Stock from './pages/dashboard/Stock';
 
 const Loadable = (Component) => (props) =>
   (
@@ -56,6 +57,10 @@ const ReportMaker = Loadable(
 
 const ScheduleList = Loadable(
   lazy(() => import('./pages/dashboard/Schedule')),
+);
+
+const StockList = Loadable(
+  lazy(() => import('./pages/dashboard/Stock')),
 );
 
 // Viewer pages
@@ -179,6 +184,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <News />,
+          },
+        ],
+      },
+      {
+        path: 'stock',
+        children: [
+          {
+            path: '/',
+            element: <StockList />,
           },
         ],
       },

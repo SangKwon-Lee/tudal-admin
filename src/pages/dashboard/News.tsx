@@ -87,7 +87,6 @@ const newsReducer = (
         news: [...state.news, ...payload],
       };
     case NewsActionKind.SET_TARGET_NEWS:
-      console.log('reducer', payload);
       return {
         ...state,
         news: state.news.map((news) => {
@@ -165,11 +164,7 @@ const News: React.FC = () => {
 
   const getNews = useCallback(async () => {
     try {
-      console.log('RELOAD NEWS');
       const { data, status } = await APINews.getNews(targetNews.id);
-
-      console.log('data', data[0].tags);
-
       if (status === 200) {
         dispatch({
           type: NewsActionKind.SET_TARGET_NEWS,
@@ -332,16 +327,26 @@ const News: React.FC = () => {
             dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
           }
         >
-          <ConfirmModal
-            title={'뉴스 선택'}
-            content={'뉴스를 선택하시겠습니까?'}
-            confirmTitle={'추가'}
-            type={'CONFIRM'}
-            handleOnClick={() => updateSelect()}
-            handleOnCancel={() =>
-              dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM })
-            }
-          />
+          {targetNews && (
+            <ConfirmModal
+              title={
+                targetNews.isSelected ? '뉴스 선택 취소' : '뉴스 선택'
+              }
+              content={
+                targetNews.isSelected
+                  ? '뉴스 선택을 취소하시겠습니까?'
+                  : '뉴스를 선택하시겠습니까?'
+              }
+              confirmTitle={targetNews.isSelected ? '취소' : '추가'}
+              type={targetNews.isSelected ? 'ERROR' : 'CONFIRM'}
+              handleOnClick={() => updateSelect()}
+              handleOnCancel={() =>
+                dispatch({
+                  type: NewsActionKind.CLOSE_SELECT_CONFIRM,
+                })
+              }
+            />
+          )}
         </Dialog>
       </Box>
     </>

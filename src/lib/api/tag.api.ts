@@ -21,6 +21,7 @@ export async function postItems(name: string[]): Promise<Tag[]> {
   const promises = name.map((name) =>
     axios.post<Tag>('/tags', { name }),
   );
+
   return await Promise.all(promises).then((responses) => {
     return responses.map((response) => {
       return response.data;
