@@ -113,7 +113,7 @@ const StockList: React.FC<StockListProps> = (props) => {
               ),
             }}
             name={'_q'}
-            placeholder="제목 또는 요약본 검색 기능을 지원합니다."
+            placeholder="종목명 검색을 지원합니다."
             onChange={(event) => handleSearch(event.target.value)}
             variant="outlined"
           />
@@ -158,24 +158,29 @@ const StockList: React.FC<StockListProps> = (props) => {
                       </Typography>
                     </Box>
                   ) : (
-                    stock.tags.map((tag, i) => {
-                      return (
-                        <Chip
-                          key={i}
-                          data-testid="stock-list-keyword"
-                          label={tag.name}
-                          sx={{
-                            ':first-of-type': {
-                              mr: 1,
-                            },
-                            '& + &': {
-                              mr: 1,
-                            },
-                          }}
-                          variant="outlined"
-                        />
-                      );
-                    })
+                    <>
+                      {stock.tags.slice(0, 20).map((tag, i) => {
+                        return (
+                          <Chip
+                            key={i}
+                            data-testid="stock-list-keyword"
+                            label={tag.name}
+                            sx={{
+                              ':first-of-type': {
+                                mr: 1,
+                              },
+                              '& + &': {
+                                mr: 1,
+                              },
+                            }}
+                            variant="outlined"
+                          />
+                        );
+                      })}
+                      <Typography variant="body1" fontSize={12}>
+                        상위 30개의 항목만 보여지고 있습니다.
+                      </Typography>
+                    </>
                   )}
                 </CardContent>
                 <Box
@@ -220,26 +225,34 @@ const StockList: React.FC<StockListProps> = (props) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {paginatedComments.map((item, i) => (
-                            <TableRow key={i}>
-                              <TableCell>
-                                <Typography
-                                  color="textPrimary"
-                                  variant="subtitle2"
-                                  className={classes.text}
-                                  data-testid="stock-list-comment-row"
-                                >
-                                  {item.message}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                {item.author
-                                  ? item.author.username
-                                  : 'NA'}
-                              </TableCell>
-                              <TableCell>{item.updated_at}</TableCell>
-                            </TableRow>
-                          ))}
+                          {_.isEmpty(paginatedComments) ? (
+                            <Typography variant={'body1'}>
+                              {'작성된 코멘트가 없습니다.'}
+                            </Typography>
+                          ) : (
+                            paginatedComments.map((item, i) => (
+                              <TableRow key={i}>
+                                <TableCell>
+                                  <Typography
+                                    color="textPrimary"
+                                    variant="subtitle2"
+                                    className={classes.text}
+                                    data-testid="stock-list-comment-row"
+                                  >
+                                    {item.message}
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  {item.author
+                                    ? item.author.username
+                                    : 'NA'}
+                                </TableCell>
+                                <TableCell>
+                                  {item.updated_at}
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
                         </TableBody>
                       </Table>
                     </Box>
@@ -267,62 +280,68 @@ const StockList: React.FC<StockListProps> = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedNews.map((item, i) => (
-                        <TableRow
-                          key={i}
-                          data-testid="stock-list-news-row"
-                          sx={{
-                            '&:last-child td': {
-                              border: 0,
-                            },
-                          }}
-                        >
-                          <TableCell>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <a
-                                href={item.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                style={{ textDecoration: 'none' }}
+                      {_.isEmpty(paginatedNews) ? (
+                        <Typography variant={'body1'}>
+                          {'연관된 뉴스가 없습니다.'}
+                        </Typography>
+                      ) : (
+                        paginatedNews.map((item, i) => (
+                          <TableRow
+                            key={i}
+                            data-testid="stock-list-news-row"
+                            sx={{
+                              '&:last-child td': {
+                                border: 0,
+                              },
+                            }}
+                          >
+                            <TableCell>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }}
                               >
-                                <ExternalLinkIcon
-                                  fontSize="small"
-                                  sx={{
-                                    color: 'text.secondary',
-                                    cursor: 'pointer',
-                                  }}
-                                />
-                              </a>
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{ textDecoration: 'none' }}
+                                >
+                                  <ExternalLinkIcon
+                                    fontSize="small"
+                                    sx={{
+                                      color: 'text.secondary',
+                                      cursor: 'pointer',
+                                    }}
+                                  />
+                                </a>
+                                <Typography
+                                  color="textPrimary"
+                                  sx={{ ml: 2 }}
+                                  variant="body2"
+                                >
+                                  {item.title}
+                                </Typography>
+                              </Box>
+                            </TableCell>
+                            <TableCell>
                               <Typography
                                 color="textPrimary"
-                                sx={{ ml: 2 }}
                                 variant="body2"
+                                className={classes.text}
                               >
-                                {item.title}
+                                {item.summarized}
                               </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textPrimary"
-                              variant="body2"
-                              className={classes.text}
-                            >
-                              {item.summarized}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            {dayjs(item.updated_at).format(
-                              'YYYY-MM-DD HH:mm',
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>
+                              {dayjs(item.updated_at).format(
+                                'YYYY-MM-DD HH:mm',
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                   <TablePagination

@@ -118,13 +118,13 @@ const News: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const [newsState, dispatch] = useReducer(newsReducer, initialState);
-  const [search, setSearch] = useState<string>('');
   const [tick, setTick] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(50);
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
+  const searchInput = useRef<HTMLInputElement>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const {
@@ -132,8 +132,6 @@ const News: React.FC = () => {
     targetNews,
     loading: newsLoading,
   } = newsState;
-
-  const handleSearch = _.debounce(setSearch, 300);
 
   const handleOpenForm = useCallback(
     () => setOpen((prev) => !prev),
@@ -151,7 +149,9 @@ const News: React.FC = () => {
   const getNewsList = useCallback(async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
-      const { data } = await APINews.getList(search);
+      const { data } = await APINews.getList(
+        searchInput?.current.value,
+      );
       dispatch({
         type: NewsActionKind.RELOAD_NEWS,
         payload: data,
@@ -160,7 +160,7 @@ const News: React.FC = () => {
       console.error(error);
       dispatch({ type: NewsActionKind.ERROR, payload: error });
     }
-  }, [search]);
+  }, []);
 
   const getNews = useCallback(async () => {
     try {
@@ -181,13 +181,13 @@ const News: React.FC = () => {
     if (!shouldUpdate) return;
     try {
       const { data } = await APINews.getList(
-        search,
+        searchInput?.current.value,
         (page + 1) * limit,
       );
       dispatch({ type: NewsActionKind.ADD_NEWS, payload: data });
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, limit, search, shouldUpdate]);
+  }, [page, limit, shouldUpdate]);
 
   useEffect(() => {
     function refreshTimer() {
@@ -198,10 +198,6 @@ const News: React.FC = () => {
     refreshTimer();
     return () => clearTimeout(refreshTimer());
   }, [tick, minutesRefresh]);
-
-  useEffect(() => {
-    getNewsList();
-  }, [getNewsList]);
 
   useEffect(() => {
     addNews();
@@ -298,8 +294,7 @@ const News: React.FC = () => {
           <Box sx={{ mt: 3 }}>
             <NewsListTable
               newsList={newsList}
-              search={search}
-              setSearch={handleSearch}
+              search={searchInput}
               reload={getNewsList}
               isLoading={newsLoading}
               setOpenConfirm={handleConfirmModal}
