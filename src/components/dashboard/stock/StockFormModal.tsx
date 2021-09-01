@@ -349,7 +349,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
             <Divider />
             <Box
               sx={{
-                alignItems: 'center',
+                alignItems: 'stretch',
                 display: 'flex',
                 flexWrap: 'wrap',
                 paddingTop: 2,
@@ -361,13 +361,17 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 stock.tags.map((tag, i) => {
                   return (
                     <Chip
-                      onDelete={() => deleteStockTag(stock, tag)}
                       key={i}
-                      onClick={() => createOrUpdateTag(stock, tag)}
                       label={tag.name}
+                      onDelete={() => deleteStockTag(stock, tag)}
+                      onClick={() => createOrUpdateTag(stock, tag)}
                       sx={{
+                        ':first-of-type': {
+                          mr: 1,
+                        },
                         '& + &': {
-                          ml: 1,
+                          mr: 1,
+                          mb: 1,
                         },
                       }}
                       variant="outlined"
