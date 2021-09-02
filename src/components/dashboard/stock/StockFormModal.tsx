@@ -1,4 +1,9 @@
-import React, { useState, useCallback, ChangeEvent } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   IStockComment,
   IStockDetailsWithTagCommentNews,
@@ -86,12 +91,13 @@ const newsManualFormInit = {
 };
 const StockForm: React.FC<StockFormProps> = (props) => {
   const { user } = useAuth();
+  const tagInput = useRef(null);
   const { stock, isOpen, setClose, reloadStock } = props;
   const [comment, setComment] = useState('');
-  const [tagInput, setTagInput] = useState('');
   const [newsUrl, setNewsUrl] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(false);
+
   // page
   const [commentPage, setCommentPage] = useState(0);
   const [newsPage, setNewsPage] = useState(0);
@@ -103,19 +109,21 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
   // target
   const [targetComment, setTargetComment] = useState<number>(null);
-
   const [openConfirm, setOpenConfirm] = useState<boolean>(false);
-
   const [newsManualForm, setNewsManualForm] = useState(
     newsManualFormInit,
   );
   const classes = useStyles();
 
-  const [{ data: tagList, loading: tagLoading }] = useAsync<Tag[]>(
-    () => APITag.getList(tagInput),
-    [tagInput],
-    [],
-  );
+  const getTagList = useCallback(() => {
+    const value = tagInput.current ? tagInput.current.value : '';
+    return APITag.getList(value);
+  }, [tagInput]);
+
+  const [{ data: tagList, loading: tagLoading }, refetchTag] =
+    useAsync<Tag[]>(getTagList, [tagInput.current], []);
+
+  const handleTagChange = _.debounce(refetchTag, 300);
 
   const createOrUpdateTag = useCallback(
     async (stock, tag) => {
@@ -427,9 +435,8 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    onChange={(event) =>
-                      setTagInput(event.target.value)
-                    }
+                    onChange={handleTagChange}
+                    inputRef={tagInput}
                     fullWidth
                     label="키워드"
                     name="keyword"
