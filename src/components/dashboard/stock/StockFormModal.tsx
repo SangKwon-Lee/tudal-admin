@@ -127,7 +127,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
 
   const createOrUpdateTag = useCallback(
     async (stock, tag) => {
-      setLoading(true);
       try {
         const { status } = await APIStock.updateTag(
           stock.code,
@@ -140,12 +139,27 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         }
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     },
     [reloadStock],
   );
+
+  const createOrUpdateTagList = async (stock, tags: Tag[]) => {
+    try {
+      for (let i = 0; i < tags.length; i++) {
+        const { status } = await APIStock.updateTag(
+          stock.code,
+          tags[i].name,
+        );
+        if (status === 200) {
+          toast.success(`${tags[i].name} 이 추가되었습니다.`);
+        }
+      }
+      reloadStock(stock.code);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const createOrSelectByUrl = async () => {
     try {
@@ -200,26 +214,22 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     }
   };
 
-  const handleExtract = useCallback(
-    async (sentence) => {
-      try {
-        setLoading(true);
-        const tokens = tokenize(sentence);
-        if (!tokens) return;
+  const handleExtract = async (sentence) => {
+    try {
+      setLoading(true);
+      const tokens = tokenize(sentence);
+      if (!tokens) return;
 
-        const tags = await extractKeywords(tokens);
-        tags.forEach((tag) => {
-          createOrUpdateTag(stock, tag);
-        });
-        reloadStock(stock.code);
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [reloadStock, stock, createOrUpdateTag],
-  );
+      const tags = await extractKeywords(tokens);
+      await createOrUpdateTagList(stock, tags);
+
+      reloadStock(stock.code);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleFormChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -255,6 +265,8 @@ const StockForm: React.FC<StockFormProps> = (props) => {
     try {
       setLoading(true);
 
+      await handleExtract(comment);
+
       const { status } = await APIStock.postComment(
         message,
         stock,
@@ -266,7 +278,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
         toast.success('코멘트가 추가되었습니다.');
         setComment('');
         reloadStock(stock);
-        handleExtract(comment);
       }
     } catch (error) {
       toast.error(error.message);
