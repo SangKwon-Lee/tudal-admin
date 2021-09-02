@@ -39,7 +39,7 @@ interface StockListProps {
   loading: boolean;
   setPage: (event: any, newPage: number) => void;
   setLimit: (limit: number) => void;
-  setSearch: (value) => void;
+  setSearch: (event: any) => void;
   setTarget: (stock: IStockDetailsWithTagCommentNews) => void;
   setOpen: () => void;
   reload: () => void;
@@ -65,17 +65,17 @@ const StockList: React.FC<StockListProps> = (props) => {
     loading,
     limit,
     page,
+    reload,
     setPage,
-    setSearch,
     setTarget,
     setOpen,
+    setSearch,
   } = props;
 
   const [commentPage, setCommentPage] = useState<number>(0);
   const [newsPage, setNewsPage] = useState<number>(0);
 
   const paginatedList = applyPagination(list, page, limit);
-  const handleSearch = _.debounce(setSearch, 300);
 
   return (
     <Box
@@ -114,10 +114,14 @@ const StockList: React.FC<StockListProps> = (props) => {
             }}
             name={'_q'}
             placeholder="종목명 검색을 지원합니다."
-            onChange={(event) => handleSearch(event.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && reload()}
+            onChange={(event) => setSearch(event.target.value)}
             variant="outlined"
           />
         </Box>
+        <Button variant={'contained'} onClick={reload}>
+          검색
+        </Button>
       </Box>
 
       {loading && (
