@@ -144,7 +144,7 @@ const StockPage = () => {
     setPage(newPage);
   };
 
-  const loadStock = useCallback(async () => {
+  const loadStock = async () => {
     dispatch({ type: StockActionKind.LOADING });
     try {
       const { data } = await APIStock.getDetailList(search);
@@ -156,7 +156,7 @@ const StockPage = () => {
       console.error(error);
       dispatch({ type: StockActionKind.ERROR, payload: error });
     }
-  }, [search]);
+  };
 
   const addStock = useCallback(async () => {
     if (!shouldUpdate) return;
@@ -167,8 +167,10 @@ const StockPage = () => {
       );
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
       setShouldUpdate(false);
-    } catch (error) {}
-  }, [page, stockList, search, shouldUpdate, page]);
+    } catch (error) {
+      dispatch({ type: StockActionKind.ERROR, payload: error });
+    }
+  }, [stockList, search, shouldUpdate]);
 
   const reloadStock = useCallback(async (stockCode) => {
     try {
@@ -177,7 +179,9 @@ const StockPage = () => {
         type: StockActionKind.RELOAD_STOCK,
         payload: data,
       });
-    } catch (error) {}
+    } catch (error) {
+      dispatch({ type: StockActionKind.ERROR, payload: error });
+    }
   }, []);
 
   useEffect(() => {
@@ -186,7 +190,7 @@ const StockPage = () => {
 
   useEffect(() => {
     loadStock();
-  }, [loadStock]);
+  }, []);
 
   return (
     <>
