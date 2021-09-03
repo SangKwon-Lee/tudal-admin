@@ -63,6 +63,11 @@ export async function deleteComment(id) {
 }
 
 /** 종목 태그 */
+export async function createTag(stockcode, tagName) {
+  return await cmsServer.put(`/stocks/code/${stockcode}/tag`, {
+    tagName: tagName,
+  });
+}
 export async function updateTag(stockcode, tagName) {
   return await cmsServer.post(`/stocks/code/${stockcode}/tag`, {
     tagName: tagName,
