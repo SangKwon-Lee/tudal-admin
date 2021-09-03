@@ -413,10 +413,44 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     }
   };
 
+  const handleModifyComment = async (
+    commentId: number,
+    message: string,
+  ) => {
+    try {
+      const response = await axios.put(
+        `/hiddenbox-comments/${commentId}`,
+        { message },
+      );
+      if (response.status === 200) {
+        fetchComments(targetHiddenbox.id);
+      }
+    } catch (e) {
+    } finally {
+    }
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     try {
       const response = await axios.delete(
         `/hiddenbox-comments/${commentId}`,
+      );
+      if (response.status === 200) {
+        fetchComments(targetHiddenbox.id);
+      }
+    } catch (e) {
+    } finally {
+    }
+  };
+
+  const handleUpdateComment = async (
+    commentId: number,
+    message: string,
+  ) => {
+    try {
+      const response = await axios.put(
+        `/hiddenbox-comments/${commentId}`,
+        { message },
       );
       if (response.status === 200) {
         fetchComments(targetHiddenbox.id);
@@ -620,7 +654,8 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                               color="textSecondary"
                               variant="body2"
                             >
-                              {hiddenbox.author.nickname}
+                              {hiddenbox.author &&
+                                hiddenbox.author.nickname}
                             </Typography>
                           </Box>
                         </Box>
@@ -711,6 +746,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 key={comment.id}
                 message={comment.message}
                 handleDeleteComment={handleDeleteComment}
+                handleUpdateComment={handleUpdateComment}
               />
             ))
           ) : (
