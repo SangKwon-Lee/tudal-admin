@@ -128,17 +128,30 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const createOrUpdateTag = useCallback(
     async (stock, tag) => {
       try {
-        const { status } = await APIStock.updateTag(
+        if (tag.isNew) {
+          const { status } = await APIStock.createTag(
+            stock.code,
+            tag.name,
+          );
+          if (status !== 200) {
+            throw new Error('서버 에러가 발생했습니다.');
+          }
+        }
+        const { status, data } = await APIStock.updateTag(
           stock.code,
           tag.name,
         );
 
         if (status === 200) {
-          toast.success(`${tag.name} 이 추가되었습니다.`);
+          if (data.is_existed) {
+            toast.success(`${tag.name} 이(가) 업데이트 되었습니다.`);
+          } else {
+            toast.success(`${tag.name} 이(가) 추가되었습니다.`);
+          }
           reloadStock(stock.code);
         }
       } catch (error) {
-        console.log(error);
+        toast.error(error.message);
       }
     },
     [reloadStock],
