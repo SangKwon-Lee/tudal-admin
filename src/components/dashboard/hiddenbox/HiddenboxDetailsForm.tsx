@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { FC } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
@@ -12,14 +12,23 @@ import {
   IconButton,
   TextField,
   Typography,
+  CircularProgress,
+  Grid,
+  LinearProgress,
   Autocomplete,
 } from '@material-ui/core';
+import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { DateTimePicker } from '@material-ui/lab';
 import PlusIcon from '../../../icons/Plus';
-import moment from 'moment';
-import type { Hiddenbox } from '../../../types/hiddenbox';
 import { apiServer } from '../../../lib/axios';
-import { ChangeCircleRounded } from '@material-ui/icons';
+import { APITag } from 'src/lib/api';
+import useAsync from 'src/hooks/useAsync';
+import { IRoleType } from 'src/types/user';
+import { Tag } from 'src/types/schedule';
+import * as _ from 'lodash';
+import useAuth from 'src/hooks/useAuth';
+
+const tagFilter = createFilterOptions<any>();
 
 interface HiddenboxDetailsProps {
   onBack?: () => void;
@@ -36,11 +45,11 @@ type Stock = {
 
 const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const { onBack, onNext, setValues, values, mode, ...other } = props;
+  const { user } = useAuth();
   const [tag, setTag] = useState<string>('');
   const [stock, setStock] = useState<string>('');
   const [stockList, setStockList] = useState<any[]>([]);
-  const stockInput = useRef(null);
-  const [valueForClear, setValueForClear] = useState('');
+  const tagInput = useRef(null);
 
   const categoryOptions = [
     { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
@@ -52,10 +61,19 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
     fetchStockList();
   }, []);
 
+  const getTagList = useCallback(() => {
+    const value = tagInput.current ? tagInput.current.value : '';
+    return APITag.getList(value);
+  }, [tagInput]);
+
+  const [{ data: tagList, loading: tagLoading }, refetchTag] =
+    useAsync<Tag[]>(getTagList, [tagInput.current], []);
+
+  const handleTagChange = _.debounce(refetchTag, 300);
+
   const fetchStockList = async () => {
     const response = await apiServer.get('/stocks/stkNmCd');
     if (response.status === 200) {
-      setStockList(response.data);
       console.log('stocklist', response.data);
     }
   };
@@ -128,15 +146,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
         touched,
         values,
       }): JSX.Element => (
-        <form
-          onSubmit={handleSubmit}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-            }
-          }}
-          {...other}
-        >
+        <form onSubmit={handleSubmit} {...other}>
           <Card sx={{ p: 3 }}>
             <Typography color="textPrimary" variant="h6">
               히든박스 생성
@@ -155,6 +165,11 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 name="title"
                 onBlur={handleBlur}
                 onChange={handleChange}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
                 value={values.title}
                 variant="outlined"
               />
@@ -165,6 +180,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   touched.description && errors.description,
                 )}
                 fullWidth
+                multiline
                 helperText={touched.description && errors.description}
                 label="상품요약"
                 name="description"
@@ -176,14 +192,19 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
             </Box>
             <Box sx={{ mt: 2 }}>
               <TextField
+                select
                 fullWidth
                 label="상품타입"
                 name="productId"
                 value={values.productId}
-                select
                 SelectProps={{ native: true }}
                 variant="outlined"
                 onChange={handleChange}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
               >
                 {categoryOptions.map((category) => (
                   <option key={category.value} value={category.value}>
@@ -193,191 +214,62 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               </TextField>
             </Box>
             <Box sx={{ mt: 2 }}>
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  mt: 3,
-                }}
-              >
-                <TextField
-                  fullWidth
-                  label="태그"
-                  name="tags"
-                  onChange={(event): void => {
-                    const val = (event.target.value || '').replace(
-                      /\s+/gi,
-                      '',
-                    );
-                    setTag(val);
-                  }}
-                  onKeyPress={(e): void => {
-                    if (!tag || e.key !== 'Enter') {
-                      return;
-                    }
-
-                    if (
-                      values.tags.find((element) => element === tag)
-                    ) {
-                      return;
-                    }
-
-                    setFieldValue('tags', [...values.tags, tag]);
-                    setTag('');
-                  }}
-                  value={tag}
-                  variant="outlined"
-                />
-                <IconButton
-                  sx={{ ml: 2 }}
-                  onClick={(): void => {
-                    if (!tag) {
-                      return;
-                    }
-
-                    if (
-                      values.tags.find((element) => element === tag)
-                    ) {
-                      return;
-                    }
-
-                    setFieldValue('tags', [...values.tags, tag]);
-                    setTag('');
-                  }}
-                >
-                  <PlusIcon fontSize="small" />
-                </IconButton>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                {values.tags.map((_tag, i) => (
-                  <Chip
-                    onDelete={(): void => {
-                      const newTags = values.tags.filter(
-                        (t) => t !== _tag,
-                      );
-
-                      setFieldValue('tags', newTags);
-                    }}
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={i}
-                    label={_tag}
-                    sx={{
-                      '& + &': {
-                        ml: 1,
-                      },
-                    }}
-                    variant="outlined"
-                  />
-                ))}
-              </Box>
-              {Boolean(touched.tags && errors.tags) && (
-                <Box sx={{ mt: 2 }}>
-                  <FormHelperText error>{errors.tags}</FormHelperText>
-                </Box>
-              )}
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  mt: 3,
-                }}
-              >
-                <Autocomplete
-                  options={stockList}
-                  getOptionLabel={(option) =>
-                    `${option.stockname}(${option.stockcode})`
-                  }
-                  // getOptionSelected={(option, value) =>
-                  //   option.stockcode === value.stockcode
-                  // }
-                  onChange={(event, value: Stock) => {
-                    if (isStock(value) && value.stockcode) {
-                      setStock(value.stockcode);
-                    }
-                  }}
-                  fullWidth
-                  autoHighlight
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      label="종목코드"
-                      name="stocks"
-                      onChange={(event): void => {
-                        const val = (
-                          event.target.value || ''
-                        ).replace(/\s+/gi, '');
-                        setStock(val);
-                      }}
-                      onKeyPress={(e): void => {
-                        if (!stock || e.key !== 'Enter') {
-                          return;
-                        }
-                        if (
-                          values.stocks.find(
-                            (element) => element === stock,
-                          )
-                        ) {
-                          return;
-                        }
-
-                        setFieldValue('stocks', [
-                          ...values.stocks,
-                          stock,
-                        ]);
-                        setStock('');
-                      }}
-                      value={stock}
-                      variant="outlined"
-                    />
-                  )}
-                />
-                <IconButton
-                  sx={{ ml: 2 }}
-                  onClick={(): void => {
-                    if (!stock) {
-                      return;
-                    }
-                    if (
-                      values.stocks.find(
-                        (element) => element === stock,
-                      )
-                    ) {
-                      return;
-                    }
-
-                    setFieldValue('stocks', [
-                      ...values.stocks,
-                      stock,
+              {tagLoading && <LinearProgress />}
+              {console.log('here', values.tags)}
+              <Autocomplete
+                multiple
+                fullWidth
+                autoHighlight
+                options={tagList}
+                value={values.tags}
+                getOptionLabel={(option) => option.name}
+                onChange={(event, keywords: Tag[], reason, item) => {
+                  console.log(reason);
+                  if (reason === 'selectOption') {
+                    setFieldValue('tags', [
+                      ...values.tags,
+                      item.option,
                     ]);
-                    setStock('');
-                  }}
-                >
-                  <PlusIcon fontSize="small" />
-                </IconButton>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                {values.stocks.map((_stock, i) => (
-                  <Chip
-                    onDelete={(): void => {
-                      const newStocks = values.stocks.filter(
-                        (t) => t !== _stock,
-                      );
-
-                      setFieldValue('stocks', newStocks);
-                    }}
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={i}
-                    label={_stock}
-                    sx={{
-                      '& + &': {
-                        ml: 1,
-                      },
-                    }}
+                  }
+                  if (reason === 'removeOption') {
+                    const tags = values.tags.filter(
+                      (tag) => tag.id !== item.option.id,
+                    );
+                    setFieldValue('tags', tags);
+                  }
+                  if (reason === 'clear') {
+                    setFieldValue('tags', []);
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    onChange={handleTagChange}
+                    inputRef={tagInput}
+                    label="키워드"
+                    name="keyword"
                     variant="outlined"
+                    helperText="신규 생성 권한은 관리자에게 문의 바랍니다."
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {tagLoading && (
+                            <CircularProgress
+                              color="inherit"
+                              size={20}
+                            />
+                          )}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
                   />
-                ))}
-              </Box>
+                )}
+              />
+            </Box>
+            <Box sx={{ mt: 2 }}>
               {Boolean(touched.stocks && errors.stocks) && (
                 <Box sx={{ mt: 2 }}>
                   <FormHelperText error>

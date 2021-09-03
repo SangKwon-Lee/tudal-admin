@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -7,9 +7,12 @@ import {
   Link,
   Typography,
   IconButton,
+  TextField,
+  Button,
 } from '@material-ui/core';
 import moment from 'moment';
 import DeleteIcon from '@material-ui/icons/Delete';
+import BuildIcon from '@material-ui/icons/Build';
 
 interface SocialPostCommentProps {
   commentId?: number;
@@ -18,6 +21,10 @@ interface SocialPostCommentProps {
   createdAt: number;
   message: string;
   handleDeleteComment?: (commentId: number) => Promise<void>;
+  handleUpdateComment?: (
+    commentId: number,
+    message: string,
+  ) => Promise<void>;
 }
 
 const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
@@ -28,9 +35,17 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
     createdAt,
     message,
     handleDeleteComment,
+    handleUpdateComment,
     ...other
   } = props;
 
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
+  const [updateMessage, setUpdateMessage] = useState<string>(message);
+
+  const _handleUpdateComment = () => {
+    handleUpdateComment(commentId, updateMessage);
+    setIsUpdate(false);
+  };
   return (
     <Box
       sx={{
@@ -75,10 +90,29 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
+          {handleUpdateComment && (
+            <IconButton
+              color={'default'}
+              component={'button'}
+              onClick={() => setIsUpdate(true)}
+            >
+              <BuildIcon fontSize="small" />
+            </IconButton>
+          )}
         </Box>
-        <Typography color="textPrimary" variant="body2">
-          {message}
-        </Typography>
+        {!isUpdate ? (
+          <Typography color="textPrimary" variant="body2">
+            {message}
+          </Typography>
+        ) : (
+          <>
+            <TextField
+              value={updateMessage}
+              onChange={(e) => setUpdateMessage(e.target.value)}
+            />
+            <Button onClick={_handleUpdateComment}>수정</Button>
+          </>
+        )}
       </Box>
     </Box>
   );
