@@ -835,6 +835,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                         </Grid>
                         <Grid item md={12} xs={12}>
                           <TextField
+                            multiline
                             fullWidth
                             label="요약"
                             required
