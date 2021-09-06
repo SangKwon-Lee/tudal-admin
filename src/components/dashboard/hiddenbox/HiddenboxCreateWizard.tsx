@@ -86,7 +86,6 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
           publicDate: moment(data.publicDate).toDate(),
           author: data.author.id,
         };
-        console.log('Edit Mode', newHiddenboxData);
         setNewHiddenbox((prev) => ({
           ...prev,
           ...newHiddenboxData,

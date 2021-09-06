@@ -413,23 +413,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     }
   };
 
-  const handleModifyComment = async (
-    commentId: number,
-    message: string,
-  ) => {
-    try {
-      const response = await axios.put(
-        `/hiddenbox-comments/${commentId}`,
-        { message },
-      );
-      if (response.status === 200) {
-        fetchComments(targetHiddenbox.id);
-      }
-    } catch (e) {
-    } finally {
-    }
-  };
-
   const handleDeleteComment = async (commentId: number) => {
     try {
       const response = await axios.delete(
@@ -732,6 +715,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         onClose={() => setCommentOpen(false)}
       >
         <Box sx={{ py: 3, px: 3, minWidth: 400 }}>
+          <Box sx={{ pb: 3 }}>
+            <Typography color="inherit" variant="h5">
+              히든박스 코멘트
+            </Typography>
+          </Box>
           {comments.length > 0 ? (
             comments.map((comment) => (
               <SocialPostComment

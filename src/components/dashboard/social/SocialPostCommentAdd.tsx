@@ -44,17 +44,12 @@ const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (
       ) : null}
       <TextField
         fullWidth
+        multiline
         onChange={handleChange}
         placeholder="댓글을 적어주세요."
         size="small"
         variant="outlined"
         value={value}
-        onKeyPress={(e): void => {
-          if (e.key === 'Enter') {
-            handleWriteComment(value);
-            setValue('');
-          }
-        }}
       />
       <Tooltip title="Send">
         <IconButton
