@@ -328,22 +328,22 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       {news.title}
                     </a>
                   </Typography>
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      mt: 1,
-                    }}
-                  >
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      fontSize={15}
-                      fontWeight={news.isSelected ? 'bold' : 'normal'}
-                    >
-                      {news.summarized}
-                    </Typography>
-                  </Box>
+                  {news.summarized.split('\n').map((sentence, i) => {
+                    return (
+                      <div key={i}>
+                        <Typography
+                          color="textSecondary"
+                          variant="body2"
+                          fontSize={15}
+                          fontWeight={
+                            news.isSelected ? 'bold' : 'normal'
+                          }
+                        >
+                          {sentence}
+                        </Typography>
+                      </div>
+                    );
+                  })}
                   <Box
                     sx={{
                       alignItems: 'center',
