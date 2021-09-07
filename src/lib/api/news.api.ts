@@ -1,6 +1,7 @@
 import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
+import { Category, Tag } from 'src/types/schedule';
 
 export async function getNews(newsId) {
   return await axios.get<INews>(
@@ -48,7 +49,7 @@ export async function createComment(comment) {
 }
 
 export async function deleteByStockAndNews(
-  stockcode: number,
+  stockcode: string,
   newsId: number,
 ) {
   return await axios.delete(
@@ -68,6 +69,41 @@ export async function createStockNews(
   });
 }
 
+export async function addTags(id, tagIds: number[]) {
+  return await axios.put(`/general-news/tags/${id}`, {
+    tags: tagIds,
+  });
+}
+
+export async function addCategories(id, categories: number[]) {
+  return await axios.put(`/general-news/categories/${id}`, {
+    categories,
+  });
+}
+
 export async function update(id, body) {
   return await axios.put(`/general-news/${id}`, body);
+}
+
+export async function createAndSelectByHand(news, author) {
+  return await axios.post<INews>('/general-news', {
+    ...news,
+    isSelected: true,
+    isSelectedBy: author,
+  });
+}
+
+export async function createAndSelectByURL(
+  url,
+  publishDate,
+  stockcode,
+  author,
+) {
+  return await axios.post(`/general-news/custom`, {
+    url,
+    publishDate,
+    stockcode,
+    author,
+    source: 'manual',
+  });
 }

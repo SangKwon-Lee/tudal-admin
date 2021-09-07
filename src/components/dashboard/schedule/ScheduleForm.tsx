@@ -109,7 +109,6 @@ enum ScheduleActionKind {
   REPLACE_CATEGORY = 'REPLACE_CATEGORY',
   REPLACE_DATES = 'REPLACE_DATES',
   HANDLE_CHANGES = 'HANDLE_CHANGES',
-
   SHOW_CONFIRM = 'SHOW_CONFIRM',
   CLOSE_CONFIRM = 'CLOSE_CONFIRM',
   SUBMIT = 'SUBMIT',
@@ -240,101 +239,95 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
 
   const handleTagChange = debounce(refetchTag, 300);
 
-  useEffect(() => {
-    async function handleSubmit() {
-      if (newScheduleForm.title.trim() === '') {
-        alert('일정 제목을 등록해주세요');
-        dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
-        return;
-      }
-      const {
-        categories,
-        endDate,
-        startDate,
-        priority,
-        title,
-        comment,
-        keywords,
-        stocks,
-      } = newScheduleForm;
+  const preProcess = async () => {
+    const { categories, keywords, stocks } = newScheduleForm;
 
-      const keywordCandidates = keywords
-        .filter((keyword) => keyword.hasOwnProperty('isNew'))
-        .map((keyword) => keyword.name);
+    const keywordCandidates = keywords
+      .filter((keyword) => keyword.hasOwnProperty('isNew'))
+      .map((keyword) => keyword.name);
 
-      const newKeywords = await APITag.postItems(
-        _.uniq(keywordCandidates),
-      );
-      const keywordIDs = keywords
-        .filter((keyword) => !keyword.hasOwnProperty('isNew'))
-        .concat(newKeywords)
-        .map((keyword) => keyword && keyword.id);
+    const newKeywords = await APITag.postItems(
+      _.uniq(keywordCandidates),
+    );
+    const keywordIDs = keywords
+      .filter((keyword) => !keyword.hasOwnProperty('isNew'))
+      .concat(newKeywords)
+      .map((keyword) => keyword && keyword.id);
 
-      const categoryCandidates = categories
-        .filter((category) => category.hasOwnProperty('isNew'))
-        .map((category) => category.name);
+    const categoryCandidates = categories
+      .filter((category) => category.hasOwnProperty('isNew'))
+      .map((category) => category.name);
 
-      const newCategories = await APICategory.postItems(
-        _.uniq(categoryCandidates),
-      );
-      const categoryIDs = categories
-        .filter((category) => !category.hasOwnProperty('isNew'))
-        .concat(newCategories)
-        .map((category) => category && category.id);
+    const newCategories = await APICategory.postItems(
+      _.uniq(categoryCandidates),
+    );
+    const categoryIDs = categories
+      .filter((category) => !category.hasOwnProperty('isNew'))
+      .concat(newCategories)
+      .map((category) => category && category.id);
 
-      const stockCodes = stocks.map((stock) => stock.code);
+    const stockCodes = stocks.map((stock) => stock.code);
+    return { stockCodes, categoryIDs, keywordIDs };
+  };
 
-      // 수정하는 경우
-      if (targetModify) {
-        await APISchedule.update({
-          id: targetModify.id,
-          title,
-          comment,
-          stockCodes,
-          keywords: keywordIDs,
-          categories: categoryIDs,
-          priority,
-          startDate,
-          endDate,
-        })
-          .then(({ status }) => {
-            if (status === 200) {
-              reload();
-              clearTargetModify();
-              dispatch({ type: ScheduleActionKind.CLEAR });
-              dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        await APISchedule.create({
-          title,
-          comment,
-          stockCodes,
-          author: user.id,
-          keywords: keywordIDs,
-          categories: categoryIDs,
-          priority,
-          startDate,
-          endDate,
-        })
-          .then(({ status }) => {
-            if (status === 200) {
-              reload();
-              dispatch({ type: ScheduleActionKind.CLEAR });
-              dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    }
+  const updateSchedule = async () => {
+    const { stockCodes, categoryIDs, keywordIDs } =
+      await preProcess();
 
-    submitForm && handleSubmit();
-  }, [submitForm, newScheduleForm]);
+    const { title, comment, priority, startDate, endDate } =
+      newScheduleForm;
+    await APISchedule.update({
+      id: targetModify.id,
+      title,
+      comment,
+      stockCodes,
+      keywords: keywordIDs,
+      categories: categoryIDs,
+      priority,
+      startDate,
+      endDate,
+    })
+      .then(({ status }) => {
+        if (status === 200) {
+          reload();
+          clearTargetModify();
+          dispatch({ type: ScheduleActionKind.CLEAR });
+          dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const createSchedule = async () => {
+    const { stockCodes, categoryIDs, keywordIDs } =
+      await preProcess();
+
+    const { title, comment, priority, startDate, endDate } =
+      newScheduleForm;
+    await APISchedule.create({
+      title,
+      comment,
+      stockCodes,
+      author: user.id,
+      keywords: keywordIDs,
+      categories: categoryIDs,
+      priority,
+      startDate,
+      endDate,
+    })
+      .then(({ status }) => {
+        if (status === 200) {
+          reload();
+          dispatch({ type: ScheduleActionKind.CLEAR });
+          dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleExtract = useCallback(
     _.debounce(async (sentence) => {
@@ -449,9 +442,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
               autoHighlight
               options={tagList}
               value={newScheduleForm.keywords}
-              // getOptionSelected={(option, value) =>
-              //   option.id === value.id
-              // }
               onChange={(event, keywords: Tag[]) => {
                 dispatch({
                   type: ScheduleActionKind.REPLACE_KEYWORD,
@@ -650,7 +640,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
             type={'CONFIRM'}
             confirmTitle={targetModify ? '수정' : '추가'}
             handleOnClick={() =>
-              dispatch({ type: ScheduleActionKind.SUBMIT })
+              targetModify ? updateSchedule() : createSchedule()
             }
             handleOnCancel={() =>
               dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM })

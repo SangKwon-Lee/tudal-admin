@@ -88,7 +88,7 @@ const applySort = (news: INews[], sort: Sort): INews[] => {
 
 interface NewsListTableProps {
   newsList: INews[];
-  search: string;
+  search: React.Ref<HTMLInputElement>;
   page: number;
   limit: number;
   isLoading: boolean;
@@ -97,7 +97,6 @@ interface NewsListTableProps {
   setOpenForm: () => void;
   setPage: (event: any, newPage: number) => void;
   setLimit: (limit: number) => void;
-  setSearch?: (value) => void;
   setTargetNews: (INews) => void;
   setOpenConfirm: () => void;
   setMinutesRefresh: (minutes: number) => void;
@@ -125,16 +124,17 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
   const classes = useStyles();
   const {
     newsList,
-    setSearch,
+    search,
     page,
-    setPage,
     limit,
-    setLimit,
     isLoading,
+    minutesRefresh,
+    reload,
+    setLimit,
+    setPage,
     setOpenConfirm,
     setTargetNews,
     setOpenForm,
-    minutesRefresh,
     setMinutesRefresh,
   } = props;
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
@@ -175,7 +175,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
           sx={{
             m: 1,
             maxWidth: '100%',
-            width: 500,
+            width: 600,
           }}
         >
           <TextField
@@ -188,12 +188,22 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 </InputAdornment>
               ),
             }}
+            inputRef={search}
             name={'_q'}
             placeholder="제목 또는 요약본 검색 기능을 지원합니다."
-            onChange={(event) => setSearch(event.target.value)}
             variant="outlined"
+            onKeyPress={(e) => {
+              e.key === 'Enter' && reload();
+            }}
           />
         </Box>
+        <Box>
+          {' '}
+          <Button variant={'contained'} onClick={reload}>
+            검색
+          </Button>
+        </Box>
+        <div style={{ width: '100%' }}></div>
         <Box
           sx={{
             m: 1,
@@ -318,22 +328,22 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       {news.title}
                     </a>
                   </Typography>
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      mt: 1,
-                    }}
-                  >
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      fontSize={15}
-                      fontWeight={news.isSelected ? 'bold' : 'normal'}
-                    >
-                      {news.summarized}
-                    </Typography>
-                  </Box>
+                  {news.summarized.split('\n').map((sentence, i) => {
+                    return (
+                      <div key={i}>
+                        <Typography
+                          color="textSecondary"
+                          variant="body2"
+                          fontSize={15}
+                          fontWeight={
+                            news.isSelected ? 'bold' : 'normal'
+                          }
+                        >
+                          {sentence}
+                        </Typography>
+                      </div>
+                    );
+                  })}
                   <Box
                     sx={{
                       alignItems: 'center',

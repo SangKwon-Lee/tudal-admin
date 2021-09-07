@@ -426,6 +426,23 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     }
   };
 
+  const handleUpdateComment = async (
+    commentId: number,
+    message: string,
+  ) => {
+    try {
+      const response = await axios.put(
+        `/hiddenbox-comments/${commentId}`,
+        { message },
+      );
+      if (response.status === 200) {
+        fetchComments(targetHiddenbox.id);
+      }
+    } catch (e) {
+    } finally {
+    }
+  };
+
   const filteredHiddenboxes = applyFilters(
     hiddenboxes,
     query,
@@ -620,7 +637,8 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                               color="textSecondary"
                               variant="body2"
                             >
-                              {hiddenbox.author.nickname}
+                              {hiddenbox.author &&
+                                hiddenbox.author.nickname}
                             </Typography>
                           </Box>
                         </Box>
@@ -697,6 +715,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         onClose={() => setCommentOpen(false)}
       >
         <Box sx={{ py: 3, px: 3, minWidth: 400 }}>
+          <Box sx={{ pb: 3 }}>
+            <Typography color="inherit" variant="h5">
+              히든박스 코멘트
+            </Typography>
+          </Box>
           {comments.length > 0 ? (
             comments.map((comment) => (
               <SocialPostComment
@@ -711,12 +734,15 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 key={comment.id}
                 message={comment.message}
                 handleDeleteComment={handleDeleteComment}
+                handleUpdateComment={handleUpdateComment}
               />
             ))
           ) : (
-            <Typography variant={'body1'}>
-              {'작성된 댓글이 없습니다.'}
-            </Typography>
+            <Box ml={3} mt={3}>
+              <Typography variant={'body1'}>
+                {'작성된 댓글이 없습니다.'}
+              </Typography>
+            </Box>
           )}
           <Divider sx={{ my: 2 }} />
           <SocialPostCommentAdd

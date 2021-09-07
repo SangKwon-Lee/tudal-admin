@@ -14,6 +14,7 @@ import {
   Breadcrumbs,
   Container,
   Grid,
+  LinearProgress,
   Link,
   Typography,
 } from '@material-ui/core';
@@ -105,21 +106,62 @@ const scheduleReducer = (
   }
 };
 
+type Sort =
+  | 'created_at:desc'
+  | 'created_at:asc'
+  | 'startDate:desc'
+  | 'startDate:asc'
+  | 'author:desc'
+  | 'priority:desc';
+
+interface SortOption {
+  value: Sort;
+  label: string;
+}
+const sortOptions: SortOption[] = [
+  {
+    label: '최신 등록순',
+    value: 'created_at:desc',
+  },
+  {
+    label: '오래된 등록순',
+    value: 'created_at:asc',
+  },
+  {
+    label: '시작일자 내림차순',
+    value: 'startDate:desc',
+  },
+  {
+    label: '시작일자 오름차순',
+    value: 'startDate:asc',
+  },
+  {
+    label: '작성자 내림차순',
+    value: 'author:desc',
+  },
+  {
+    label: '중요도 내림차순',
+    value: 'priority:desc',
+  },
+];
+
 const ScheduleList: React.FC = () => {
   const { settings } = useSettings();
   const scrollRef = useRef(null);
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(50);
+  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [targetModify, setTargetModify] = useState<Schedule>(null);
   const [scheduleState, dispatch] = useReducer(
     scheduleReducer,
     initialState,
   );
+
   const mounted = useMounted();
 
-  const { list } = scheduleState;
+  const { list, loading } = scheduleState;
 
   const handlePage = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -140,7 +182,7 @@ const ScheduleList: React.FC = () => {
     dispatch({ type: ScheduleActionKind.LOADING });
     try {
       setPage(0);
-      const { data } = await APISchedule.getList(search);
+      const { data } = await APISchedule.getList(search, sort);
       dispatch({
         type: ScheduleActionKind.LOAD_SCHEDULE,
         payload: data,
@@ -149,12 +191,13 @@ const ScheduleList: React.FC = () => {
       console.error(error);
       dispatch({ type: ScheduleActionKind.ERROR, payload: error });
     }
-  }, [search]);
+  }, [search, sort]);
 
   const addSchedule = useCallback(async () => {
     try {
       const { data } = await APISchedule.getList(
         search,
+        sort,
         (page + 1) * limit,
       );
       dispatch({
@@ -163,14 +206,15 @@ const ScheduleList: React.FC = () => {
       });
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, limit, search]);
+  }, [page, limit, search, sort]);
 
   const realodSchedule = useCallback(async () => {
     try {
       const { data } = await APISchedule.getList(
         search,
+        sort,
         0,
-        (page + 1) * limit,
+        (page + 2) * limit,
       );
       dispatch({
         type: ScheduleActionKind.RELOAD_SCHEDULE,
@@ -179,7 +223,7 @@ const ScheduleList: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [page, limit, search]);
+  }, [page, limit, search, sort]);
 
   useEffect(() => {
     shouldUpdate && addSchedule();
@@ -274,12 +318,16 @@ const ScheduleList: React.FC = () => {
             clearTargetModify={clearTargetModify}
           />
           <Box sx={{ mt: 3 }}>
+            {loading && <LinearProgress />}
             <ScheduleListTable
               schedules={list}
               reload={reload}
               search={search}
               page={page}
               limit={limit}
+              sortOptions={sortOptions}
+              sort={sort}
+              handleSort={setSort}
               handlePage={handlePage}
               handleLimit={handleLimit}
               setSearch={handleSearch}
