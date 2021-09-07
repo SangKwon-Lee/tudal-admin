@@ -53,8 +53,6 @@ export function useAsync<T>(
     dispatch({ type: 'LOADING' });
     try {
       const { data } = await callback();
-
-      console.log('inside', data);
       dispatch({ type: 'SUCCESS', data });
     } catch (e) {
       console.error(e);

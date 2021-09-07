@@ -5,12 +5,21 @@ import { Schedule, IScheduleForm } from 'src/types/schedule';
 export async function getList(
   search: string,
   sort,
+  startDate?,
+  endDate?,
   start: number = 0,
   limit: number = 100,
 ) {
   let q: any = {};
+
   if (search) {
     q._q = search;
+  }
+  if (startDate) {
+    q.startDate = startDate;
+  }
+  if (endDate) {
+    q.endDate = endDate;
   }
   if (start) {
     q._start = start;
