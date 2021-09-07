@@ -255,10 +255,6 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const deleteStockTag = async (stock, tag) => {
     try {
       setLoading(true);
-      if (user.role && user.role.type === IRoleType.Author) {
-        toast.error('해당 계정으로는 키워드를 삭제할 수 없습니다.');
-        return;
-      }
       const { status } = await APIStock.deleteTag(
         stock.code,
         tag.tag_id,
