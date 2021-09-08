@@ -41,7 +41,7 @@ import Scrollbar from '../../components/layout/Scrollbar';
 import ChevronRightIcon from 'src/icons/ChevronRight';
 import { IRoleType } from 'src/types/user';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
-
+import * as _ from 'lodash';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import useAsync from 'src/hooks/useAsync';
 import PencilAltIcon from 'src/icons/PencilAlt';
@@ -59,7 +59,7 @@ const customFilter = createFilterOptions<any>();
 const Keywords: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
-
+  const tagInput = useRef(null);
   const scrollRef = useRef(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [newKeyword, setNewKeyword] = useState<string[]>([
@@ -74,8 +74,14 @@ const Keywords: React.FC = () => {
   const [loadMore, setLoadMore] = useState<boolean>(false);
   const rowsPerPage = 20;
 
-  const [{ data: tagList, loading: tagloading }, refetchTag] =
-    useAsync<Tag[]>(APITag.getList, [], []);
+  const getTagList = useCallback(() => {
+    const value = tagInput.current ? tagInput.current.value : '';
+    return APITag.getList(value);
+  }, [tagInput]);
+
+  const [{ data: tagList, loading: tagLoading }, refetchTag] =
+    useAsync<Tag[]>(getTagList, [tagInput], []);
+  const handleTagChange = _.debounce(refetchTag, 300);
 
   const getList = useCallback(async () => {
     setLoading(true);
@@ -191,7 +197,6 @@ const Keywords: React.FC = () => {
               clearOnBlur
               handleHomeEndKeys
               options={tagList}
-              // value={newScheduleForm.keywords}
               // onChange={}
               getOptionLabel={(option) => {
                 const label = option.name;
@@ -219,22 +224,22 @@ const Keywords: React.FC = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  // onChange={handleTagChange}
+                  onChange={handleTagChange}
                   fullWidth
                   label="키워드"
                   name="keyword"
                   variant="outlined"
-                  // inputRef={tagInput}
+                  inputRef={tagInput}
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (
                       <React.Fragment>
-                        {/* {tagLoading ? (
+                        {tagLoading ? (
                           <CircularProgress
                             color="inherit"
                             size={20}
                           />
-                        ) : null} */}
+                        ) : null}
                         {params.InputProps.endAdornment}
                       </React.Fragment>
                     ),
