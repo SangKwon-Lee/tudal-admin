@@ -3,8 +3,12 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
 
-export async function getList(search: string) {
-  const q: any = { _limit: 30 };
+export async function getList(
+  search: string,
+  start: number = 0,
+  limit: number = 100,
+) {
+  const q: any = { _limit: limit, _start: start };
   if (search) {
     q._q = search;
   }

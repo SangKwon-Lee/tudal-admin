@@ -19,6 +19,7 @@ import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
+import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
@@ -52,6 +53,11 @@ const sections = [
         title: '일정',
         path: '/dashboard/schedule',
         icon: <CalendarIcon fontSize="small" />,
+      },
+      {
+        title: '키워드',
+        path: '/dashboard/keyword',
+        icon: <StarIcon fontSize="small" />,
       },
       {
         title: '종목',
