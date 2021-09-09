@@ -34,6 +34,8 @@ import {
   Typography,
   Button,
   CircularProgress,
+  FormControlLabel,
+  Switch,
 } from '@material-ui/core';
 import useSettings from 'src/hooks/useSettings';
 import toast, { Toaster } from 'react-hot-toast';
@@ -62,11 +64,8 @@ const Keywords: React.FC = () => {
   const tagInput = useRef(null);
   const scrollRef = useRef(null);
   const [tags, setTags] = useState<Tag[]>([]);
-  const [newKeyword, setNewKeyword] = useState<string[]>([
-    '',
-    '',
-    '',
-  ]);
+  const [newKeyword, setNewKeyword] = useState<Tag>(null);
+  const [addType, setAddType] = useState<boolean>(false);
   const [targetTag, setTarget] = useState<Tag>(null);
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
@@ -114,12 +113,6 @@ const Keywords: React.FC = () => {
     }
   }, [search, page]);
 
-  const handleNewKeyword = (event, index) => {
-    const _newKeyword = [...newKeyword];
-    _newKeyword[index] = event.target.value;
-    setNewKeyword(_newKeyword);
-  };
-
   const handlePage = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     newPage: number,
@@ -130,6 +123,24 @@ const Keywords: React.FC = () => {
     setPage(newPage);
   };
 
+  const handleCreate = async () => {
+    try {
+      if (!newKeyword.isNew) {
+        alert('이미 등록된 키워드입니다.');
+        return;
+      }
+      const value = newKeyword.inputValue;
+      const { status, data } = await APITag.postItem(value);
+      console.log(status, data);
+      if (status === 200) {
+        alert('완료되었습니다.');
+        setNewKeyword(null);
+        tagInput.current.value = '';
+      }
+    } catch (error) {
+      alert('키워드를 다시 확인해주세요');
+    }
+  };
   useEffect(() => {
     getList();
   }, [getList]);
@@ -137,6 +148,12 @@ const Keywords: React.FC = () => {
   useEffect(() => {
     loadMore && loadMoreList();
   }, [loadMore]);
+
+  const keyword = newKeyword
+    ? newKeyword.isNew
+      ? newKeyword.inputValue
+      : newKeyword.name
+    : '';
 
   const paginatedTags = applyPagination(tags, page, rowsPerPage);
   return (
@@ -189,88 +206,123 @@ const Keywords: React.FC = () => {
               </Breadcrumbs>
             </Grid>
           </Grid>
-          <Box display="flex" mt={3}>
-            <Autocomplete
-              fullWidth
-              freeSolo
-              selectOnFocus
-              clearOnBlur
-              handleHomeEndKeys
-              options={tagList}
-              // onChange={}
-              getOptionLabel={(option) => {
-                const label = option.name;
-                if (option.hasOwnProperty('isNew')) {
-                  return `+ '${label}'`;
+          <Box my={3}>
+            <Typography color="textPrimary" variant="h6">
+              키워드 추가
+            </Typography>
+            <Card>
+              <FormControlLabel
+                style={{ margin: '10px' }}
+                label={addType ? '한개씩 등록' : '여러개 등록'}
+                control={
+                  <Switch
+                    checked={addType}
+                    onChange={(event) =>
+                      setAddType(event.target.checked)
+                    }
+                    name="수동 등록"
+                    color="primary"
+                  />
                 }
-                return label;
-              }}
-              filterOptions={(options, params) => {
-                const filtered = customFilter(options, params);
-                if (
-                  user.role.type !== IRoleType.Author &&
-                  filtered.length === 0 &&
-                  params.inputValue !== ''
-                ) {
-                  filtered.push({
-                    id: Math.random(),
-                    isNew: true,
-                    name: params.inputValue,
-                  });
-                }
+              />
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  m: -1,
+                  p: 4,
+                }}
+              >
+                {addType ? (
+                  <Autocomplete
+                    freeSolo
+                    value={keyword}
+                    selectOnFocus
+                    clearOnBlur
+                    handleHomeEndKeys
+                    options={tagList}
+                    style={{ width: 500, marginRight: 10 }}
+                    onChange={(event, newValue) => {
+                      if (!newValue) {
+                        setNewKeyword(null);
+                        return;
+                      }
+                      if (typeof newValue !== 'string') {
+                        console.log(newValue);
+                        if (
+                          newValue &&
+                          newValue.isNew &&
+                          newValue.inputValue
+                        ) {
+                          // Create a new value from the user input
+                          setNewKeyword(newValue);
+                        }
+                      }
+                    }}
+                    getOptionLabel={(option) => {
+                      if (typeof option === 'string') {
+                        return option;
+                      }
+                      if (option.isNew) {
+                        return option.name;
+                      }
+                      return option.name;
+                    }}
+                    filterOptions={(options, params) => {
+                      const filtered = customFilter(options, params);
 
-                return filtered;
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  onChange={handleTagChange}
-                  fullWidth
-                  label="키워드"
-                  name="keyword"
-                  variant="outlined"
-                  inputRef={tagInput}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <React.Fragment>
-                        {tagLoading ? (
-                          <CircularProgress
-                            color="inherit"
-                            size={20}
-                          />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </React.Fragment>
-                    ),
-                  }}
-                />
-              )}
-            />
-            <TextField
-              label="키워드_1"
-              name="title"
-              required
-              variant="outlined"
-              onChange={(event) => handleNewKeyword(event, 0)}
-            />
-            <TextField
-              label="키워드_2"
-              name="title"
-              required
-              variant="outlined"
-              onChange={(event) => handleNewKeyword(event, 1)}
-            />
-            <TextField
-              label="키워드_3"
-              name="title"
-              required
-              variant="outlined"
-              onChange={(event) => handleNewKeyword(event, 2)}
-            />
+                      if (params.inputValue !== '') {
+                        filtered.push({
+                          id: Math.random(),
+                          isNew: true,
+                          name: `Add "${params.inputValue}"`,
+                          inputValue: params.inputValue,
+                        });
+                      }
 
-            {console.log(newKeyword)}
-            <Button variant="outlined">수정</Button>
+                      return filtered;
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={handleTagChange}
+                        fullWidth
+                        label="키워드"
+                        name="keyword"
+                        variant="outlined"
+                        inputRef={tagInput}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <React.Fragment>
+                              {tagLoading && (
+                                <CircularProgress
+                                  color="inherit"
+                                  size={20}
+                                />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </React.Fragment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                ) : (
+                  <TextField
+                    style={{ width: 500, marginRight: 10 }}
+                    multiline
+                    rows={3}
+                    helperText="띄어쓰기로 나누어 태그를 등록해주세요."
+                  ></TextField>
+                )}
+
+                <Button variant="outlined" onClick={handleCreate}>
+                  추가
+                </Button>
+              </Box>
+            </Card>
           </Box>
           <Card>
             {/* <Tabs
@@ -314,7 +366,7 @@ const Keywords: React.FC = () => {
                       </InputAdornment>
                     ),
                   }}
-                  placeholder="Search customers"
+                  placeholder="키워드를 검색해주세요"
                   variant="outlined"
                   onChange={(e) => {
                     setSearch(e.target.value);
