@@ -8,6 +8,7 @@ import { applyPagination } from 'src/utils/pagination';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
+import dayjs from 'dayjs';
 import { subDays, subHours } from 'date-fns';
 import {
   Avatar,
@@ -55,6 +56,7 @@ import { Tag } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
 
 import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
+import EditTextDialog from 'src/components/widgets/dialogs/Dialog.EditText';
 
 const now = new Date();
 
@@ -73,6 +75,13 @@ const Keywords: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadMore, setLoadMore] = useState<boolean>(false);
+
+  // Dialogs
+  const [openTag, setOpenTag] = useState<boolean>(false);
+  const [openSummary, setOpenSummary] = useState<boolean>(false);
+  const [openDescription, setOpenDescription] =
+    useState<boolean>(false);
+
   const rowsPerPage = 20;
 
   const getTagList = useCallback(() => {
@@ -145,9 +154,10 @@ const Keywords: React.FC = () => {
 
   const reload = () => getList();
 
-  const updateTag = async (id, name) => {
+  const updateTag = async (id, body) => {
     try {
-      await APITag.update(id, name);
+      await APITag.update(id, body);
+      setOpenTag(false);
       setTarget(null);
       reload();
     } catch (error) {
@@ -185,13 +195,43 @@ const Keywords: React.FC = () => {
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
       <Toaster />
-      {targetTag && (
+      {openTag && targetTag && (
         <KeywordEditDialog
-          open={Boolean(targetTag)}
-          setClose={() => setTarget(null)}
+          open={openTag}
+          setClose={() => {
+            setOpenTag(false);
+            setTarget(null);
+          }}
           tag={targetTag}
           updateTag={updateTag}
           reload={getList}
+        />
+      )}
+
+      {openSummary && targetTag && (
+        <EditTextDialog
+          open={openSummary}
+          setOpen={setOpenSummary}
+          onSubmit={(_text) =>
+            updateTag(targetTag.id, { summary: _text })
+          }
+          title={'요약문 변경'}
+          description={'요약문을 변경합니다.'}
+          defaultText={targetTag.summary}
+          isMultiLine={true}
+        />
+      )}
+      {openDescription && targetTag && (
+        <EditTextDialog
+          open={openDescription}
+          setOpen={setOpenDescription}
+          onSubmit={(_text) =>
+            updateTag(targetTag.id, { description: _text })
+          }
+          title={'요약문 변경'}
+          description={'요약문을 변경합니다.'}
+          defaultText={targetTag.description}
+          isMultiLine={true}
         />
       )}
 
@@ -444,14 +484,37 @@ const Keywords: React.FC = () => {
                               color="textSecondary"
                               variant="body2"
                             >
-                              {tag.updated_at}
+                              {dayjs(tag.updated_at).format(
+                                'YYYY-MM-DD',
+                              )}
                             </Typography>
                           </TableCell>
-                          <TableCell>{'요약문'}</TableCell>
-                          <TableCell>{'설명문'}</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => {
+                                setTarget(tag);
+                                setOpenSummary(true);
+                              }}
+                            >
+                              {tag.summary ? '더보기' : '작성'}
+                            </Button>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => {
+                                setTarget(tag);
+                                setOpenDescription(true);
+                              }}
+                            >
+                              {tag.description ? '더보기' : '작성'}
+                            </Button>
+                          </TableCell>
                           <TableCell>
                             <IconButton
-                              onClick={() => setTarget(tag)}
+                              onClick={() => {
+                                setTarget(tag);
+                                setOpenTag(true);
+                              }}
                             >
                               <BuildIcon fontSize="small" />
                             </IconButton>

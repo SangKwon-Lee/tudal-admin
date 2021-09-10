@@ -1,10 +1,14 @@
 export interface Tag {
   id: number;
   name: string;
-  isNew?: boolean;
-  inputValue?: string;
+  summary: string;
+  description: string;
   created_at: string;
   updated_at: string;
+
+  // 자동완성을 위한 property
+  isNew?: boolean;
+  inputValue?: string;
 }
 
 export interface Stock {

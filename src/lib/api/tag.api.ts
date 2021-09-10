@@ -35,9 +35,10 @@ export async function postItems(name: string[]): Promise<Tag[]> {
 
 export async function update(
   id: number,
-  name: string,
+  body: object,
 ): Promise<AxiosResponse<Tag>> {
-  return await axios.put<Tag>(`/tags/${id}`, { name });
+  console.log('hello', body);
+  return await axios.put<Tag>(`/tags/${id}`, body);
 }
 
 export async function remove(
