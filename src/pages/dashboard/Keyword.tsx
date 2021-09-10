@@ -54,6 +54,8 @@ import { APITag } from 'src/lib/api';
 import { Tag } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
 
+import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
+
 const now = new Date();
 
 const customFilter = createFilterOptions<any>();
@@ -65,7 +67,7 @@ const Keywords: React.FC = () => {
   const scrollRef = useRef(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [newKeyword, setNewKeyword] = useState<Tag>(null);
-  const [addType, setAddType] = useState<boolean>(false);
+  const [addType, setAddType] = useState<boolean>(true);
   const [targetTag, setTarget] = useState<Tag>(null);
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
@@ -162,6 +164,14 @@ const Keywords: React.FC = () => {
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
       <Toaster />
+      {targetTag && (
+        <KeywordEditDialog
+          open={Boolean(targetTag)}
+          setClose={() => setTarget(null)}
+          tag={targetTag}
+          reload={getList}
+        />
+      )}
 
       <Box
         sx={{
@@ -255,7 +265,6 @@ const Keywords: React.FC = () => {
                           newValue.isNew &&
                           newValue.inputValue
                         ) {
-                          // Create a new value from the user input
                           setNewKeyword(newValue);
                         }
                       }
@@ -437,7 +446,9 @@ const Keywords: React.FC = () => {
                           <TableCell>{'요약문'}</TableCell>
                           <TableCell>{'설명문'}</TableCell>
                           <TableCell>
-                            <IconButton>
+                            <IconButton
+                              onClick={() => setTarget(tag)}
+                            >
                               <BuildIcon fontSize="small" />
                             </IconButton>
                           </TableCell>
