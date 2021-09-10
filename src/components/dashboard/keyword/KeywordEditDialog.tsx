@@ -22,6 +22,7 @@ interface KeywordEditDialogProps {
   tag: Tag;
   open: boolean;
   setClose: () => void;
+  updateTag: (id: number, name: string) => void;
   reload: () => void;
 }
 const customFilter = createFilterOptions<any>();
@@ -30,6 +31,7 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
   tag,
   open,
   setClose,
+  updateTag,
   reload,
 }) => {
   const [keyword, setKeyword] = useState<string>(tag.name);
@@ -44,17 +46,8 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
-  const updateTag = async () => {
-    try {
-      await APITag.update(tag.id, keyword);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const onSubmit = async () => {
-    await updateTag();
-    setClose();
-    reload();
+    updateTag(tag.id, keyword);
   };
 
   return (

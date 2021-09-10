@@ -101,7 +101,6 @@ const Keywords: React.FC = () => {
   const loadMoreList = useCallback(async () => {
     setLoading(true);
     try {
-      console.log('load more');
       const start = (page + 1) * rowsPerPage; //rows per page
       const { data, status } = await APITag.getList(search, start);
       if (status === 200) {
@@ -143,6 +142,28 @@ const Keywords: React.FC = () => {
       alert('키워드를 다시 확인해주세요');
     }
   };
+
+  const reload = () => getList();
+
+  const updateTag = async (id, name) => {
+    try {
+      await APITag.update(id, name);
+      setTarget(null);
+      reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await APITag.remove(id);
+      reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getList();
   }, [getList]);
@@ -169,6 +190,7 @@ const Keywords: React.FC = () => {
           open={Boolean(targetTag)}
           setClose={() => setTarget(null)}
           tag={targetTag}
+          updateTag={updateTag}
           reload={getList}
         />
       )}
@@ -334,21 +356,6 @@ const Keywords: React.FC = () => {
             </Card>
           </Box>
           <Card>
-            {/* <Tabs
-              indicatorColor="primary"
-              scrollButtons="auto"
-              textColor="primary"
-              value="all"
-              variant="scrollable"
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  label={tab.label}
-                  value={tab.value}
-                />
-              ))}
-            </Tabs> */}
             <Divider />
             <Box
               sx={{
@@ -377,9 +384,10 @@ const Keywords: React.FC = () => {
                   }}
                   placeholder="키워드를 검색해주세요"
                   variant="outlined"
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                  }}
+                  onChange={_.debounce(
+                    (e) => setSearch(e.target.value),
+                    300,
+                  )}
                 />
               </Box>
             </Box>
@@ -389,9 +397,7 @@ const Keywords: React.FC = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell padding="checkbox">
-                        <Checkbox color="primary" />
-                      </TableCell>
+                      <TableCell>id</TableCell>
                       <TableCell>키워드_1</TableCell>
                       <TableCell>키워드_2</TableCell>
                       <TableCell>키워드_3</TableCell>
@@ -408,9 +414,7 @@ const Keywords: React.FC = () => {
                         tag.name.split('.');
                       return (
                         <TableRow hover key={tag.id}>
-                          <TableCell padding="checkbox">
-                            <Checkbox color="primary" />
-                          </TableCell>
+                          <TableCell>{tag.id}</TableCell>
                           <TableCell>
                             <Typography
                               color="textSecondary"
@@ -453,7 +457,9 @@ const Keywords: React.FC = () => {
                             </IconButton>
                           </TableCell>
                           <TableCell>
-                            <IconButton>
+                            <IconButton
+                              onClick={() => handleDelete(tag.id)}
+                            >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
                           </TableCell>

@@ -39,6 +39,13 @@ export async function update(
 ): Promise<AxiosResponse<Tag>> {
   return await axios.put<Tag>(`/tags/${id}`, { name });
 }
+
+export async function remove(
+  id: number,
+): Promise<AxiosResponse<Tag>> {
+  return await axios.delete<Tag>(`/tags/${id}`);
+}
+
 export async function findKeywords(tags: string[]): Promise<Tag[]> {
   const promises = tags.map((tag) => {
     return axios.get(`/tags-excluded?_where[name]=${tag}`);
