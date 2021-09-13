@@ -8,7 +8,6 @@ import {
 import { MemoryRouter } from 'react-router-dom';
 import Keyword from './Keyword';
 import 'src/setupTest';
-import userEvent from '@testing-library/user-event';
 
 jest.mock('react-helmet-async', () => ({
   Helmet: () => <header></header>,
@@ -35,14 +34,9 @@ describe('should have keyword list and form modal', () => {
     expect(getByTestId('keyword-list-table')).toBeInTheDocument();
   });
 
-  it('search properly', async () => {
-    const {
-      getAllByRole,
-      getByDisplayValue,
-      getByTestId,
-      getAllByDisplayValue,
-      getByLabelText,
-    } = renderKeyword();
+  it('search - find properly', async () => {
+    const { getAllByRole, getByTestId, getByDisplayValue } =
+      renderKeyword();
 
     await waitForElementToBeRemoved(() =>
       getByTestId('keyword-list-loading'),
@@ -56,19 +50,32 @@ describe('should have keyword list and form modal', () => {
       target: { value: '문재인' },
     });
 
-    await waitFor(() => console.log('debounce'), { timeout: 300 }); // But will get called within 350ms
-    const foo = true;
-    await new Promise((r) => setTimeout(r, 2000));
-    expect(foo).toBeDefined();
+    await waitFor(() => getByTestId('keyword-list-loading'));
+    await waitForElementToBeRemoved(() =>
+      getByTestId('keyword-list-loading'),
+    );
 
-    await expect(
-      waitFor(() => getByTestId('keyword-list-loading')),
-    ).toBeTruthy();
+    expect(getByDisplayValue('문재인')).toBeTruthy();
+  });
 
-    expect(screen.getByDisplayValue('문재인')).toBeTruthy();
+  it('search - not exists', async () => {
+    const { getAllByRole, getByTestId } = renderKeyword();
 
-    // await waitForElementToBeRemoved(() =>
-    //   getByTestId('keyword-list-loading'),
-    // );
+    await waitForElementToBeRemoved(() =>
+      getByTestId('keyword-list-loading'),
+    );
+
+    const searchInput = getAllByRole('textbox').filter(
+      (element) => element.id === 'search',
+    )[0];
+
+    fireEvent.change(searchInput, {
+      target: { value: '레바논이라크' },
+    });
+
+    await waitFor(() => getByTestId('keyword-list-loading'));
+    await waitForElementToBeRemoved(() =>
+      getByTestId('keyword-list-loading'),
+    );
   });
 });

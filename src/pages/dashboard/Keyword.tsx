@@ -90,6 +90,7 @@ const Keywords: React.FC = () => {
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [search], []);
+
   const handleTagChange = _.debounce(refetchTag, 300);
 
   const getList = useCallback(async () => {

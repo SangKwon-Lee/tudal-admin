@@ -37,7 +37,6 @@ export async function update(
   id: number,
   body: object,
 ): Promise<AxiosResponse<Tag>> {
-  console.log('hello', body);
   return await axios.put<Tag>(`/tags/${id}`, body);
 }
 

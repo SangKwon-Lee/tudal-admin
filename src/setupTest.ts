@@ -101,6 +101,14 @@ const tagHandler = [
   rest.get(
     `${process.env.REACT_APP_CMS_URL}/tags`,
     (req, res, ctx) => {
+      const search = req.url.searchParams.get('_q');
+      if (search) {
+        const result = FixtureTags.list.filter((tag) =>
+          tag.name.includes(search),
+        );
+        return res(ctx.status(200), ctx.json(result));
+      }
+
       return res(ctx.status(200), ctx.json(FixtureTags.list));
     },
   ),
