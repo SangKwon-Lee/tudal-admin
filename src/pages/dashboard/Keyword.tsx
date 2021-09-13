@@ -82,7 +82,7 @@ const Keywords: React.FC = () => {
     useState<boolean>(false);
   const [openDeleteTag, setOpenDeleteTag] = useState<boolean>(false);
 
-  const rowsPerPage = 20;
+  const rowsPerPage = 25;
 
   const getTagList = useCallback(() => {
     return APITag.getList(search);
@@ -163,7 +163,7 @@ const Keywords: React.FC = () => {
         return;
       }
       const values = tagsCreateRef.current.value.split('\n');
-      console.log(values);
+
       const success = [];
       const errors = [];
       for (let i = 0; i < values.length; i++) {
@@ -436,24 +436,32 @@ const Keywords: React.FC = () => {
                 <TextField
                   fullWidth
                   InputProps={{
+                    id: 'search',
                     startAdornment: (
                       <InputAdornment position="start">
                         <SearchIcon fontSize="small" />
                       </InputAdornment>
                     ),
                   }}
+                  id="search"
                   placeholder="키워드 검색"
                   variant="outlined"
-                  onChange={_.debounce(
-                    (e) => setSearch(e.target.value),
-                    300,
-                  )}
+                  onChange={_.debounce((e) => {
+                    setSearch(e.target.value);
+                  }, 300)}
                 />
               </Box>
             </Box>
-            {loading && <LinearProgress />}
+            {loading && (
+              <div data-testid="keyword-list-loading">
+                <LinearProgress />
+              </div>
+            )}
             <Scrollbar>
-              <Box sx={{ minWidth: 700 }}>
+              <Box
+                sx={{ minWidth: 700 }}
+                data-testid="keyword-list-table"
+              >
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -561,7 +569,7 @@ const Keywords: React.FC = () => {
               count={tags.length}
               onPageChange={handlePage}
               page={page}
-              rowsPerPage={20}
+              rowsPerPage={rowsPerPage}
             />
           </Card>
 
