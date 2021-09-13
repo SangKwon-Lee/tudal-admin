@@ -29,9 +29,6 @@ const EditTextDialog: React.FC<EditTextDialogProps> = ({
   const [_text, _setText] = React.useState<string>(
     defaultText ? defaultText : '',
   );
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);

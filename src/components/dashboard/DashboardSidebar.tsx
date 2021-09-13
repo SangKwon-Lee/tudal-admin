@@ -19,6 +19,7 @@ import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
+import ShoppingBag from '../../icons/ShoppingBag';
 import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
@@ -62,7 +63,7 @@ const sections = [
       {
         title: '종목',
         path: '/dashboard/stock',
-        icon: <CalendarIcon fontSize="small" />,
+        icon: <ShoppingBag fontSize="small" />,
       },
       {
         title: '뉴스',

@@ -9,21 +9,18 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
 import dayjs from 'dayjs';
-import { subDays, subHours } from 'date-fns';
+
 import {
-  Avatar,
   Box,
   Container,
   Breadcrumbs,
   Grid,
   Card,
-  Checkbox,
   Divider,
   IconButton,
   InputAdornment,
   LinearProgress,
   Link,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -37,7 +34,9 @@ import {
   CircularProgress,
   FormControlLabel,
   Switch,
+  Dialog,
 } from '@material-ui/core';
+
 import useSettings from 'src/hooks/useSettings';
 import toast, { Toaster } from 'react-hot-toast';
 import Scrollbar from '../../components/layout/Scrollbar';
@@ -57,19 +56,19 @@ import useAuth from 'src/hooks/useAuth';
 
 import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
 import EditTextDialog from 'src/components/widgets/dialogs/Dialog.EditText';
-
-const now = new Date();
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 const customFilter = createFilterOptions<any>();
 
 const Keywords: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
-  const tagInput = useRef(null);
   const scrollRef = useRef(null);
+  const tagsCreateRef = useRef(null);
+
   const [tags, setTags] = useState<Tag[]>([]);
   const [newKeyword, setNewKeyword] = useState<Tag>(null);
-  const [addType, setAddType] = useState<boolean>(true);
+  const [isMultiCreate, setMultiCreate] = useState<boolean>(false);
   const [targetTag, setTarget] = useState<Tag>(null);
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
@@ -77,20 +76,20 @@ const Keywords: React.FC = () => {
   const [loadMore, setLoadMore] = useState<boolean>(false);
 
   // Dialogs
-  const [openTag, setOpenTag] = useState<boolean>(false);
+  const [openUpdateTag, setOpenUpdateTag] = useState<boolean>(false);
   const [openSummary, setOpenSummary] = useState<boolean>(false);
   const [openDescription, setOpenDescription] =
     useState<boolean>(false);
+  const [openDeleteTag, setOpenDeleteTag] = useState<boolean>(false);
 
   const rowsPerPage = 20;
 
   const getTagList = useCallback(() => {
-    const value = tagInput.current ? tagInput.current.value : '';
-    return APITag.getList(value);
-  }, [tagInput]);
+    return APITag.getList(search);
+  }, [search]);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
-    useAsync<Tag[]>(getTagList, [tagInput], []);
+    useAsync<Tag[]>(getTagList, [search], []);
   const handleTagChange = _.debounce(refetchTag, 300);
 
   const getList = useCallback(async () => {
@@ -134,6 +133,8 @@ const Keywords: React.FC = () => {
   };
 
   const handleCreate = async () => {
+    setLoading(true);
+
     try {
       if (!newKeyword.isNew) {
         alert('이미 등록된 키워드입니다.');
@@ -141,14 +142,45 @@ const Keywords: React.FC = () => {
       }
       const value = newKeyword.inputValue;
       const { status, data } = await APITag.postItem(value);
-      console.log(status, data);
       if (status === 200) {
-        alert('완료되었습니다.');
+        toast.success('추가되었습니다.');
+        setSearch('');
         setNewKeyword(null);
-        tagInput.current.value = '';
       }
     } catch (error) {
       alert('키워드를 다시 확인해주세요');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMultiCreate = async () => {
+    setLoading(true);
+
+    try {
+      if (!tagsCreateRef.current.value) {
+        toast.error('키워드를 확인해 주세요');
+        return;
+      }
+      const values = tagsCreateRef.current.value.split('\n');
+      console.log(values);
+      const success = [];
+      const errors = [];
+      for (let i = 0; i < values.length; i++) {
+        const { data, status } = await APITag.postItem(values[i]);
+        if (status === 200 && Boolean(data)) {
+          success.push(data.name);
+        } else {
+          errors.push(values[i]);
+        }
+      }
+      success.forEach((success) => toast.success(success));
+      errors.forEach((error) => toast.error(error));
+      tagsCreateRef.current.value = '';
+    } catch (error) {
+      alert('키워드를 다시 확인해주세요');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,7 +189,7 @@ const Keywords: React.FC = () => {
   const updateTag = async (id, body) => {
     try {
       await APITag.update(id, body);
-      setOpenTag(false);
+      setOpenUpdateTag(false);
       setTarget(null);
       reload();
     } catch (error) {
@@ -167,10 +199,18 @@ const Keywords: React.FC = () => {
 
   const handleDelete = async (id) => {
     try {
-      await APITag.remove(id);
-      reload();
+      if (user.role.type !== IRoleType.AUTHENTICATED) {
+        toast.error('삭제는 관리자 권한이 필요합니다.');
+      } else {
+        await APITag.remove(id);
+        reload();
+        toast.success('삭제되었습니다.');
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setOpenDeleteTag(false);
+      setTarget(null);
     }
   };
 
@@ -181,6 +221,11 @@ const Keywords: React.FC = () => {
   useEffect(() => {
     loadMore && loadMoreList();
   }, [loadMore]);
+
+  useEffect(() => {
+    scrollRef.current &&
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [page]);
 
   const keyword = newKeyword
     ? newKeyword.isNew
@@ -195,46 +240,6 @@ const Keywords: React.FC = () => {
         <title>Dashboard: Schedule List | TUDAL Admin</title>
       </Helmet>
       <Toaster />
-      {openTag && targetTag && (
-        <KeywordEditDialog
-          open={openTag}
-          setClose={() => {
-            setOpenTag(false);
-            setTarget(null);
-          }}
-          tag={targetTag}
-          updateTag={updateTag}
-          reload={getList}
-        />
-      )}
-
-      {openSummary && targetTag && (
-        <EditTextDialog
-          open={openSummary}
-          setOpen={setOpenSummary}
-          onSubmit={(_text) =>
-            updateTag(targetTag.id, { summary: _text })
-          }
-          title={'요약문 변경'}
-          description={'요약문을 변경합니다.'}
-          defaultText={targetTag.summary}
-          isMultiLine={true}
-        />
-      )}
-      {openDescription && targetTag && (
-        <EditTextDialog
-          open={openDescription}
-          setOpen={setOpenDescription}
-          onSubmit={(_text) =>
-            updateTag(targetTag.id, { description: _text })
-          }
-          title={'요약문 변경'}
-          description={'요약문을 변경합니다.'}
-          defaultText={targetTag.description}
-          isMultiLine={true}
-        />
-      )}
-
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -285,12 +290,12 @@ const Keywords: React.FC = () => {
             <Card>
               <FormControlLabel
                 style={{ margin: '10px' }}
-                label={addType ? '한개씩 등록' : '여러개 등록'}
+                label={'여러개 등록'}
                 control={
                   <Switch
-                    checked={addType}
+                    checked={isMultiCreate}
                     onChange={(event) =>
-                      setAddType(event.target.checked)
+                      setMultiCreate(event.target.checked)
                     }
                     name="수동 등록"
                     color="primary"
@@ -306,92 +311,107 @@ const Keywords: React.FC = () => {
                   p: 4,
                 }}
               >
-                {addType ? (
-                  <Autocomplete
-                    freeSolo
-                    value={keyword}
-                    selectOnFocus
-                    clearOnBlur
-                    handleHomeEndKeys
-                    options={tagList}
-                    style={{ width: 500, marginRight: 10 }}
-                    onChange={(event, newValue) => {
-                      if (!newValue) {
-                        setNewKeyword(null);
-                        return;
-                      }
-                      if (typeof newValue !== 'string') {
-                        console.log(newValue);
-                        if (
-                          newValue &&
-                          newValue.isNew &&
-                          newValue.inputValue
-                        ) {
-                          setNewKeyword(newValue);
-                        }
-                      }
-                    }}
-                    getOptionLabel={(option) => {
-                      if (typeof option === 'string') {
-                        return option;
-                      }
-                      if (option.isNew) {
-                        return option.name;
-                      }
-                      return option.name;
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = customFilter(options, params);
-
-                      if (params.inputValue !== '') {
-                        filtered.push({
-                          id: Math.random(),
-                          isNew: true,
-                          name: `Add "${params.inputValue}"`,
-                          inputValue: params.inputValue,
-                        });
-                      }
-
-                      return filtered;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        onChange={handleTagChange}
-                        fullWidth
-                        label="키워드"
-                        name="keyword"
-                        variant="outlined"
-                        inputRef={tagInput}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <React.Fragment>
-                              {tagLoading && (
-                                <CircularProgress
-                                  color="inherit"
-                                  size={20}
-                                />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </React.Fragment>
-                          ),
-                        }}
-                      />
-                    )}
-                  />
+                {isMultiCreate ? (
+                  <>
+                    <TextField
+                      style={{ width: 500, marginRight: 10 }}
+                      multiline
+                      rows={3}
+                      inputRef={tagsCreateRef}
+                      helperText="띄어쓰기로 나누어 태그를 등록해주세요."
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={handleMultiCreate}
+                    >
+                      추가
+                    </Button>
+                  </>
                 ) : (
-                  <TextField
-                    style={{ width: 500, marginRight: 10 }}
-                    multiline
-                    rows={3}
-                    helperText="띄어쓰기로 나누어 태그를 등록해주세요."
-                  ></TextField>
-                )}
+                  <>
+                    <Autocomplete
+                      freeSolo
+                      value={keyword}
+                      selectOnFocus
+                      clearOnBlur
+                      handleHomeEndKeys
+                      options={tagList}
+                      style={{
+                        width: 500,
+                        marginRight: 10,
+                        marginBottom: 20,
+                      }}
+                      onChange={(event, newValue) => {
+                        if (!newValue) {
+                          setNewKeyword(null);
+                          return;
+                        }
+                        if (typeof newValue !== 'string') {
+                          if (
+                            newValue &&
+                            newValue.isNew &&
+                            newValue.inputValue
+                          ) {
+                            setNewKeyword(newValue);
+                          }
+                        }
+                      }}
+                      getOptionLabel={(option) => {
+                        if (typeof option === 'string') {
+                          return option;
+                        }
+                        if (option.isNew) {
+                          return option.name;
+                        }
+                        return option.name;
+                      }}
+                      filterOptions={(options, params) => {
+                        const filtered = customFilter(
+                          options,
+                          params,
+                        );
 
-                <Button variant="outlined" onClick={handleCreate}>
-                  추가
-                </Button>
+                        if (params.inputValue !== '') {
+                          filtered.push({
+                            id: Math.random(),
+                            isNew: true,
+                            name: `Add "${params.inputValue}"`,
+                            inputValue: params.inputValue,
+                          });
+                        }
+
+                        return filtered;
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          onChange={handleTagChange}
+                          fullWidth
+                          label="키워드 추가"
+                          name="keyword"
+                          variant="outlined"
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {tagLoading && (
+                                  <CircularProgress
+                                    color="inherit"
+                                    size={20}
+                                  />
+                                )}
+                                {params.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                    <Button variant="outlined" onClick={handleCreate}>
+                      추가
+                    </Button>
+                  </>
+                )}
               </Box>
             </Card>
           </Box>
@@ -422,7 +442,7 @@ const Keywords: React.FC = () => {
                       </InputAdornment>
                     ),
                   }}
-                  placeholder="키워드를 검색해주세요"
+                  placeholder="키워드 검색"
                   variant="outlined"
                   onChange={_.debounce(
                     (e) => setSearch(e.target.value),
@@ -496,7 +516,7 @@ const Keywords: React.FC = () => {
                                 setOpenSummary(true);
                               }}
                             >
-                              {tag.summary ? '더보기' : '작성'}
+                              {tag.summary ? '확인' : '작성'}
                             </Button>
                           </TableCell>
                           <TableCell>
@@ -506,14 +526,14 @@ const Keywords: React.FC = () => {
                                 setOpenDescription(true);
                               }}
                             >
-                              {tag.description ? '더보기' : '작성'}
+                              {tag.description ? '확인' : '작성'}
                             </Button>
                           </TableCell>
                           <TableCell>
                             <IconButton
                               onClick={() => {
                                 setTarget(tag);
-                                setOpenTag(true);
+                                setOpenUpdateTag(true);
                               }}
                             >
                               <BuildIcon fontSize="small" />
@@ -521,7 +541,10 @@ const Keywords: React.FC = () => {
                           </TableCell>
                           <TableCell>
                             <IconButton
-                              onClick={() => handleDelete(tag.id)}
+                              onClick={() => {
+                                setOpenDeleteTag(true);
+                                setTarget(tag);
+                              }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -541,6 +564,64 @@ const Keywords: React.FC = () => {
               rowsPerPage={20}
             />
           </Card>
+
+          {/* Dialogs */}
+          {openUpdateTag && targetTag && (
+            <KeywordEditDialog
+              open={openUpdateTag}
+              setClose={() => {
+                setOpenUpdateTag(false);
+                setTarget(null);
+              }}
+              tag={targetTag}
+              updateTag={updateTag}
+              reload={getList}
+            />
+          )}
+
+          {openSummary && targetTag && (
+            <EditTextDialog
+              open={openSummary}
+              setOpen={setOpenSummary}
+              onSubmit={(_text) =>
+                updateTag(targetTag.id, { summary: _text })
+              }
+              title={'요약문 변경'}
+              description={'요약문을 변경합니다.'}
+              defaultText={targetTag.summary}
+              isMultiLine={true}
+            />
+          )}
+          {openDescription && targetTag && (
+            <EditTextDialog
+              open={openDescription}
+              setOpen={setOpenDescription}
+              onSubmit={(_text) =>
+                updateTag(targetTag.id, { description: _text })
+              }
+              title={'요약문 변경'}
+              description={'요약문을 변경합니다.'}
+              defaultText={targetTag.description}
+              isMultiLine={true}
+            />
+          )}
+          <Dialog
+            aria-labelledby="ConfirmModal"
+            open={openDeleteTag}
+            onClose={() => setOpenDeleteTag(false)}
+          >
+            <ConfirmModal
+              title={'키워드 삭제'}
+              content={'해당 키워드를 삭제하시겠습니까?'}
+              confirmTitle={'삭제'}
+              type={'ERROR'}
+              handleOnClick={() => handleDelete(targetTag.id)}
+              handleOnCancel={() => {
+                setOpenDeleteTag(false);
+                setTarget(null);
+              }}
+            />
+          </Dialog>
         </Container>
       </Box>
     </>
