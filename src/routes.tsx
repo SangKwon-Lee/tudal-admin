@@ -66,6 +66,9 @@ const StockList = Loadable(
 const KeywordList = Loadable(
   lazy(() => import('./pages/dashboard/Keyword')),
 );
+const CategoryList = Loadable(
+  lazy(() => import('./pages/dashboard/Category')),
+);
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -174,7 +177,7 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'schedule',
+        path: 'schedules',
         children: [
           {
             path: '/',
@@ -192,7 +195,7 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'stock',
+        path: 'stocks',
         children: [
           {
             path: '/',
@@ -201,11 +204,20 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'keyword',
+        path: 'keywords',
         children: [
           {
             path: '/',
             element: <KeywordList />,
+          },
+        ],
+      },
+      {
+        path: 'categories',
+        children: [
+          {
+            path: '/',
+            element: <CategoryList />,
           },
         ],
       },

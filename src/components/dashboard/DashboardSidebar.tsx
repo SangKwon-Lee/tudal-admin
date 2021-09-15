@@ -16,6 +16,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import useAuth from '../../hooks/useAuth';
 import ChartPieIcon from '../../icons/ChartPie';
+import BriefcaseIcon from '../../icons/Briefcase';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
@@ -52,7 +53,7 @@ const sections = [
       },
       {
         title: '일정',
-        path: '/dashboard/schedule',
+        path: '/dashboard/schedules',
         icon: <CalendarIcon fontSize="small" />,
       },
       {
@@ -62,8 +63,13 @@ const sections = [
       },
       {
         title: '종목',
-        path: '/dashboard/stock',
+        path: '/dashboard/stocks',
         icon: <ShoppingBag fontSize="small" />,
+      },
+      {
+        title: '카테고리',
+        path: '/dashboard/categories',
+        icon: <BriefcaseIcon fontSize="small" />,
       },
       {
         title: '뉴스',
