@@ -62,7 +62,7 @@ const CategoryEditDialog: React.FC<CategoryEditDialogProps> = ({
       <DialogTitle id="form-dialog-title">키워드 수정</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {category.name}을 수정합니다.
+          "{category.name}"을 수정합니다.
         </DialogContentText>
         <Autocomplete
           freeSolo
@@ -70,7 +70,7 @@ const CategoryEditDialog: React.FC<CategoryEditDialogProps> = ({
           clearOnBlur
           handleHomeEndKeys
           options={tagList}
-          style={{ width: 500, marginRight: 10 }}
+          style={{ width: 500, marginRight: 10, marginTop: 25 }}
           onChange={(event, newValue) => {
             if (!newValue) {
               setInput(null);
@@ -112,8 +112,8 @@ const CategoryEditDialog: React.FC<CategoryEditDialogProps> = ({
               {...params}
               onChange={handleTagChange}
               fullWidth
-              label="키워드"
-              name="keyword"
+              label="카테고리"
+              name="category"
               variant="outlined"
               inputRef={categoryRef}
               InputProps={{

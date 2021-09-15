@@ -100,7 +100,6 @@ const DialogEditMultiSelect: FC<DialogEditMultiSelectProps> = (
               />
             ))}
         </Box>
-        <Divider />
       </Box>
     </Dialog>
   );

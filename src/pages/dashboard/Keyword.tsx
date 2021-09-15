@@ -199,6 +199,7 @@ const Keywords: React.FC = () => {
       const { data, status } = await APITag.getItem(targetTag.id);
       if (status === 200) {
         setTarget(data[0]);
+        reload();
       }
     } catch (error) {
       console.log(error);
@@ -492,7 +493,7 @@ const Keywords: React.FC = () => {
                     ),
                   }}
                   id="search"
-                  placeholder="키워드 검색"
+                  placeholder="검색"
                   variant="outlined"
                   onChange={_.debounce((e) => {
                     setSearch(e.target.value);

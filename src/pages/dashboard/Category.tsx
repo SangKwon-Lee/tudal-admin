@@ -366,7 +366,7 @@ const CategoryPage: React.FC = () => {
                     ),
                   }}
                   id="search"
-                  placeholder="카테고리 검색"
+                  placeholder="검색"
                   variant="outlined"
                   onChange={_.debounce((e) => {
                     setSearch(e.target.value);
