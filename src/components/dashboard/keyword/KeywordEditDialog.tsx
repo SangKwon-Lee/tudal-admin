@@ -129,10 +129,10 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={setClose} color="primary">
-          Cancel
+          취소
         </Button>
         <Button onClick={onSubmit} color="primary">
-          Subscribe
+          수정
         </Button>
       </DialogActions>
     </Dialog>

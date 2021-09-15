@@ -49,14 +49,16 @@ import useAsync from 'src/hooks/useAsync';
 import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
+import AliasIcon from '@material-ui/icons/ShoppingBag';
 import SearchIcon from '../../icons/Search';
 import { APITag } from 'src/lib/api';
-import { Tag } from 'src/types/schedule';
+import { ITagAlias, Tag } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
 
 import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
-import EditTextDialog from 'src/components/widgets/dialogs/Dialog.EditText';
+import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect';
 
 const customFilter = createFilterOptions<any>();
 
@@ -81,11 +83,12 @@ const Keywords: React.FC = () => {
   const [openDescription, setOpenDescription] =
     useState<boolean>(false);
   const [openDeleteTag, setOpenDeleteTag] = useState<boolean>(false);
+  const [openAlias, setOpenAlias] = useState<boolean>(false);
 
   const rowsPerPage = 25;
 
   const getTagList = useCallback(() => {
-    return APITag.getList(search);
+    return APITag.getList(search, true);
   }, [search]);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
@@ -96,8 +99,9 @@ const Keywords: React.FC = () => {
   const getList = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, status } = await APITag.getList(search);
+      const { data, status } = await APITag.getList(search, true);
       if (status === 200) {
+        console.log('here');
         setTags(data);
       }
     } catch (error) {
@@ -111,7 +115,11 @@ const Keywords: React.FC = () => {
     setLoading(true);
     try {
       const start = (page + 1) * rowsPerPage; //rows per page
-      const { data, status } = await APITag.getList(search, start);
+      const { data, status } = await APITag.getList(
+        search,
+        true,
+        start,
+      );
       if (status === 200) {
         setTags((prev) => [...prev, ...data]);
         setLoadMore(false);
@@ -138,7 +146,7 @@ const Keywords: React.FC = () => {
 
     try {
       if (!newKeyword.isNew) {
-        alert('이미 등록된 키워드입니다.');
+        toast.error('이미 등록된 키워드입니다.');
         return;
       }
       const value = newKeyword.inputValue;
@@ -149,7 +157,7 @@ const Keywords: React.FC = () => {
         setNewKeyword(null);
       }
     } catch (error) {
-      alert('키워드를 다시 확인해주세요');
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -179,13 +187,23 @@ const Keywords: React.FC = () => {
       errors.forEach((error) => toast.error(error));
       tagsCreateRef.current.value = '';
     } catch (error) {
-      alert('키워드를 다시 확인해주세요');
+      toast.error('키워드를 다시 확인해주세요');
     } finally {
       setLoading(false);
     }
   };
 
   const reload = () => getList();
+  const reloadTarget = async () => {
+    try {
+      const { data, status } = await APITag.getItem(targetTag.id);
+      if (status === 200) {
+        setTarget(data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const updateTag = async (id, body) => {
     try {
@@ -203,7 +221,7 @@ const Keywords: React.FC = () => {
       if (user.role.type !== IRoleType.AUTHENTICATED) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
       } else {
-        await APITag.remove(id);
+        await APITag.update(id, { isDeleted: true });
         reload();
         toast.success('삭제되었습니다.');
       }
@@ -212,6 +230,35 @@ const Keywords: React.FC = () => {
     } finally {
       setOpenDeleteTag(false);
       setTarget(null);
+    }
+  };
+
+  const handleCreateAlias = async (name) => {
+    try {
+      const { data, status } = await APITag.postAlias(
+        targetTag.id,
+        name,
+      );
+      if (status === 200) {
+        toast.success('alias 추가에 성공했습니다.');
+        reloadTarget();
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleDeleteAlias = async (tagAlias: ITagAlias) => {
+    try {
+      const { data, status } = await APITag.removeAlias(tagAlias.id);
+      if (status === 200) {
+        toast.success(
+          `${tagAlias.aliasName}이(가) 성공적으로 삭제되었습니다.`,
+        );
+        reloadTarget();
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -473,6 +520,7 @@ const Keywords: React.FC = () => {
                       <TableCell>최종수정일시</TableCell>
                       <TableCell>요약문</TableCell>
                       <TableCell>설명문</TableCell>
+                      <TableCell>Alias</TableCell>
                       <TableCell>수정</TableCell>
                       <TableCell>삭제</TableCell>
                     </TableRow>
@@ -542,6 +590,16 @@ const Keywords: React.FC = () => {
                             <IconButton
                               onClick={() => {
                                 setTarget(tag);
+                                setOpenAlias(true);
+                              }}
+                            >
+                              <AliasIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>
+                            <IconButton
+                              onClick={() => {
+                                setTarget(tag);
                                 setOpenUpdateTag(true);
                               }}
                             >
@@ -575,6 +633,18 @@ const Keywords: React.FC = () => {
           </Card>
 
           {/* Dialogs */}
+
+          {openAlias && targetTag && (
+            <DialogEditMultiSelect
+              id={'id'}
+              name={'aliasName'}
+              isOpen={openAlias}
+              options={targetTag.alias}
+              handleOpen={setOpenAlias}
+              handleCreate={handleCreateAlias}
+              handleDelete={handleDeleteAlias}
+            />
+          )}
           {openUpdateTag && targetTag && (
             <KeywordEditDialog
               open={openUpdateTag}
