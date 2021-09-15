@@ -1,9 +1,21 @@
 export interface Tag {
   id: number;
   name: string;
-  isNew?: boolean;
+  summary: string;
+  description: string;
   created_at: string;
   updated_at: string;
+  alias?: ITagAlias[];
+
+  // 자동완성을 위한 property
+  isNew?: boolean;
+  inputValue?: string;
+}
+
+export interface ITagAlias {
+  id: number;
+  tagId: number;
+  aliasName: string;
 }
 
 export interface Stock {

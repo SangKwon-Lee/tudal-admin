@@ -63,6 +63,10 @@ const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
 
+const KeywordList = Loadable(
+  lazy(() => import('./pages/dashboard/Keyword')),
+);
+
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -193,6 +197,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <StockList />,
+          },
+        ],
+      },
+      {
+        path: 'keyword',
+        children: [
+          {
+            path: '/',
+            element: <KeywordList />,
           },
         ],
       },
