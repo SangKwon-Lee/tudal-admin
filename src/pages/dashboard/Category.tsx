@@ -50,9 +50,10 @@ import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import SearchIcon from '../../icons/Search';
-import { APITag } from 'src/lib/api';
-import { Tag } from 'src/types/schedule';
+import { APICategory } from 'src/lib/api';
+import { Category } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
+import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog';
 
 import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
 import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
@@ -60,23 +61,22 @@ import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 const customFilter = createFilterOptions<any>();
 
-const Keywords: React.FC = () => {
+const CategoryPage: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const scrollRef = useRef(null);
   const tagsCreateRef = useRef(null);
 
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [newKeyword, setNewKeyword] = useState<Tag>(null);
-  const [isMultiCreate, setMultiCreate] = useState<boolean>(false);
-  const [targetTag, setTarget] = useState<Tag>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategory, setNewCategory] = useState<Category>(null);
+  const [targetCategory, setTarget] = useState<Category>(null);
   const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadMore, setLoadMore] = useState<boolean>(false);
 
   // Dialogs
-  const [openUpdateTag, setOpenUpdateTag] = useState<boolean>(false);
+  const [openUpdate, setOpenUpdate] = useState<boolean>(false);
   const [openSummary, setOpenSummary] = useState<boolean>(false);
   const [openDescription, setOpenDescription] =
     useState<boolean>(false);
@@ -85,20 +85,22 @@ const Keywords: React.FC = () => {
   const rowsPerPage = 25;
 
   const getTagList = useCallback(() => {
-    return APITag.getList(search);
+    return APICategory.getList(search);
   }, [search]);
 
-  const [{ data: tagList, loading: tagLoading }, refetchTag] =
-    useAsync<Tag[]>(getTagList, [search], []);
+  const [
+    { data: categoryList, loading: categoryListLoading },
+    refetchCategory,
+  ] = useAsync<Category[]>(getTagList, [search], []);
 
-  const handleTagChange = _.debounce(refetchTag, 300);
+  const handleTagChange = _.debounce(refetchCategory, 300);
 
   const getList = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, status } = await APITag.getList(search);
+      const { data, status } = await APICategory.getList(search);
       if (status === 200) {
-        setTags(data);
+        setCategories(data);
       }
     } catch (error) {
       console.log(error);
@@ -111,9 +113,9 @@ const Keywords: React.FC = () => {
     setLoading(true);
     try {
       const start = (page + 1) * rowsPerPage; //rows per page
-      const { data, status } = await APITag.getList(search, start);
+      const { data, status } = await APICategory.getList(search);
       if (status === 200) {
-        setTags((prev) => [...prev, ...data]);
+        setCategories((prev) => [...prev, ...data]);
         setLoadMore(false);
       }
     } catch (error) {
@@ -127,7 +129,7 @@ const Keywords: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     newPage: number,
   ): void => {
-    if ((page + 1) * rowsPerPage >= tags.length - rowsPerPage) {
+    if ((page + 1) * rowsPerPage >= categories.length - rowsPerPage) {
       setLoadMore(true);
     }
     setPage(newPage);
@@ -137,49 +139,19 @@ const Keywords: React.FC = () => {
     setLoading(true);
 
     try {
-      if (!newKeyword.isNew) {
-        alert('이미 등록된 키워드입니다.');
+      if (!newCategory.isNew) {
+        toast.error('이미 등록된 카테고리입니다.');
         return;
       }
-      const value = newKeyword.inputValue;
-      const { status, data } = await APITag.postItem(value);
+      const value = newCategory.inputValue;
+      const { status, data } = await APICategory.postItem(value);
       if (status === 200) {
         toast.success('추가되었습니다.');
         setSearch('');
-        setNewKeyword(null);
+        setNewCategory(null);
       }
     } catch (error) {
-      alert('키워드를 다시 확인해주세요');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMultiCreate = async () => {
-    setLoading(true);
-
-    try {
-      if (!tagsCreateRef.current.value) {
-        toast.error('키워드를 확인해 주세요');
-        return;
-      }
-      const values = tagsCreateRef.current.value.split('\n');
-
-      const success = [];
-      const errors = [];
-      for (let i = 0; i < values.length; i++) {
-        const { data, status } = await APITag.postItem(values[i]);
-        if (status === 200 && Boolean(data)) {
-          success.push(data.name);
-        } else {
-          errors.push(values[i]);
-        }
-      }
-      success.forEach((success) => toast.success(success));
-      errors.forEach((error) => toast.error(error));
-      tagsCreateRef.current.value = '';
-    } catch (error) {
-      alert('키워드를 다시 확인해주세요');
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -187,10 +159,10 @@ const Keywords: React.FC = () => {
 
   const reload = () => getList();
 
-  const updateTag = async (id, body) => {
+  const handleUpdate = async (id, body) => {
     try {
-      await APITag.update(id, body);
-      setOpenUpdateTag(false);
+      await APICategory.update(id, body);
+      setOpenUpdate(false);
       setTarget(null);
       reload();
     } catch (error) {
@@ -200,12 +172,14 @@ const Keywords: React.FC = () => {
 
   const handleDelete = async (id) => {
     try {
-      if (user.role.type !== IRoleType.AUTHENTICATED) {
+      if (user.role.type === IRoleType.Author) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
       } else {
-        await APITag.remove(id);
-        reload();
-        toast.success('삭제되었습니다.');
+        const { data } = await APICategory.remove(id);
+        if (data.isDeleted) {
+          reload();
+          toast.success('삭제되었습니다.');
+        }
       }
     } catch (error) {
       console.log(error);
@@ -228,17 +202,21 @@ const Keywords: React.FC = () => {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [page]);
 
-  const keyword = newKeyword
-    ? newKeyword.isNew
-      ? newKeyword.inputValue
-      : newKeyword.name
+  const category = newCategory
+    ? newCategory.isNew
+      ? newCategory.inputValue
+      : newCategory.name
     : '';
 
-  const paginatedTags = applyPagination(tags, page, rowsPerPage);
+  const paginatedCategories = applyPagination(
+    categories,
+    page,
+    rowsPerPage,
+  );
   return (
     <>
       <Helmet>
-        <title>Dashboard: Schedule List | TUDAL Admin</title>
+        <title>Dashboard: Category List | TUDAL Admin</title>
       </Helmet>
       <Toaster />
       <Box
@@ -255,7 +233,7 @@ const Keywords: React.FC = () => {
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                키워드 리스트
+                카테고리 리스트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -279,142 +257,85 @@ const Keywords: React.FC = () => {
                   컨텐츠관리
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  키워드
+                  카테고리
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box my={3}>
             <Typography color="textPrimary" variant="h6">
-              키워드 추가
+              카테고리 추가
             </Typography>
-            <Card>
-              <FormControlLabel
-                style={{ margin: '10px' }}
-                label={'여러개 등록'}
-                control={
-                  <Switch
-                    checked={isMultiCreate}
-                    onChange={(event) =>
-                      setMultiCreate(event.target.checked)
-                    }
-                    name="수동 등록"
-                    color="primary"
-                  />
-                }
-              />
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  m: -1,
-                  p: 4,
+            <Box display="flex">
+              <Autocomplete
+                freeSolo
+                value={category}
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                options={categoryList}
+                style={{
+                  width: 500,
+                  marginRight: 10,
                 }}
-              >
-                {isMultiCreate ? (
-                  <>
-                    <TextField
-                      style={{ width: 500, marginRight: 10 }}
-                      multiline
-                      rows={3}
-                      inputRef={tagsCreateRef}
-                      helperText="띄어쓰기로 나누어 태그를 등록해주세요."
-                    />
-                    <Button
-                      variant="outlined"
-                      onClick={handleMultiCreate}
-                    >
-                      추가
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Autocomplete
-                      freeSolo
-                      value={keyword}
-                      selectOnFocus
-                      clearOnBlur
-                      handleHomeEndKeys
-                      options={tagList}
-                      style={{
-                        width: 500,
-                        marginRight: 10,
-                        marginBottom: 20,
-                      }}
-                      onChange={(event, newValue) => {
-                        if (!newValue) {
-                          setNewKeyword(null);
-                          return;
-                        }
-                        if (typeof newValue !== 'string') {
-                          if (
-                            newValue &&
-                            newValue.isNew &&
-                            newValue.inputValue
-                          ) {
-                            setNewKeyword(newValue);
-                          }
-                        }
-                      }}
-                      getOptionLabel={(option) => {
-                        if (typeof option === 'string') {
-                          return option;
-                        }
-                        if (option.isNew) {
-                          return option.name;
-                        }
-                        return option.name;
-                      }}
-                      filterOptions={(options, params) => {
-                        const filtered = customFilter(
-                          options,
-                          params,
-                        );
+                onChange={(event, newValue) => {
+                  console.log(newValue);
+                  if (typeof newValue !== 'string') {
+                    setNewCategory(newValue);
+                  }
+                }}
+                getOptionLabel={(option) => {
+                  if (typeof option === 'string') {
+                    return option;
+                  }
+                  if (option.isNew) {
+                    return option.name;
+                  }
+                  return option.name;
+                }}
+                filterOptions={(options, params) => {
+                  const filtered = customFilter(options, params);
 
-                        if (params.inputValue !== '') {
-                          filtered.push({
-                            id: Math.random(),
-                            isNew: true,
-                            name: `Add "${params.inputValue}"`,
-                            inputValue: params.inputValue,
-                          });
-                        }
+                  if (params.inputValue !== '') {
+                    filtered.push({
+                      id: Math.random(),
+                      isNew: true,
+                      name: `Add "${params.inputValue}"`,
+                      inputValue: params.inputValue,
+                    });
+                  }
 
-                        return filtered;
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          onChange={handleTagChange}
-                          fullWidth
-                          label="키워드 추가"
-                          name="keyword"
-                          variant="outlined"
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {tagLoading && (
-                                  <CircularProgress
-                                    color="inherit"
-                                    size={20}
-                                  />
-                                )}
-                                {params.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                    <Button variant="outlined" onClick={handleCreate}>
-                      추가
-                    </Button>
-                  </>
+                  return filtered;
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    onChange={handleTagChange}
+                    fullWidth
+                    label="카테고리 추가"
+                    name="category"
+                    variant="outlined"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <React.Fragment>
+                          {categoryListLoading && (
+                            <CircularProgress
+                              color="inherit"
+                              size={20}
+                            />
+                          )}
+                          {params.InputProps.endAdornment}
+                        </React.Fragment>
+                      ),
+                    }}
+                  />
                 )}
-              </Box>
-            </Card>
+              />
+              <Button variant="outlined" onClick={handleCreate}>
+                추가
+              </Button>
+            </Box>
           </Box>
           <Card>
             <Divider />
@@ -445,7 +366,7 @@ const Keywords: React.FC = () => {
                     ),
                   }}
                   id="search"
-                  placeholder="키워드 검색"
+                  placeholder="카테고리 검색"
                   variant="outlined"
                   onChange={_.debounce((e) => {
                     setSearch(e.target.value);
@@ -467,29 +388,23 @@ const Keywords: React.FC = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>id</TableCell>
-                      <TableCell>키워드_1</TableCell>
-                      <TableCell>키워드_2</TableCell>
-                      <TableCell>키워드_3</TableCell>
+                      <TableCell>카테고리</TableCell>
                       <TableCell>최종수정일시</TableCell>
-                      <TableCell>요약문</TableCell>
-                      <TableCell>설명문</TableCell>
                       <TableCell>수정</TableCell>
                       <TableCell>삭제</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paginatedTags.map((tag) => {
-                      const [depth_1, depth_2, depth_3] =
-                        tag.name.split('.');
+                    {paginatedCategories.map((category) => {
                       return (
-                        <TableRow hover key={tag.id}>
-                          <TableCell>{tag.id}</TableCell>
+                        <TableRow hover key={category.id}>
+                          <TableCell>{category.id}</TableCell>
                           <TableCell>
                             <Typography
                               color="textSecondary"
                               variant="body2"
                             >
-                              {depth_1}
+                              {category.name}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -497,52 +412,17 @@ const Keywords: React.FC = () => {
                               color="textSecondary"
                               variant="body2"
                             >
-                              {depth_2}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {depth_3}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {dayjs(tag.updated_at).format(
+                              {dayjs(category.updated_at).format(
                                 'YYYY-MM-DD',
                               )}
                             </Typography>
                           </TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenSummary(true);
-                              }}
-                            >
-                              {tag.summary ? '확인' : '작성'}
-                            </Button>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenDescription(true);
-                              }}
-                            >
-                              {tag.description ? '확인' : '작성'}
-                            </Button>
-                          </TableCell>
+
                           <TableCell>
                             <IconButton
                               onClick={() => {
-                                setTarget(tag);
-                                setOpenUpdateTag(true);
+                                setTarget(category);
+                                setOpenUpdate(true);
                               }}
                             >
                               <BuildIcon fontSize="small" />
@@ -552,7 +432,7 @@ const Keywords: React.FC = () => {
                             <IconButton
                               onClick={() => {
                                 setOpenDeleteTag(true);
-                                setTarget(tag);
+                                setTarget(category);
                               }}
                             >
                               <DeleteIcon fontSize="small" />
@@ -567,7 +447,7 @@ const Keywords: React.FC = () => {
             </Scrollbar>
             <TablePagination
               component="div"
-              count={tags.length}
+              count={categories.length}
               onPageChange={handlePage}
               page={page}
               rowsPerPage={rowsPerPage}
@@ -575,56 +455,30 @@ const Keywords: React.FC = () => {
           </Card>
 
           {/* Dialogs */}
-          {openUpdateTag && targetTag && (
-            <KeywordEditDialog
-              open={openUpdateTag}
+          {openUpdate && (
+            <CategoryEditDialog
+              open={openUpdate}
               setClose={() => {
-                setOpenUpdateTag(false);
+                setOpenUpdate(false);
                 setTarget(null);
               }}
-              tag={targetTag}
-              updateTag={updateTag}
+              category={targetCategory}
+              update={handleUpdate}
               reload={getList}
             />
           )}
 
-          {openSummary && targetTag && (
-            <EditTextDialog
-              open={openSummary}
-              setOpen={setOpenSummary}
-              onSubmit={(_text) =>
-                updateTag(targetTag.id, { summary: _text })
-              }
-              title={'요약문 변경'}
-              description={'요약문을 변경합니다.'}
-              defaultText={targetTag.summary}
-              isMultiLine={true}
-            />
-          )}
-          {openDescription && targetTag && (
-            <EditTextDialog
-              open={openDescription}
-              setOpen={setOpenDescription}
-              onSubmit={(_text) =>
-                updateTag(targetTag.id, { description: _text })
-              }
-              title={'요약문 변경'}
-              description={'요약문을 변경합니다.'}
-              defaultText={targetTag.description}
-              isMultiLine={true}
-            />
-          )}
           <Dialog
             aria-labelledby="ConfirmModal"
             open={openDeleteTag}
             onClose={() => setOpenDeleteTag(false)}
           >
             <ConfirmModal
-              title={'키워드 삭제'}
-              content={'해당 키워드를 삭제하시겠습니까?'}
+              title={'카테고리 삭제'}
+              content={'해당 카테고리를 삭제하시겠습니까?'}
               confirmTitle={'삭제'}
               type={'ERROR'}
-              handleOnClick={() => handleDelete(targetTag.id)}
+              handleOnClick={() => handleDelete(targetCategory.id)}
               handleOnCancel={() => {
                 setOpenDeleteTag(false);
                 setTarget(null);
@@ -637,4 +491,4 @@ const Keywords: React.FC = () => {
   );
 };
 
-export default Keywords;
+export default CategoryPage;

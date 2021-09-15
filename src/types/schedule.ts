@@ -28,7 +28,13 @@ export interface Stock {
 export interface Category {
   id: number;
   name: string;
+  isDeleted: boolean;
+  created_at: string;
+  updated_at: string;
+
+  // 자동완성을 위한 property
   isNew?: boolean;
+  inputValue?: string;
 }
 
 export enum Priority {

@@ -58,7 +58,7 @@ const sections = [
       },
       {
         title: '키워드',
-        path: '/dashboard/keyword',
+        path: '/dashboard/keywords',
         icon: <StarIcon fontSize="small" />,
       },
       {

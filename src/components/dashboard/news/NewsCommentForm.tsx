@@ -62,7 +62,7 @@ const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
     useAsync<Tag[]>(getTagList, [tagInput.current], []);
 
   const [{ data: categoryList, loading: categoryLoading }] = useAsync<
-    Tag[]
+    Category[]
   >(APICategory.getList, [], []);
 
   const [{ data: commentList }, refetchComment] = useAsync<
