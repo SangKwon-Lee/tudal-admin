@@ -68,7 +68,7 @@ const Keywords: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const scrollRef = useRef(null);
-  const tagsCreateRef = useRef(null);
+  const tagCreateRef = useRef(null);
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [newKeyword, setNewKeyword] = useState<Tag>(null);
@@ -90,13 +90,16 @@ const Keywords: React.FC = () => {
   const rowsPerPage = 25;
 
   const getTagList = useCallback(() => {
-    return APITag.getList(search, true);
-  }, [search]);
+    const value = tagCreateRef.current
+      ? tagCreateRef.current.value
+      : '';
+    return APITag.getList(value, true);
+  }, []);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [search], []);
 
-  const handleTagChange = _.debounce(refetchTag, 300);
+  const handleTagInput = _.debounce(refetchTag, 300);
 
   const getList = useCallback(async () => {
     setLoading(true);
@@ -169,11 +172,11 @@ const Keywords: React.FC = () => {
     setLoading(true);
 
     try {
-      if (!tagsCreateRef.current.value) {
+      if (!tagCreateRef.current.value) {
         toast.error('키워드를 확인해 주세요');
         return;
       }
-      const values = tagsCreateRef.current.value.split('\n');
+      const values = tagCreateRef.current.value.split('\n');
 
       const success = [];
       const errors = [];
@@ -187,7 +190,7 @@ const Keywords: React.FC = () => {
       }
       success.forEach((success) => toast.success(success));
       errors.forEach((error) => toast.error(error));
-      tagsCreateRef.current.value = '';
+      tagCreateRef.current.value = '';
     } catch (error) {
       toast.error('키워드를 다시 확인해주세요');
     } finally {
@@ -374,7 +377,7 @@ const Keywords: React.FC = () => {
                       style={{ width: 500, marginRight: 10 }}
                       multiline
                       rows={3}
-                      inputRef={tagsCreateRef}
+                      inputRef={tagCreateRef}
                       helperText="띄어쓰기로 나누어 태그를 등록해주세요."
                     />
                     <Button
@@ -442,8 +445,9 @@ const Keywords: React.FC = () => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          onChange={handleTagChange}
                           fullWidth
+                          inputRef={tagCreateRef}
+                          onChange={handleTagInput}
                           label="키워드 추가"
                           name="keyword"
                           variant="outlined"

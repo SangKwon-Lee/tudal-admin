@@ -61,6 +61,7 @@ const CategoryPage: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const scrollRef = useRef(null);
+  const categoryCreateRef = useRef(null);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState<Category>(null);
@@ -77,15 +78,18 @@ const CategoryPage: React.FC = () => {
   const rowsPerPage = 25;
 
   const getTagList = useCallback(() => {
-    return APICategory.getList(search);
-  }, [search]);
+    const value = categoryCreateRef.current
+      ? categoryCreateRef.current.value
+      : '';
+    return APICategory.getList(value);
+  }, []);
 
   const [
     { data: categoryList, loading: categoryListLoading },
     refetchCategory,
-  ] = useAsync<Category[]>(getTagList, [search], []);
+  ] = useAsync<Category[]>(getTagList, [], []);
 
-  const handleTagChange = _.debounce(refetchCategory, 300);
+  const handleCreateInput = _.debounce(refetchCategory, 300);
 
   const getList = useCallback(async () => {
     setLoading(true);
@@ -105,7 +109,10 @@ const CategoryPage: React.FC = () => {
     setLoading(true);
     try {
       const start = (page + 1) * rowsPerPage; //rows per page
-      const { data, status } = await APICategory.getList(search);
+      const { data, status } = await APICategory.getList(
+        search,
+        start,
+      );
       if (status === 200) {
         setCategories((prev) => [...prev, ...data]);
         setLoadMore(false);
@@ -309,11 +316,12 @@ const CategoryPage: React.FC = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    onChange={handleTagChange}
                     fullWidth
                     label="카테고리 추가"
                     name="category"
                     variant="outlined"
+                    onChange={handleCreateInput}
+                    inputRef={categoryCreateRef}
                     InputProps={{
                       ...params.InputProps,
                       endAdornment: (
