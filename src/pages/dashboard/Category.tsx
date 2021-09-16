@@ -44,6 +44,7 @@ import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import * as _ from 'lodash';
 import useAsync from 'src/hooks/useAsync';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import SearchIcon from '../../icons/Search';
 import { APICategory } from 'src/lib/api';
@@ -161,17 +162,22 @@ const CategoryPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (category) => {
+  const handleDelete = async (category: Category) => {
     try {
       if (user.role.type === IRoleType.Author) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
-      } else if (category.isDeleted) {
-        toast.error('이미 삭제된 카테고리 입니다.');
       } else {
-        const { data } = await APICategory.remove(category.id);
-        if (data.isDeleted) {
+        const { status, data } = await APICategory.update(
+          category.id,
+          {
+            isDeleted: !category.isDeleted,
+          },
+        );
+        if (status === 200) {
+          toast.success(
+            data.isDeleted ? '삭제되었습니다.' : '복구되었습니다.',
+          );
           reload();
-          toast.success('삭제되었습니다.');
         }
       }
     } catch (error) {
@@ -440,7 +446,11 @@ const CategoryPage: React.FC = () => {
                                 setTarget(category);
                               }}
                             >
-                              <DeleteIcon fontSize="small" />
+                              {category.isDeleted ? (
+                                <RefreshIcon fontSize="small" />
+                              ) : (
+                                <DeleteIcon fontSize="small" />
+                              )}
                             </IconButton>
                           </TableCell>
                         </TableRow>
@@ -473,23 +483,35 @@ const CategoryPage: React.FC = () => {
             />
           )}
 
-          <Dialog
-            aria-labelledby="ConfirmModal"
-            open={openDeleteTag}
-            onClose={() => setOpenDeleteTag(false)}
-          >
-            <ConfirmModal
-              title={'카테고리 삭제'}
-              content={'해당 카테고리를 삭제하시겠습니까?'}
-              confirmTitle={'삭제'}
-              type={'ERROR'}
-              handleOnClick={() => handleDelete(targetCategory)}
-              handleOnCancel={() => {
-                setOpenDeleteTag(false);
-                setTarget(null);
-              }}
-            />
-          </Dialog>
+          {targetCategory && (
+            <Dialog
+              aria-labelledby="ConfirmModal"
+              open={openDeleteTag}
+              onClose={() => setOpenDeleteTag(false)}
+            >
+              <ConfirmModal
+                title={
+                  targetCategory.isDeleted
+                    ? '카테고리 복구'
+                    : '카테고리 삭제'
+                }
+                content={
+                  targetCategory.isDeleted
+                    ? '해당 카테고리를 복구하시겠습니까'
+                    : '해당 카테고리를 삭제하시겠습니까'
+                }
+                confirmTitle={
+                  targetCategory.isDeleted ? '복구' : '삭제'
+                }
+                type={targetCategory.isDeleted ? 'CONFIRM' : 'ERROR'}
+                handleOnClick={() => handleDelete(targetCategory)}
+                handleOnCancel={() => {
+                  setOpenDeleteTag(false);
+                  setTarget(null);
+                }}
+              />
+            </Dialog>
+          )}
         </Container>
       </Box>
     </>

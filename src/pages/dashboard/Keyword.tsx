@@ -48,6 +48,7 @@ import ArrowRightIcon from 'src/icons/ArrowRight';
 import useAsync from 'src/hooks/useAsync';
 import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import AliasIcon from '@material-ui/icons/ShoppingBag';
 import SearchIcon from '../../icons/Search';
@@ -218,16 +219,20 @@ const Keywords: React.FC = () => {
     }
   };
 
-  const handleDelete = async (tag) => {
+  const handleDelete = async (tag: Tag) => {
     try {
       if (user.role.type !== IRoleType.AUTHENTICATED) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
-      } else if (tag.isDeleted) {
-        toast.error('이미 삭제된 태그입니다.');
       } else {
-        await APITag.update(tag.id, { isDeleted: true });
-        reload();
-        toast.success('삭제되었습니다.');
+        const { status, data } = await APITag.update(tag.id, {
+          isDeleted: !tag.isDeleted,
+        });
+        if (status === 200) {
+          toast.success(
+            data.isDeleted ? '삭제되었습니다.' : '복구되었습니다.',
+          );
+          reload();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -628,7 +633,11 @@ const Keywords: React.FC = () => {
                                 setTarget(tag);
                               }}
                             >
-                              <DeleteIcon fontSize="small" />
+                              {tag.isDeleted ? (
+                                <RefreshIcon fontSize="small" />
+                              ) : (
+                                <DeleteIcon fontSize="small" />
+                              )}
                             </IconButton>
                           </TableCell>
                         </TableRow>
@@ -699,23 +708,31 @@ const Keywords: React.FC = () => {
               isMultiLine={true}
             />
           )}
-          <Dialog
-            aria-labelledby="ConfirmModal"
-            open={openDeleteTag}
-            onClose={() => setOpenDeleteTag(false)}
-          >
-            <ConfirmModal
-              title={'키워드 삭제'}
-              content={'해당 키워드를 삭제하시겠습니까?'}
-              confirmTitle={'삭제'}
-              type={'ERROR'}
-              handleOnClick={() => handleDelete(targetTag)}
-              handleOnCancel={() => {
-                setOpenDeleteTag(false);
-                setTarget(null);
-              }}
-            />
-          </Dialog>
+          {targetTag && (
+            <Dialog
+              aria-labelledby="ConfirmModal"
+              open={openDeleteTag}
+              onClose={() => setOpenDeleteTag(false)}
+            >
+              <ConfirmModal
+                title={
+                  targetTag.isDeleted ? '키워드 복구' : '키워드 삭제'
+                }
+                content={
+                  targetTag.isDeleted
+                    ? '해당 키워드를 복구하시겠습니까'
+                    : '해당 키워드를 삭제하시겠습니까'
+                }
+                confirmTitle={targetTag.isDeleted ? '복구' : '삭제'}
+                type={targetTag.isDeleted ? 'CONFIRM' : 'ERROR'}
+                handleOnClick={() => handleDelete(targetTag)}
+                handleOnCancel={() => {
+                  setOpenDeleteTag(false);
+                  setTarget(null);
+                }}
+              />
+            </Dialog>
+          )}
         </Container>
       </Box>
     </>
