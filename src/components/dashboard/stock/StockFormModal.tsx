@@ -821,9 +821,9 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                             label="발행일"
                             name="publishDate"
                             type="date"
-                            value={newsManualForm.publishDate.format(
-                              'YYYY-MM-DD',
-                            )}
+                            value={dayjs(
+                              newsManualForm.publishDate,
+                            ).format('YYYY-MM-DD')}
                             required
                             onChange={handleFormChange}
                             variant="outlined"
