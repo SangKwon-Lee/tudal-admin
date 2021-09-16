@@ -16,10 +16,10 @@ export async function getList(
     q._q = search;
   }
   if (startDate) {
-    q.startDate = startDate;
+    q._startDate = startDate;
   }
   if (endDate) {
-    q.endDate = endDate;
+    q._endDate = endDate;
   }
   if (start) {
     q._start = start;
