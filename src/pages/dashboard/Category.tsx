@@ -32,8 +32,6 @@ import {
   Typography,
   Button,
   CircularProgress,
-  FormControlLabel,
-  Switch,
   Dialog,
 } from '@material-ui/core';
 
@@ -44,20 +42,17 @@ import ChevronRightIcon from 'src/icons/ChevronRight';
 import { IRoleType } from 'src/types/user';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import * as _ from 'lodash';
-import ArrowRightIcon from 'src/icons/ArrowRight';
 import useAsync from 'src/hooks/useAsync';
-import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import SearchIcon from '../../icons/Search';
 import { APICategory } from 'src/lib/api';
 import { Category } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
-import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog';
 
-import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
-import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
+import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import Label from 'src/components/widgets/Label';
 
 const customFilter = createFilterOptions<any>();
 
@@ -65,7 +60,6 @@ const CategoryPage: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const scrollRef = useRef(null);
-  const tagsCreateRef = useRef(null);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState<Category>(null);
@@ -77,9 +71,6 @@ const CategoryPage: React.FC = () => {
 
   // Dialogs
   const [openUpdate, setOpenUpdate] = useState<boolean>(false);
-  const [openSummary, setOpenSummary] = useState<boolean>(false);
-  const [openDescription, setOpenDescription] =
-    useState<boolean>(false);
   const [openDeleteTag, setOpenDeleteTag] = useState<boolean>(false);
 
   const rowsPerPage = 25;
@@ -170,12 +161,14 @@ const CategoryPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (category) => {
     try {
       if (user.role.type === IRoleType.Author) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
+      } else if (category.isDeleted) {
+        toast.error('이미 삭제된 카테고리 입니다.');
       } else {
-        const { data } = await APICategory.remove(id);
+        const { data } = await APICategory.remove(category.id);
         if (data.isDeleted) {
           reload();
           toast.success('삭제되었습니다.');
@@ -390,6 +383,7 @@ const CategoryPage: React.FC = () => {
                       <TableCell>id</TableCell>
                       <TableCell>카테고리</TableCell>
                       <TableCell>최종수정일시</TableCell>
+                      <TableCell>상태</TableCell>
                       <TableCell>수정</TableCell>
                       <TableCell>삭제</TableCell>
                     </TableRow>
@@ -416,6 +410,17 @@ const CategoryPage: React.FC = () => {
                                 'YYYY-MM-DD',
                               )}
                             </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Label
+                              color={
+                                category.isDeleted
+                                  ? 'error'
+                                  : 'success'
+                              }
+                            >
+                              {category.isDeleted ? '삭제' : '정상'}
+                            </Label>{' '}
                           </TableCell>
 
                           <TableCell>
@@ -478,7 +483,7 @@ const CategoryPage: React.FC = () => {
               content={'해당 카테고리를 삭제하시겠습니까?'}
               confirmTitle={'삭제'}
               type={'ERROR'}
-              handleOnClick={() => handleDelete(targetCategory.id)}
+              handleOnClick={() => handleDelete(targetCategory)}
               handleOnCancel={() => {
                 setOpenDeleteTag(false);
                 setTarget(null);

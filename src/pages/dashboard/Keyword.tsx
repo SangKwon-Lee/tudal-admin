@@ -59,6 +59,7 @@ import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialo
 import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect';
+import Label from 'src/components/widgets/Label';
 
 const customFilter = createFilterOptions<any>();
 
@@ -217,12 +218,14 @@ const Keywords: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (tag) => {
     try {
       if (user.role.type !== IRoleType.AUTHENTICATED) {
         toast.error('삭제는 관리자 권한이 필요합니다.');
+      } else if (tag.isDeleted) {
+        toast.error('이미 삭제된 태그입니다.');
       } else {
-        await APITag.update(id, { isDeleted: true });
+        await APITag.update(tag.id, { isDeleted: true });
         reload();
         toast.success('삭제되었습니다.');
       }
@@ -521,6 +524,7 @@ const Keywords: React.FC = () => {
                       <TableCell>최종수정일시</TableCell>
                       <TableCell>요약문</TableCell>
                       <TableCell>설명문</TableCell>
+                      <TableCell>상태</TableCell>
                       <TableCell>Alias</TableCell>
                       <TableCell>수정</TableCell>
                       <TableCell>삭제</TableCell>
@@ -586,6 +590,16 @@ const Keywords: React.FC = () => {
                             >
                               {tag.description ? '확인' : '작성'}
                             </Button>
+                          </TableCell>
+
+                          <TableCell>
+                            <Label
+                              color={
+                                tag.isDeleted ? 'error' : 'success'
+                              }
+                            >
+                              {tag.isDeleted ? '삭제' : '정상'}
+                            </Label>{' '}
                           </TableCell>
                           <TableCell>
                             <IconButton
@@ -695,7 +709,7 @@ const Keywords: React.FC = () => {
               content={'해당 키워드를 삭제하시겠습니까?'}
               confirmTitle={'삭제'}
               type={'ERROR'}
-              handleOnClick={() => handleDelete(targetTag.id)}
+              handleOnClick={() => handleDelete(targetTag)}
               handleOnCancel={() => {
                 setOpenDeleteTag(false);
                 setTarget(null);

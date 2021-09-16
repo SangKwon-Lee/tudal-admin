@@ -59,7 +59,7 @@ const CategoryEditDialog: React.FC<CategoryEditDialogProps> = ({
       onClose={setClose}
       aria-labelledby="form-dialog-title"
     >
-      <DialogTitle id="form-dialog-title">키워드 수정</DialogTitle>
+      <DialogTitle id="form-dialog-title">카테고리 수정</DialogTitle>
       <DialogContent>
         <DialogContentText>
           "{category.name}"을 수정합니다.

@@ -6,6 +6,7 @@ export interface Tag {
   created_at: string;
   updated_at: string;
   alias?: ITagAlias[];
+  isDeleted: boolean;
 
   // 자동완성을 위한 property
   isNew?: boolean;
