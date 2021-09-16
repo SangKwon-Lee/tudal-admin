@@ -23,7 +23,6 @@ import { ScheduleForm } from 'src/components/dashboard/schedule';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import { ScheduleListTable } from '../../components/dashboard/schedule';
 import useSettings from 'src/hooks/useSettings';
-import useAsync from 'src/hooks/useAsync';
 import { APISchedule } from 'src/lib/api';
 import { AxiosError } from 'axios';
 import * as _ from 'lodash';
@@ -152,6 +151,8 @@ const ScheduleList: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(50);
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(false);
   const [targetModify, setTargetModify] = useState<Schedule>(null);
   const [scheduleState, dispatch] = useReducer(
@@ -198,6 +199,8 @@ const ScheduleList: React.FC = () => {
       const { data } = await APISchedule.getList(
         search,
         sort,
+        startDate,
+        endDate,
         (page + 1) * limit,
       );
       dispatch({
@@ -206,13 +209,20 @@ const ScheduleList: React.FC = () => {
       });
       setShouldUpdate(false);
     } catch (error) {}
-  }, [page, limit, search, sort]);
+  }, [page, limit, search, sort, startDate, endDate]);
 
-  const realodSchedule = useCallback(async () => {
+  const handleDate = (startDate, endDate) => {
+    startDate && setStartDate(startDate);
+    endDate && setEndDate(endDate);
+  };
+
+  const reloadSchedule = useCallback(async () => {
     try {
       const { data } = await APISchedule.getList(
         search,
         sort,
+        startDate,
+        endDate,
         0,
         (page + 2) * limit,
       );
@@ -223,7 +233,7 @@ const ScheduleList: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [page, limit, search, sort]);
+  }, [page, limit, search, sort, startDate, endDate]);
 
   useEffect(() => {
     shouldUpdate && addSchedule();
@@ -234,11 +244,15 @@ const ScheduleList: React.FC = () => {
   }, [getSchedule, mounted]);
 
   useEffect(() => {
+    reloadSchedule();
+  }, [reloadSchedule]);
+
+  useEffect(() => {
     scrollRef &&
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [page]);
 
-  const reload = () => realodSchedule();
+  const reload = () => reloadSchedule();
 
   const postDelete = async (id: number) => {
     try {
@@ -321,19 +335,22 @@ const ScheduleList: React.FC = () => {
             {loading && <LinearProgress />}
             <ScheduleListTable
               schedules={list}
-              reload={reload}
               search={search}
               page={page}
               limit={limit}
               sortOptions={sortOptions}
               sort={sort}
+              scrollRef={scrollRef}
+              reload={reload}
+              startDate={startDate}
+              endDate={endDate}
+              handleDate={handleDate}
               handleSort={setSort}
               handlePage={handlePage}
               handleLimit={handleLimit}
-              setSearch={handleSearch}
               postDelete={postDelete}
+              setSearch={handleSearch}
               setTargetModify={setTargetModify}
-              scrollRef={scrollRef}
             />
           </Box>
         </Container>

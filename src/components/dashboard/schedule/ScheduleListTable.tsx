@@ -30,6 +30,7 @@ import Label from '../../widgets/Label';
 import SearchIcon from '../../../icons/Search';
 import { Priority, Schedule } from '../../../types/schedule';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
 
 const getPriorityLabel = (priority) => {
   const scale =
@@ -63,8 +64,11 @@ interface ScheduleListTableProps {
   limit: number;
   search: string;
   sort: string;
+  startDate: string;
+  endDate: string;
   sortOptions: Array<{ value: string; label: string }>;
   scrollRef: RefObject<HTMLDivElement>;
+  handleDate: (startDate, endDate) => void;
   handleSort: (event: any) => void;
   handlePage: (event: any, newPage: number) => void;
   handleLimit: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -85,14 +89,16 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
 ) => {
   const {
     schedules,
-    postDelete,
-    setSearch,
-    setTargetModify,
     scrollRef,
     page,
     limit,
-    sort,
     sortOptions,
+    startDate,
+    endDate,
+    handleDate,
+    postDelete,
+    setSearch,
+    setTargetModify,
     handleSort,
     handlePage,
     handleLimit,
@@ -128,7 +134,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
             sx={{
               m: 1,
               maxWidth: '100%',
-              width: 500,
+              width: 400,
             }}
           >
             <TextField
@@ -171,6 +177,26 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               })}
             </TextField>
           </Box>
+
+          <TextField
+            id="date"
+            label="시작일"
+            type="date"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(e) => handleDate(e.target.value, null)}
+          />
+
+          <TextField
+            id="date"
+            label="종료일"
+            type="date"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(e) => handleDate(null, e.target.value)}
+          />
         </Box>
         <Box>
           <Table>
