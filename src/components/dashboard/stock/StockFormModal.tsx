@@ -89,6 +89,7 @@ const newsManualFormInit = {
   publishDate: dayjs(),
   summarized: '',
 };
+
 const StockForm: React.FC<StockFormProps> = (props) => {
   const { user } = useAuth();
   const tagInput = useRef(null);
@@ -203,8 +204,15 @@ const StockForm: React.FC<StockFormProps> = (props) => {
   const createAndSelectByHand = async () => {
     try {
       setLoading(true);
+
+      const _date = dayjs(newsManualForm.publishDate);
+      const _newsManualForm = {
+        ...newsManualForm,
+        publishDate: _date,
+      };
+
       const { data: news } = await APINews.createAndSelectByHand(
-        newsManualForm,
+        _newsManualForm,
         user.id,
       );
 
@@ -385,6 +393,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
               }}
             >
               <Divider sx={{ mb: 2 }} />
+
               {stock.tags &&
                 stock.tags.map((tag, i) => {
                   return (
@@ -695,7 +704,7 @@ const StockForm: React.FC<StockFormProps> = (props) => {
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            {dayjs(item.updated_at).format(
+                            {dayjs(item.publishDate).format(
                               'YYYY-MM-DD HH:mm',
                             )}
                           </TableCell>
