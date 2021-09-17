@@ -1,10 +1,9 @@
-import { useState, useRef, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -30,7 +29,6 @@ import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
 import ChatIcon from '../../../icons/ChatAlt';
 import type { Hiddenbox } from '../../../types/hiddenbox';
-import getInitials from '../../../utils/getInitials';
 import Scrollbar from '../../layout/Scrollbar';
 import axios, { CMSURL, apiServer } from '../../../lib/axios';
 import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
@@ -52,7 +50,11 @@ type Sort =
   | 'updated_at|desc'
   | 'updated_at|asc'
   | 'orders|desc'
-  | 'orders|asc';
+  | 'orders|asc'
+  | 'price|desc'
+  | 'price|asc'
+  | 'likes|desc'
+  | 'likes|asc';
 
 interface SortOption {
   value: Sort;
@@ -98,6 +100,22 @@ const sortOptions: SortOption[] = [
   {
     label: '판매량 최저',
     value: 'orders|asc',
+  },
+  {
+    label: '가격 높은순',
+    value: 'price|desc',
+  },
+  {
+    label: '가격 낮은순',
+    value: 'price|asc',
+  },
+  {
+    label: '좋아요 높은순',
+    value: 'likes|desc',
+  },
+  {
+    label: '좋아요 낮은순',
+    value: 'likes|asc',
   },
 ];
 
@@ -218,8 +236,9 @@ const applySort = (
     'asc' | 'desc',
   ];
   const comparator = getComparator(order, orderBy);
-  const stabilizedThis = hiddenboxes.map((el, index) => [el, index]);
 
+  const stabilizedThis = hiddenboxes.map((el, index) => [el, index]);
+  console.log(stabilizedThis);
   stabilizedThis.sort((a, b) => {
     // @ts-ignore
     const newOrder = comparator(a[0], b[0]);
@@ -527,7 +546,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               value={sort}
               variant="outlined"
             >
-              {sortOptions.map((option) => (
+              {sortOptions.map((option, index) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -540,8 +559,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
             <Box
               sx={{
                 backgroundColor: 'background.paper',
-                mt: '6px',
-                position: 'absolute',
+                // position: 'absolute',
                 px: '4px',
                 width: '100%',
                 zIndex: 2,
@@ -589,7 +607,9 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                   <TableCell>상품명</TableCell>
                   <TableCell>판매일</TableCell>
                   <TableCell>공개일</TableCell>
+                  <TableCell>가격</TableCell>
                   <TableCell>판매량</TableCell>
+                  <TableCell>좋아요</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -597,7 +617,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 {paginatedHiddenboxes.map((hiddenbox) => {
                   const isHiddenboxSelected =
                     selectedHiddenboxes.includes(hiddenbox.id);
-
                   return (
                     <TableRow
                       hover
@@ -624,7 +643,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                             display: 'flex',
                           }}
                         >
-                          <Box sx={{ ml: 1 }}>
+                          <Box sx={{ ml: 1, maxWidth: '150px' }}>
                             <Link
                               color="inherit"
                               component={RouterLink}
@@ -643,10 +662,14 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                           </Box>
                         </Box>
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        style={{
+                          maxWidth: '160px',
+                        }}
+                      >
                         {`${moment(hiddenbox.startDate).format(
                           'YYYY년 M월 D일 HH:mm',
-                        )} - ${moment(hiddenbox.endDate).format(
+                        )}-${moment(hiddenbox.endDate).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}`}
                       </TableCell>
@@ -655,7 +678,9 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
+                      <TableCell>가격 얼마</TableCell>
                       <TableCell>{hiddenbox.orders}</TableCell>
+                      <TableCell>좋아요 수</TableCell>
                       <TableCell align="right">
                         <IconButton
                           onClick={() => {
