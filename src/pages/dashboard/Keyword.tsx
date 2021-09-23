@@ -12,6 +12,8 @@ import { Helmet } from 'react-helmet-async';
 import dayjs from 'dayjs';
 
 import {
+  FormLabel,
+  Checkbox,
   Tooltip,
   Box,
   Container,
@@ -69,8 +71,12 @@ import { errorMessage } from 'src/common/error';
 import { isStringEmpty } from 'src/utils/funcs';
 
 const customFilter = createFilterOptions<any>();
+interface ISortOption {
+  label: string;
+  value: string;
+}
 
-const sortOptions: { label: string; value: string }[] = [
+const sortOptions: ISortOption[] = [
   {
     label: '기본',
     value: 'id:asc',
@@ -85,6 +91,19 @@ const sortOptions: { label: string; value: string }[] = [
   },
 ];
 
+const filterOptions = [
+  {
+    label: '요약문',
+    name: 'summary_null',
+    value: false,
+  },
+  {
+    label: '설명문',
+    name: 'description_null',
+    value: false,
+  },
+];
+
 const Keywords: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
@@ -92,13 +111,14 @@ const Keywords: React.FC = () => {
   const tagCreateRef = useRef(null);
 
   const [tags, setTags] = useState<Tag[]>([]);
-
-  const [sort, setSort] = useState(sortOptions[0].value);
   const [newKeyword, setNewKeyword] = useState<Tag>(null);
-  const [isMultiCreate, setMultiCreate] = useState<boolean>(false);
   const [targetTag, setTarget] = useState<Tag>(null);
   const [search, setSearch] = useState<string>('');
+
   const [page, setPage] = useState<number>(0);
+  const [sort, setSort] = useState<string>(sortOptions[0].value);
+  const [filter, setFilter] = useState(filterOptions);
+  const [isMultiCreate, setMultiCreate] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadMore, setLoadMore] = useState<boolean>(false);
 
@@ -116,7 +136,7 @@ const Keywords: React.FC = () => {
     const value = tagCreateRef.current
       ? tagCreateRef.current.value
       : '';
-    return APITag.getList(value, sort, true);
+    return APITag.getList(value, sort, filter, true);
   }, []);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
@@ -130,10 +150,10 @@ const Keywords: React.FC = () => {
       const { data, status } = await APITag.getList(
         search,
         sort,
+        filter,
         true,
       );
       if (status === 200) {
-        console.log('here');
         setTags(data);
       }
     } catch (error) {
@@ -141,7 +161,7 @@ const Keywords: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, sort]);
+  }, [search, sort, filter]);
 
   const loadMoreList = useCallback(async () => {
     setLoading(true);
@@ -150,6 +170,7 @@ const Keywords: React.FC = () => {
       const { data, status } = await APITag.getList(
         search,
         sort,
+        filter,
         true,
         start,
       );
@@ -162,7 +183,7 @@ const Keywords: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, page, sort]);
+  }, [search, page, sort, filter]);
 
   const handlePage = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -321,7 +342,18 @@ const Keywords: React.FC = () => {
   const handleSort = (event: ChangeEvent<HTMLInputElement>): void => {
     setSort(event.target.value);
   };
+  const handleFilter = (index: number, status: boolean): void => {
+    setFilter((prev) => {
+      const temp = [...prev];
+      temp[index].value = status;
+      console.log(temp);
+      return temp;
+    });
+  };
 
+  {
+    console.log('11', filter);
+  }
   useEffect(() => {
     getList();
   }, [getList]);
@@ -568,12 +600,13 @@ const Keywords: React.FC = () => {
                 />
               </Box>
               <TextField
-                label="Sort By"
+                label="정렬"
                 name="sort"
                 select
                 SelectProps={{ native: true }}
                 variant="outlined"
                 onChange={handleSort}
+                style={{ marginLeft: '5px', marginRight: '5px' }}
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -581,6 +614,38 @@ const Keywords: React.FC = () => {
                   </option>
                 ))}
               </TextField>
+              {filterOptions.map((filter, index) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={filter.value}
+                        color="primary"
+                        name={filter.label}
+                        onChange={() =>
+                          handleFilter(index, !filter.value)
+                        }
+                      />
+                    }
+                    label={
+                      <>
+                        <Typography
+                          color="textPrimary"
+                          variant="body1"
+                        >
+                          {filter.label}
+                        </Typography>
+                        <Typography
+                          color="textSecondary"
+                          variant="caption"
+                        >
+                          (작성되지 않은)
+                        </Typography>
+                      </>
+                    }
+                  />
+                );
+              })}
             </Box>
             {loading && (
               <div data-testid="keyword-list-loading">
@@ -740,13 +805,13 @@ const Keywords: React.FC = () => {
                             </TableCell>
                             <TableCell>
                               <Tooltip
-                                title={tag.alias?.map((el) => {
+                                title={tag.alias?.map((alias) => {
                                   return (
                                     <Chip
-                                      label={el.aliasName}
                                       color="primary"
+                                      label={alias.aliasName}
                                       style={{ marginLeft: 3 }}
-                                    ></Chip>
+                                    />
                                   );
                                 })}
                                 placement="bottom"
