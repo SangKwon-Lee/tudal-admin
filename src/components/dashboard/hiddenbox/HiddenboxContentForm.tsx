@@ -103,6 +103,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
       if (editorRef.current) {
         console.log(editorRef.current);
         const contents = log();
+
         // const contents = editorRef.current
         //   .getInstance()
         //   .getMarkdown();
@@ -173,6 +174,8 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
             initialValue={values.contents}
             onInit={(evt, editor) => (editorRef.current = editor)}
             init={{
+              //@ts-ignore
+              selector: 'textarea',
               language: 'ko_KR',
               height: 500,
               menubar: false,

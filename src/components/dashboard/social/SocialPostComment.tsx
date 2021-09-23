@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -7,13 +7,14 @@ import {
   Link,
   Typography,
   IconButton,
+  Dialog,
   TextField,
   Button,
+  Card,
 } from '@material-ui/core';
 import moment from 'moment';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
-
 interface SocialPostCommentProps {
   commentId?: number;
   authorAvatar: string;
@@ -41,6 +42,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
 
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
   const [updateMessage, setUpdateMessage] = useState<string>(message);
+  const [open, setOpen] = useState<boolean>(false);
 
   const _handleUpdateComment = () => {
     handleUpdateComment(commentId, updateMessage);
@@ -63,7 +65,6 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           ml: 2,
           p: 2,
           pt: 0,
-          // minWidth: '300px',
         }}
       >
         <Box
@@ -88,7 +89,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           <IconButton
             color={'default'}
             component={'button'}
-            onClick={() => handleDeleteComment(commentId)}
+            onClick={() => setOpen(true)}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
@@ -107,6 +108,9 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
         ) : (
           <>
             <TextField
+              sx={{
+                width: '100%',
+              }}
               value={updateMessage}
               multiline
               onChange={(e) => setUpdateMessage(e.target.value)}
@@ -116,6 +120,43 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           </>
         )}
       </Box>
+      <Dialog
+        aria-labelledby="ConfirmModal"
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <Card
+          sx={{
+            width: '300px',
+            display: 'flex',
+            padding: 3,
+            flexDirection: 'column',
+          }}
+        >
+          <Typography>정말 삭제하시겠습니까?</Typography>
+          <Box sx={{ mt: 3, alignSelf: 'end' }}>
+            <Button
+              color="primary"
+              sx={{ mr: 2 }}
+              variant="outlined"
+              onClick={() => setOpen(false)}
+            >
+              취소
+            </Button>
+            <Button
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'error.dark',
+                },
+              }}
+              variant="contained"
+              onClick={() => handleDeleteComment(commentId)}
+            >
+              삭제
+            </Button>
+          </Box>
+        </Card>
+      </Dialog>
     </Box>
   );
 };

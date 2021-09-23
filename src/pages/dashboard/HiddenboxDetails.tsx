@@ -25,7 +25,7 @@ import useMounted from 'src/hooks/useMounted';
 
 const tabs = [
   { label: '상품내용', value: 'details' },
-  { label: '구매내역', value: 'payments' },
+  // { label: '구매내역', value: 'payments' },
 ];
 
 const HiddenboxDetails: FC = () => {
@@ -34,6 +34,7 @@ const HiddenboxDetails: FC = () => {
   const [hiddenbox, setHiddenbox] = useState<Hiddenbox | null>(null);
   const [currentTab, setCurrentTab] = useState<string>('details');
   const { hiddenboxId } = useParams();
+  const [orders, setOrders] = useState(0);
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
@@ -44,6 +45,13 @@ const HiddenboxDetails: FC = () => {
       const response = await axios.get<Hiddenbox>(
         `/hiddenboxes/${hiddenboxId}`,
       );
+      const salesCount = await axios.get(
+        `/my-hiddenboxes/count?hiddenbox=${hiddenboxId}`,
+      );
+      if (salesCount.status === 200) {
+        setOrders(salesCount.data);
+      }
+
       console.log('[HiddenboxDetail', response.data);
       if (mounted) {
         setHiddenbox(response.data);
@@ -67,6 +75,7 @@ const HiddenboxDetails: FC = () => {
   if (!hiddenbox) {
     return null;
   }
+  console.log(orders);
 
   return (
     <>
@@ -94,21 +103,21 @@ const HiddenboxDetails: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard"
+                  to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
-                  대시보드
+                  히든박스
                 </Link>
-                <Link
+                {/* <Link
                   color="textPrimary"
                   component={RouterLink}
                   to="/dashboard"
                   variant="subtitle2"
                 >
-                  컨텐츠관리
-                </Link>
+                  상세보기
+                </Link> */}
                 <Typography color="textSecondary" variant="subtitle2">
-                  히든박스
+                  상세보기
                 </Typography>
               </Breadcrumbs>
             </Grid>
@@ -156,7 +165,10 @@ const HiddenboxDetails: FC = () => {
                   xl={settings.compact ? 12 : 8}
                   xs={12}
                 >
-                  <HiddenboxProductDetails hiddenbox={hiddenbox} />
+                  <HiddenboxProductDetails
+                    hiddenbox={hiddenbox}
+                    orders={orders}
+                  />
                 </Grid>
               </Grid>
             )}

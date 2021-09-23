@@ -15,7 +15,7 @@ interface ConfirmModalProps {
   content: string;
   confirmTitle: string;
   type?: 'ERROR' | 'CONFIRM';
-  handleOnClick: () => void;
+  handleOnClick: (id) => void;
   handleOnCancel: () => void;
 }
 
