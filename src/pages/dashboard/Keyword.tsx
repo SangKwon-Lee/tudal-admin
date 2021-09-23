@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async';
 import dayjs from 'dayjs';
 
 import {
+  Tooltip,
   Box,
   Container,
   Breadcrumbs,
@@ -53,7 +54,7 @@ import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
-import AliasIcon from '@material-ui/icons/ShoppingBag';
+import AliasIcon from '@material-ui/icons/Repeat';
 import SearchIcon from '../../icons/Search';
 import { APITag } from 'src/lib/api';
 import { ITagAlias, Tag } from 'src/types/schedule';
@@ -65,6 +66,7 @@ import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect';
 import Label from 'src/components/widgets/Label';
 import { errorMessage } from 'src/common/error';
+import { isStringEmpty } from 'src/utils/funcs';
 
 const customFilter = createFilterOptions<any>();
 
@@ -637,15 +639,6 @@ const Keywords: React.FC = () => {
                                   >
                                     {depth_1}{' '}
                                   </Typography>
-                                  {tag.alias.map((alias) => (
-                                    <Chip
-                                      key={alias.id}
-                                      color="default"
-                                      label={alias.aliasName}
-                                      size={'small'}
-                                      variant="outlined"
-                                    />
-                                  ))}
                                 </Box>
                               </Box>
                             </TableCell>
@@ -676,38 +669,64 @@ const Keywords: React.FC = () => {
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              <Button
-                                onClick={() => {
-                                  setTarget(tag);
-                                  setOpenSummary(true);
-                                }}
+                              <Tooltip
+                                title={
+                                  isStringEmpty(tag.summary)
+                                    ? '작성해주세요'
+                                    : tag.summary
+                                }
+                                placement="bottom"
                               >
-                                <Typography
-                                  color={
-                                    tag.summary ? 'lightgrey' : ''
-                                  }
-                                  variant="button"
+                                <Button
+                                  onClick={() => {
+                                    setTarget(tag);
+                                    setOpenSummary(true);
+                                  }}
                                 >
-                                  {tag.summary ? '확인' : '작성'}
-                                </Typography>
-                              </Button>
+                                  <Typography
+                                    color={
+                                      isStringEmpty(tag.summary)
+                                        ? 'lightgrey'
+                                        : ''
+                                    }
+                                    variant="button"
+                                  >
+                                    {isStringEmpty(tag.summary)
+                                      ? '작성'
+                                      : '확인'}
+                                  </Typography>
+                                </Button>
+                              </Tooltip>
                             </TableCell>
                             <TableCell>
-                              <Button
-                                onClick={() => {
-                                  setTarget(tag);
-                                  setOpenDescription(true);
-                                }}
+                              <Tooltip
+                                title={
+                                  isStringEmpty(tag.description)
+                                    ? '작성해주세요'
+                                    : tag.description
+                                }
+                                placement="bottom"
                               >
-                                <Typography
-                                  color={
-                                    tag.summary ? 'lightgrey' : ''
-                                  }
-                                  variant="button"
+                                <Button
+                                  onClick={() => {
+                                    setTarget(tag);
+                                    setOpenDescription(true);
+                                  }}
                                 >
-                                  {tag.description ? '확인' : '작성'}
-                                </Typography>
-                              </Button>
+                                  <Typography
+                                    color={
+                                      isStringEmpty(tag.description)
+                                        ? 'lightgrey'
+                                        : ''
+                                    }
+                                    variant="button"
+                                  >
+                                    {isStringEmpty(tag.description)
+                                      ? '작성'
+                                      : '확인'}
+                                  </Typography>
+                                </Button>
+                              </Tooltip>
                             </TableCell>
 
                             <TableCell>
@@ -720,14 +739,27 @@ const Keywords: React.FC = () => {
                               </Label>{' '}
                             </TableCell>
                             <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  setTarget(tag);
-                                  setOpenAlias(true);
-                                }}
+                              <Tooltip
+                                title={tag.alias?.map((el) => {
+                                  return (
+                                    <Chip
+                                      label={el.aliasName}
+                                      color="primary"
+                                      style={{ marginLeft: 3 }}
+                                    ></Chip>
+                                  );
+                                })}
+                                placement="bottom"
                               >
-                                <AliasIcon fontSize="small" />
-                              </IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    setTarget(tag);
+                                    setOpenAlias(true);
+                                  }}
+                                >
+                                  <AliasIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
                             </TableCell>
                             <TableCell>
                               <IconButton
