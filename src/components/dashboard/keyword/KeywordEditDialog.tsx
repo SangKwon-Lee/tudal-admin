@@ -96,7 +96,7 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
               filtered.push({
                 id: Math.random(),
                 isNew: true,
-                name: `"${tag.name}" =>"${params.inputValue}"`,
+                name: `"${tag.name}" -> "${params.inputValue}"`,
                 inputValue: params.inputValue,
               });
             }

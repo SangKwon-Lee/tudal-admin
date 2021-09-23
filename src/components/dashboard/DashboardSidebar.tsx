@@ -47,19 +47,9 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '히든박스',
-        path: '/dashboard/hiddenboxes',
-        icon: <FolderOpenIcon fontSize="small" />,
-      },
-      {
         title: '일정',
         path: '/dashboard/schedules',
         icon: <CalendarIcon fontSize="small" />,
-      },
-      {
-        title: '키워드',
-        path: '/dashboard/keywords',
-        icon: <StarIcon fontSize="small" />,
       },
       {
         title: '종목',
@@ -67,14 +57,24 @@ const sections = [
         icon: <ShoppingBag fontSize="small" />,
       },
       {
+        title: '뉴스',
+        path: '/dashboard/news-comments',
+        icon: <DeviceTabletIcon fontSize="small" />,
+      },
+      {
+        title: '키워드',
+        path: '/dashboard/keywords',
+        icon: <StarIcon fontSize="small" />,
+      },
+      {
         title: '카테고리',
         path: '/dashboard/categories',
         icon: <BriefcaseIcon fontSize="small" />,
       },
       {
-        title: '뉴스',
-        path: '/dashboard/news-comments',
-        icon: <DeviceTabletIcon fontSize="small" />,
+        title: '히든박스',
+        path: '/dashboard/hiddenboxes',
+        icon: <FolderOpenIcon fontSize="small" />,
       },
     ],
   },

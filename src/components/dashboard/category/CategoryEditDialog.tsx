@@ -100,7 +100,7 @@ const CategoryEditDialog: React.FC<CategoryEditDialogProps> = ({
               filtered.push({
                 id: Math.random(),
                 isNew: true,
-                name: `"${category.name}" =>"${params.inputValue}"`,
+                name: `"${category.name}" -> "${params.inputValue}"`,
                 inputValue: params.inputValue,
               });
             }

@@ -465,6 +465,11 @@ const Keywords: React.FC = () => {
                           inputRef={tagCreateRef}
                           onChange={handleTagInput}
                           label="키워드 추가"
+                          onKeyDown={(event) => {
+                            if (event.code === 'ENTER') {
+                              console.log('asdasd');
+                            }
+                          }}
                           name="keyword"
                           variant="outlined"
                           InputProps={{

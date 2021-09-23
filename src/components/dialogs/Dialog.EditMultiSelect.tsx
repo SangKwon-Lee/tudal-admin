@@ -78,7 +78,9 @@ const DialogEditMultiSelect: FC<DialogEditMultiSelectProps> = (
               onChange={(e) => setInput(e.target.value)}
             />
           </Box>
-          <Button onClick={_handleCreate}>등록</Button>
+          <Button variant="contained" onClick={_handleCreate}>
+            등록
+          </Button>
         </Box>
         <Divider />
         <Box
