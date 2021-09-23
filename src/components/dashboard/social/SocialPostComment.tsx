@@ -63,6 +63,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           ml: 2,
           p: 2,
           pt: 0,
+          // minWidth: '300px',
         }}
       >
         <Box
@@ -102,7 +103,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           )}
         </Box>
         {!isUpdate ? (
-          <pre>{message}</pre>
+          <Box>{message}</Box>
         ) : (
           <>
             <TextField

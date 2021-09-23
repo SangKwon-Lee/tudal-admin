@@ -51,8 +51,8 @@ type Sort =
   | 'updated_at|asc'
   | 'orders|desc'
   | 'orders|asc'
-  | 'price|desc'
-  | 'price|asc'
+  | 'productId|desc'
+  | 'productId|asc'
   | 'likes|desc'
   | 'likes|asc';
 
@@ -103,11 +103,11 @@ const sortOptions: SortOption[] = [
   },
   {
     label: '가격 높은순',
-    value: 'price|desc',
+    value: 'productId|desc',
   },
   {
     label: '가격 낮은순',
-    value: 'price|asc',
+    value: 'productId|asc',
   },
   {
     label: '좋아요 높은순',
@@ -209,6 +209,16 @@ const descendingComparator = (
   b: Hiddenbox,
   orderBy: string,
 ): number => {
+  if (orderBy === 'productId' || orderBy === 'likes') {
+    if (Number(b[orderBy]) < Number(a[orderBy])) {
+      return -1;
+    }
+
+    if (Number(b[orderBy]) > Number(a[orderBy])) {
+      return 1;
+    }
+  }
+
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -664,7 +674,8 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       </TableCell>
                       <TableCell
                         style={{
-                          maxWidth: '160px',
+                          maxWidth: '180px',
+                          minWidth: '180px',
                         }}
                       >
                         {`${moment(hiddenbox.startDate).format(
@@ -678,9 +689,9 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
-                      <TableCell>가격 얼마</TableCell>
+                      <TableCell>{hiddenbox.productId}</TableCell>
                       <TableCell>{hiddenbox.orders}</TableCell>
-                      <TableCell>좋아요 수</TableCell>
+                      <TableCell>{hiddenbox.likes}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           onClick={() => {
@@ -739,7 +750,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         open={commentOpen}
         onClose={() => setCommentOpen(false)}
       >
-        <Box sx={{ py: 3, px: 3, minWidth: 400 }}>
+        <Box
+          sx={{
+            py: 3,
+            px: 3,
+          }}
+        >
           <Box sx={{ pb: 3 }}>
             <Typography color="inherit" variant="h5">
               히든박스 코멘트
