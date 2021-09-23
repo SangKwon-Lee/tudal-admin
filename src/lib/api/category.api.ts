@@ -3,6 +3,10 @@ import axios from 'src/lib/axios';
 import qs from 'qs';
 import { Category } from 'src/types/schedule';
 
+export async function get(name: string) {
+  return await axios.get<Category[]>(`/categories?name=${name}`);
+}
+
 export async function getList(
   search: string,
   _start: number = 0,

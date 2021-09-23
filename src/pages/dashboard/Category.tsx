@@ -54,6 +54,7 @@ import useAuth from 'src/hooks/useAuth';
 import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import Label from 'src/components/widgets/Label';
+import { errorMessage } from 'src/common/error';
 
 const customFilter = createFilterOptions<any>();
 
@@ -138,6 +139,10 @@ const CategoryPage: React.FC = () => {
     setLoading(true);
 
     try {
+      if (!newCategory) {
+        toast.error('입력을 확인해주세요.');
+        return;
+      }
       if (!newCategory.isNew) {
         toast.error('이미 등록된 카테고리입니다.');
         return;
@@ -160,6 +165,19 @@ const CategoryPage: React.FC = () => {
 
   const handleUpdate = async (id, body) => {
     try {
+      if (!body && !body.name) {
+        toast.error('카테고리를 입력해주세요');
+        return;
+      }
+      const { data, status } = await APICategory.get(body.name);
+      if (status !== 200) {
+        toast.error(errorMessage.TEMP_SERVER_ERROR);
+        return;
+      }
+      if (data && !_.isEmpty(data)) {
+        toast.error('중복된 카테고리 입니다.');
+        return;
+      }
       await APICategory.update(id, body);
       setOpenUpdate(false);
       setTarget(null);
@@ -306,7 +324,7 @@ const CategoryPage: React.FC = () => {
                     filtered.push({
                       id: Math.random(),
                       isNew: true,
-                      name: `Add "${params.inputValue}"`,
+                      name: `+ "${params.inputValue}"`,
                       inputValue: params.inputValue,
                     });
                   }
@@ -339,7 +357,7 @@ const CategoryPage: React.FC = () => {
                   />
                 )}
               />
-              <Button variant="outlined" onClick={handleCreate}>
+              <Button variant="contained" onClick={handleCreate}>
                 추가
               </Button>
             </Box>

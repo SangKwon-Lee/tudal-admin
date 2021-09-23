@@ -3,6 +3,10 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
 
+export async function find(name) {
+  return await axios.get<Tag[]>(`/tags?name=${name}`);
+}
+
 export async function getList(
   search: string,
   _alias: boolean = false,

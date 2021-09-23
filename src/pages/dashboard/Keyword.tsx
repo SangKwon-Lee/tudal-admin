@@ -61,6 +61,7 @@ import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect';
 import Label from 'src/components/widgets/Label';
+import { errorMessage } from 'src/common/error';
 
 const customFilter = createFilterOptions<any>();
 
@@ -150,6 +151,10 @@ const Keywords: React.FC = () => {
     setLoading(true);
 
     try {
+      if (!newKeyword) {
+        toast.error('입력해주세요.');
+        return;
+      }
       if (!newKeyword.isNew) {
         toast.error('이미 등록된 키워드입니다.');
         return;
@@ -213,6 +218,18 @@ const Keywords: React.FC = () => {
 
   const updateTag = async (id, body) => {
     try {
+      console.log(id, body);
+      if (body && body.name) {
+        const { status, data } = await APITag.find(body.name);
+        if (status !== 200) {
+          toast.error(errorMessage.TEMP_SERVER_ERROR);
+          return;
+        }
+        if (!_.isEmpty(data)) {
+          toast.error('중복된 키워드가 있습니다');
+          return;
+        }
+      }
       await APITag.update(id, body);
       setOpenUpdateTag(false);
       setTarget(null);
@@ -381,7 +398,7 @@ const Keywords: React.FC = () => {
                       helperText="띄어쓰기로 나누어 태그를 등록해주세요."
                     />
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       onClick={handleMultiCreate}
                     >
                       추가
@@ -399,7 +416,6 @@ const Keywords: React.FC = () => {
                       style={{
                         width: 500,
                         marginRight: 10,
-                        marginBottom: 20,
                       }}
                       onChange={(event, newValue) => {
                         if (!newValue) {
@@ -435,7 +451,7 @@ const Keywords: React.FC = () => {
                           filtered.push({
                             id: Math.random(),
                             isNew: true,
-                            name: `Add "${params.inputValue}"`,
+                            name: `+ "${params.inputValue}"`,
                             inputValue: params.inputValue,
                           });
                         }
@@ -468,7 +484,10 @@ const Keywords: React.FC = () => {
                         />
                       )}
                     />
-                    <Button variant="outlined" onClick={handleCreate}>
+                    <Button
+                      variant="contained"
+                      onClick={handleCreate}
+                    >
                       추가
                     </Button>
                   </>
