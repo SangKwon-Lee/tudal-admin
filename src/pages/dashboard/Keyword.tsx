@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  ChangeEvent,
 } from 'react';
 import { applyPagination } from 'src/utils/pagination';
 import { Link as RouterLink } from 'react-router-dom';
@@ -21,6 +22,7 @@ import {
   InputAdornment,
   LinearProgress,
   Link,
+  Chip,
   Table,
   TableBody,
   TableCell,
@@ -35,6 +37,7 @@ import {
   FormControlLabel,
   Switch,
   Dialog,
+  Collapse,
 } from '@material-ui/core';
 
 import useSettings from 'src/hooks/useSettings';
@@ -65,6 +68,21 @@ import { errorMessage } from 'src/common/error';
 
 const customFilter = createFilterOptions<any>();
 
+const sortOptions: { label: string; value: string }[] = [
+  {
+    label: '기본',
+    value: 'id:asc',
+  },
+  {
+    label: '이름순',
+    value: 'name:desc',
+  },
+  {
+    label: '수정일 최신순',
+    value: 'updated_at:desc',
+  },
+];
+
 const Keywords: React.FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
@@ -72,6 +90,8 @@ const Keywords: React.FC = () => {
   const tagCreateRef = useRef(null);
 
   const [tags, setTags] = useState<Tag[]>([]);
+
+  const [sort, setSort] = useState(sortOptions[0].value);
   const [newKeyword, setNewKeyword] = useState<Tag>(null);
   const [isMultiCreate, setMultiCreate] = useState<boolean>(false);
   const [targetTag, setTarget] = useState<Tag>(null);
@@ -94,7 +114,7 @@ const Keywords: React.FC = () => {
     const value = tagCreateRef.current
       ? tagCreateRef.current.value
       : '';
-    return APITag.getList(value, true);
+    return APITag.getList(value, sort, true);
   }, []);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
@@ -105,7 +125,11 @@ const Keywords: React.FC = () => {
   const getList = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, status } = await APITag.getList(search, true);
+      const { data, status } = await APITag.getList(
+        search,
+        sort,
+        true,
+      );
       if (status === 200) {
         console.log('here');
         setTags(data);
@@ -115,7 +139,7 @@ const Keywords: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, sort]);
 
   const loadMoreList = useCallback(async () => {
     setLoading(true);
@@ -123,6 +147,7 @@ const Keywords: React.FC = () => {
       const start = (page + 1) * rowsPerPage; //rows per page
       const { data, status } = await APITag.getList(
         search,
+        sort,
         true,
         start,
       );
@@ -135,7 +160,7 @@ const Keywords: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, page]);
+  }, [search, page, sort]);
 
   const handlePage = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -289,6 +314,10 @@ const Keywords: React.FC = () => {
     } catch (error) {
       toast.error(error.message);
     }
+  };
+
+  const handleSort = (event: ChangeEvent<HTMLInputElement>): void => {
+    setSort(event.target.value);
   };
 
   useEffect(() => {
@@ -536,6 +565,20 @@ const Keywords: React.FC = () => {
                   }, 300)}
                 />
               </Box>
+              <TextField
+                label="Sort By"
+                name="sort"
+                select
+                SelectProps={{ native: true }}
+                variant="outlined"
+                onChange={handleSort}
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
             </Box>
             {loading && (
               <div data-testid="keyword-list-loading">
@@ -568,107 +611,150 @@ const Keywords: React.FC = () => {
                       const [depth_1, depth_2, depth_3] =
                         tag.name.split('.');
                       return (
-                        <TableRow hover key={tag.id}>
-                          <TableCell>{tag.id}</TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {depth_1}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {depth_2}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {depth_3}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {dayjs(tag.updated_at).format(
-                                'YYYY-MM-DD',
-                              )}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenSummary(true);
-                              }}
-                            >
-                              {tag.summary ? '확인' : '작성'}
-                            </Button>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenDescription(true);
-                              }}
-                            >
-                              {tag.description ? '확인' : '작성'}
-                            </Button>
-                          </TableCell>
+                        <>
+                          <TableRow
+                            key={tag.id}
+                            sx={{
+                              '& > *': {
+                                border: 'none',
+                              },
+                            }}
+                          >
+                            <TableCell>{tag.id}</TableCell>
+                            <TableCell>
+                              <Box
+                                sx={{
+                                  alignItems: 'center',
+                                  display: 'flex',
+                                }}
+                              >
+                                <Box
+                                  sx={{ ml: 1, maxWidth: '150px' }}
+                                >
+                                  <Typography
+                                    color="textSecondary"
+                                    variant="body2"
+                                  >
+                                    {depth_1}{' '}
+                                  </Typography>
+                                  {tag.alias.map((alias) => (
+                                    <Chip
+                                      key={alias.id}
+                                      color="default"
+                                      label={alias.aliasName}
+                                      size={'small'}
+                                      variant="outlined"
+                                    />
+                                  ))}
+                                </Box>
+                              </Box>
+                            </TableCell>
+                            <TableCell>
+                              <Typography
+                                color="textSecondary"
+                                variant="body2"
+                              >
+                                {depth_2}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography
+                                color="textSecondary"
+                                variant="body2"
+                              >
+                                {depth_3}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography
+                                color="textSecondary"
+                                variant="body2"
+                              >
+                                {dayjs(tag.updated_at).format(
+                                  'YYYY-MM-DD',
+                                )}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() => {
+                                  setTarget(tag);
+                                  setOpenSummary(true);
+                                }}
+                              >
+                                <Typography
+                                  color={
+                                    tag.summary ? 'lightgrey' : ''
+                                  }
+                                  variant="button"
+                                >
+                                  {tag.summary ? '확인' : '작성'}
+                                </Typography>
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() => {
+                                  setTarget(tag);
+                                  setOpenDescription(true);
+                                }}
+                              >
+                                <Typography
+                                  color={
+                                    tag.summary ? 'lightgrey' : ''
+                                  }
+                                  variant="button"
+                                >
+                                  {tag.description ? '확인' : '작성'}
+                                </Typography>
+                              </Button>
+                            </TableCell>
 
-                          <TableCell>
-                            <Label
-                              color={
-                                tag.isDeleted ? 'error' : 'success'
-                              }
-                            >
-                              {tag.isDeleted ? '삭제' : '정상'}
-                            </Label>{' '}
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenAlias(true);
-                              }}
-                            >
-                              <AliasIcon fontSize="small" />
-                            </IconButton>
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                setTarget(tag);
-                                setOpenUpdateTag(true);
-                              }}
-                            >
-                              <BuildIcon fontSize="small" />
-                            </IconButton>
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                setOpenDeleteTag(true);
-                                setTarget(tag);
-                              }}
-                            >
-                              {tag.isDeleted ? (
-                                <RefreshIcon fontSize="small" />
-                              ) : (
-                                <DeleteIcon fontSize="small" />
-                              )}
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
+                            <TableCell>
+                              <Label
+                                color={
+                                  tag.isDeleted ? 'error' : 'success'
+                                }
+                              >
+                                {tag.isDeleted ? '삭제' : '정상'}
+                              </Label>{' '}
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  setTarget(tag);
+                                  setOpenAlias(true);
+                                }}
+                              >
+                                <AliasIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  setTarget(tag);
+                                  setOpenUpdateTag(true);
+                                }}
+                              >
+                                <BuildIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  setOpenDeleteTag(true);
+                                  setTarget(tag);
+                                }}
+                              >
+                                {tag.isDeleted ? (
+                                  <RefreshIcon fontSize="small" />
+                                ) : (
+                                  <DeleteIcon fontSize="small" />
+                                )}
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </>
                       );
                     })}
                   </TableBody>

@@ -9,6 +9,7 @@ export async function find(name) {
 
 export async function getList(
   search: string,
+  sort: string = '',
   _alias: boolean = false,
   _start: number = 0,
   _limit: number = 100,
@@ -16,6 +17,9 @@ export async function getList(
   const q: any = { _alias, _start, _limit };
   if (search) {
     q._q = search;
+  }
+  if (sort) {
+    q._sort = sort;
   }
   return await axios.get<Tag[]>('/tags?' + qs.stringify(q));
 }
