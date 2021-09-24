@@ -27,7 +27,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
 ) => {
   const mode = props.mode || 'create';
   const hiddenboxId = props.boxid || 0;
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const initialHiddenbox: any = {
     title: '',
     description: '',
@@ -80,7 +80,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
           productId: data.productId,
           contents: data.contents,
           tags: data.tags,
-          stocks: data.stocks.map((item) => item.code),
+          stocks: data.stocks,
           startDate: moment(data.startDate).toDate(),
           endDate: moment(data.endDate).toDate(),
           publicDate: moment(data.publicDate).toDate(),
@@ -118,94 +118,117 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
     console.log('values are changed', values, newHiddenbox);
   };
 
+  let productMode = 'beforeSale';
+  if (moment().diff(moment(newHiddenbox.startDate)) < 0) {
+    productMode = 'beforeSale';
+  } else if (
+    moment().diff(moment(newHiddenbox.startDate)) > 0 &&
+    moment().diff(moment(newHiddenbox.endDate)) < 0
+  ) {
+    productMode = 'onSale';
+  } else if (
+    moment().diff(moment(newHiddenbox.endDate)) > 0 &&
+    moment().diff(moment(newHiddenbox.publicDate)) < 0
+  ) {
+    productMode = 'afterSale';
+  } else {
+    productMode = 'public';
+  }
+
   return (
     <div {...props}>
-      {!completed ? (
+      {productMode === 'beforeSale' || productMode === 'onSale' ? (
         <>
-          {activeStep === 0 &&
-          ((mode === 'edit' && loading === false) ||
-            mode === 'create') ? (
-            <HiddenboxDetailsForm
-              onNext={handleNext}
-              setValues={handleSetNewHiddenbox}
-              values={newHiddenbox}
-              mode={mode}
-            />
-          ) : null}
-          {activeStep === 1 && (
-            <HiddenboxContentForm
-              onBack={handleBack}
-              onComplete={handleComplete}
-              setValues={handleSetNewHiddenbox}
-              values={newHiddenbox}
-              mode={mode}
-            />
+          {!completed ? (
+            <>
+              {activeStep === 0 &&
+              ((mode === 'edit' && loading === false) ||
+                mode === 'create') ? (
+                <HiddenboxDetailsForm
+                  onNext={handleNext}
+                  setValues={handleSetNewHiddenbox}
+                  values={newHiddenbox}
+                  mode={mode}
+                />
+              ) : null}
+              {activeStep === 1 && (
+                <HiddenboxContentForm
+                  onBack={handleBack}
+                  onComplete={handleComplete}
+                  setValues={handleSetNewHiddenbox}
+                  values={newHiddenbox}
+                  mode={mode}
+                />
+              )}
+            </>
+          ) : (
+            <Card>
+              <CardContent>
+                <Box
+                  sx={{
+                    maxWidth: 450,
+                    mx: 'auto',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Avatar
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        color: 'primary.contrastText',
+                      }}
+                    >
+                      <StarIcon fontSize="small" />
+                    </Avatar>
+                  </Box>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      align="center"
+                      color="textPrimary"
+                      variant="h3"
+                    >
+                      {mode === 'create'
+                        ? '히든박스가 만들어졌습니다!'
+                        : '히든박스가 수정되었습니다!'}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      align="center"
+                      color="textSecondary"
+                      variant="subtitle1"
+                    >
+                      유료결제 상품이니 판매일 및 공개일을 다시 한 번
+                      잘 살펴주세요.
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      mt: 2,
+                    }}
+                  >
+                    <Button
+                      color="primary"
+                      component={RouterLink}
+                      to="/dashboard/hiddenboxes"
+                      variant="contained"
+                    >
+                      히든박스 보기
+                    </Button>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           )}
         </>
       ) : (
-        <Card>
-          <CardContent>
-            <Box
-              sx={{
-                maxWidth: 450,
-                mx: 'auto',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <Avatar
-                  sx={{
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
-                  }}
-                >
-                  <StarIcon fontSize="small" />
-                </Avatar>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <Typography
-                  align="center"
-                  color="textPrimary"
-                  variant="h3"
-                >
-                  {mode === 'create'
-                    ? '히든박스가 만들어졌습니다!'
-                    : '히든박스가 수정되었습니다!'}
-                </Typography>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <Typography
-                  align="center"
-                  color="textSecondary"
-                  variant="subtitle1"
-                >
-                  유료결제 상품이니 판매일 및 공개일을 다시 한 번 잘
-                  살펴주세요.
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  mt: 2,
-                }}
-              >
-                <Button
-                  color="primary"
-                  component={RouterLink}
-                  to="/dashboard/hiddenboxes"
-                  variant="contained"
-                >
-                  히든박스 보기
-                </Button>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+        '판매 완료나 공개중인 상품은 수정할 수 없습니다.'
       )}
     </div>
   );

@@ -14,11 +14,11 @@ import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
-import useAuth from 'src/hooks/useAuth';
+// import useAuth from 'src/hooks/useAuth';
 
 const HiddenboxCreate: FC = () => {
   const { settings } = useSettings();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);

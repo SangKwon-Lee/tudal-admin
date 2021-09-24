@@ -58,7 +58,22 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
       return editorRef.current.getContent();
     }
   };
-
+  let productMode = 'beforeSale';
+  if (moment().diff(moment(values.startDate)) < 0) {
+    productMode = 'beforeSale';
+  } else if (
+    moment().diff(moment(values.startDate)) > 0 &&
+    moment().diff(moment(values.endDate)) < 0
+  ) {
+    productMode = 'onSale';
+  } else if (
+    moment().diff(moment(values.endDate)) > 0 &&
+    moment().diff(moment(values.publicDate)) < 0
+  ) {
+    productMode = 'afterSale';
+  } else {
+    productMode = 'public';
+  }
   // const editor = useRef(null);
   const handleUploadImage = async (blob, callback) => {
     /* 
@@ -101,7 +116,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
       setIsSubmitting(true);
 
       if (editorRef.current) {
-        console.log(editorRef.current);
         const contents = log();
 
         // const contents = editorRef.current
@@ -111,7 +125,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           ...values,
           contents: contents,
         });
-        console.log(contents, '여기는 어디냐');
 
         const newHiddenbox = {
           ...values,
@@ -170,6 +183,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <Editor
+            disabled={productMode === 'onSale'}
             ref={editorRef}
             initialValue={values.contents}
             onInit={(evt, editor) => (editorRef.current = editor)}

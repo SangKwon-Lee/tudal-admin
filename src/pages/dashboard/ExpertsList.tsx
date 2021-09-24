@@ -4,7 +4,17 @@ import { Helmet } from 'react-helmet-async';
 import useSettings from '../../hooks/useSettings';
 import gtm from '../../lib/gtm';
 import useAuth from 'src/hooks/useAuth';
-import { Box, Typography } from '@material-ui/core';
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Container,
+  Link,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import ChevronRightIcon from '../../icons/ChevronRight';
+import PlusIcon from '../../icons/Plus';
 
 const ExpertsList: FC = () => {
   const { settings } = useSettings();
@@ -27,7 +37,7 @@ const ExpertsList: FC = () => {
             py: 8,
           }}
         >
-          {/* <Container maxWidth={settings.compact ? 'xl' : false}>
+          <Container maxWidth={settings.compact ? 'xl' : false}>
             <Grid
               container
               justifyContent="space-between"
@@ -35,7 +45,7 @@ const ExpertsList: FC = () => {
             >
               <Grid item>
                 <Typography color="textPrimary" variant="h5">
-                  히든박스 리스트
+                  달인 리스트
                 </Typography>
                 <Breadcrumbs
                   aria-label="breadcrumb"
@@ -54,7 +64,7 @@ const ExpertsList: FC = () => {
                     color="textSecondary"
                     variant="subtitle2"
                   >
-                    히든박스
+                    달인
                   </Typography>
                 </Breadcrumbs>
               </Grid>
@@ -66,20 +76,15 @@ const ExpertsList: FC = () => {
                     sx={{ m: 1 }}
                     variant="contained"
                     component={RouterLink}
-                    to="/dashboard/hiddenboxes/new"
+                    to="/dashboard/experts/new"
                   >
-                    히든박스 추가
+                    달인 추가
                   </Button>
                 </Box>
               </Grid>
             </Grid>
-            <Box sx={{ mt: 3 }}>
-              <HiddenboxListTable
-                hiddenboxes={hiddenboxes}
-                reload={reload}
-              />
-            </Box>
-          </Container> */}
+            <Box sx={{ mt: 3 }}>컴포넌트 자리</Box>
+          </Container>
         </Box>
       ) : (
         <Box

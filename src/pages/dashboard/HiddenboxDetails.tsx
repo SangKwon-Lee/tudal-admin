@@ -22,6 +22,7 @@ import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
 import useMounted from 'src/hooks/useMounted';
+import moment from 'moment';
 
 const tabs = [
   { label: '상품내용', value: 'details' },
@@ -59,7 +60,7 @@ const HiddenboxDetails: FC = () => {
     } catch (err) {
       console.error(err);
     }
-  }, [mounted]);
+  }, [mounted, hiddenboxId]);
 
   useEffect(() => {
     getHiddenbox();
@@ -75,7 +76,23 @@ const HiddenboxDetails: FC = () => {
   if (!hiddenbox) {
     return null;
   }
-  console.log(orders);
+
+  let productMode = 'beforeSale';
+  if (moment().diff(moment(hiddenbox.startDate)) < 0) {
+    productMode = 'beforeSale';
+  } else if (
+    moment().diff(moment(hiddenbox.startDate)) > 0 &&
+    moment().diff(moment(hiddenbox.endDate)) < 0
+  ) {
+    productMode = 'onSale';
+  } else if (
+    moment().diff(moment(hiddenbox.endDate)) > 0 &&
+    moment().diff(moment(hiddenbox.publicDate)) < 0
+  ) {
+    productMode = 'afterSale';
+  } else {
+    productMode = 'public';
+  }
 
   return (
     <>
@@ -123,16 +140,21 @@ const HiddenboxDetails: FC = () => {
             </Grid>
             <Grid item>
               <Box sx={{ m: -1 }}>
-                <Button
-                  color="primary"
-                  component={RouterLink}
-                  startIcon={<PencilAltIcon fontSize="small" />}
-                  sx={{ m: 1 }}
-                  to={`/dashboard/hiddenboxes/${hiddenboxId}/edit`}
-                  variant="contained"
-                >
-                  편집
-                </Button>
+                {productMode === 'beforeSale' ||
+                productMode === 'onSale' ? (
+                  <Button
+                    color="primary"
+                    component={RouterLink}
+                    startIcon={<PencilAltIcon fontSize="small" />}
+                    sx={{ m: 1 }}
+                    to={`/dashboard/hiddenboxes/${hiddenboxId}/edit`}
+                    variant="contained"
+                  >
+                    편집
+                  </Button>
+                ) : (
+                  ''
+                )}
               </Box>
             </Grid>
           </Grid>

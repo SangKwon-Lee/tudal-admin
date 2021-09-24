@@ -291,6 +291,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
       fetchSalesCount();
     }
   }, [hiddenboxes]);
+
   useEffect(() => {
     if (targetHiddenbox) {
       fetchComments(targetHiddenbox.id);
@@ -388,15 +389,15 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     setSort(event.target.value as Sort);
   };
 
-  const handleSelectAllHiddenboxes = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedHiddenboxes(
-      event.target.checked
-        ? hiddenboxes.map((hiddenbox) => hiddenbox.id)
-        : [],
-    );
-  };
+  // const handleSelectAllHiddenboxes = (
+  //   event: ChangeEvent<HTMLInputElement>,
+  // ): void => {
+  //   setSelectedHiddenboxes(
+  //     event.target.checked
+  //       ? hiddenboxes.map((hiddenbox) => hiddenbox.id)
+  //       : [],
+  //   );
+  // };
 
   const handleSelectOneHiddenbox = (
     event: ChangeEvent<HTMLInputElement>,
@@ -482,11 +483,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     limit,
   );
   const enableBulkActions = selectedHiddenboxes.length > 0;
-  const selectedSomeHiddenboxes =
-    selectedHiddenboxes.length > 0 &&
-    selectedHiddenboxes.length < hiddenboxes.length;
-  const selectedAllHiddenboxes =
-    selectedHiddenboxes.length === hiddenboxes.length;
+  // const selectedSomeHiddenboxes =
+  //   selectedHiddenboxes.length > 0 &&
+  //   selectedHiddenboxes.length < hiddenboxes.length;
+  // const selectedAllHiddenboxes =
+  //   selectedHiddenboxes.length === hiddenboxes.length;
 
   return (
     <>
@@ -618,6 +619,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                   <TableCell>가격</TableCell>
                   <TableCell>판매량</TableCell>
                   <TableCell>좋아요</TableCell>
+                  <TableCell>조회수</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -690,6 +692,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       <TableCell>{hiddenbox.productId}</TableCell>
                       <TableCell>{hiddenbox.orders}</TableCell>
                       <TableCell>{hiddenbox.likes}</TableCell>
+                      <TableCell>조회수</TableCell>
                       <TableCell align="right">
                         <IconButton
                           onClick={() => {
