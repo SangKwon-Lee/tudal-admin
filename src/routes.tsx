@@ -63,6 +63,10 @@ const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
 
+const ExpertsList = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertsList')),
+);
+
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -202,6 +206,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <ReportMaker />,
+          },
+        ],
+      },
+      {
+        path: 'experts',
+        children: [
+          {
+            path: '/',
+            element: <ExpertsList />,
           },
         ],
       },

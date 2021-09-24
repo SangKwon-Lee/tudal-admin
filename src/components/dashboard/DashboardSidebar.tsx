@@ -42,7 +42,7 @@ const sections = [
       },
       {
         title: '달인',
-        path: '/dashboard/hiddenboxes',
+        path: '/dashboard/experts',
         icon: <PencilIcon fontSize="small" />,
       },
     ],

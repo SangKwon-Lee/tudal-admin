@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
@@ -40,11 +40,11 @@ interface HiddenboxListTableProps {
 }
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
-const Bar = forwardRef((props: any, ref: any) => (
-  <div {...props} ref={ref}>
-    {props.children}
-  </div>
-));
+// const Bar = forwardRef((props: any, ref: any) => (
+//   <div {...props} ref={ref}>
+//     {props.children}
+//   </div>
+// ));
 
 type Sort =
   | 'updated_at|desc'
@@ -248,7 +248,6 @@ const applySort = (
   const comparator = getComparator(order, orderBy);
 
   const stabilizedThis = hiddenboxes.map((el, index) => [el, index]);
-  console.log(stabilizedThis);
   stabilizedThis.sort((a, b) => {
     // @ts-ignore
     const newOrder = comparator(a[0], b[0]);
@@ -292,7 +291,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
       fetchSalesCount();
     }
   }, [hiddenboxes]);
-
   useEffect(() => {
     if (targetHiddenbox) {
       fetchComments(targetHiddenbox.id);
@@ -543,8 +541,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
           </Box>
           <Box
             sx={{
-              m: 1,
-              width: 240,
+              mx: 1,
             }}
           >
             <TextField
@@ -555,6 +552,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               SelectProps={{ native: true }}
               value={sort}
               variant="outlined"
+              sx={{ mx: 1 }}
             >
               {sortOptions.map((option, index) => (
                 <option key={option.value} value={option.value}>

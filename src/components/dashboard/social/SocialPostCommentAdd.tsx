@@ -1,15 +1,12 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import type { FC, ChangeEvent } from 'react';
 import {
   Avatar,
   Box,
-  Divider,
   IconButton,
   TextField,
   Tooltip,
 } from '@material-ui/core';
-import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SendIcon from '@material-ui/icons/Send';
 import useAuth from '../../../hooks/useAuth';
 import { CMSURL } from '../../../lib/axios';
@@ -57,6 +54,7 @@ const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (
           component={value ? 'button' : 'span'}
           onClick={() => {
             handleWriteComment(value);
+            setValue('');
           }}
           disabled={!value}
         >
