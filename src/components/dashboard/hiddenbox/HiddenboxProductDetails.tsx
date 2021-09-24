@@ -138,6 +138,18 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
           <TableRow>
             <TableCell>
               <Typography color="textPrimary" variant="subtitle2">
+                상품 가격
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {hiddenbox.productId}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
                 판매일
               </Typography>
             </TableCell>

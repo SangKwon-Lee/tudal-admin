@@ -1,34 +1,24 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import type { FC } from 'react';
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import {
   Box,
   Button,
   Card,
-  Chip,
   FormHelperText,
-  IconButton,
   TextField,
   Typography,
   CircularProgress,
-  Grid,
   LinearProgress,
   Autocomplete,
 } from '@material-ui/core';
-import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { DateTimePicker } from '@material-ui/lab';
-import PlusIcon from '../../../icons/Plus';
-import { apiServer } from '../../../lib/axios';
-import { APITag } from 'src/lib/api';
+import { APIStock, APITag } from 'src/lib/api';
 import useAsync from 'src/hooks/useAsync';
-import { IRoleType } from 'src/types/user';
 import { Tag } from 'src/types/schedule';
 import * as _ from 'lodash';
 import useAuth from 'src/hooks/useAuth';
-
-const tagFilter = createFilterOptions<any>();
 
 interface HiddenboxDetailsProps {
   onBack?: () => void;
@@ -46,20 +36,26 @@ type Stock = {
 const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const { onBack, onNext, setValues, values, mode, ...other } = props;
   const { user } = useAuth();
-  const [tag, setTag] = useState<string>('');
-  const [stock, setStock] = useState<string>('');
-  const [stockList, setStockList] = useState<any[]>([]);
   const tagInput = useRef(null);
+  const stockInput = useRef(null);
 
-  const categoryOptions = [
-    { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
-    { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-    { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-  ];
-
-  useEffect(() => {
-    fetchStockList();
-  }, []);
+  const categoryOptions = {
+    1: [
+      { label: '베이직(5,900원)', value: '5,900' },
+      { label: '스탠다드(33,000원)', value: '33,000' },
+      { label: '프리미엄(115,000원)', value: '115,000' },
+    ],
+    2: [
+      { label: '베이직(5,900원)', value: '5,900' },
+      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+    ],
+    3: [
+      { label: '베이직(5,900원)', value: '5,900' },
+      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+    ],
+  };
 
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
@@ -71,16 +67,28 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
-  const fetchStockList = async () => {
-    const response = await apiServer.get('/stocks/stkNmCd');
-    if (response.status === 200) {
-      console.log('stocklist', response.data);
-    }
-  };
+  const getStockListTest = useCallback(() => {
+    const value = stockInput.current ? stockInput.current.value : '';
+    return APIStock.getDetailList(value);
+  }, [stockInput]);
 
-  const isStock = (object: any): object is Stock => {
-    return object && object.stockcode !== undefined;
-  };
+  const [
+    { data: stockListTest, loading: stockLoading },
+    refetchStock,
+  ] = useAsync<any>(getStockListTest, [stockInput.current], []);
+
+  const handleStockChange = _.debounce(refetchStock, 300);
+
+  // const fetchStockList = async () => {
+  //   const response = await apiServer.get('/stocks/stkNmCd');
+  //   if (response.status === 200) {
+  //     console.log('stocklist', response.data);
+  //   }
+  // };
+
+  // const isStock = (object: any): object is Stock => {
+  //   return object && object.stockcode !== undefined;
+  // };
 
   return (
     <Formik
@@ -206,7 +214,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   }
                 }}
               >
-                {categoryOptions.map((category) => (
+                {categoryOptions[user.role.Lv].map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
                   </option>
@@ -214,8 +222,70 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               </TextField>
             </Box>
             <Box sx={{ mt: 2 }}>
+              {stockLoading && <LinearProgress />}
+              <Autocomplete
+                multiple
+                fullWidth
+                autoHighlight
+                options={stockListTest}
+                value={values.stocks}
+                getOptionLabel={(option) =>
+                  option.name + `(${option.code})`
+                }
+                onChange={(
+                  event,
+                  keywords: Stock[],
+                  reason,
+                  item,
+                ) => {
+                  console.log(values);
+                  console.log(item);
+                  if (reason === 'selectOption') {
+                    setFieldValue('stocks', [
+                      ...values.stocks,
+                      item.option,
+                    ]);
+                  }
+                  if (reason === 'removeOption') {
+                    const stocks = values.stocks.filter(
+                      (stocks) => stocks.id !== item.option.id,
+                    );
+                    setFieldValue('stocks', stocks);
+                  }
+                  if (reason === 'clear') {
+                    setFieldValue('stocks', []);
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    onChange={handleStockChange}
+                    inputRef={stockInput}
+                    label="종목"
+                    name="stocks"
+                    variant="outlined"
+                    helperText="신규 생성 권한은 관리자에게 문의 바랍니다."
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {tagLoading && (
+                            <CircularProgress
+                              color="inherit"
+                              size={20}
+                            />
+                          )}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </Box>
+            <Box sx={{ mt: 2 }}>
               {tagLoading && <LinearProgress />}
-              {console.log('here', values.tags)}
               <Autocomplete
                 multiple
                 fullWidth

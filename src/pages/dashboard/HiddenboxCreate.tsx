@@ -8,16 +8,17 @@ import {
   Container,
   Grid,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
+import useAuth from 'src/hooks/useAuth';
 
 const HiddenboxCreate: FC = () => {
   const { settings } = useSettings();
-
+  const { user } = useAuth();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
@@ -31,7 +32,7 @@ const HiddenboxCreate: FC = () => {
         sx={{
           backgroundColor: 'background.default',
           minHeight: '100%',
-          py: 8
+          py: 8,
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
@@ -42,11 +43,8 @@ const HiddenboxCreate: FC = () => {
             spacing={3}
           >
             <Grid item>
-              <Typography
-                color="textPrimary"
-                variant="h5"
-              >
-                히든박스 생성 Process
+              <Typography color="textPrimary" variant="h5">
+                히든박스 생성
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -56,16 +54,13 @@ const HiddenboxCreate: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  대시보드
-                </Link>
-                <Typography
-                  color="textSecondary"
+                  to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
                   히든박스
+                </Link>
+                <Typography color="textSecondary" variant="subtitle2">
+                  히든박스 생성
                 </Typography>
               </Breadcrumbs>
             </Grid>

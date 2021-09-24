@@ -13,17 +13,17 @@ import {
 } from '@material-ui/core';
 import { HiddenboxListTable } from '../../components/dashboard/hiddenbox';
 import ChevronRightIcon from '../../icons/ChevronRight';
-import DownloadIcon from '../../icons/Download';
 import PlusIcon from '../../icons/Plus';
-import UploadIcon from '../../icons/Upload';
 import useSettings from '../../hooks/useSettings';
 import gtm from '../../lib/gtm';
 import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
 import useMounted from 'src/hooks/useMounted';
+import useAuth from 'src/hooks/useAuth';
 
 const HiddenboxList: FC = () => {
   const { settings } = useSettings();
+  const { user } = useAuth();
   const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
   const mounted = useMounted();
 
@@ -49,7 +49,6 @@ const HiddenboxList: FC = () => {
   );
 
   useEffect(() => {
-    console.log('useEffect, getHiddenboxes');
     getHiddenboxes();
   }, [getHiddenboxes]);
 
@@ -62,68 +61,85 @@ const HiddenboxList: FC = () => {
       <Helmet>
         <title>Dashboard: Hiddenbox List | TUDAL Admin</title>
       </Helmet>
-      <Box
-        sx={{
-          backgroundColor: 'background.default',
-          minHeight: '100%',
-          py: 8,
-        }}
-      >
-        <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid container justifyContent="space-between" spacing={3}>
-            <Grid item>
-              <Typography color="textPrimary" variant="h5">
-                Hiddenbox List
-              </Typography>
-              <Breadcrumbs
-                aria-label="breadcrumb"
-                separator={<ChevronRightIcon fontSize="small" />}
-                sx={{ mt: 1 }}
-              >
-                <Link
-                  color="textPrimary"
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  대시보드
-                </Link>
-                <Link
-                  color="textPrimary"
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  컨텐츠관리
-                </Link>
-                <Typography color="textSecondary" variant="subtitle2">
-                  히든박스
+      {user.role.hiddenbox ? (
+        <Box
+          sx={{
+            backgroundColor: 'background.default',
+            minHeight: '100%',
+            py: 8,
+          }}
+        >
+          <Container maxWidth={settings.compact ? 'xl' : false}>
+            <Grid
+              container
+              justifyContent="space-between"
+              spacing={3}
+            >
+              <Grid item>
+                <Typography color="textPrimary" variant="h5">
+                  히든박스 리스트
                 </Typography>
-              </Breadcrumbs>
-            </Grid>
-            <Grid item>
-              <Box sx={{ m: -1 }}>
-                <Button
-                  color="primary"
-                  startIcon={<PlusIcon fontSize="small" />}
-                  sx={{ m: 1 }}
-                  variant="contained"
-                  component={RouterLink}
-                  to="/dashboard/hiddenboxes/new"
+                <Breadcrumbs
+                  aria-label="breadcrumb"
+                  separator={<ChevronRightIcon fontSize="small" />}
+                  sx={{ mt: 1 }}
                 >
-                  히든박스 추가
-                </Button>
-              </Box>
+                  <Link
+                    color="textPrimary"
+                    component={RouterLink}
+                    to="/dashboard/hiddenboxes"
+                    variant="subtitle2"
+                  >
+                    콘텐츠
+                  </Link>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle2"
+                  >
+                    히든박스
+                  </Typography>
+                </Breadcrumbs>
+              </Grid>
+              <Grid item>
+                <Box sx={{ m: -1 }}>
+                  <Button
+                    color="primary"
+                    startIcon={<PlusIcon fontSize="small" />}
+                    sx={{ m: 1 }}
+                    variant="contained"
+                    component={RouterLink}
+                    to="/dashboard/hiddenboxes/new"
+                  >
+                    히든박스 추가
+                  </Button>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-          <Box sx={{ mt: 3 }}>
-            <HiddenboxListTable
-              hiddenboxes={hiddenboxes}
-              reload={reload}
-            />
-          </Box>
-        </Container>
-      </Box>
+            <Box sx={{ mt: 3 }}>
+              <HiddenboxListTable
+                hiddenboxes={hiddenboxes}
+                reload={reload}
+              />
+            </Box>
+          </Container>
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Typography> 히든박스 권한이 없습니다.</Typography>
+          <Typography>
+            히든박스 권한을 등록하시려면 관리자에게 문의해주세요.
+          </Typography>
+        </Box>
+      )}
     </>
   );
 };
