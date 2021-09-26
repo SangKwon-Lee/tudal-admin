@@ -181,7 +181,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
           <TextField
             fullWidth
             InputProps={{
-              id: '_q',
+              id: 'search',
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon fontSize="small" />

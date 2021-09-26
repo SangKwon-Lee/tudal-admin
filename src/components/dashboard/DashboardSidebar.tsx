@@ -16,9 +16,12 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import useAuth from '../../hooks/useAuth';
 import ChartPieIcon from '../../icons/ChartPie';
+import BriefcaseIcon from '../../icons/Briefcase';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
+import ShoppingBag from '../../icons/ShoppingBag';
+import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
@@ -44,24 +47,34 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '히든박스',
-        path: '/dashboard/hiddenboxes',
-        icon: <FolderOpenIcon fontSize="small" />,
-      },
-      {
         title: '일정',
-        path: '/dashboard/schedule',
+        path: '/dashboard/schedules',
         icon: <CalendarIcon fontSize="small" />,
       },
       {
         title: '종목',
-        path: '/dashboard/stock',
-        icon: <CalendarIcon fontSize="small" />,
+        path: '/dashboard/stocks',
+        icon: <ShoppingBag fontSize="small" />,
       },
       {
         title: '뉴스',
         path: '/dashboard/news-comments',
         icon: <DeviceTabletIcon fontSize="small" />,
+      },
+      {
+        title: '키워드',
+        path: '/dashboard/keywords',
+        icon: <StarIcon fontSize="small" />,
+      },
+      {
+        title: '카테고리',
+        path: '/dashboard/categories',
+        icon: <BriefcaseIcon fontSize="small" />,
+      },
+      {
+        title: '히든박스',
+        path: '/dashboard/hiddenboxes',
+        icon: <FolderOpenIcon fontSize="small" />,
       },
     ],
   },
