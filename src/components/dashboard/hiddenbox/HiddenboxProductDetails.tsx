@@ -54,6 +54,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
   props,
 ) => {
   const { hiddenbox, orders, ...other } = props;
+
   let productMode = 'beforeSale';
   let productModeDisplay = '';
   if (moment().diff(moment(hiddenbox.startDate)) < 0) {
@@ -291,6 +292,18 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
                   {hiddenbox.likes}
+                </Typography>
+              </TableCell>
+            </TableRow>{' '}
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  조회수
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  조회수
                 </Typography>
               </TableCell>
             </TableRow>
