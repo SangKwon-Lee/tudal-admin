@@ -1,67 +1,35 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import useSettings from '../../hooks/useSettings';
+import gtm from '../../lib/gtm';
+import useAuth from 'src/hooks/useAuth';
 import {
   Box,
   Breadcrumbs,
   Button,
   Container,
-  Grid,
   Link,
+  Grid,
   Typography,
 } from '@material-ui/core';
-import { HiddenboxListTable } from '../../components/dashboard/hiddenbox';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PlusIcon from '../../icons/Plus';
-import useSettings from '../../hooks/useSettings';
-import gtm from '../../lib/gtm';
-import type { Hiddenbox } from '../../types/hiddenbox';
-import axios from '../../lib/axios';
-import useMounted from 'src/hooks/useMounted';
-import useAuth from 'src/hooks/useAuth';
 
-const HiddenboxList: FC = () => {
+const ExpertsList: FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
-  const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
-  const mounted = useMounted();
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
 
-  const getHiddenboxes = useCallback(
-    async (reload = false) => {
-      try {
-        const response = await axios.get<Hiddenbox[]>(
-          `/hiddenboxes?isDeleted=0&_sort=created_at:DESC`,
-        );
-        console.log(response.data);
-        if (mounted || reload) {
-          setHiddenboxes(response.data);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [mounted],
-  );
-
-  useEffect(() => {
-    getHiddenboxes();
-  }, [getHiddenboxes]);
-
-  const reload = () => {
-    getHiddenboxes();
-  };
-
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox List | TUDAL Admin</title>
+        <title>Dashboard: Experts List | TUDAL Admin</title>
       </Helmet>
-      {user.role.hiddenbox ? (
+      {user.role.expert ? (
         <Box
           sx={{
             backgroundColor: 'background.default',
@@ -77,7 +45,7 @@ const HiddenboxList: FC = () => {
             >
               <Grid item>
                 <Typography color="textPrimary" variant="h5">
-                  히든박스 리스트
+                  달인 리스트
                 </Typography>
                 <Breadcrumbs
                   aria-label="breadcrumb"
@@ -96,7 +64,7 @@ const HiddenboxList: FC = () => {
                     color="textSecondary"
                     variant="subtitle2"
                   >
-                    히든박스
+                    달인
                   </Typography>
                 </Breadcrumbs>
               </Grid>
@@ -108,19 +76,14 @@ const HiddenboxList: FC = () => {
                     sx={{ m: 1 }}
                     variant="contained"
                     component={RouterLink}
-                    to="/dashboard/hiddenboxes/new"
+                    to="/dashboard/experts/new"
                   >
-                    히든박스 추가
+                    달인 추가
                   </Button>
                 </Box>
               </Grid>
             </Grid>
-            <Box sx={{ mt: 3 }}>
-              <HiddenboxListTable
-                hiddenboxes={hiddenboxes}
-                reload={reload}
-              />
-            </Box>
+            <Box sx={{ mt: 3 }}>컴포넌트 자리</Box>
           </Container>
         </Box>
       ) : (
@@ -134,9 +97,9 @@ const HiddenboxList: FC = () => {
             alignItems: 'center',
           }}
         >
-          <Typography> 히든박스 권한이 없습니다.</Typography>
+          <Typography> 달인 권한이 없습니다.</Typography>
           <Typography>
-            히든박스 권한을 등록하시려면 관리자에게 문의해주세요.
+            달인 권한을 등록하시려면 관리자에게 문의해주세요.
           </Typography>
         </Box>
       )}
@@ -144,4 +107,4 @@ const HiddenboxList: FC = () => {
   );
 };
 
-export default HiddenboxList;
+export default ExpertsList;

@@ -12,9 +12,13 @@ export enum IRoleType {
 }
 
 interface IRole {
+  Lv: number;
   id: number;
   name: string;
   type: IRoleType;
+  hiddenbox: boolean;
+  expert: boolean;
+  lms: boolean;
 }
 
 export interface User {
