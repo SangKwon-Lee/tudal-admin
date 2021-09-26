@@ -37,7 +37,7 @@ const NewsCommentHistory: FC<NewsCommentHistoryProps> = ({
       new Date(a.updated_at).getTime(),
   );
   return _.isEmpty(newsComments) ? (
-    <div data-testid="hello">
+    <div>
       <LinearProgress />
     </div>
   ) : (

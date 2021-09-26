@@ -215,7 +215,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
             </Box>
             <Box sx={{ mt: 2 }}>
               {tagLoading && <LinearProgress />}
-              {console.log('here', values.tags)}
               <Autocomplete
                 multiple
                 fullWidth

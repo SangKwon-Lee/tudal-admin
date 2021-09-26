@@ -36,9 +36,9 @@ export function applySort<T>(list: Array<T>, sort: string): Array<T> {
 }
 
 export function applyPagination<T>(
-  news: Array<T>,
+  list: Array<T>,
   page: number,
   limit: number,
 ): Array<T> {
-  return news.slice(page * limit, page * limit + limit);
+  return list.slice(page * limit, page * limit + limit);
 }
