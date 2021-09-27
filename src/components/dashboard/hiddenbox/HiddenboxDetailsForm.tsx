@@ -19,7 +19,7 @@ import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
 import * as _ from 'lodash';
 import useAuth from 'src/hooks/useAuth';
-import moment from 'moment';
+import productStatusFunc from 'src/utils/productStatus';
 
 interface HiddenboxDetailsProps {
   onBack?: () => void;
@@ -90,23 +90,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   // const isStock = (object: any): object is Stock => {
   //   return object && object.stockcode !== undefined;
   // };
-
-  let productMode = 'beforeSale';
-  if (moment().diff(moment(values.startDate)) < 0) {
-    productMode = 'beforeSale';
-  } else if (
-    moment().diff(moment(values.startDate)) > 0 &&
-    moment().diff(moment(values.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-  } else if (
-    moment().diff(moment(values.endDate)) > 0 &&
-    moment().diff(moment(values.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-  } else {
-    productMode = 'public';
-  }
+  const productStatus = productStatusFunc(values);
 
   return (
     <Formik
@@ -188,7 +172,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 fullWidth
                 helperText={touched.title && errors.title}
                 label="상품명"
-                disabled={productMode === 'onSale'}
+                disabled={productStatus[0] === 'onSale'}
                 name="title"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -210,7 +194,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 multiline
                 helperText={touched.description && errors.description}
                 label="상품요약"
-                disabled={productMode === 'onSale'}
+                disabled={productStatus[0] === 'onSale'}
                 name="description"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -224,7 +208,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 fullWidth
                 label="상품타입"
                 name="productId"
-                disabled={productMode === 'onSale'}
+                disabled={productStatus[0] === 'onSale'}
                 value={values.productId}
                 SelectProps={{ native: true }}
                 variant="outlined"
@@ -247,7 +231,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productMode === 'onSale'}
+                disabled={productStatus[0] === 'onSale'}
                 autoHighlight
                 options={stockListTest}
                 value={values.stocks}
@@ -311,7 +295,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productMode === 'onSale'}
+                disabled={productStatus[0] === 'onSale'}
                 autoHighlight
                 options={tagList}
                 value={values.tags}
@@ -378,7 +362,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               >
                 <Box sx={{ mr: 2 }}>
                   <DateTimePicker
-                    disabled={productMode === 'onSale'}
+                    disabled={productStatus[0] === 'onSale'}
                     label="판매 시작일"
                     onAccept={() => setFieldTouched('startDate')}
                     onChange={(date) =>

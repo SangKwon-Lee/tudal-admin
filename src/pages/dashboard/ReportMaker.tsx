@@ -1,27 +1,21 @@
-import { useCallback, useState, useEffect, useContext } from 'react';
-import type { FC, ChangeEvent } from 'react';
+import { useEffect, useContext } from 'react';
+import type { FC } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
   Breadcrumbs,
-  Button,
   Container,
   Divider,
   Grid,
   Link,
-  Tab,
-  Tabs,
   Typography,
 } from '@material-ui/core';
 import { ReportMakerWizard } from '../../components/dashboard/report';
 import ChevronRightIcon from '../../icons/ChevronRight';
-import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
-import type { Hiddenbox } from '../../types/hiddenbox';
-import axios from '../../lib/axios';
+// import type { Hiddenbox } from '../../types/hiddenbox';
 import useSettings from '../../hooks/useSettings';
-import { alpha } from '@material-ui/core/styles';
 import SocketManager, {
   SocketContext,
 } from '../../contexts/SocketContext';

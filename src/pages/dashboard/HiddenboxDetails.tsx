@@ -22,12 +22,9 @@ import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
 import useMounted from 'src/hooks/useMounted';
-import moment from 'moment';
+import productStatusFunc from 'src/utils/productStatus';
 
-const tabs = [
-  { label: '상품내용', value: 'details' },
-  // { label: '구매내역', value: 'payments' },
-];
+const tabs = [{ label: '상품내용', value: 'details' }];
 
 const HiddenboxDetails: FC = () => {
   const mounted = useMounted();
@@ -76,23 +73,7 @@ const HiddenboxDetails: FC = () => {
   if (!hiddenbox) {
     return null;
   }
-
-  let productMode = 'beforeSale';
-  if (moment().diff(moment(hiddenbox.startDate)) < 0) {
-    productMode = 'beforeSale';
-  } else if (
-    moment().diff(moment(hiddenbox.startDate)) > 0 &&
-    moment().diff(moment(hiddenbox.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-  } else if (
-    moment().diff(moment(hiddenbox.endDate)) > 0 &&
-    moment().diff(moment(hiddenbox.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-  } else {
-    productMode = 'public';
-  }
+  const productStatus = productStatusFunc(hiddenbox);
 
   return (
     <>
@@ -140,8 +121,8 @@ const HiddenboxDetails: FC = () => {
             </Grid>
             <Grid item>
               <Box sx={{ m: -1 }}>
-                {productMode === 'beforeSale' ||
-                productMode === 'onSale' ? (
+                {productStatus[0] === 'beforeSale' ||
+                productStatus[0] === 'onSale' ? (
                   <Button
                     color="primary"
                     component={RouterLink}

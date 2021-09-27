@@ -94,6 +94,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     if (openMobile && onMobileClose) {
       onMobileClose();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const content = (
