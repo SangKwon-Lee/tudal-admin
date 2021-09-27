@@ -136,11 +136,11 @@ const Keywords: React.FC = () => {
     const value = tagCreateRef.current
       ? tagCreateRef.current.value
       : '';
-    return APITag.getList(value, sort, filter, true);
+    return APITag.getList(value);
   }, []);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
-    useAsync<Tag[]>(getTagList, [search], []);
+    useAsync<Tag[]>(getTagList, [], []);
 
   const handleTagInput = _.debounce(refetchTag, 300);
 
