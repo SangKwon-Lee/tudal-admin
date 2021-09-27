@@ -13,7 +13,6 @@ import CalendarIcon from '../../icons/Calendar';
 import ShoppingBag from '../../icons/ShoppingBag';
 import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
-import StarIcon from '../../icons/Star';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
