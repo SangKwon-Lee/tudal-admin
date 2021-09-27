@@ -244,8 +244,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   reason,
                   item,
                 ) => {
-                  console.log(values);
-                  console.log(item);
                   if (reason === 'selectOption') {
                     setFieldValue('stocks', [
                       ...values.stocks,
@@ -301,7 +299,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 value={values.tags}
                 getOptionLabel={(option) => option.name}
                 onChange={(event, keywords: Tag[], reason, item) => {
-                  console.log(reason);
                   if (reason === 'selectOption') {
                     setFieldValue('tags', [
                       ...values.tags,

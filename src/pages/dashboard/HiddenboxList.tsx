@@ -26,7 +26,6 @@ const HiddenboxList: FC = () => {
   const { user } = useAuth();
   const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
   const mounted = useMounted();
-
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);

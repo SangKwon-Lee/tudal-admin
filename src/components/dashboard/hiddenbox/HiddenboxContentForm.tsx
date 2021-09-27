@@ -14,9 +14,6 @@ import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import productStatusFunc from 'src/utils/productStatus';
 import 'tui-color-picker/dist/tui-color-picker.css';
-// import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
-// import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-// import { Editor } from '@toast-ui/react-editor';
 
 import moment from 'moment';
 import { cmsServer } from '../../../lib/axios';
@@ -102,10 +99,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
 
       if (editorRef.current) {
         const contents = log();
-
-        // const contents = editorRef.current
-        //   .getInstance()
-        //   .getMarkdown();
         setValues({
           ...values,
           contents: contents,
@@ -164,7 +157,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
     <form onSubmit={handleSubmit} {...other}>
       <Card sx={{ p: 3 }}>
         <Typography color="textPrimary" variant="h6">
-          리포트 내용을 입력해주세요.
+          히든박스 내용을 입력해주세요.
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <Editor
@@ -289,19 +282,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
                 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
             }}
           />
-          {/* <Editor
-            ref={editor}
-            initialValue={values.contents}
-            previewStyle="vertical"
-            height="400px"
-            initialEditType="wysiwyg"
-            useCommandShortcut={true}
-            hooks={{
-              addImageBlobHook: handleUploadImage,
-            }}
-            //@ts-ignore
-            plugins={[colorSyntax]}
-          /> */}
         </Paper>
         {error && (
           <Box sx={{ mt: 2 }}>

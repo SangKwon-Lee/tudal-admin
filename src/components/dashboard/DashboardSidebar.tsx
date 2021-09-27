@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -7,7 +7,6 @@ import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
-import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import StarIcon from '../../icons/Star';
@@ -15,6 +14,7 @@ import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
+import useAuth from 'src/hooks/useAuth';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -51,11 +51,6 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '히든박스',
-        path: '/dashboard/hiddenboxes',
-        icon: <FolderOpenIcon fontSize="small" />,
-      },
-      {
         title: '일정',
         path: '/dashboard/schedule',
         icon: <CalendarIcon fontSize="small" />,
@@ -86,6 +81,8 @@ const sections = [
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   const { onMobileClose, openMobile } = props;
+  const [filterSection, setFilterSection] = useState([]);
+  const { user } = useAuth();
   const location = useLocation();
   const lgUp = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up('lg'),
@@ -94,8 +91,18 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     if (openMobile && onMobileClose) {
       onMobileClose();
     }
+    handleFilterSection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
+  const handleFilterSection = () => {
+    if (user.role.name === 'CP') {
+      const section = sections.filter(
+        (data) => data.title !== 'Management',
+      );
+      setFilterSection(section);
+    }
+  };
 
   const content = (
     <Box
@@ -127,18 +134,19 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
         </Box>
         <Divider />
         <Box sx={{ p: 2 }}>
-          {sections.map((section) => (
-            <NavSection
-              key={section.title}
-              pathname={location.pathname}
-              sx={{
-                '& + &': {
-                  mt: 3,
-                },
-              }}
-              {...section}
-            />
-          ))}
+          {filterSection &&
+            filterSection.map((section) => (
+              <NavSection
+                key={section.title}
+                pathname={location.pathname}
+                sx={{
+                  '& + &': {
+                    mt: 3,
+                  },
+                }}
+                {...section}
+              />
+            ))}
         </Box>
       </Scrollbar>
     </Box>
