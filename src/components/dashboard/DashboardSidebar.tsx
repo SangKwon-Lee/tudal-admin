@@ -16,6 +16,7 @@ import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
+import FolderOpenIcon from 'src/icons/FolderOpen';
 import useAuth from 'src/hooks/useAuth';
 
 interface DashboardSidebarProps {
