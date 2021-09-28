@@ -40,23 +40,29 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
-  const categoryOptions = {
-    1: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: '33,000' },
-      { label: '프리미엄(115,000원)', value: '115,000' },
-    ],
-    2: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-    3: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-  };
+  // const categoryOptions = {
+  //   1: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: '33,000' },
+  //     { label: '프리미엄(115,000원)', value: '115,000' },
+  //   ],
+  //   2: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  //   3: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  // };
+
+  const categoryOptions = [
+    { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
+    { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+    { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  ];
 
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
@@ -219,11 +225,15 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   }
                 }}
               >
-                {categoryOptions[user.role.Lv].map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
+                {categoryOptions &&
+                  categoryOptions.map((category) => (
+                    <option
+                      key={category.value}
+                      value={category.value}
+                    >
+                      {category.label}
+                    </option>
+                  ))}
               </TextField>
             </Box>
             <Box sx={{ mt: 2 }}>
