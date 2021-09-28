@@ -148,13 +148,14 @@ const HiddenboxDetails: FC = () => {
               value={currentTab}
               variant="scrollable"
             >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  label={tab.label}
-                  value={tab.value}
-                />
-              ))}
+              {tabs &&
+                tabs.map((tab) => (
+                  <Tab
+                    key={tab.value}
+                    label={tab.label}
+                    value={tab.value}
+                  />
+                ))}
             </Tabs>
           </Box>
           <Divider />

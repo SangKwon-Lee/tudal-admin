@@ -120,7 +120,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
     console.log('values are changed', values, newHiddenbox);
   };
 
-  const productStatus = productStatusFunc(newHiddenbox);
+  const productStatus = productStatusFunc(newHiddenbox, mode);
 
   return (
     <div {...props}>

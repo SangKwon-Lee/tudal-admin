@@ -30,7 +30,7 @@ import SearchIcon from '../../../icons/Search';
 import ChatIcon from '../../../icons/ChatAlt';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import Scrollbar from '../../layout/Scrollbar';
-import axios, { CMSURL, apiServer } from '../../../lib/axios';
+import axios, { CMSURL } from '../../../lib/axios';
 import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
 
@@ -219,7 +219,7 @@ const descendingComparator = (
   b: Hiddenbox,
   orderBy: string,
 ): number => {
-  if (orderBy === 'productId') {
+  if (orderBy === 'productId' || orderBy === 'viewCount') {
     if (Number(b[orderBy]) < Number(a[orderBy])) {
       return -1;
     }
@@ -326,7 +326,8 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     setSalesDataLoaded(true);
   };
 
-  const fetchComments = async (hiddenboxId) => {
+  const fetchComments = async (hiddenboxId: number) => {
+    console.log(hiddenboxId);
     try {
       const response = await axios.get(
         `/hiddenbox-comments?hiddenboxId=${hiddenboxId}`,
@@ -336,7 +337,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
         setCommentOpen(true);
       }
     } catch (e) {
-    } finally {
+      console.log(e);
     }
   };
 
@@ -355,13 +356,19 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const handleDelete = async () => {
     try {
       const hiddenboxId = selectedHiddenboxes[0];
-      const response = await apiServer.delete(
-        `/hiddenbox/${hiddenboxId.toString()}`,
+      const response = await axios.delete(
+        `/hiddenboxes/${hiddenboxId.toString()}`,
+        {
+          data: {
+            id: hiddenboxId,
+          },
+        },
       );
       if (response.status === 200) {
         props.reload();
       }
     } catch (e) {
+      alert('삭제할 수 없습니다. 관리자에게 문의해주세요.');
     } finally {
       setOpen(false);
     }
@@ -511,13 +518,14 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
           value={currentTab}
           variant="scrollable"
         >
-          {tabs.map((tab) => (
-            <Tab
-              key={tab.value}
-              label={tab.label}
-              value={tab.value}
-            />
-          ))}
+          {tabs &&
+            tabs.map((tab) => (
+              <Tab
+                key={tab.value}
+                label={tab.label}
+                value={tab.value}
+              />
+            ))}
         </Tabs>
         <Divider />
         <Box
@@ -566,11 +574,12 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {sortOptions.map((option, index) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {sortOptions &&
+                sortOptions.map((option, index) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
             </TextField>
           </Box>
         </Box>
@@ -635,99 +644,106 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedHiddenboxes.map((hiddenbox) => {
-                  const isHiddenboxSelected =
-                    selectedHiddenboxes.includes(hiddenbox.id);
-                  return (
-                    <TableRow
-                      hover
-                      key={hiddenbox.id}
-                      selected={isHiddenboxSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isHiddenboxSelected}
-                          color="primary"
-                          onChange={(event) =>
-                            handleSelectOneHiddenbox(
-                              event,
-                              hiddenbox.id,
-                            )
-                          }
-                          value={isHiddenboxSelected}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                          }}
-                        >
-                          <Box sx={{ ml: 1, maxWidth: '150px' }}>
-                            <Link
-                              color="inherit"
-                              component={RouterLink}
-                              to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                              variant="subtitle2"
-                            >
-                              {hiddenbox.title}
-                            </Link>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {hiddenbox.author &&
-                                hiddenbox.author.nickname}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          maxWidth: '180px',
-                          minWidth: '180px',
-                        }}
+                {paginatedHiddenboxes &&
+                  paginatedHiddenboxes.map((hiddenbox) => {
+                    const isHiddenboxSelected =
+                      selectedHiddenboxes.includes(hiddenbox.id);
+                    return (
+                      <TableRow
+                        hover
+                        key={hiddenbox.id}
+                        selected={isHiddenboxSelected}
                       >
-                        {`${moment(hiddenbox.startDate).format(
-                          'YYYY년 M월 D일 HH:mm',
-                        )}-${moment(hiddenbox.endDate).format(
-                          'YYYY년 M월 D일 HH:mm',
-                        )}`}
-                      </TableCell>
-                      <TableCell>
-                        {moment(hiddenbox.publicDate).format(
-                          'YYYY년 M월 D일 HH:mm',
-                        )}
-                      </TableCell>
-                      <TableCell>{hiddenbox.productId}</TableCell>
-                      <TableCell>{hiddenbox.orders}</TableCell>
-                      <TableCell>{hiddenbox.likes}</TableCell>
-                      <TableCell>{hiddenbox.viewCount}</TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          onClick={() => {
-                            onClickComment(hiddenbox);
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isHiddenboxSelected}
+                            color="primary"
+                            onChange={(event) =>
+                              handleSelectOneHiddenbox(
+                                event,
+                                hiddenbox.id,
+                              )
+                            }
+                            value={isHiddenboxSelected}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                ml: 1,
+                                maxWidth: '150px',
+                                wordBreak: 'break-all',
+                              }}
+                            >
+                              <Link
+                                color="inherit"
+                                component={RouterLink}
+                                to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                                variant="subtitle2"
+                              >
+                                {hiddenbox.title}
+                              </Link>
+                              <Typography
+                                color="textSecondary"
+                                variant="body2"
+                              >
+                                {hiddenbox.author &&
+                                  hiddenbox.author.nickname}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            maxWidth: '180px',
+                            minWidth: '180px',
                           }}
                         >
-                          <ChatIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          component={RouterLink}
-                          to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
-                        >
-                          <PencilAltIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          component={RouterLink}
-                          to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                        >
-                          <ArrowRightIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          {`${moment(hiddenbox.startDate).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}-${moment(hiddenbox.endDate).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}`}
+                        </TableCell>
+                        <TableCell>
+                          {moment(hiddenbox.publicDate).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}
+                        </TableCell>
+                        <TableCell>{hiddenbox.productId}</TableCell>
+                        <TableCell>{hiddenbox.orders}</TableCell>
+                        <TableCell>{hiddenbox.likes}</TableCell>
+                        <TableCell>{hiddenbox.viewCount}</TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            onClick={() => {
+                              onClickComment(hiddenbox);
+                            }}
+                          >
+                            <ChatIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            component={RouterLink}
+                            to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
+                          >
+                            <PencilAltIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            component={RouterLink}
+                            to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                          >
+                            <ArrowRightIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </Box>
@@ -768,7 +784,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
             px: 3,
           }}
         >
-          <Box sx={{ pb: 3 }}>
+          <Box sx={{ pb: 3, width: 700 }}>
             <Typography color="inherit" variant="h5">
               히든박스 코멘트
             </Typography>

@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import useSettings from '../../hooks/useSettings';
@@ -15,14 +15,43 @@ import {
 } from '@material-ui/core';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PlusIcon from '../../icons/Plus';
+import ExpertListTable from '../../components/dashboard/expert/ExpertListTable';
+import useMounted from 'src/hooks/useMounted';
+import axios from 'src/lib/axios';
 
 const ExpertsList: FC = () => {
   const { settings } = useSettings();
+  const [experts, setExperts] = useState([]);
   const { user } = useAuth();
-
+  const mounted = useMounted();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
+
+  const getExperts = useCallback(
+    async (reload = false) => {
+      try {
+        const response = await axios.get(
+          `/expert-feeds?&_sort=created_at:DESC`,
+        );
+        console.log(response.data);
+        if (mounted || reload) {
+          setExperts(response.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [mounted],
+  );
+
+  useEffect(() => {
+    getExperts();
+  }, [getExperts]);
+
+  const reload = () => {
+    getExperts();
+  };
 
   return (
     <>
@@ -83,7 +112,9 @@ const ExpertsList: FC = () => {
                 </Box>
               </Grid>
             </Grid>
-            <Box sx={{ mt: 3 }}>컴포넌트 자리</Box>
+            <Box sx={{ mt: 3 }}>
+              <ExpertListTable experts={experts} reload={reload} />
+            </Box>
           </Container>
         </Box>
       ) : (

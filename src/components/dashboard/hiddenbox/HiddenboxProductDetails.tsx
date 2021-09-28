@@ -250,7 +250,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {hiddenbox.stocks.map(
+                  {hiddenbox?.stocks.map(
                     (stock) => `${stock.name}(${stock.code})\n`,
                   )}
                 </Typography>
@@ -264,7 +264,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {hiddenbox.tags.map((tag) => `#${tag.name} `)}
+                  {hiddenbox?.tags.map((tag) => `#${tag.name} `)}
                 </Typography>
               </TableCell>
             </TableRow>
