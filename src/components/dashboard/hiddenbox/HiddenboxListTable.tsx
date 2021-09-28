@@ -54,7 +54,9 @@ type Sort =
   | 'productId|desc'
   | 'productId|asc'
   | 'likes|desc'
-  | 'likes|asc';
+  | 'likes|asc'
+  | 'viewCount|desc'
+  | 'viewCount|asc';
 
 interface SortOption {
   value: Sort;
@@ -116,6 +118,14 @@ const sortOptions: SortOption[] = [
   {
     label: '좋아요 낮은순',
     value: 'likes|asc',
+  },
+  {
+    label: '조회수 높은순',
+    value: 'viewCount|desc',
+  },
+  {
+    label: '조회수 낮은순',
+    value: 'viewCount|asc',
   },
 ];
 
@@ -209,7 +219,7 @@ const descendingComparator = (
   b: Hiddenbox,
   orderBy: string,
 ): number => {
-  if (orderBy === 'productId' || orderBy === 'likes') {
+  if (orderBy === 'productId') {
     if (Number(b[orderBy]) < Number(a[orderBy])) {
       return -1;
     }
@@ -290,6 +300,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
     if (hiddenboxes.length > 0) {
       fetchSalesCount();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hiddenboxes]);
 
   useEffect(() => {
@@ -692,7 +703,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                       <TableCell>{hiddenbox.productId}</TableCell>
                       <TableCell>{hiddenbox.orders}</TableCell>
                       <TableCell>{hiddenbox.likes}</TableCell>
-                      <TableCell>조회수</TableCell>
+                      <TableCell>{hiddenbox.viewCount}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           onClick={() => {

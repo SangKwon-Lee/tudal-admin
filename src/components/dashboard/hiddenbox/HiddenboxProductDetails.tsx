@@ -17,6 +17,7 @@ import moment from 'moment';
 import axios, { CMSURL } from '../../../lib/axios';
 import { Viewer } from '@toast-ui/react-editor';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
+import productStatusFunc from 'src/utils/productStatus';
 
 interface HiddenboxProductDetails {
   hiddenbox: Hiddenbox;
@@ -50,37 +51,19 @@ interface HiddenboxProductDetails {
 //   },
 // }));
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
   props,
 ) => {
   const { hiddenbox, orders, ...other } = props;
 
-  let productMode = 'beforeSale';
-  let productModeDisplay = '';
-  if (moment().diff(moment(hiddenbox.startDate)) < 0) {
-    productMode = 'beforeSale';
-    productModeDisplay = '판매 전';
-  } else if (
-    moment().diff(moment(hiddenbox.startDate)) > 0 &&
-    moment().diff(moment(hiddenbox.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-    productModeDisplay = '판매 중';
-  } else if (
-    moment().diff(moment(hiddenbox.endDate)) > 0 &&
-    moment().diff(moment(hiddenbox.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-    productModeDisplay = '판매 완료';
-  } else {
-    productMode = 'public';
-    productModeDisplay = '공개';
-  }
+  const productStatus = productStatusFunc(hiddenbox);
 
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchComments = async () => {
@@ -172,10 +155,12 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               <TableCell>
                 <Label
                   color={
-                    productMode === 'onSale' ? 'success' : 'error'
+                    productStatus[0] === 'onSale'
+                      ? 'success'
+                      : 'error'
                   }
                 >
-                  {productModeDisplay}
+                  {productStatus[1]}
                 </Label>
               </TableCell>
             </TableRow>
@@ -294,7 +279,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
                   {hiddenbox.likes}
                 </Typography>
               </TableCell>
-            </TableRow>{' '}
+            </TableRow>
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
@@ -303,7 +288,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  조회수
+                  {hiddenbox.viewCount ? hiddenbox.viewCount : 0}
                 </Typography>
               </TableCell>
             </TableRow>

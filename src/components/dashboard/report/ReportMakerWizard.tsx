@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import type { FC } from "react";
-import * as Yup from "yup";
-import { Formik } from "formik";
-import { DatePicker } from "@material-ui/lab";
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
+import * as Yup from 'yup';
+import { Formik } from 'formik';
+import { DatePicker } from '@material-ui/lab';
 import {
   Box,
   Button,
@@ -12,30 +12,28 @@ import {
   IconButton,
   TextField,
   Typography,
-  Link,
   Switch,
-} from "@material-ui/core";
-import PlusIcon from "../../../icons/Plus";
-import moment from "moment";
-import axios, { apiServer, cmsServer } from "../../../lib/axios";
-import CheckIcon from "../../../icons/Check";
-import { ReportStockItem } from "./";
-import { truncate } from "fs/promises";
+} from '@material-ui/core';
+import PlusIcon from '../../../icons/Plus';
+import moment from 'moment';
+import axios from '../../../lib/axios';
+import { ReportStockItem } from './';
+// import { truncate } from 'fs/promises';
 
 interface ReportMakerWizardProps {}
 
-type Stock = {
-  stockcode: string;
-  stockname: string;
-};
+// type Stock = {
+//   stockcode: string;
+//   stockname: string;
+// };
 
 const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
   const { ...other } = props;
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState('');
   const [values, setValues] = useState<any>({
     tags: [],
-    startDate: moment().subtract(60, "days").format("YYYY-MM-DD"),
-    endDate: moment().format("YYYY-MM-DD"),
+    startDate: moment().subtract(60, 'days').format('YYYY-MM-DD'),
+    endDate: moment().format('YYYY-MM-DD'),
   });
   const [tagList, setTagList] = useState([]);
   const [showReport, setShowReport] = useState(false);
@@ -45,7 +43,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
   });
 
   useEffect(() => {
-    console.log("TagList is changed", tagList);
+    console.log('TagList is changed', tagList);
     if (tagList.length > 0) {
       setShowReport(true);
     } else {
@@ -54,7 +52,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
   }, [tagList]);
 
   const getKeywords = (tags) => {
-    let keywords = "";
+    let keywords = '';
     tags.map((tag) => (keywords += `#${tag.name} `));
     return keywords;
   };
@@ -73,7 +71,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
               newTagList = newTagList.concat(response.data);
               console.log(response.data);
             }
-          })
+          }),
         );
         setTagList(newTagList);
         resolve(true);
@@ -102,17 +100,17 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
         })}
         onSubmit={async (
           values,
-          { setErrors, setStatus, setSubmitting }
+          { setErrors, setStatus, setSubmitting },
         ): Promise<void> => {
           try {
             try {
               setTagList([]);
               if (values.tags && values.tags.length > 0) {
                 await fetchTags(values.tags);
-                console.log("TagList", tagList);
+                console.log('TagList', tagList);
               }
             } catch (error) {
-              console.log("fetch failed", error);
+              console.log('fetch failed', error);
             }
             setStatus({ success: true });
             setSubmitting(false);
@@ -138,7 +136,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
           <form
             onSubmit={handleSubmit}
             onKeyPress={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === 'Enter') {
                 e.preventDefault();
               }
             }}
@@ -149,7 +147,8 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                 리포트 생성
               </Typography>
               <Typography color="textSecondary" variant="body1">
-                Alpha Version. 날짜 및 태그 입력 후 생성을 하시면 됩니다.
+                Alpha Version. 날짜 및 태그 입력 후 생성을 하시면
+                됩니다.
               </Typography>
               {/* <Box sx={{ mt: 2 }}>
                 <TextField
@@ -167,8 +166,8 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
               <Box sx={{ mt: 2 }}>
                 <Box
                   sx={{
-                    alignItems: "center",
-                    display: "flex",
+                    alignItems: 'center',
+                    display: 'flex',
                     mt: 3,
                   }}
                 >
@@ -177,23 +176,25 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                     label="태그"
                     name="tags"
                     onChange={(event): void => {
-                      const val = (event.target.value || "").replace(
+                      const val = (event.target.value || '').replace(
                         /\s+/gi,
-                        ""
+                        '',
                       );
                       setTag(val);
                     }}
                     onKeyPress={(e): void => {
-                      if (!tag || e.key !== "Enter") {
+                      if (!tag || e.key !== 'Enter') {
                         return;
                       }
 
-                      if (values.tags.find((element) => element === tag)) {
+                      if (
+                        values.tags.find((element) => element === tag)
+                      ) {
                         return;
                       }
 
-                      setFieldValue("tags", [...values.tags, tag]);
-                      setTag("");
+                      setFieldValue('tags', [...values.tags, tag]);
+                      setTag('');
                     }}
                     value={tag}
                     variant="outlined"
@@ -205,12 +206,14 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                         return;
                       }
 
-                      if (values.tags.find((element) => element === tag)) {
+                      if (
+                        values.tags.find((element) => element === tag)
+                      ) {
                         return;
                       }
 
-                      setFieldValue("tags", [...values.tags, tag]);
-                      setTag("");
+                      setFieldValue('tags', [...values.tags, tag]);
+                      setTag('');
                     }}
                   >
                     <PlusIcon fontSize="small" />
@@ -220,15 +223,17 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                   {values.tags.map((_tag, i) => (
                     <Chip
                       onDelete={(): void => {
-                        const newTags = values.tags.filter((t) => t !== _tag);
+                        const newTags = values.tags.filter(
+                          (t) => t !== _tag,
+                        );
 
-                        setFieldValue("tags", newTags);
+                        setFieldValue('tags', newTags);
                       }}
                       // eslint-disable-next-line react/no-array-index-key
                       key={i}
                       label={_tag}
                       sx={{
-                        "& + &": {
+                        '& + &': {
                           ml: 1,
                         },
                       }}
@@ -238,50 +243,66 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                 </Box>
                 {Boolean(touched.tags && errors.tags) && (
                   <Box sx={{ mt: 2 }}>
-                    <FormHelperText error>{errors.tags}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.tags}
+                    </FormHelperText>
                   </Box>
                 )}
                 {Boolean(touched.stocks && errors.stocks) && (
                   <Box sx={{ mt: 2 }}>
-                    <FormHelperText error>{errors.stocks}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.stocks}
+                    </FormHelperText>
                   </Box>
                 )}
                 <Box
                   sx={{
-                    display: "flex",
+                    display: 'flex',
                     mt: 4,
                   }}
                 >
                   <Box sx={{ mr: 2 }}>
                     <DatePicker
                       label="리포트 시작 날짜"
-                      onChange={(date) => setFieldValue("startDate", date)}
-                      onClose={() => setFieldTouched("startDate")}
+                      onChange={(date) =>
+                        setFieldValue('startDate', date)
+                      }
+                      onClose={() => setFieldTouched('startDate')}
                       value={values.startDate}
                       disablePast={false}
-                      renderInput={(params) => <TextField {...params} />}
+                      renderInput={(params) => (
+                        <TextField {...params} />
+                      )}
                     />
                   </Box>
                   <Box sx={{ mr: 2 }}>
                     <DatePicker
                       label="리포트 종료 날짜"
-                      onChange={(date) => setFieldValue("endDate", date)}
-                      onClose={() => setFieldTouched("endDate")}
+                      onChange={(date) =>
+                        setFieldValue('endDate', date)
+                      }
+                      onClose={() => setFieldTouched('endDate')}
                       value={values.endDate}
                       disablePast={false}
                       minDate={values.startDate}
-                      renderInput={(params) => <TextField {...params} />}
+                      renderInput={(params) => (
+                        <TextField {...params} />
+                      )}
                     />
                   </Box>
                 </Box>
                 {Boolean(touched.startDate && errors.startDate) && (
                   <Box sx={{ mt: 2 }}>
-                    <FormHelperText error>{errors.startDate}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.startDate}
+                    </FormHelperText>
                   </Box>
                 )}
                 {Boolean(touched.endDate && errors.endDate) && (
                   <Box sx={{ mt: 2 }}>
-                    <FormHelperText error>{errors.endDate}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.endDate}
+                    </FormHelperText>
                   </Box>
                 )}
               </Box>
@@ -294,8 +315,8 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                   일치하는 태그만 검색
                 </Typography>
                 <Typography color="textSecondary" variant="body2">
-                  이 옵션을 체크 해제하면, '윤석열' 검색시 '윤석열정책' 등도
-                  포함하여 검색합니다.
+                  이 옵션을 체크 해제하면, '윤석열' 검색시
+                  '윤석열정책' 등도 포함하여 검색합니다.
                 </Typography>
                 <Switch
                   color="primary"
@@ -319,8 +340,8 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
                   기간 내에 기사 있는 종목만 표시
                 </Typography>
                 <Typography color="textSecondary" variant="body2">
-                  이 옵션을 체크 해제하면, 해당 기간 내에 기사가 없어도 종목은
-                  표시가 됩니다.
+                  이 옵션을 체크 해제하면, 해당 기간 내에 기사가
+                  없어도 종목은 표시가 됩니다.
                 </Typography>
                 <Switch
                   color="primary"
@@ -337,7 +358,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
               </Box>
               <Box
                 sx={{
-                  display: "flex",
+                  display: 'flex',
                   mt: 6,
                 }}
               >
@@ -357,7 +378,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
       {showReport ? (
         <Card sx={{ mt: 3, p: 3 }}>
           <Typography color="textPrimary" variant="h4">
-            {"키워드"}
+            {'키워드'}
           </Typography>
           <Typography color="textPrimary" variant="subtitle2">
             {getKeywords(tagList)}
@@ -365,7 +386,7 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
           {tagList.length > 0 &&
             tagList.map((tag) => {
               return (
-                <Box key={"tagList" + tag.id} sx={{ mt: 3 }}>
+                <Box key={'tagList' + tag.id} sx={{ mt: 3 }}>
                   <Typography color="textPrimary" variant="h5">
                     {tag.name}
                   </Typography>

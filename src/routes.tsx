@@ -7,7 +7,6 @@ import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
 import News from './pages/dashboard/News';
-import Stock from './pages/dashboard/Stock';
 
 const Loadable = (Component) => (props) =>
   (
@@ -72,6 +71,9 @@ const CategoryList = Loadable(
 
 const ExpertsList = Loadable(
   lazy(() => import('./pages/dashboard/ExpertsList')),
+);
+const ExpertCreate = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertCreate')),
 );
 
 // Viewer pages
@@ -240,6 +242,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <ExpertsList />,
+          },
+          {
+            path: '/new',
+            element: <ExpertCreate />,
           },
         ],
       },

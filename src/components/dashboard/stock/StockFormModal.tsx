@@ -1,13 +1,5 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
-import {
-  IStockComment,
-  IStockDetailsWithTagCommentNews,
-} from 'src/types/stock';
+import React, { useState, useCallback, useRef } from 'react';
+import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import {
   Dialog,
   Divider,

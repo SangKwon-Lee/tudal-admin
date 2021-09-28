@@ -12,12 +12,8 @@ import {
 } from '@material-ui/core';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
-
+import productStatusFunc from 'src/utils/productStatus';
 import 'tui-color-picker/dist/tui-color-picker.css';
-
-// import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
-// import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-// import { Editor } from '@toast-ui/react-editor';
 
 import moment from 'moment';
 import { cmsServer } from '../../../lib/axios';
@@ -51,62 +47,48 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
     props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
   const editorRef = useRef(null);
   const log = () => {
     if (editorRef.current) {
       return editorRef.current.getContent();
     }
   };
-  let productMode = 'beforeSale';
-  if (moment().diff(moment(values.startDate)) < 0) {
-    productMode = 'beforeSale';
-  } else if (
-    moment().diff(moment(values.startDate)) > 0 &&
-    moment().diff(moment(values.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-  } else if (
-    moment().diff(moment(values.endDate)) > 0 &&
-    moment().diff(moment(values.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-  } else {
-    productMode = 'public';
-  }
-  // const editor = useRef(null);
-  const handleUploadImage = async (blob, callback) => {
-    /* 
-      blob: {
-        lastModified: 1565934119000,
-        lastModifiedDate: Fri Aug 16 2019 14:41:59 GMT+0900 (대한민국 표준시) {},
-        name: "스크린샷 2019-08-16 오후 2.41.53.png",
-        size: 124076,
-        type: "image/png",
-        webkitRelativePath: ""
-      }
-    */
-    const regexp = /(?:\.([^.]+))?$/;
-    const ext = regexp.exec(blob.name)[1];
-    const imageName = `hb-${moment().format(
-      'YYYYMMDDHHmmss',
-    )}.${ext}`;
 
-    try {
-      // Koscom Cloud에 업로드하기!
-      await S3.putObject({
-        Bucket: bucket_name,
-        Key: imageName,
-        ACL: 'public-read',
-        // ACL을 지우면 전체공개가 되지 않습니다.
-        Body: blob,
-      }).promise();
-      const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
-      callback(imageUrl, imageName);
-    } catch (error) {
-      return false;
-    }
-  };
+  const productStatus = productStatusFunc(values);
+
+  // const editor = useRef(null);
+  // const handleUploadImage = async (blob) => {
+  //   /*
+  //     blob: {
+  //       lastModified: 1565934119000,
+  //       lastModifiedDate: Fri Aug 16 2019 14:41:59 GMT+0900 (대한민국 표준시) {},
+  //       name: "스크린샷 2019-08-16 오후 2.41.53.png",
+  //       size: 124076,
+  //       type: "image/png",
+  //       webkitRelativePath: ""
+  //     }
+  //   */
+  //   const regexp = /(?:\.([^.]+))?$/;
+  //   const ext = regexp.exec(blob);
+  //   const imageName = `hb-${moment().format(
+  //     'YYYYMMDDHHmmss',
+  //   )}.${ext}`;
+
+  //   try {
+  //     // Koscom Cloud에 업로드하기!
+  //     await S3.putObject({
+  //       Bucket: bucket_name,
+  //       Key: imageName,
+  //       ACL: 'public-read',
+  //       // ACL을 지우면 전체공개가 되지 않습니다.
+  //       Body: blob,
+  //     }).promise();
+  //     const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
+  //     // callback(imageUrl, imageName);
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
@@ -117,10 +99,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
 
       if (editorRef.current) {
         const contents = log();
-
-        // const contents = editorRef.current
-        //   .getInstance()
-        //   .getMarkdown();
         setValues({
           ...values,
           contents: contents,
@@ -179,11 +157,11 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
     <form onSubmit={handleSubmit} {...other}>
       <Card sx={{ p: 3 }}>
         <Typography color="textPrimary" variant="h6">
-          리포트 내용을 입력해주세요.
+          히든박스 내용을 입력해주세요.
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <Editor
-            disabled={productMode === 'onSale'}
+            disabled={productStatus[0] === 'onSale'}
             ref={editorRef}
             initialValue={values.contents}
             onInit={(evt, editor) => (editorRef.current = editor)}
@@ -193,36 +171,73 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
               language: 'ko_KR',
               height: 500,
               menubar: false,
+              paste_as_text: true,
               automatic_uploads: true,
               paste_data_images: true,
               file_picker_types: 'file image media',
+              images_upload_handler: async function (
+                blobInfo,
+                success,
+                failure,
+              ) {
+                try {
+                  // Koscom Cloud에 업로드하기!
+                  await S3.putObject({
+                    Bucket: bucket_name,
+                    Key: blobInfo.filename(),
+                    ACL: 'public-read',
+                    // ACL을 지우면 전체공개가 되지 않습니다.
+                    Body: blobInfo.blob(),
+                  }).promise();
+                  const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${blobInfo.filename()}`;
+                  success(imageUrl);
+                } catch (error) {
+                  return false;
+                }
+              },
               file_picker_callback: function (cb, value, meta) {
                 var input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.setAttribute('accept', 'image/*');
-
-                input.onchange = function () {
+                input.onchange = async function () {
                   //@ts-ignore
                   var file = this.files[0];
+                  const regexp = /(?:\.([^.]+))?$/;
+                  const ext = regexp.exec(file);
+                  const imageName = `hb-${moment().format(
+                    'YYYYMMDDHHmmss',
+                  )}.${ext}`;
+
+                  try {
+                    // Koscom Cloud에 업로드하기!
+                    await S3.putObject({
+                      Bucket: bucket_name,
+                      Key: imageName,
+                      ACL: 'public-read',
+                      // ACL을 지우면 전체공개가 되지 않습니다.
+                      Body: file,
+                    }).promise();
+                    const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
+                    cb(imageUrl, { title: imageName });
+                  } catch (error) {
+                    return false;
+                  }
                   var reader = new FileReader();
-
-                  reader.onload = function () {
-                    var id = 'blobid' + new Date().getTime();
-                    //@ts-ignore
-                    var blobCache =
-                      //@ts-ignore
-                      tinymce.activeEditor.editorUpload.blobCache;
-                    //@ts-ignore
-                    var base64 = reader.result.split(',')[1];
-                    var blobInfo = blobCache.create(id, file, base64);
-                    blobCache.add(blobInfo);
-
-                    // call the callback and populate the Title field with the file name
-                    cb(blobInfo.blobUri(), { title: file.name });
-                  };
+                  // reader.onload = function () {
+                  //   var id = 'blobid' + new Date().getTime();
+                  //   //@ts-ignore
+                  //   var blobCache =
+                  //     //@ts-ignore
+                  //     tinymce.activeEditor.editorUpload.blobCache;
+                  //   //@ts-ignore
+                  //   var base64 = reader.result.split(',')[1];
+                  //   var blobInfo = blobCache.create(id, file, base64);
+                  //   blobCache.add(blobInfo);
+                  //   // call the callback and populate the Title field with the file name
+                  //   cb(blobInfo.blobUri(), { title: file.name });
+                  // };
                   reader.readAsDataURL(file);
                 };
-
                 input.click();
               },
               browser_spellcheck: true,
@@ -242,14 +257,15 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
                 'searchreplace',
                 'visualblocks',
                 'code',
+                'table',
                 'fullscreen',
                 'insertdatetime',
                 'media',
-                // 'table',
                 'paste',
                 'code',
                 'help',
                 'wordcount',
+                'paste',
                 'save',
               ],
               toolbar:
@@ -259,25 +275,13 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
                 ' alignjustify alignleft aligncenter alignright |' +
                 ' bullist numlist |' +
                 ' table tabledelete |' +
-                ' link image' +
-                'image,paste',
+                ' link image |' +
+                ' paste |' +
+                ' image,paste |',
               content_style:
                 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
             }}
           />
-          {/* <Editor
-            ref={editor}
-            initialValue={values.contents}
-            previewStyle="vertical"
-            height="400px"
-            initialEditType="wysiwyg"
-            useCommandShortcut={true}
-            hooks={{
-              addImageBlobHook: handleUploadImage,
-            }}
-            //@ts-ignore
-            plugins={[colorSyntax]}
-          /> */}
         </Paper>
         {error && (
           <Box sx={{ mt: 2 }}>
