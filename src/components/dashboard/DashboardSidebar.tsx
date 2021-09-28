@@ -2,27 +2,21 @@ import { useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  Link,
-  Typography,
-} from '@material-ui/core';
+import { Box, Divider, Drawer } from '@material-ui/core';
 import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ReceiptIcon from '@material-ui/icons/Receipt';
-import useAuth from '../../hooks/useAuth';
 import ChartPieIcon from '../../icons/ChartPie';
+import BriefcaseIcon from '../../icons/Briefcase';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import FolderOpenIcon from '../../icons/FolderOpen';
 import CalendarIcon from '../../icons/Calendar';
+import ShoppingBag from '../../icons/ShoppingBag';
+import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
+import PencilIcon from '../../icons/PencilAlt';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -41,27 +35,52 @@ const sections = [
     ],
   },
   {
-    title: 'Management',
+    title: 'Contents',
     items: [
       {
         title: '히든박스',
         path: '/dashboard/hiddenboxes',
-        icon: <FolderOpenIcon fontSize="small" />,
+        icon: <StarIcon fontSize="small" />,
       },
       {
+        title: '달인',
+        path: '/dashboard/experts',
+        icon: <PencilIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
+    title: 'Management',
+    items: [
+      {
         title: '일정',
-        path: '/dashboard/schedule',
+        path: '/dashboard/schedules',
         icon: <CalendarIcon fontSize="small" />,
       },
       {
         title: '종목',
-        path: '/dashboard/stock',
-        icon: <CalendarIcon fontSize="small" />,
+        path: '/dashboard/stocks',
+        icon: <ShoppingBag fontSize="small" />,
       },
       {
         title: '뉴스',
         path: '/dashboard/news-comments',
         icon: <DeviceTabletIcon fontSize="small" />,
+      },
+      {
+        title: '키워드',
+        path: '/dashboard/keywords',
+        icon: <StarIcon fontSize="small" />,
+      },
+      {
+        title: '카테고리',
+        path: '/dashboard/categories',
+        icon: <BriefcaseIcon fontSize="small" />,
+      },
+      {
+        title: '히든박스',
+        path: '/dashboard/hiddenboxes',
+        icon: <FolderOpenIcon fontSize="small" />,
       },
     ],
   },
@@ -80,11 +99,9 @@ const sections = [
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   const { onMobileClose, openMobile } = props;
   const location = useLocation();
-  const { user } = useAuth();
   const lgUp = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up('lg'),
   );
-
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();

@@ -18,6 +18,7 @@ export async function getList() {
 export async function getDetail(stockcode: string) {
   return await cmsServer.get(`/stocks/detail/${stockcode}`);
 }
+
 export async function getDetailList(
   search: string,
   start: number = 0,
@@ -26,7 +27,7 @@ export async function getDetailList(
   if (search) {
     _query._q = search;
   }
-
+  console.log(search);
   return await cmsServer.get(
     `/stocks/detail?_limit=30&${qs.stringify(_query)}`,
   );

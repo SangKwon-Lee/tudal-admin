@@ -30,7 +30,6 @@ import Label from '../../widgets/Label';
 import SearchIcon from '../../../icons/Search';
 import { Priority, Schedule } from '../../../types/schedule';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
-import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
 
 const getPriorityLabel = (priority) => {
   const scale =

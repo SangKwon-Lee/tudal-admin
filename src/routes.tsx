@@ -63,6 +63,17 @@ const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
 
+const KeywordList = Loadable(
+  lazy(() => import('./pages/dashboard/Keyword')),
+);
+const CategoryList = Loadable(
+  lazy(() => import('./pages/dashboard/Category')),
+);
+
+const ExpertsList = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertsList')),
+);
+
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -170,7 +181,7 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'schedule',
+        path: 'schedules',
         children: [
           {
             path: '/',
@@ -188,11 +199,29 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'stock',
+        path: 'stocks',
         children: [
           {
             path: '/',
             element: <StockList />,
+          },
+        ],
+      },
+      {
+        path: 'keywords',
+        children: [
+          {
+            path: '/',
+            element: <KeywordList />,
+          },
+        ],
+      },
+      {
+        path: 'categories',
+        children: [
+          {
+            path: '/',
+            element: <CategoryList />,
           },
         ],
       },
@@ -202,6 +231,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <ReportMaker />,
+          },
+        ],
+      },
+      {
+        path: 'experts',
+        children: [
+          {
+            path: '/',
+            element: <ExpertsList />,
           },
         ],
       },

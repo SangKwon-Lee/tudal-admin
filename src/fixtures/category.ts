@@ -1,6 +1,6 @@
 import { Category } from 'src/types/schedule';
 
-export const list: Category[] = [
+export const list: any = [
   {
     id: 1,
     name: '경제',

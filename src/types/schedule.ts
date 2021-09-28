@@ -1,9 +1,22 @@
 export interface Tag {
   id: number;
   name: string;
-  isNew?: boolean;
+  summary: string;
+  description: string;
   created_at: string;
   updated_at: string;
+  alias?: ITagAlias[];
+  isDeleted: boolean;
+
+  // 자동완성을 위한 property
+  isNew?: boolean;
+  inputValue?: string;
+}
+
+export interface ITagAlias {
+  id: number;
+  tagId: number;
+  aliasName: string;
 }
 
 export interface Stock {
@@ -16,7 +29,13 @@ export interface Stock {
 export interface Category {
   id: number;
   name: string;
+  isDeleted: boolean;
+  created_at: string;
+  updated_at: string;
+
+  // 자동완성을 위한 property
   isNew?: boolean;
+  inputValue?: string;
 }
 
 export enum Priority {
