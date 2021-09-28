@@ -1,7 +1,12 @@
 import moment from 'moment';
 
-const productStatusFunc = (hiddenbox) => {
-  let productStatus = 'beforeSale';
+type ProductStatus = 'beforeSale' | 'onSale' | 'afterSale' | 'public';
+
+const productStatusFunc = (hiddenbox, mode?: string) => {
+  if (mode === 'create') {
+    return ['beforeSale', '판매 전'];
+  }
+  let productStatus: ProductStatus = 'beforeSale';
   let productModeDisplay = '';
   if (moment().diff(moment(hiddenbox.startDate)) < 0) {
     productStatus = 'beforeSale';

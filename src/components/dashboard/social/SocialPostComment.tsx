@@ -104,7 +104,7 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
           )}
         </Box>
         {!isUpdate ? (
-          <Box>{message}</Box>
+          <Box sx={{ wordBreak: 'break-all' }}>{message}</Box>
         ) : (
           <>
             <TextField

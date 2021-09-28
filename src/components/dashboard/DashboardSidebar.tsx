@@ -44,6 +44,20 @@ const sections = [
         title: '달인',
         path: '/dashboard/experts',
         icon: <PencilIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/experts',
+          },
+          {
+            title: '메뉴관리',
+            path: '/dashboard/experts',
+          },
+          {
+            title: '구독현황',
+            path: '/dashboard/experts',
+          },
+        ],
       },
     ],
   },
@@ -96,6 +110,9 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   }, [location.pathname]);
 
   const handleFilterSection = () => {
+    if (user.role.name === 'Authenticated') {
+      setFilterSection(sections);
+    }
     if (user.role.name === 'CP') {
       const section = sections.filter(
         (data) => data.title !== 'Management',
