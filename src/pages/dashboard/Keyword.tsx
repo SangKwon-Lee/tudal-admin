@@ -69,6 +69,7 @@ import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect
 import Label from 'src/components/widgets/Label';
 import { errorMessage } from 'src/common/error';
 import { isStringEmpty } from 'src/utils/funcs';
+import KeywordMergeDialog from 'src/components/dashboard/keyword/KeywordMergeDialog';
 
 const customFilter = createFilterOptions<any>();
 interface ISortOption {
@@ -129,6 +130,7 @@ const Keywords: React.FC = () => {
     useState<boolean>(false);
   const [openDeleteTag, setOpenDeleteTag] = useState<boolean>(false);
   const [openAlias, setOpenAlias] = useState<boolean>(false);
+  const [openMerge, setOpenMerge] = useState<boolean>(false);
 
   const rowsPerPage = 25;
 
@@ -351,9 +353,6 @@ const Keywords: React.FC = () => {
     });
   };
 
-  {
-    console.log('11', filter);
-  }
   useEffect(() => {
     getList();
   }, [getList]);
@@ -425,7 +424,7 @@ const Keywords: React.FC = () => {
           </Grid>
           <Box my={3}>
             <Typography color="textPrimary" variant="h6">
-              키워드 추가
+              키워드 관리
             </Typography>
             <Card>
               <FormControlLabel
@@ -448,7 +447,7 @@ const Keywords: React.FC = () => {
                   display: 'flex',
                   flexWrap: 'wrap',
                   m: -1,
-                  p: 4,
+                  p: 2,
                 }}
               >
                 {isMultiCreate ? (
@@ -614,6 +613,12 @@ const Keywords: React.FC = () => {
                   </option>
                 ))}
               </TextField>
+              <Button
+                variant="outlined"
+                onClick={() => setOpenMerge(true)}
+              >
+                키워드 통합
+              </Button>
               {filterOptions.map((filter, index) => {
                 return (
                   <FormControlLabel
@@ -633,14 +638,12 @@ const Keywords: React.FC = () => {
                           color="textPrimary"
                           variant="body1"
                         >
-                          {filter.label}
+                          빈 {filter.label}
                         </Typography>
                         <Typography
                           color="textSecondary"
                           variant="caption"
-                        >
-                          (작성되지 않은)
-                        </Typography>
+                        ></Typography>
                       </>
                     }
                   />
@@ -660,6 +663,7 @@ const Keywords: React.FC = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
+                      <TableCell></TableCell>
                       <TableCell>id</TableCell>
                       <TableCell>키워드_1</TableCell>
                       <TableCell>키워드_2</TableCell>
@@ -687,6 +691,9 @@ const Keywords: React.FC = () => {
                               },
                             }}
                           >
+                            <TableCell padding="checkbox">
+                              <Checkbox color="primary" />
+                            </TableCell>
                             <TableCell>{tag.id}</TableCell>
                             <TableCell>
                               <Box
@@ -919,6 +926,15 @@ const Keywords: React.FC = () => {
               isMultiLine={true}
             />
           )}
+
+          {openMerge && (
+            <KeywordMergeDialog
+              isOpen={openMerge}
+              setClose={() => setOpenMerge(false)}
+              reload={getList}
+            />
+          )}
+
           {targetTag && (
             <Dialog
               aria-labelledby="ConfirmModal"

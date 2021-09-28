@@ -86,3 +86,12 @@ export async function findKeywords(tags: string[]): Promise<Tag[]> {
       .map((response) => response.data[0]);
   });
 }
+
+export async function findRelations(tagIds: Number[]) {
+  let params = { id: tagIds };
+  return axios.get('/tags/relations?', { params });
+}
+
+export async function merge(data) {
+  return axios.post('/tags/merge', data);
+}
