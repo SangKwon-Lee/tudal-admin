@@ -40,23 +40,29 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
-  const categoryOptions = {
-    1: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: '33,000' },
-      { label: '프리미엄(115,000원)', value: '115,000' },
-    ],
-    2: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-    3: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-  };
+  // const categoryOptions = {
+  //   1: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: '33,000' },
+  //     { label: '프리미엄(115,000원)', value: '115,000' },
+  //   ],
+  //   2: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  //   3: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  // };
+
+  const categoryOptions = [
+    { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
+    { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+    { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  ];
 
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
@@ -90,8 +96,8 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   // const isStock = (object: any): object is Stock => {
   //   return object && object.stockcode !== undefined;
   // };
-  const productStatus = productStatusFunc(values);
-
+  const productStatus = productStatusFunc(values, mode);
+  console.log(values.endDate);
   return (
     <Formik
       initialValues={{
@@ -219,11 +225,15 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   }
                 }}
               >
-                {categoryOptions[user.role.Lv].map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
+                {categoryOptions &&
+                  categoryOptions.map((category) => (
+                    <option
+                      key={category.value}
+                      value={category.value}
+                    >
+                      {category.label}
+                    </option>
+                  ))}
               </TextField>
             </Box>
             <Box sx={{ mt: 2 }}>
@@ -351,6 +361,10 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   </FormHelperText>
                 </Box>
               )}
+              <Typography color="textPrimary" variant="subtitle2">
+                판매 시작 이후, 판매 종료일, 공개일을 제외한 나머지는
+                수정할 수 없습니다.
+              </Typography>
               <Box
                 sx={{
                   display: 'flex',
@@ -362,9 +376,9 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     disabled={productStatus[0] === 'onSale'}
                     label="판매 시작일"
                     onAccept={() => setFieldTouched('startDate')}
-                    onChange={(date) =>
-                      setFieldValue('startDate', date)
-                    }
+                    onChange={(date) => {
+                      setFieldValue('startDate', date);
+                    }}
                     onClose={() => setFieldTouched('startDate')}
                     value={values.startDate}
                     disablePast={mode === 'edit' ? false : true}
@@ -380,7 +394,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onClose={() => setFieldTouched('endDate')}
                     value={values.endDate}
                     disablePast={mode === 'edit' ? false : true}
-                    minDate={values.startDate}
+                    minDate={values.endDate}
                     renderInput={(props) => <TextField {...props} />}
                   />
                 </Box>
