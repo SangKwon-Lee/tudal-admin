@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
-import { Box, Typography, Container } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import type { TagData } from '../../types/todaykeyword';
 import ReactFC from 'react-fusioncharts';
 import FusionCharts from 'fusioncharts';

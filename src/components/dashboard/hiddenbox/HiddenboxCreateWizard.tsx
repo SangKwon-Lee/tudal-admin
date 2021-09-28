@@ -14,6 +14,7 @@ import HiddenboxContentForm from './HiddenboxContentForm';
 import HiddenboxDetailsForm from './HiddenboxDetailsForm';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import moment from 'moment';
+import productStatusFunc from 'src/utils/productStatus';
 import useAuth from '../../../hooks/useAuth';
 import axios from '../../../lib/axios';
 
@@ -62,6 +63,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
     if (mode === 'edit') {
       getHiddenbox();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getHiddenbox = async () => {
@@ -118,26 +120,12 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
     console.log('values are changed', values, newHiddenbox);
   };
 
-  let productMode = 'beforeSale';
-  if (moment().diff(moment(newHiddenbox.startDate)) < 0) {
-    productMode = 'beforeSale';
-  } else if (
-    moment().diff(moment(newHiddenbox.startDate)) > 0 &&
-    moment().diff(moment(newHiddenbox.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-  } else if (
-    moment().diff(moment(newHiddenbox.endDate)) > 0 &&
-    moment().diff(moment(newHiddenbox.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-  } else {
-    productMode = 'public';
-  }
+  const productStatus = productStatusFunc(newHiddenbox);
 
   return (
     <div {...props}>
-      {productMode === 'beforeSale' || productMode === 'onSale' ? (
+      {productStatus[0] === 'beforeSale' ||
+      productStatus[0] === 'onSale' ? (
         <>
           {!completed ? (
             <>
