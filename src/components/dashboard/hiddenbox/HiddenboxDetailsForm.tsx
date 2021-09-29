@@ -74,15 +74,12 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
-  const getStockListTest = useCallback(() => {
-    const value = stockInput.current ? stockInput.current.value : '';
-    return APIStock.getDetailList(value);
-  }, [stockInput]);
+  const getStockList = useCallback(() => {
+    return APIStock.getSimpleList();
+  }, []);
 
-  const [
-    { data: stockListTest, loading: stockLoading },
-    refetchStock,
-  ] = useAsync<any>(getStockListTest, [stockInput.current], []);
+  const [{ data: stockList, loading: stockLoading }, refetchStock] =
+    useAsync<any>(getStockList, [], []);
 
   const handleStockChange = _.debounce(refetchStock, 300);
 
@@ -97,7 +94,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   //   return object && object.stockcode !== undefined;
   // };
   const productStatus = productStatusFunc(values, mode);
-  console.log(values.endDate);
+
   return (
     <Formik
       initialValues={{
@@ -172,13 +169,16 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               종료일까지 판매가 가능합니다. 그리고 공개일 이후부터
               구매하지 않은 모든 고객에게 해당 상품이 보여집니다.
             </Typography>
+            <Typography color="textSecondary" variant="body1">
+              판매 중에는 종료일, 공개일만 수정이 가능합니다.
+            </Typography>
             <Box sx={{ mt: 2 }}>
               <TextField
                 error={Boolean(touched.title && errors.title)}
                 fullWidth
                 helperText={touched.title && errors.title}
                 label="상품명"
-                disabled={productStatus[0] === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 name="title"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -200,7 +200,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 multiline
                 helperText={touched.description && errors.description}
                 label="상품요약"
-                disabled={productStatus[0] === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 name="description"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -214,7 +214,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 fullWidth
                 label="상품타입"
                 name="productId"
-                disabled={productStatus[0] === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 value={values.productId}
                 SelectProps={{ native: true }}
                 variant="outlined"
@@ -241,9 +241,9 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productStatus[0] === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 autoHighlight
-                options={stockListTest}
+                options={stockList}
                 value={values.stocks}
                 getOptionLabel={(option) =>
                   option.name + `(${option.code})`
@@ -303,7 +303,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productStatus[0] === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 autoHighlight
                 options={tagList}
                 value={values.tags}
@@ -373,7 +373,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               >
                 <Box sx={{ mr: 2 }}>
                   <DateTimePicker
-                    disabled={productStatus[0] === 'onSale'}
+                    // disabled={productStatus[0] === 'onSale'}
                     label="판매 시작일"
                     onAccept={() => setFieldTouched('startDate')}
                     onChange={(date) => {

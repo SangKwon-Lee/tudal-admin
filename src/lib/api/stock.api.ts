@@ -14,6 +14,10 @@ export async function getList() {
   return { data, status };
 }
 
+export async function getSimpleList() {
+  return await cmsServer.get<Stock[]>('/stocks?relations=&_limit=-1');
+}
+
 /** 종목 디테일 */
 export async function getDetail(stockcode: string) {
   return await cmsServer.get(`/stocks/detail/${stockcode}`);
@@ -27,7 +31,7 @@ export async function getDetailList(
   if (search) {
     _query._q = search;
   }
-  console.log(search);
+
   return await cmsServer.get(
     `/stocks/detail?_limit=30&${qs.stringify(_query)}`,
   );

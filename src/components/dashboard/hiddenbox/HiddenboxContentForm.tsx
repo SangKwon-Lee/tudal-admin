@@ -103,20 +103,26 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           ...values,
           contents: contents,
         });
+        console.log('여기', values.stocks);
+        console.log(
+          '여기',
+          values.stocks.map((el) => el.id),
+        );
 
         const newHiddenbox = {
           ...values,
           tags: values.tags.map((tag) => tag.id),
-          startDate: moment(values.startDate)
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss'),
-          endDate: moment(values.endDate)
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss'),
+          stocks: values.stocks.map((stock) => stock.id),
+          contents: contents,
+          startDate: moment(values.startDate).format(
+            'YYYY-MM-DD HH:mm:ss',
+          ),
+          endDate: moment(values.endDate).format(
+            'YYYY-MM-DD HH:mm:ss',
+          ),
           publicDate: moment(values.publicDate).format(
             'YYYY-MM-DD HH:mm:ss',
           ),
-          contents: contents,
         };
 
         if (mode === 'create') {
@@ -167,7 +173,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <Editor
-            disabled={productStatus[0] === 'onSale'}
+            // disabled={productStatus[0] === 'onSale'}
             ref={editorRef}
             initialValue={values.contents}
             onInit={(evt, editor) => (editorRef.current = editor)}
