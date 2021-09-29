@@ -167,7 +167,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <Editor
-            disabled={productStatus[0] === 'onSale'}
+            // disabled={productStatus[0] === 'onSale'}
             ref={editorRef}
             initialValue={values.contents}
             onInit={(evt, editor) => (editorRef.current = editor)}

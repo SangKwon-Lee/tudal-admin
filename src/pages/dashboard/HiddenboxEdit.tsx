@@ -8,7 +8,7 @@ import {
   Container,
   Grid,
   Link,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
 import useSettings from '../../hooks/useSettings';
@@ -18,7 +18,7 @@ import gtm from '../../lib/gtm';
 const HiddenboxEdit: FC = () => {
   const { settings } = useSettings();
   const { hiddenboxId } = useParams();
-  console.log("hiddenboxId", hiddenboxId);
+  console.log('hiddenboxId', hiddenboxId);
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
@@ -32,7 +32,7 @@ const HiddenboxEdit: FC = () => {
         sx={{
           backgroundColor: 'background.default',
           minHeight: '100%',
-          py: 8
+          py: 8,
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
@@ -43,11 +43,8 @@ const HiddenboxEdit: FC = () => {
             spacing={3}
           >
             <Grid item>
-              <Typography
-                color="textPrimary"
-                variant="h5"
-              >
-                히든박스 생성 Process
+              <Typography color="textPrimary" variant="h5">
+                히든박스 수정
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -62,17 +59,17 @@ const HiddenboxEdit: FC = () => {
                 >
                   대시보드
                 </Link>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                >
+                <Typography color="textSecondary" variant="subtitle2">
                   히든박스
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxCreateWizard mode={'edit'} boxid={parseInt(hiddenboxId)} />
+            <HiddenboxCreateWizard
+              mode={'edit'}
+              boxid={parseInt(hiddenboxId)}
+            />
           </Box>
         </Container>
       </Box>

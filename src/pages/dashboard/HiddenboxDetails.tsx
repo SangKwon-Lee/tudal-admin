@@ -121,21 +121,21 @@ const HiddenboxDetails: FC = () => {
             </Grid>
             <Grid item>
               <Box sx={{ m: -1 }}>
-                {productStatus[0] === 'beforeSale' ||
-                productStatus[0] === 'onSale' ? (
-                  <Button
-                    color="primary"
-                    component={RouterLink}
-                    startIcon={<PencilAltIcon fontSize="small" />}
-                    sx={{ m: 1 }}
-                    to={`/dashboard/hiddenboxes/${hiddenboxId}/edit`}
-                    variant="contained"
-                  >
-                    편집
-                  </Button>
-                ) : (
+                {/* {productStatus[0] === 'beforeSale' ||
+                productStatus[0] === 'onSale' ? ( */}
+                <Button
+                  color="primary"
+                  component={RouterLink}
+                  startIcon={<PencilAltIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                  to={`/dashboard/hiddenboxes/${hiddenboxId}/edit`}
+                  variant="contained"
+                >
+                  편집
+                </Button>
+                {/* ) : (
                   ''
-                )}
+                )} */}
               </Box>
             </Grid>
           </Grid>
