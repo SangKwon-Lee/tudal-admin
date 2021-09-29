@@ -701,8 +701,8 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         </TableCell>
                         <TableCell
                           style={{
-                            maxWidth: '180px',
-                            minWidth: '180px',
+                            maxWidth: '190px',
+                            minWidth: '190px',
                           }}
                         >
                           {`${moment(hiddenbox.startDate).format(
@@ -711,7 +711,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          style={{
+                            minWidth: '185px',
+                          }}
+                        >
                           {moment(hiddenbox.publicDate).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}

@@ -62,12 +62,12 @@ const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
 
-const ExpertsList = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertsList')),
-);
-const ExpertCreate = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertCreate')),
-);
+// const ExpertsList = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertsList')),
+// );
+// const ExpertCreate = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertCreate')),
+// );
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -211,19 +211,19 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
-      {
-        path: 'experts',
-        children: [
-          {
-            path: '/',
-            element: <ExpertsList />,
-          },
-          {
-            path: '/new',
-            element: <ExpertCreate />,
-          },
-        ],
-      },
+      // {
+      //   path: 'experts',
+      //   children: [
+      //     {
+      //       path: '/',
+      //       element: <ExpertsList />,
+      //     },
+      //     {
+      //       path: '/new',
+      //       element: <ExpertCreate />,
+      //     },
+      //   ],
+      // },
     ],
   },
 

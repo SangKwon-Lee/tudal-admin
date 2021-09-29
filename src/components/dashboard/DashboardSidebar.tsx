@@ -40,25 +40,25 @@ const sections = [
         path: '/dashboard/hiddenboxes',
         icon: <StarIcon fontSize="small" />,
       },
-      {
-        title: '달인',
-        path: '/dashboard/experts',
-        icon: <PencilIcon fontSize="small" />,
-        children: [
-          {
-            title: '리스트',
-            path: '/dashboard/experts',
-          },
-          {
-            title: '메뉴관리',
-            path: '/dashboard/experts',
-          },
-          {
-            title: '구독현황',
-            path: '/dashboard/experts',
-          },
-        ],
-      },
+      // {
+      //   title: '달인',
+      //   path: '/dashboard/experts',
+      //   icon: <PencilIcon fontSize="small" />,
+      //   children: [
+      //     {
+      //       title: '리스트',
+      //       path: '/dashboard/experts',
+      //     },
+      //     {
+      //       title: '메뉴관리',
+      //       path: '/dashboard/experts',
+      //     },
+      //     {
+      //       title: '구독현황',
+      //       path: '/dashboard/experts',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

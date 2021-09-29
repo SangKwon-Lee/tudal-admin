@@ -107,16 +107,16 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
         const newHiddenbox = {
           ...values,
           tags: values.tags.map((tag) => tag.id),
-          startDate: moment(values.startDate)
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss'),
-          endDate: moment(values.endDate)
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss'),
+          contents: contents,
+          startDate: moment(values.startDate).format(
+            'YYYY-MM-DD HH:mm:ss',
+          ),
+          endDate: moment(values.endDate).format(
+            'YYYY-MM-DD HH:mm:ss',
+          ),
           publicDate: moment(values.publicDate).format(
             'YYYY-MM-DD HH:mm:ss',
           ),
-          contents: contents,
         };
 
         if (mode === 'create') {
