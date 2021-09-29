@@ -15,23 +15,38 @@ import {
   TextField,
   List,
   ListItemText,
-  ListItem,
   CardContent,
   CardActions,
   Typography,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Checkbox,
 } from '@material-ui/core';
-import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import useAsync from 'src/hooks/useAsync';
 
 import { Tag } from 'src/types/schedule';
 import { APITag } from 'src/lib/api';
 import toast from 'react-hot-toast';
+
+const STEPS = { SELECT_CANDIDATES: 0, CONFIRM_MERGE: 1 };
+const SUBTITLE = {
+  0: '한번에 최대 2개까지 통합이 가능합니다.',
+  1: '통합할 키워드를 선택해주세요',
+};
+const calculateMoreRelations = (obj) => {
+  let total = 0;
+  let id = null;
+  for (const key in obj) {
+    const tag = obj[key];
+    if (tag.total >= total) {
+      id = tag.id;
+      total = tag.total;
+    }
+  }
+  return id;
+};
 
 interface KeywordMergeDialogProps {
   isOpen: boolean;
@@ -43,7 +58,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
   setClose,
   reload,
 }) => {
-  const [step, setStep] = useState<number>(0);
+  const [step, setStep] = useState<number>(STEPS.SELECT_CANDIDATES);
   const [candidates, setCandidates] = useState<Tag[]>([]);
   const [relations, setRelations] = useState(null);
   const [mergeItems, setMergeItems] = useState({
@@ -56,20 +71,17 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
     return APITag.getList(value);
   }, [tagInput]);
 
-  const handleCandidates = (tag) => {
+  const handleCandidates = (candidate) => {
     setCandidates((prev) => {
-      if (!tag) {
-        return prev;
-      } else if (prev.length === 2 && tag) {
-        return [prev[1], tag];
-      } else {
-        return [...prev, tag];
+      if (prev.length === 2) {
+        return [prev[1], candidate];
       }
+      return [...prev, candidate];
     });
   };
 
   const handleStep = () => {
-    if (step === 1) {
+    if (step === STEPS.CONFIRM_MERGE) {
       handleSubmit();
     }
     setStep((prev) => prev + 1);
@@ -86,22 +98,14 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
 
   const getRelations = useCallback(async () => {
     try {
+      const candidatesIds = candidates.map((el) => el.id);
       const { data, status } = await APITag.findRelations(
-        candidates.map((el) => el.id),
+        candidatesIds,
       );
       if (status === 200) {
+        const hasMoreRelationship = calculateMoreRelations(data);
         setRelations(data);
-        // TODO
-        let total = 0;
-        let id = null;
-        for (const key in data) {
-          const obj = data[key];
-          if (obj.total >= total) {
-            id = obj.id;
-            total = obj.total;
-          }
-        }
-        handleCheck(id);
+        handleCheck(hasMoreRelationship);
       }
     } catch (error) {
       alert('error');
@@ -112,11 +116,11 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
     try {
       const { data, status } = await APITag.merge(mergeItems);
       if (status === 200) {
-        reload();
         toast.success(
           `총 ${data.numOfChanged}개의 데이터가 변경되었습니다.`,
         );
         setClose();
+        reload();
       }
     } catch (error) {
       toast.success(error.message);
@@ -129,12 +133,12 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
   const handleTagChange = _.debounce(refetchTag, 300);
 
   useEffect(() => {
-    if (step === 1) {
+    if (step === STEPS.CONFIRM_MERGE) {
       getRelations();
     }
   }, [step, getRelations]);
 
-  if (step > 1) {
+  if (step > STEPS.CONFIRM_MERGE) {
     return <CircularProgress />;
   } else {
     return (
@@ -143,8 +147,9 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
         onClose={setClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">키워드 통합</DialogTitle>
+        <DialogTitle>키워드 통합</DialogTitle>
         <DialogContent>
+          <Typography>{SUBTITLE[step]}</Typography>
           <Box
             sx={{
               alignItems: 'center',
@@ -154,7 +159,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
               minWidth: 500,
             }}
           >
-            {step === 0 && (
+            {step === STEPS.SELECT_CANDIDATES && (
               <List
                 sx={{
                   width: '100%',
@@ -175,7 +180,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
                 })}
               </List>
             )}
-            {step === 1 &&
+            {step === STEPS.CONFIRM_MERGE &&
               relations &&
               candidates.map((tag) => {
                 return (
@@ -218,8 +223,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
                 );
               })}
           </Box>
-          {console.log(mergeItems)}
-          {step === 0 && (
+          {step === STEPS.SELECT_CANDIDATES && (
             <Autocomplete
               freeSolo
               clearOnBlur
@@ -227,7 +231,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
               options={tagList}
               style={{ width: 500, marginRight: 10 }}
               onChange={(event, newValue) => {
-                if (typeof newValue !== 'string') {
+                if (typeof newValue !== 'string' && newValue) {
                   handleCandidates(newValue);
                 }
               }}

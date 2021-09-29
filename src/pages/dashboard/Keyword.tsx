@@ -559,6 +559,12 @@ const Keywords: React.FC = () => {
                     </Button>
                   </>
                 )}
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenMerge(true)}
+                >
+                  키워드 통합
+                </Button>
               </Box>
             </Card>
           </Box>
@@ -613,12 +619,7 @@ const Keywords: React.FC = () => {
                   </option>
                 ))}
               </TextField>
-              <Button
-                variant="outlined"
-                onClick={() => setOpenMerge(true)}
-              >
-                키워드 통합
-              </Button>
+
               {filterOptions.map((filter, index) => {
                 return (
                   <FormControlLabel
