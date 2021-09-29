@@ -51,8 +51,6 @@ type Sort =
   | 'updated_at|asc'
   | 'orders|desc'
   | 'orders|asc'
-  | 'productId|desc'
-  | 'productId|asc'
   | 'likes|desc'
   | 'likes|asc'
   | 'viewCount|desc'
@@ -102,14 +100,6 @@ const sortOptions: SortOption[] = [
   {
     label: '판매량 최저',
     value: 'orders|asc',
-  },
-  {
-    label: '가격 높은순',
-    value: 'productId|desc',
-  },
-  {
-    label: '가격 낮은순',
-    value: 'productId|asc',
   },
   {
     label: '좋아요 높은순',
