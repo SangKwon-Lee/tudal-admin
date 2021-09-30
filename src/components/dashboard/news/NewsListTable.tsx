@@ -21,7 +21,6 @@ import {
   Divider,
   Typography,
 } from '@material-ui/core';
-import * as _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SearchIcon from '../../../icons/Search';
@@ -55,8 +54,11 @@ const sortOptions: SortOption[] = [
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
+  } else if (b[orderBy] > a[orderBy]) {
+    return 1;
+  } else if (b['id'] > a['id']) {
+    return -1;
+  } else if (b['id'] < a['id']) {
     return 1;
   }
   return 0;
@@ -75,7 +77,6 @@ const applySort = (news: INews[], sort: Sort): INews[] => {
   ];
   const comparator = getComparator(order, orderBy);
   const stabilizedThis = news.map((el, index) => [el, index]);
-
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -154,7 +155,8 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
     page,
     limit,
   );
-
+  console.log(paginatedNewsList[48]);
+  console.log(paginatedNewsList[49]);
   return (
     <Box
       sx={{
@@ -193,13 +195,22 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             placeholder="제목 또는 요약본 검색 기능을 지원합니다."
             variant="outlined"
             onKeyPress={(e) => {
-              e.key === 'Enter' && reload();
+              if (e.key === 'Enter') {
+                reload();
+                setPage('', 0);
+              }
             }}
           />
         </Box>
         <Box>
           {' '}
-          <Button variant={'contained'} onClick={reload}>
+          <Button
+            variant={'contained'}
+            onClick={() => {
+              reload();
+              setPage('', 0);
+            }}
+          >
             검색
           </Button>
         </Box>
@@ -280,10 +291,10 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="news-table-list">
-            {paginatedNewsList.map((news) => (
+            {paginatedNewsList.map((news, index) => (
               <TableRow
                 hover
-                key={news.id}
+                key={index}
                 sx={{
                   '&:last-child td': {
                     border: 0,
@@ -301,7 +312,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                   >
                     <Checkbox
                       color="primary"
-                      checked={news.isSelected}
+                      checked={news.isSelected || false}
                       onClick={() => {
                         setTargetNews(news);
                         setOpenConfirm();
@@ -430,7 +441,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         onRowsPerPageChange={handleLimitChange}
         page={page}
         rowsPerPage={limit}
-        rowsPerPageOptions={[10, 20, 50]}
+        rowsPerPageOptions={[50]}
       />
     </Box>
   );
