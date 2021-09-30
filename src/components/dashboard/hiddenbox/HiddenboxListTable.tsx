@@ -712,7 +712,9 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         </TableCell>
                         <TableCell>{hiddenbox.productId}</TableCell>
                         <TableCell>{hiddenbox.orders}</TableCell>
-                        <TableCell>{hiddenbox.likes}</TableCell>
+                        <TableCell>
+                          {hiddenbox.likes.length}
+                        </TableCell>
                         <TableCell>{hiddenbox.viewCount}</TableCell>
                         <TableCell align="right">
                           <IconButton
