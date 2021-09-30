@@ -346,12 +346,11 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const handleDelete = async () => {
     try {
       const hiddenboxId = selectedHiddenboxes[0];
-      const response = await axios.delete(
+      console.log('ASD');
+      const response = await axios.put(
         `/hiddenboxes/${hiddenboxId.toString()}`,
         {
-          data: {
-            id: hiddenboxId,
-          },
+          isDeleted: true,
         },
       );
       if (response.status === 200) {
@@ -712,7 +711,9 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         </TableCell>
                         <TableCell>{hiddenbox.productId}</TableCell>
                         <TableCell>{hiddenbox.orders}</TableCell>
-                        <TableCell>{hiddenbox.likes}</TableCell>
+                        <TableCell>
+                          {hiddenbox.likes.length}
+                        </TableCell>
                         <TableCell>{hiddenbox.viewCount}</TableCell>
                         <TableCell align="right">
                           <IconButton

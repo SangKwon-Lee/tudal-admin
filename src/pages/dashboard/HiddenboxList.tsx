@@ -34,7 +34,7 @@ const HiddenboxList: FC = () => {
     async (reload = false) => {
       try {
         const response = await axios.get<Hiddenbox[]>(
-          `/hiddenboxes?isDeleted=0&_sort=created_at:DESC`,
+          `/hiddenboxes?isDeleted=0&_sort=created_at:DESC&author.id=${user.id}`,
         );
         console.log(response.data);
         if (mounted || reload) {

@@ -276,7 +276,7 @@ const HiddenboxProductDetails: FC<HiddenboxProductDetails> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {hiddenbox.likes}
+                  {hiddenbox.likes.length}
                 </Typography>
               </TableCell>
             </TableRow>
