@@ -7,7 +7,6 @@ import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
 import News from './pages/dashboard/News';
-import Stock from './pages/dashboard/Stock';
 
 const Loadable = (Component) => (props) =>
   (
@@ -70,9 +69,12 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category')),
 );
 
-const ExpertsList = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertsList')),
-);
+// const ExpertsList = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertsList')),
+// );
+// const ExpertCreate = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertCreate')),
+// );
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -234,15 +236,19 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
-      {
-        path: 'experts',
-        children: [
-          {
-            path: '/',
-            element: <ExpertsList />,
-          },
-        ],
-      },
+      // {
+      //   path: 'experts',
+      //   children: [
+      //     {
+      //       path: '/',
+      //       element: <ExpertsList />,
+      //     },
+      //     {
+      //       path: '/new',
+      //       element: <ExpertCreate />,
+      //     },
+      //   ],
+      // },
     ],
   },
 

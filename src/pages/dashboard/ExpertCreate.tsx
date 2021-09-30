@@ -10,7 +10,7 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
+import { ExpertContentForm } from '../../components/dashboard/expert';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
@@ -24,7 +24,7 @@ const HiddenboxCreate: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
+        <title>Dashboard: Expert Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -42,7 +42,7 @@ const HiddenboxCreate: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                히든박스 생성
+                달인 생성
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -52,19 +52,19 @@ const HiddenboxCreate: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/hiddenboxes"
+                  to="/dashboard/experts"
                   variant="subtitle2"
                 >
-                  히든박스
+                  달인
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  히든박스 생성
+                  달인 생성
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxCreateWizard />
+            <ExpertContentForm />
           </Box>
         </Container>
       </Box>

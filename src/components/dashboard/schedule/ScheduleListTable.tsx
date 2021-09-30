@@ -1,9 +1,4 @@
-import React, {
-  ChangeEvent,
-  useState,
-  useRef,
-  RefObject,
-} from 'react';
+import React, { ChangeEvent, useState, RefObject } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import {
@@ -23,7 +18,7 @@ import {
   Chip,
 } from '@material-ui/core';
 
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import Label from '../../widgets/Label';

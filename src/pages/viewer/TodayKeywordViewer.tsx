@@ -1,11 +1,5 @@
-import {
-  useCallback,
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-} from 'react';
-import type { FC, ChangeEvent } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
+import type { FC } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container, Typography } from '@material-ui/core';

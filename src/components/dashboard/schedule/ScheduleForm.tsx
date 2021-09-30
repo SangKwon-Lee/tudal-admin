@@ -1,9 +1,7 @@
 import React, {
-  useState,
   useEffect,
   useCallback,
   useRef,
-  useMemo,
   useReducer,
 } from 'react';
 import dayjs from 'dayjs';
@@ -34,7 +32,6 @@ import {
   Category,
   Schedule,
 } from 'src/types/schedule';
-import axios, { apiServer } from '../../../lib/axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import useAuth from 'src/hooks/useAuth';

@@ -19,7 +19,7 @@ import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
 import * as _ from 'lodash';
 import useAuth from 'src/hooks/useAuth';
-import moment from 'moment';
+import productStatusFunc from 'src/utils/productStatus';
 
 interface HiddenboxDetailsProps {
   onBack?: () => void;
@@ -40,23 +40,29 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
-  const categoryOptions = {
-    1: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: '33,000' },
-      { label: '프리미엄(115,000원)', value: '115,000' },
-    ],
-    2: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-    3: [
-      { label: '베이직(5,900원)', value: '5,900' },
-      { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
-      { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
-    ],
-  };
+  // const categoryOptions = {
+  //   1: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: '33,000' },
+  //     { label: '프리미엄(115,000원)', value: '115,000' },
+  //   ],
+  //   2: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  //   3: [
+  //     { label: '베이직(5,900원)', value: '5,900' },
+  //     { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+  //     { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  //   ],
+  // };
+
+  const categoryOptions = [
+    { label: '베이직(5,900원)', value: 'hiddenbox_basic' },
+    { label: '스탠다드(33,000원)', value: 'hiddenbox_standard' },
+    { label: '프리미엄(115,000원)', value: 'hiddenbox_premium' },
+  ];
 
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
@@ -68,15 +74,12 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
 
   const handleTagChange = _.debounce(refetchTag, 300);
 
-  const getStockListTest = useCallback(() => {
-    const value = stockInput.current ? stockInput.current.value : '';
-    return APIStock.getDetailList(value);
-  }, [stockInput]);
+  const getStockList = useCallback(() => {
+    return APIStock.getSimpleList();
+  }, []);
 
-  const [
-    { data: stockListTest, loading: stockLoading },
-    refetchStock,
-  ] = useAsync<any>(getStockListTest, [stockInput.current], []);
+  const [{ data: stockList, loading: stockLoading }, refetchStock] =
+    useAsync<any>(getStockList, [], []);
 
   const handleStockChange = _.debounce(refetchStock, 300);
 
@@ -90,23 +93,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   // const isStock = (object: any): object is Stock => {
   //   return object && object.stockcode !== undefined;
   // };
-
-  let productMode = 'beforeSale';
-  if (moment().diff(moment(values.startDate)) < 0) {
-    productMode = 'beforeSale';
-  } else if (
-    moment().diff(moment(values.startDate)) > 0 &&
-    moment().diff(moment(values.endDate)) < 0
-  ) {
-    productMode = 'onSale';
-  } else if (
-    moment().diff(moment(values.endDate)) > 0 &&
-    moment().diff(moment(values.publicDate)) < 0
-  ) {
-    productMode = 'afterSale';
-  } else {
-    productMode = 'public';
-  }
+  const productStatus = productStatusFunc(values, mode);
 
   return (
     <Formik
@@ -182,13 +169,16 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               종료일까지 판매가 가능합니다. 그리고 공개일 이후부터
               구매하지 않은 모든 고객에게 해당 상품이 보여집니다.
             </Typography>
+            <Typography color="textSecondary" variant="body1">
+              판매 중에는 종료일, 공개일만 수정이 가능합니다.
+            </Typography>
             <Box sx={{ mt: 2 }}>
               <TextField
                 error={Boolean(touched.title && errors.title)}
                 fullWidth
                 helperText={touched.title && errors.title}
                 label="상품명"
-                disabled={productMode === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 name="title"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -210,7 +200,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 multiline
                 helperText={touched.description && errors.description}
                 label="상품요약"
-                disabled={productMode === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 name="description"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -224,7 +214,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                 fullWidth
                 label="상품타입"
                 name="productId"
-                disabled={productMode === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 value={values.productId}
                 SelectProps={{ native: true }}
                 variant="outlined"
@@ -235,11 +225,15 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   }
                 }}
               >
-                {categoryOptions[user.role.Lv].map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
+                {categoryOptions &&
+                  categoryOptions.map((category) => (
+                    <option
+                      key={category.value}
+                      value={category.value}
+                    >
+                      {category.label}
+                    </option>
+                  ))}
               </TextField>
             </Box>
             <Box sx={{ mt: 2 }}>
@@ -247,9 +241,9 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productMode === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 autoHighlight
-                options={stockListTest}
+                options={stockList}
                 value={values.stocks}
                 getOptionLabel={(option) =>
                   option.name + `(${option.code})`
@@ -260,8 +254,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   reason,
                   item,
                 ) => {
-                  console.log(values);
-                  console.log(item);
                   if (reason === 'selectOption') {
                     setFieldValue('stocks', [
                       ...values.stocks,
@@ -311,13 +303,12 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               <Autocomplete
                 multiple
                 fullWidth
-                disabled={productMode === 'onSale'}
+                // disabled={productStatus[0] === 'onSale'}
                 autoHighlight
                 options={tagList}
                 value={values.tags}
                 getOptionLabel={(option) => option.name}
                 onChange={(event, keywords: Tag[], reason, item) => {
-                  console.log(reason);
                   if (reason === 'selectOption') {
                     setFieldValue('tags', [
                       ...values.tags,
@@ -370,6 +361,10 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                   </FormHelperText>
                 </Box>
               )}
+              <Typography color="textPrimary" variant="subtitle2">
+                판매 시작 이후, 판매 종료일, 공개일을 제외한 나머지는
+                수정할 수 없습니다.
+              </Typography>
               <Box
                 sx={{
                   display: 'flex',
@@ -378,12 +373,12 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
               >
                 <Box sx={{ mr: 2 }}>
                   <DateTimePicker
-                    disabled={productMode === 'onSale'}
+                    // disabled={productStatus[0] === 'onSale'}
                     label="판매 시작일"
                     onAccept={() => setFieldTouched('startDate')}
-                    onChange={(date) =>
-                      setFieldValue('startDate', date)
-                    }
+                    onChange={(date) => {
+                      setFieldValue('startDate', date);
+                    }}
                     onClose={() => setFieldTouched('startDate')}
                     value={values.startDate}
                     disablePast={mode === 'edit' ? false : true}
@@ -399,7 +394,7 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
                     onClose={() => setFieldTouched('endDate')}
                     value={values.endDate}
                     disablePast={mode === 'edit' ? false : true}
-                    minDate={values.startDate}
+                    minDate={values.endDate}
                     renderInput={(props) => <TextField {...props} />}
                   />
                 </Box>

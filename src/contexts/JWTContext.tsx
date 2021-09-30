@@ -1,9 +1,9 @@
-import { createContext, useEffect, useReducer } from "react";
-import type { FC, ReactNode } from "react";
-import PropTypes from "prop-types";
-import type { User } from "../types/user";
-import { authApi } from "../lib/api/auth.api";
-import axios, { cmsServer } from "../lib/axios";
+import { createContext, useEffect, useReducer } from 'react';
+import type { FC, ReactNode } from 'react';
+import PropTypes from 'prop-types';
+import type { User } from '../types/user';
+import { authApi } from '../lib/api/auth.api';
+import axios, { cmsServer } from '../lib/axios';
 
 interface State {
   isInitialized: boolean;
@@ -12,7 +12,7 @@ interface State {
 }
 
 interface AuthContextValue extends State {
-  platform: "JWT";
+  platform: 'JWT';
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -22,7 +22,7 @@ interface AuthProviderProps {
 }
 
 type InitializeAction = {
-  type: "INITIALIZE";
+  type: 'INITIALIZE';
   payload: {
     isAuthenticated: boolean;
     user: User | null;
@@ -30,24 +30,28 @@ type InitializeAction = {
 };
 
 type LoginAction = {
-  type: "LOGIN";
+  type: 'LOGIN';
   payload: {
     user: User;
   };
 };
 
 type LogoutAction = {
-  type: "LOGOUT";
+  type: 'LOGOUT';
 };
 
 type RegisterAction = {
-  type: "REGISTER";
+  type: 'REGISTER';
   payload: {
     user: User;
   };
 };
 
-type Action = InitializeAction | LoginAction | LogoutAction | RegisterAction;
+type Action =
+  | InitializeAction
+  | LoginAction
+  | LogoutAction
+  | RegisterAction;
 
 const initialState: State = {
   isAuthenticated: false,
@@ -57,22 +61,25 @@ const initialState: State = {
 
 const setSession = (
   accessToken: string | null,
-  userId?: string | null
+  userId?: string | null,
 ): void => {
   if (accessToken && userId) {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("userId", userId);
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('userId', userId);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     cmsServer.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("userId");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
     delete axios.defaults.headers.common.Authorization;
     delete cmsServer.defaults.headers.common.Authorization;
   }
 };
 
-const handlers: Record<string, (state: State, action: Action) => State> = {
+const handlers: Record<
+  string,
+  (state: State, action: Action) => State
+> = {
   INITIALIZE: (state: State, action: InitializeAction): State => {
     const { isAuthenticated, user } = action.payload;
 
@@ -109,11 +116,13 @@ const handlers: Record<string, (state: State, action: Action) => State> = {
 };
 
 const reducer = (state: State, action: Action): State =>
-  handlers[action.type] ? handlers[action.type](state, action) : state;
+  handlers[action.type]
+    ? handlers[action.type](state, action)
+    : state;
 
 const AuthContext = createContext<AuthContextValue>({
   ...initialState,
-  platform: "JWT",
+  platform: 'JWT',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
 });
@@ -125,16 +134,17 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   useEffect(() => {
     const initialize = async (): Promise<void> => {
       try {
-        const accessToken = window.localStorage.getItem("accessToken");
-        const userId = window.localStorage.getItem("userId");
+        const accessToken =
+          window.localStorage.getItem('accessToken');
+        const userId = window.localStorage.getItem('userId');
 
-        console.log("INIT", accessToken, userId);
+        console.log('INIT', accessToken, userId);
         if (accessToken) {
           setSession(accessToken, userId);
           const user = await authApi.me(userId);
-          console.log("INIT User", user);
+          console.log('INIT User', user);
           dispatch({
-            type: "INITIALIZE",
+            type: 'INITIALIZE',
             payload: {
               isAuthenticated: true,
               user,
@@ -143,7 +153,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         } else {
           setSession(null);
           dispatch({
-            type: "INITIALIZE",
+            type: 'INITIALIZE',
             payload: {
               isAuthenticated: false,
               user: null,
@@ -153,7 +163,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       } catch (err) {
         setSession(null);
         dispatch({
-          type: "INITIALIZE",
+          type: 'INITIALIZE',
           payload: {
             isAuthenticated: false,
             user: null,
@@ -165,7 +175,10 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     initialize();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<void> => {
     setSession(null);
     const { accessToken, user } = await authApi.login({
       email,
@@ -173,7 +186,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     });
     setSession(accessToken, user.id.toString());
     dispatch({
-      type: "LOGIN",
+      type: 'LOGIN',
       payload: {
         user,
       },
@@ -182,14 +195,14 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 
   const logout = async (): Promise<void> => {
     setSession(null);
-    dispatch({ type: "LOGOUT" });
+    dispatch({ type: 'LOGOUT' });
   };
 
   return (
     <AuthContext.Provider
       value={{
         ...state,
-        platform: "JWT",
+        platform: 'JWT',
         login,
         logout,
       }}

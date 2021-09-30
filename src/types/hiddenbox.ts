@@ -9,7 +9,8 @@ interface Stock {
 }
 
 export interface Hiddenbox {
-  likes: number;
+  likes: [];
+  viewCount: number;
   id: number;
   title: string;
   description?: string;
