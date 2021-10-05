@@ -14,6 +14,6 @@ export interface Expert {
   url: string;
   createdAt: string;
   updatedAt: string;
-  likes: string;
+  likes: [];
   viewCount: string;
 }

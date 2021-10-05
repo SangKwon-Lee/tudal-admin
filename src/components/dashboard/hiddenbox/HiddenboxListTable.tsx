@@ -34,6 +34,11 @@ import Scrollbar from '../../layout/Scrollbar';
 import axios, { CMSURL } from '../../../lib/axios';
 import ConfirmModal from '../../../components/widgets/modals/ConfirmModal';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
+import {
+  applyFilters,
+  applyPagination,
+  applySort,
+} from '../../../utils/sort';
 
 interface HiddenboxListTableProps {
   hiddenboxes: Hiddenbox[];
@@ -120,151 +125,6 @@ const sortOptions: SortOption[] = [
     value: 'viewCount|asc',
   },
 ];
-
-const applyFilters = (
-  hiddenboxes: Hiddenbox[],
-  query: string,
-  filters: any,
-): Hiddenbox[] =>
-  hiddenboxes.filter((hiddenbox) => {
-    let matches = true;
-
-    if (query) {
-      const properties = ['title', 'author-username'];
-      let containsQuery = false;
-
-      properties.forEach((property) => {
-        if (property.indexOf('-') > -1) {
-          const strArray = property.split('-');
-          if (
-            hiddenbox[strArray[0]][strArray[1]]
-              .toLowerCase()
-              .includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
-        } else {
-          if (
-            hiddenbox[property]
-              .toLowerCase()
-              .includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
-        }
-      });
-
-      if (!containsQuery) {
-        matches = false;
-      }
-    }
-
-    Object.keys(filters).forEach((key) => {
-      const value = filters[key];
-
-      switch (key) {
-        case 'beforeSale':
-          if (
-            value &&
-            moment().diff(moment(hiddenbox.startDate)) > 0
-          ) {
-            matches = false;
-          }
-          break;
-        case 'onSale':
-          if (
-            value &&
-            (moment().diff(moment(hiddenbox.startDate)) < 0 ||
-              moment().diff(moment(hiddenbox.endDate)) > 0)
-          ) {
-            matches = false;
-          }
-          break;
-        case 'afterSale':
-          if (value && moment().diff(moment(hiddenbox.endDate)) < 0) {
-            matches = false;
-          }
-          break;
-        case 'public':
-          if (
-            value &&
-            moment().diff(moment(hiddenbox.publicDate)) < 0
-          ) {
-            matches = false;
-          }
-          break;
-      }
-    });
-
-    return matches;
-  });
-
-const applyPagination = (
-  hiddenboxes: Hiddenbox[],
-  page: number,
-  limit: number,
-): Hiddenbox[] =>
-  hiddenboxes.slice(page * limit, page * limit + limit);
-
-const descendingComparator = (
-  a: Hiddenbox,
-  b: Hiddenbox,
-  orderBy: string,
-): number => {
-  if (orderBy === 'productId' || orderBy === 'viewCount') {
-    if (Number(b[orderBy]) < Number(a[orderBy])) {
-      return -1;
-    }
-
-    if (Number(b[orderBy]) > Number(a[orderBy])) {
-      return 1;
-    }
-  }
-
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const getComparator = (order: 'asc' | 'desc', orderBy: string) =>
-  order === 'desc'
-    ? (a: Hiddenbox, b: Hiddenbox) =>
-        descendingComparator(a, b, orderBy)
-    : (a: Hiddenbox, b: Hiddenbox) =>
-        -descendingComparator(a, b, orderBy);
-
-const applySort = (
-  hiddenboxes: Hiddenbox[],
-  sort: Sort,
-): Hiddenbox[] => {
-  const [orderBy, order] = sort.split('|') as [
-    string,
-    'asc' | 'desc',
-  ];
-  const comparator = getComparator(order, orderBy);
-
-  const stabilizedThis = hiddenboxes.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    // @ts-ignore
-    const newOrder = comparator(a[0], b[0]);
-
-    if (newOrder !== 0) {
-      return newOrder;
-    }
-
-    // @ts-ignore
-    return a[1] - b[1];
-  });
-
-  // @ts-ignore
-  return stabilizedThis.map((el) => el[0]);
-};
 
 const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const { hiddenboxes, reload, loading, ...other } = props;
@@ -635,123 +495,109 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedHiddenboxes.length > 0 ? (
-                  paginatedHiddenboxes.map((hiddenbox) => {
-                    const isHiddenboxSelected =
-                      selectedHiddenboxes.includes(hiddenbox.id);
-                    return (
-                      <TableRow
-                        hover
-                        key={hiddenbox.id}
-                        selected={isHiddenboxSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isHiddenboxSelected}
-                            color="primary"
-                            onChange={(event) =>
-                              handleSelectOneHiddenbox(
-                                event,
-                                hiddenbox.id,
-                              )
-                            }
-                            value={isHiddenboxSelected}
-                          />
-                        </TableCell>
-                        <TableCell>
+                {paginatedHiddenboxes.map((hiddenbox) => {
+                  const isHiddenboxSelected =
+                    selectedHiddenboxes.includes(hiddenbox.id);
+                  return (
+                    <TableRow
+                      hover
+                      key={hiddenbox.id}
+                      selected={isHiddenboxSelected}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isHiddenboxSelected}
+                          color="primary"
+                          onChange={(event) =>
+                            handleSelectOneHiddenbox(
+                              event,
+                              hiddenbox.id,
+                            )
+                          }
+                          value={isHiddenboxSelected}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                        >
                           <Box
                             sx={{
-                              alignItems: 'center',
-                              display: 'flex',
+                              ml: 1,
+                              maxWidth: '150px',
+                              wordBreak: 'break-all',
                             }}
                           >
-                            <Box
-                              sx={{
-                                ml: 1,
-                                maxWidth: '150px',
-                                wordBreak: 'break-all',
-                              }}
+                            <Link
+                              color="inherit"
+                              component={RouterLink}
+                              to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                              variant="subtitle2"
                             >
-                              <Link
-                                color="inherit"
-                                component={RouterLink}
-                                to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                                variant="subtitle2"
-                              >
-                                {hiddenbox.title}
-                              </Link>
-                              <Typography
-                                color="textSecondary"
-                                variant="body2"
-                              >
-                                {hiddenbox.author &&
-                                  hiddenbox.author.nickname}
-                              </Typography>
-                            </Box>
+                              {hiddenbox.title}
+                            </Link>
+                            <Typography
+                              color="textSecondary"
+                              variant="body2"
+                            >
+                              {hiddenbox.author &&
+                                hiddenbox.author.nickname}
+                            </Typography>
                           </Box>
-                        </TableCell>
-                        <TableCell
-                          style={{
-                            maxWidth: '190px',
-                            minWidth: '190px',
+                        </Box>
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          maxWidth: '190px',
+                          minWidth: '190px',
+                        }}
+                      >
+                        {`${moment(hiddenbox.startDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )}-${moment(hiddenbox.endDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )}`}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          minWidth: '185px',
+                        }}
+                      >
+                        {moment(hiddenbox.publicDate).format(
+                          'YYYY년 M월 D일 HH:mm',
+                        )}
+                      </TableCell>
+                      <TableCell>{hiddenbox.productId}</TableCell>
+                      <TableCell>{hiddenbox.orders}</TableCell>
+                      <TableCell>{hiddenbox.likes.length}</TableCell>
+                      <TableCell>{hiddenbox.viewCount}</TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          onClick={() => {
+                            onClickComment(hiddenbox);
                           }}
                         >
-                          {`${moment(hiddenbox.startDate).format(
-                            'YYYY년 M월 D일 HH:mm',
-                          )}-${moment(hiddenbox.endDate).format(
-                            'YYYY년 M월 D일 HH:mm',
-                          )}`}
-                        </TableCell>
-                        <TableCell
-                          style={{
-                            minWidth: '185px',
-                          }}
+                          <ChatIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          component={RouterLink}
+                          to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
                         >
-                          {moment(hiddenbox.publicDate).format(
-                            'YYYY년 M월 D일 HH:mm',
-                          )}
-                        </TableCell>
-                        <TableCell>{hiddenbox.productId}</TableCell>
-                        <TableCell>{hiddenbox.orders}</TableCell>
-                        <TableCell>
-                          {hiddenbox.likes.length}
-                        </TableCell>
-                        <TableCell>{hiddenbox.viewCount}</TableCell>
-                        <TableCell align="right">
-                          <IconButton
-                            onClick={() => {
-                              onClickComment(hiddenbox);
-                            }}
-                          >
-                            <ChatIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            component={RouterLink}
-                            to={`/dashboard/hiddenboxes/${hiddenbox.id}/edit`}
-                          >
-                            <PencilAltIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            component={RouterLink}
-                            to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
-                          >
-                            <ArrowRightIcon fontSize="small" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      position: 'absolute',
-                      border: '10px solid red',
-                    }}
-                  >
-                    No data
-                  </Box>
-                )}
+                          <PencilAltIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          component={RouterLink}
+                          to={`/dashboard/hiddenboxes/${hiddenbox.id}`}
+                        >
+                          <ArrowRightIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
             {!loading && (

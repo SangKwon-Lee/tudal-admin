@@ -30,11 +30,11 @@ import type { Expert } from '../../../types/expert';
 import Scrollbar from '../../layout/Scrollbar';
 import { apiServer } from '../../../lib/axios';
 import ConfirmModal from '../../widgets/modals/ConfirmModal';
-
-interface ExpertListTableProps {
-  experts: Expert[];
-  reload: () => void;
-}
+import {
+  applyFilters,
+  applyPagination,
+  applySort,
+} from '../../../utils/sort';
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
 // const Bar = forwardRef((props: any, ref: any) => (
@@ -43,6 +43,12 @@ interface ExpertListTableProps {
 //   </div>
 // ));
 
+interface ExpertListTableProps {
+  experts: Expert[];
+  reload: () => void;
+}
+
+// 정렬 로직
 type Sort =
   | 'updated_at|desc'
   | 'updated_at|asc'
@@ -90,196 +96,21 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const applyFilters = (experts: Expert[], query: string): Expert[] =>
-  experts.filter((hiddenbox) => {
-    let matches = true;
-
-    if (query) {
-      const properties = ['title', 'author-username'];
-      let containsQuery = false;
-
-      properties.forEach((property) => {
-        if (property.indexOf('-') > -1) {
-          const strArray = property.split('-');
-          if (
-            hiddenbox[strArray[0]][strArray[1]]
-              .toLowerCase()
-              .includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
-        } else {
-          if (
-            hiddenbox[property]
-              .toLowerCase()
-              .includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
-        }
-      });
-
-      if (!containsQuery) {
-        matches = false;
-      }
-    }
-
-    // Object.keys(filters).forEach((key) => {
-    //   const value = filters[key];
-
-    //   switch (key) {
-    //     case 'beforeSale':
-    //       if (
-    //         value &&
-    //         moment().diff(moment(hiddenbox.startDate)) > 0
-    //       ) {
-    //         matches = false;
-    //       }
-    //       break;
-    //     case 'onSale':
-    //       if (
-    //         value &&
-    //         (moment().diff(moment(hiddenbox.startDate)) < 0 ||
-    //           moment().diff(moment(hiddenbox.endDate)) > 0)
-    //       ) {
-    //         matches = false;
-    //       }
-    //       break;
-    //     case 'afterSale':
-    //       if (value && moment().diff(moment(hiddenbox.endDate)) < 0) {
-    //         matches = false;
-    //       }
-    //       break;
-    //     case 'public':
-    //       if (
-    //         value &&
-    //         moment().diff(moment(hiddenbox.publicDate)) < 0
-    //       ) {
-    //         matches = false;
-    //       }
-    //       break;
-    //   }
-    // });
-
-    return matches;
-  });
-
-const applyPagination = (
-  experts: Expert[],
-  page: number,
-  limit: number,
-): Expert[] => experts.slice(page * limit, page * limit + limit);
-
-const descendingComparator = (
-  a: Expert,
-  b: Expert,
-  orderBy: string,
-): number => {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const getComparator = (order: 'asc' | 'desc', orderBy: string) =>
-  order === 'desc'
-    ? (a: Expert, b: Expert) => descendingComparator(a, b, orderBy)
-    : (a: Expert, b: Expert) => -descendingComparator(a, b, orderBy);
-
-const applySort = (experts: Expert[], sort: Sort): Expert[] => {
-  const [orderBy, order] = sort.split('|') as [
-    string,
-    'asc' | 'desc',
-  ];
-  const comparator = getComparator(order, orderBy);
-
-  const stabilizedThis = experts.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    // @ts-ignore
-    const newOrder = comparator(a[0], b[0]);
-
-    if (newOrder !== 0) {
-      return newOrder;
-    }
-
-    // @ts-ignore
-    return a[1] - b[1];
-  });
-
-  // @ts-ignore
-  return stabilizedThis.map((el) => el[0]);
-};
-
 const ExpertListTable: FC<ExpertListTableProps> = (props) => {
   const { experts, reload, ...other } = props;
   const [currentTab, setCurrentTab] = useState<string>('all');
-  const [selectedHiddenboxes, setSelectedHiddenboxes] = useState<
-    number[]
-  >([]);
+  const [selectedExperts, setSelectedExperts] = useState<number[]>(
+    [],
+  );
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
   const [query, setQuery] = useState<string>('');
   const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [open, setOpen] = useState(false);
-  const [targetHiddenbox, setTargetHiddenbox] = useState(null);
-  const [salesDataLoaded, setSalesDataLoaded] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   if (hiddenboxes.length > 0) {
-  //     fetchSalesCount();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [hiddenboxes]);
-
-  // useEffect(() => {
-  //   if (targetHiddenbox) {
-  //     fetchComments(targetHiddenbox.id);
-  //   }
-  // }, [targetHiddenbox]);
-
-  // const fetchSalesCount = async () => {
-  //   await Promise.all(
-  //     hiddenboxes.map(async (hiddenbox) => {
-  //       const response = await axios.get(
-  //         `/my-hiddenboxes/count?hiddenbox=${hiddenbox.id}`,
-  //       );
-  //       if (response.status === 200) {
-  //         const theHiddenbox = hiddenboxes.find(
-  //           (element) => element.id === hiddenbox.id,
-  //         );
-  //         theHiddenbox.orders = response.data;
-  //       }
-  //     }),
-  //   );
-  //   setSalesDataLoaded(true);
-  // };
-
-  const onClickDelete = () => {
-    setOpen(true);
-  };
-
-  const handleDelete = async () => {
-    try {
-      const hiddenboxId = selectedHiddenboxes[0];
-      const response = await apiServer.delete(
-        `/hiddenbox/${hiddenboxId.toString()}`,
-      );
-      if (response.status === 200) {
-        // props.reload();
-      }
-    } catch (e) {
-    } finally {
-      setOpen(false);
-    }
-  };
-
+  //* 탭 변경
   const handleTabsChange = (
-    event: ChangeEvent<{}>,
+    __: ChangeEvent<{}>,
     value: string,
   ): void => {
     const updatedFilters = {
@@ -292,55 +123,79 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
     if (value !== 'all') {
       updatedFilters[value] = true;
     }
-
-    setSelectedHiddenboxes([]);
+    setSelectedExperts([]);
     setCurrentTab(value);
   };
 
+  //* 삭제 모달
+  const onClickDelete = () => {
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const expertId = selectedExperts[0];
+      const response = await apiServer.delete(
+        `/expert/${expertId.toString()}`,
+      );
+      if (response.status === 200) {
+        props.reload();
+      }
+    } catch (e) {
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  //* 검색어
   const handleQueryChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
     setQuery(event.target.value);
   };
 
+  //* 정렬 변경
   const handleSortChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
     setSort(event.target.value as Sort);
   };
 
-  const handleSelectOneHiddenbox = (
-    event: ChangeEvent<HTMLInputElement>,
-    hiddenboxId: number,
-  ): void => {
-    if (!selectedHiddenboxes.includes(hiddenboxId)) {
-      setSelectedHiddenboxes((prevSelected) => [hiddenboxId]);
-    } else {
-      setSelectedHiddenboxes((prevSelected) =>
-        prevSelected.filter((id) => id !== hiddenboxId),
-      );
-    }
-  };
-
-  const handlePageChange = (event: any, newPage: number): void => {
+  //* 페이지 변경
+  const handlePageChange = (__: any, newPage: number): void => {
     setPage(newPage);
   };
 
+  //* 리스트 수 변경
   const handleLimitChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
     setLimit(parseInt(event.target.value, 10));
   };
 
-  const filteredHiddenboxes = applyFilters(experts, query);
+  //* 리스트에서 게시글 선택
+  const handleSelectOneExpert = (
+    __: ChangeEvent<HTMLInputElement>,
+    expertId: number,
+  ): void => {
+    if (!selectedExperts.includes(expertId)) {
+      setSelectedExperts((prevSelected) => [expertId]);
+    } else {
+      setSelectedExperts((prevSelected) =>
+        prevSelected.filter((id) => id !== expertId),
+      );
+    }
+  };
 
-  const sortedHiddenboxes = applySort(filteredHiddenboxes, sort);
-  const paginatedHiddenboxes = applyPagination(
-    sortedHiddenboxes,
+  //* 최종 리스트, 정렬 데이터
+  const filteredExperts = applyFilters(experts, query);
+  const sortedExperts = applySort(filteredExperts, sort);
+  const paginatedExperts = applyPagination(
+    sortedExperts,
     page,
     limit,
   );
-  const enableBulkActions = selectedHiddenboxes.length > 0;
+  const enableBulkActions = selectedExperts.length > 0;
 
   return (
     <>
@@ -408,11 +263,12 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {sortOptions.map((option, index) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {sortOptions &&
+                sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
             </TextField>
           </Box>
         </Box>
@@ -428,10 +284,10 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
               }}
             >
               {/* <Checkbox
-                checked={selectedAllHiddenboxes}
+                checked={selectedAllExperts}
                 color="primary"
-                indeterminate={selectedSomeHiddenboxes}
-                onChange={handleSelectAllHiddenboxes}
+                indeterminate={selectedSomeExperts}
+                onChange={handleSelectAllExperts}
               /> */}
               <Button
                 color="primary"
@@ -446,7 +302,7 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
                 sx={{ ml: 2 }}
                 variant="outlined"
                 component={RouterLink}
-                to={`/dashboard/expert/${selectedHiddenboxes[0]}/edit`}
+                to={`/dashboard/expert/${selectedExperts[0]}/edit`}
               >
                 수정
               </Button>
@@ -460,10 +316,10 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
                 <TableRow>
                   <TableCell padding="checkbox">
                     {/* <Checkbox
-                      checked={selectedAllHiddenboxes}
+                      checked={selectedAllExperts}
                       color="primary"
-                      indeterminate={selectedSomeHiddenboxes}
-                      onChange={handleSelectAllHiddenboxes}
+                      indeterminate={selectedSomeExperts}
+                      onChange={handleSelectAllExperts}
                     /> */}
                   </TableCell>
                   <TableCell>제목</TableCell>
@@ -475,23 +331,24 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedHiddenboxes.map((expert) => {
-                  const isHiddenboxSelected =
-                    selectedHiddenboxes.includes(expert.id);
+                {paginatedExperts.map((expert) => {
+                  const isExpertSelected = selectedExperts.includes(
+                    expert.id,
+                  );
                   return (
                     <TableRow
                       hover
                       key={expert.id}
-                      selected={isHiddenboxSelected}
+                      selected={isExpertSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
-                          checked={isHiddenboxSelected}
+                          checked={isExpertSelected}
                           color="primary"
                           onChange={(event) =>
-                            handleSelectOneHiddenbox(event, expert.id)
+                            handleSelectOneExpert(event, expert.id)
                           }
-                          value={isHiddenboxSelected}
+                          value={isExpertSelected}
                         />
                       </TableCell>
                       <TableCell>
@@ -508,6 +365,7 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
                               to={`/dashboard/expert/${expert.id}`}
                               variant="subtitle2"
                             >
+                              타이틀
                               {expert.title}
                             </Link>
                             <Typography
@@ -525,17 +383,17 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
                           minWidth: '180px',
                         }}
                       >
-                        {`${moment(expert.createdAt).format(
+                        {`${moment(expert.created_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}`}
                       </TableCell>
                       <TableCell>
-                        {moment(expert.updatedAt).format(
+                        {moment(expert.updated_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
-                      <TableCell>{expert.likes}</TableCell>
-                      <TableCell>{expert.viewCount}</TableCell>
+                      <TableCell>0</TableCell>
+                      <TableCell>0</TableCell>
                       <TableCell align="right">
                         <IconButton
                           component={RouterLink}
@@ -559,7 +417,7 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
         </Scrollbar>
         <TablePagination
           component="div"
-          count={5}
+          count={experts.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}

@@ -10,10 +10,10 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { ExpertContentForm } from '../../components/dashboard/expert';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
+import ExpertCreateWizard from 'src/components/dashboard/expert/ExpertCreateWizard';
 
 const HiddenboxCreate: FC = () => {
   const { settings } = useSettings();
@@ -64,7 +64,7 @@ const HiddenboxCreate: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertContentForm />
+            <ExpertCreateWizard />
           </Box>
         </Container>
       </Box>
