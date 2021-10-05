@@ -10,6 +10,7 @@ import {
   Checkbox,
   Divider,
   IconButton,
+  LinearProgress,
   InputAdornment,
   Link,
   Tab,
@@ -37,6 +38,7 @@ import { SocialPostComment, SocialPostCommentAdd } from '../social';
 interface HiddenboxListTableProps {
   hiddenboxes: Hiddenbox[];
   reload: () => void;
+  loading: boolean;
 }
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
@@ -265,7 +267,7 @@ const applySort = (
 };
 
 const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
-  const { hiddenboxes, reload, ...other } = props;
+  const { hiddenboxes, reload, loading, ...other } = props;
   const [currentTab, setCurrentTab] = useState<string>('all');
   const [selectedHiddenboxes, setSelectedHiddenboxes] = useState<
     number[]
@@ -633,7 +635,7 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedHiddenboxes &&
+                {paginatedHiddenboxes.length > 0 ? (
                   paginatedHiddenboxes.map((hiddenbox) => {
                     const isHiddenboxSelected =
                       selectedHiddenboxes.includes(hiddenbox.id);
@@ -738,9 +740,25 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  })
+                ) : (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      position: 'absolute',
+                      border: '10px solid red',
+                    }}
+                  >
+                    No data
+                  </Box>
+                )}
               </TableBody>
             </Table>
+            {!loading && (
+              <div data-testid="news-list-loading">
+                <LinearProgress />
+              </div>
+            )}
           </Box>
         </Scrollbar>
         <TablePagination

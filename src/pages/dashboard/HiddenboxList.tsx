@@ -25,6 +25,7 @@ const HiddenboxList: FC = () => {
   const { settings } = useSettings();
   const { user } = useAuth();
   const [hiddenboxes, setHiddenboxes] = useState<Hiddenbox[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const mounted = useMounted();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
@@ -39,9 +40,11 @@ const HiddenboxList: FC = () => {
         console.log(response.data);
         if (mounted || reload) {
           setHiddenboxes(response.data);
+          setLoading(true);
         }
       } catch (err) {
         console.error(err);
+        setLoading(true);
       }
     },
     [mounted],
@@ -111,6 +114,7 @@ const HiddenboxList: FC = () => {
             <HiddenboxListTable
               hiddenboxes={hiddenboxes}
               reload={reload}
+              loading={loading}
             />
           </Box>
         </Container>
