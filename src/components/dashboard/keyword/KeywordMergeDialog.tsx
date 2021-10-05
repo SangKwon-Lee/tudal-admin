@@ -108,7 +108,10 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
         handleCheck(hasMoreRelationship);
       }
     } catch (error) {
-      alert('error');
+      toast.error(
+        '키워드 정보 불러오기에 실패했습니다. 지속해서 발생할 시 관리자에게 문의해주세요',
+      );
+      setClose();
     }
   }, [candidates, handleCheck]);
 
