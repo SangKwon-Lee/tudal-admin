@@ -559,12 +559,22 @@ const Keywords: React.FC = () => {
                     </Button>
                   </>
                 )}
-                <Button
-                  variant="outlined"
-                  onClick={() => setOpenMerge(true)}
+                <Box
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    m: -1,
+                    p: 2,
+                  }}
                 >
-                  키워드 통합
-                </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenMerge(true)}
+                  >
+                    키워드 통합
+                  </Button>
+                </Box>
               </Box>
             </Card>
           </Box>

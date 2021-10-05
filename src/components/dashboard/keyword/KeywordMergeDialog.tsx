@@ -183,6 +183,14 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
             {step === STEPS.CONFIRM_MERGE &&
               relations &&
               candidates.map((tag) => {
+                const {
+                  stocks,
+                  schedules,
+                  themes,
+                  news,
+                  hiddenboxes,
+                  aliases,
+                } = relations[tag.id];
                 return (
                   <Box
                     sx={{
@@ -197,15 +205,17 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
                         {tag?.name}
                       </Typography>
                       <Typography variant="body2">
-                        종목: {relations[tag.id]?.stocks}
+                        종목: {stocks}
                         <br />
-                        일정: {relations[tag.id]?.schedules}
+                        일정: {schedules}
                         <br />
-                        테마: {relations[tag.id]?.themes}
+                        테마: {themes}
                         <br />
-                        뉴스: {relations[tag.id]?.news}
+                        뉴스: {news}
                         <br />
-                        alias: {relations[tag.id]?.aliases}
+                        히든박스: {hiddenboxes}
+                        <br />
+                        alias: {aliases}
                         <br />
                       </Typography>
                     </CardContent>
