@@ -633,6 +633,7 @@ const Keywords: React.FC = () => {
               {filterOptions.map((filter, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={filter.value}
@@ -644,7 +645,7 @@ const Keywords: React.FC = () => {
                       />
                     }
                     label={
-                      <>
+                      <React.Fragment key={index}>
                         <Typography
                           color="textPrimary"
                           variant="body1"
@@ -655,7 +656,7 @@ const Keywords: React.FC = () => {
                           color="textSecondary"
                           variant="caption"
                         ></Typography>
-                      </>
+                      </React.Fragment>
                     }
                   />
                 );
@@ -693,7 +694,7 @@ const Keywords: React.FC = () => {
                       const [depth_1, depth_2, depth_3] =
                         tag.name.split('.');
                       return (
-                        <>
+                        <React.Fragment key={tag.id}>
                           <TableRow
                             key={tag.id}
                             sx={{
@@ -869,7 +870,7 @@ const Keywords: React.FC = () => {
                               </IconButton>
                             </TableCell>
                           </TableRow>
-                        </>
+                        </React.Fragment>
                       );
                     })}
                   </TableBody>

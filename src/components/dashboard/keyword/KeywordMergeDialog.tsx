@@ -41,7 +41,7 @@ const calculateMoreRelations = (obj) => {
   for (const key in obj) {
     const tag = obj[key];
     if (tag.total >= total) {
-      id = tag.id;
+      id = key;
       total = tag.total;
     }
   }
@@ -115,7 +115,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
   const handleSubmit = async () => {
     try {
       const { data, status } = await APITag.merge(mergeItems);
-      if (status === 200) {
+      if (status === 200 && data.success) {
         toast.success(
           `총 ${data.numOfChanged}개의 데이터가 변경되었습니다.`,
         );
@@ -169,8 +169,13 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
                 {candidates.map((tag) => {
                   return (
                     <ListItemText
+                      key={tag.id}
                       primary={`- ${tag.name}`}
-                      secondary={tag.summary}
+                      secondary={`요약문 : ${
+                        tag.summary
+                          ? tag.summary
+                          : '존재하지 않습니다'
+                      }`}
                       style={{
                         whiteSpace: 'pre-wrap',
                         overflowY: 'scroll',
@@ -193,6 +198,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
                 } = relations[tag.id];
                 return (
                   <Box
+                    key={tag.id}
                     sx={{
                       flexDirection: 'column',
                     }}
