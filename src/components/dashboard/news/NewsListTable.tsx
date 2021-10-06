@@ -155,8 +155,6 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
     page,
     limit,
   );
-  console.log(paginatedNewsList[48]);
-  console.log(paginatedNewsList[49]);
   return (
     <Box
       sx={{
