@@ -12,8 +12,8 @@ export interface Expert {
   thumbnail: [];
   type: string;
   url: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
   likes: [];
   viewCount: string;
 }

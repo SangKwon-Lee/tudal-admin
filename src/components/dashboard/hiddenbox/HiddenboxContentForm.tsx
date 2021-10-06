@@ -158,7 +158,10 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           판매 시작 이후 추가 내용은 댓글로 작성해주세요.
         </Typography>
         <Paper sx={{ mt: 3 }} variant="outlined">
-          <WebEditor editorRef={editorRef} />
+          <WebEditor
+            editorRef={editorRef}
+            contents={values.contents}
+          />
         </Paper>
         {error && (
           <Box sx={{ mt: 2 }}>

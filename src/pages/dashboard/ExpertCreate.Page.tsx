@@ -13,9 +13,9 @@ import {
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
-import ExpertCreateWizard from 'src/components/dashboard/expert/ExpertCreateWizard';
+import ExpertCreateWizardContainer from 'src/components/dashboard/expert/ExpertCreateWizard.Container';
 
-const HiddenboxCreate: FC = () => {
+const ExpertCreatePage: FC = () => {
   const { settings } = useSettings();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
@@ -64,7 +64,7 @@ const HiddenboxCreate: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertCreateWizard />
+            <ExpertCreateWizardContainer />
           </Box>
         </Container>
       </Box>
@@ -72,4 +72,4 @@ const HiddenboxCreate: FC = () => {
   );
 };
 
-export default HiddenboxCreate;
+export default ExpertCreatePage;

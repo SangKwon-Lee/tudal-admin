@@ -45,20 +45,20 @@ const sections = [
       },
       {
         title: '달인',
-        path: '/dashboard/experts',
+        path: '/dashboard/expert',
         icon: <PencilIcon fontSize="small" />,
         children: [
           {
             title: '리스트',
-            path: '/dashboard/experts/',
+            path: '/dashboard/expert/',
           },
           {
             title: '메뉴관리',
-            path: '/dashboard/experts',
+            path: '/dashboard/expert',
           },
           {
             title: '구독현황',
-            path: '/dashboard/experts',
+            path: '/dashboard/expert',
           },
         ],
       },

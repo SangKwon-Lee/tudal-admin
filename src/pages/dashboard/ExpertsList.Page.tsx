@@ -1,9 +1,8 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import useSettings from '../../hooks/useSettings';
 import gtm from '../../lib/gtm';
-import useAuth from 'src/hooks/useAuth';
 import {
   Box,
   Breadcrumbs,
@@ -15,41 +14,15 @@ import {
 } from '@material-ui/core';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PlusIcon from '../../icons/Plus';
-import ExpertListTable from '../../components/dashboard/expert/ExpertListTable';
-import useMounted from 'src/hooks/useMounted';
-import { APIExpert } from 'src/lib/api';
+import ExpertListTableContainer from '../../components/dashboard/expert/ExpertListTable.Container';
+// import useAuth from 'src/hooks/useAuth';
 
-const ExpertsList: FC = () => {
+const ExpertsListPage: FC = () => {
   const { settings } = useSettings();
-  const [experts, setExperts] = useState([]);
-  const { user } = useAuth();
-  const mounted = useMounted();
+  // const { user } = useAuth();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
-
-  const getExperts = useCallback(
-    async (reload = false) => {
-      try {
-        const response = await APIExpert.getList();
-        console.log(response.data);
-        if (mounted || reload) {
-          setExperts(response.data);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [mounted],
-  );
-
-  useEffect(() => {
-    getExperts();
-  }, [getExperts]);
-
-  const reload = () => {
-    getExperts();
-  };
 
   return (
     <>
@@ -104,7 +77,7 @@ const ExpertsList: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertListTable experts={experts} reload={reload} />
+            <ExpertListTableContainer />
           </Box>
         </Container>
       </Box>
@@ -129,4 +102,4 @@ const ExpertsList: FC = () => {
   );
 };
 
-export default ExpertsList;
+export default ExpertsListPage;

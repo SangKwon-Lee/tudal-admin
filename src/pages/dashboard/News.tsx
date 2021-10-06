@@ -67,7 +67,6 @@ const newsReducer = (
   action: NewsAction,
 ): newsState => {
   const { type, payload } = action;
-
   switch (type) {
     case NewsActionKind.LOADING:
       return {
@@ -105,7 +104,6 @@ const newsReducer = (
         ...state,
         isOpenConfirm: false,
       };
-
     case NewsActionKind.ERROR:
       return {
         ...state,
@@ -125,7 +123,6 @@ const News: React.FC = () => {
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const {
     news: newsList,

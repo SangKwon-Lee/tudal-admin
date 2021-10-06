@@ -69,13 +69,18 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category')),
 );
 
-const ExpertsList = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertsList')),
+const ExpertsListPage = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertsList.Page')),
 );
-const ExpertCreate = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertCreate')),
+const ExpertCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertCreate.Page')),
 );
-
+const ExpertDetailsPage = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertDetails.Page')),
+);
+const ExpertEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/ExpertEdit.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -237,15 +242,23 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'experts',
+        path: 'expert',
         children: [
           {
             path: '/',
-            element: <ExpertsList />,
+            element: <ExpertsListPage />,
           },
           {
             path: '/new',
-            element: <ExpertCreate />,
+            element: <ExpertCreatePage />,
+          },
+          {
+            path: ':expertId',
+            element: <ExpertDetailsPage />,
+          },
+          {
+            path: ':expertId/edit',
+            element: <ExpertEditPage />,
           },
         ],
       },

@@ -18,10 +18,11 @@ const S3 = new AWS.S3({
 const bucket_name = 'hiddenbox-photo';
 
 const WebEditor = (props) => {
-  const { editorRef } = props;
+  const { editorRef, contents } = props;
   return (
     <Editor
       ref={editorRef}
+      initialValue={contents}
       onInit={(evt, editor) => (editorRef.current = editor)}
       init={{
         //@ts-ignore

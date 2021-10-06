@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import {
@@ -28,13 +26,8 @@ import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
 import type { Expert } from '../../../types/expert';
 import Scrollbar from '../../layout/Scrollbar';
-import { apiServer } from '../../../lib/axios';
 import ConfirmModal from '../../widgets/modals/ConfirmModal';
-import {
-  applyFilters,
-  applyPagination,
-  applySort,
-} from '../../../utils/sort';
+import { ChangeEvent, FC } from 'react';
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
 // const Bar = forwardRef((props: any, ref: any) => (
@@ -42,11 +35,6 @@ import {
 //     {props.children}
 //   </div>
 // ));
-
-interface ExpertListTableProps {
-  experts: Expert[];
-  reload: () => void;
-}
 
 // 정렬 로직
 type Sort =
@@ -96,106 +84,57 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const ExpertListTable: FC<ExpertListTableProps> = (props) => {
-  const { experts, reload, ...other } = props;
-  const [currentTab, setCurrentTab] = useState<string>('all');
-  const [selectedExperts, setSelectedExperts] = useState<number[]>(
-    [],
-  );
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
-  const [query, setQuery] = useState<string>('');
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [open, setOpen] = useState<boolean>(false);
-
-  //* 탭 변경
-  const handleTabsChange = (
-    __: ChangeEvent<{}>,
-    value: string,
-  ): void => {
-    const updatedFilters = {
-      beforeSale: null,
-      onSale: null,
-      afterSale: null,
-      public: null,
-    };
-
-    if (value !== 'all') {
-      updatedFilters[value] = true;
-    }
-    setSelectedExperts([]);
-    setCurrentTab(value);
-  };
-
-  //* 삭제 모달
-  const onClickDelete = () => {
-    setOpen(true);
-  };
-
-  const handleDelete = async () => {
-    try {
-      const expertId = selectedExperts[0];
-      const response = await apiServer.delete(
-        `/expert/${expertId.toString()}`,
-      );
-      if (response.status === 200) {
-        props.reload();
-      }
-    } catch (e) {
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  //* 검색어
-  const handleQueryChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setQuery(event.target.value);
-  };
-
-  //* 정렬 변경
-  const handleSortChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSort(event.target.value as Sort);
-  };
-
-  //* 페이지 변경
-  const handlePageChange = (__: any, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  //* 리스트 수 변경
-  const handleLimitChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setLimit(parseInt(event.target.value, 10));
-  };
-
-  //* 리스트에서 게시글 선택
-  const handleSelectOneExpert = (
+interface IExpertListTableProps {
+  experts: Expert[];
+  handleTabsChange: (__: ChangeEvent<{}>, value: string) => void;
+  currentTab: string;
+  handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  query: string;
+  handleSortChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  sort: Sort;
+  enableBulkActions: boolean;
+  onClickDelete: () => void;
+  paginatedExperts: any[];
+  selectedExperts: number[];
+  handleSelectOneExpert: (
     __: ChangeEvent<HTMLInputElement>,
     expertId: number,
-  ): void => {
-    if (!selectedExperts.includes(expertId)) {
-      setSelectedExperts((prevSelected) => [expertId]);
-    } else {
-      setSelectedExperts((prevSelected) =>
-        prevSelected.filter((id) => id !== expertId),
-      );
-    }
-  };
-
-  //* 최종 리스트, 정렬 데이터
-  const filteredExperts = applyFilters(experts, query);
-  const sortedExperts = applySort(filteredExperts, sort);
-  const paginatedExperts = applyPagination(
-    sortedExperts,
+  ) => void;
+  handlePageChange: (__: any, newPage: number) => void;
+  handleLimitChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  page: number;
+  limit: number;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleDelete: () => Promise<void>;
+  reload: () => void;
+}
+const ExpertListTablePresenter: FC<IExpertListTableProps> = (
+  props,
+) => {
+  const {
+    handleTabsChange,
+    experts,
+    reload,
+    currentTab,
+    handleQueryChange,
+    query,
+    handleSortChange,
+    handleSelectOneExpert,
+    enableBulkActions,
+    sort,
+    onClickDelete,
+    paginatedExperts,
+    selectedExperts,
+    handlePageChange,
+    handleLimitChange,
     page,
     limit,
-  );
-  const enableBulkActions = selectedExperts.length > 0;
+    open,
+    setOpen,
+    handleDelete,
+    ...other
+  } = props;
 
   return (
     <>
@@ -417,7 +356,7 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
         </Scrollbar>
         <TablePagination
           component="div"
-          count={experts.length}
+          count={experts.length ? experts.length : 0}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -432,9 +371,7 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
       >
         <ConfirmModal
           title={'정말 삭제하시겠습니까?'}
-          content={
-            '고객들이 구매한 상품의 경우 삭제시 큰 주의가 필요합니다.'
-          }
+          content={'삭제시 큰 주의가 필요합니다.'}
           confirmTitle={'삭제'}
           handleOnClick={handleDelete}
           handleOnCancel={() => setOpen(false)}
@@ -444,4 +381,4 @@ const ExpertListTable: FC<ExpertListTableProps> = (props) => {
   );
 };
 
-export default ExpertListTable;
+export default ExpertListTablePresenter;

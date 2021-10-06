@@ -1,4 +1,3 @@
-import { useState, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import type { FC, FormEvent } from 'react';
 import {
@@ -12,7 +11,6 @@ import {
 } from '@material-ui/core';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import { cmsServer } from '../../../lib/axios';
 import WebEditor from 'src/components/common/WebEditor';
 
 const roomOptions = [
@@ -27,87 +25,26 @@ const roomOptions = [
   },
 ];
 
-interface ExpertFormProps {
-  onComplete?: () => void;
-  setValues?: (any) => void;
+interface IExpertContentFormProps {
+  editorRef: React.MutableRefObject<any>;
+  handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
+  handleChange: (e: any) => void;
+  error: string;
+  isSubmitting: boolean;
   values: any;
-  mode: string;
 }
-const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
-  const { mode, values, onComplete, setValues } = props;
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  // const [complete, setComplete] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
-  //* 웹 에디터에 전달되는 Props
-  const editorRef = useRef(null);
-  const log = () => {
-    if (editorRef.current) {
-      return editorRef.current.getContent();
-    }
-  };
-
-  //* Submit
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-  ): Promise<void> => {
-    event.preventDefault();
-    try {
-      setIsSubmitting(true);
-
-      if (editorRef.current) {
-        const contents = log();
-        setValues({
-          ...values,
-          description: contents,
-        });
-        const newExpert = {
-          ...values,
-          description: contents,
-        };
-        if (mode === 'create') {
-          const response = await cmsServer.post(
-            '/expert-feeds',
-            newExpert,
-          );
-          console.log(response);
-          if (response.status === 200) {
-            if (onComplete) {
-              onComplete();
-            }
-          } else {
-            return;
-          }
-        } else {
-          const response = await cmsServer.put(
-            `/expert-feeds/${newExpert.id}`,
-            newExpert,
-          );
-          if (response.status === 200) {
-            if (onComplete) {
-              onComplete();
-            }
-          } else {
-            return;
-          }
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  //* 타이틀, 방 변경
-  const handleChange = (e: any) => {
-    let newInput = {
-      ...values,
-      [e.target.name]: e.target.value,
-    };
-    setValues(newInput);
-  };
+const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
+  props,
+) => {
+  const {
+    editorRef,
+    handleSubmit,
+    handleChange,
+    values,
+    error,
+    isSubmitting,
+  } = props;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -128,7 +65,7 @@ const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
                 e.preventDefault();
               }
             }}
-            value={values.title}
+            value={values.title || ''}
             variant="outlined"
           />
         </Box>
@@ -138,7 +75,7 @@ const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
             fullWidth
             label="방 선택"
             name="room"
-            value={values.room}
+            value={values.room || ''}
             SelectProps={{ native: true }}
             variant="outlined"
             onChange={handleChange}
@@ -156,7 +93,10 @@ const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
           </TextField>
         </Box>
         <Paper sx={{ mt: 3 }} variant="outlined">
-          <WebEditor editorRef={editorRef} />
+          <WebEditor
+            editorRef={editorRef}
+            contents={values.description}
+          />
         </Paper>
         {error && (
           <Box sx={{ mt: 2 }}>
@@ -174,7 +114,7 @@ const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
             size="large"
             variant="text"
             component={RouterLink}
-            to={`/dashboard/experts`}
+            to={`/dashboard/expert`}
           >
             이전
           </Button>
@@ -193,4 +133,4 @@ const ExpertboxContentForm: FC<ExpertFormProps> = (props) => {
   );
 };
 
-export default ExpertboxContentForm;
+export default ExpertContentFormPresenter;
