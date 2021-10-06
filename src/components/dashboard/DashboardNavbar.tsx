@@ -6,7 +6,7 @@ import { experimentalStyled } from '@material-ui/core/styles';
 import type { AppBarProps } from '@material-ui/core';
 import MenuIcon from '../../icons/Menu';
 import AccountPopover from './AccountPopover';
-import Logo from '../../common/public/logo.png';
+import Logo from '../../icons/logo.png';
 interface DashboardNavbarProps extends AppBarProps {
   onSidebarMobileOpen?: () => void;
 }
