@@ -219,7 +219,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
                   const imageName = `hb-${moment().format(
                     'YYYYMMDDHHmmss',
                   )}.${ext}`;
-
                   try {
                     // Koscom Cloud에 업로드하기!
                     await S3.putObject({
@@ -279,6 +278,24 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
                 'wordcount',
                 'paste',
                 'save',
+                'textpattern',
+              ],
+              textpattern_patterns: [
+                { start: '*', end: '*', format: 'italic' },
+                { start: '**', end: '**', format: 'bold' },
+                { start: '#', format: 'h1' },
+                { start: '##', format: 'h2' },
+                { start: '###', format: 'h3' },
+                { start: '####', format: 'h4' },
+                { start: '#####', format: 'h5' },
+                { start: '######', format: 'h6' },
+                { start: '1. ', cmd: 'InsertOrderedList' },
+                { start: '* ', cmd: 'InsertUnorderedList' },
+                { start: '- ', cmd: 'InsertUnorderedList' },
+                { start: '---', replacement: '<hr/>' },
+                { start: '--', replacement: '—' },
+                { start: '-', replacement: '—' },
+                { start: '(c)', replacement: '©' },
               ],
               toolbar:
                 'formatselect fontselect fontsizeselect |' +
