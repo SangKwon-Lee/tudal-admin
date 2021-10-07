@@ -74,7 +74,6 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
               return;
             }
             if (typeof newValue !== 'string') {
-              console.log(newValue);
               if (newValue && newValue.isNew && newValue.inputValue) {
                 setKeyword(newValue.inputValue);
               }

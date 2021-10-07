@@ -3,10 +3,6 @@ import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
 
-export async function find(name) {
-  return await axios.get<Tag[]>(`/tags?name=${name}`);
-}
-
 export async function getList(
   search: string,
   sort: string = '',
@@ -27,7 +23,12 @@ export async function getList(
       q[filter.name] = filter.value;
     }
   });
-  return await axios.get<Tag[]>('/tags?' + qs.stringify(q));
+
+  return await axios.get<Tag[]>('/tags-excluded?' + qs.stringify(q));
+}
+
+export async function find(name) {
+  return await axios.get<Tag[]>(`/tags?name=${name}`);
 }
 
 export async function getItem(id: number) {
@@ -84,4 +85,13 @@ export async function findKeywords(tags: string[]): Promise<Tag[]> {
       .filter((response) => response.data.length === 1)
       .map((response) => response.data[0]);
   });
+}
+
+export async function findRelations(tagIds: Number[]) {
+  let params = { id: tagIds };
+  return axios.get('/tags/relations?', { params });
+}
+
+export async function merge(data) {
+  return axios.post('/tags/merge', data);
 }
