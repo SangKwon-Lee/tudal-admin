@@ -17,6 +17,7 @@ import ExpertCreateWizardContainer from 'src/components/dashboard/expert/ExpertC
 
 const ExpertCreatePage: FC = () => {
   const { settings } = useSettings();
+
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);

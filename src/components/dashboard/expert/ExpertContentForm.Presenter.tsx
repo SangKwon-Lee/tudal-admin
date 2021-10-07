@@ -12,26 +12,24 @@ import {
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
+import { AxiosError } from 'axios';
+import useAuth from 'src/hooks/useAuth';
+import { Expert, Room } from 'src/types/expert';
 
-const roomOptions = [
-  {
-    name: '공개방',
-  },
-  {
-    name: '어낭픽',
-  },
-  {
-    name: '연금픽',
-  },
-];
+interface newState {
+  newExpert: Expert;
+  loading: boolean;
+  error: AxiosError<any> | boolean;
+  isSubmitting: boolean;
+}
 
 interface IExpertContentFormProps {
   editorRef: React.MutableRefObject<any>;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
-  handleChange: (e: any) => void;
-  error: string;
+  handleChangeTitle: (e: any) => void;
+  handleChangeRoom: (e: any) => void;
   isSubmitting: boolean;
-  values: any;
+  newState: newState;
 }
 
 const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
@@ -40,11 +38,14 @@ const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
   const {
     editorRef,
     handleSubmit,
-    handleChange,
-    values,
-    error,
+    handleChangeTitle,
     isSubmitting,
+    handleChangeRoom,
+    newState,
   } = props;
+
+  const { error, newExpert } = newState;
+  const { user } = useAuth();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -58,14 +59,14 @@ const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
             helperText={'3글자 이상 입력하세요'}
             label="제목"
             name="title"
-            onBlur={handleChange}
-            onChange={handleChange}
+            onBlur={handleChangeTitle}
+            onChange={handleChangeTitle}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
               }
             }}
-            value={values.title || ''}
+            value={newExpert?.title || ''}
             variant="outlined"
           />
         </Box>
@@ -73,29 +74,42 @@ const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
           <TextField
             select
             fullWidth
-            label="방 선택"
+            label={
+              user.cp_rooms.length > 0
+                ? '방 선택'
+                : '방을 만들어주세요'
+            }
+            disabled={user?.cp_rooms.length > 0 ? false : true}
             name="room"
-            value={values.room || ''}
+            value={user?.cp_rooms.id}
             SelectProps={{ native: true }}
             variant="outlined"
-            onChange={handleChange}
+            onChange={handleChangeRoom}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
               }
             }}
           >
-            {roomOptions.map((roomOptions) => (
-              <option key={roomOptions.name} value={roomOptions.name}>
-                {roomOptions.name}
-              </option>
-            ))}
+            {user?.cp_rooms ? (
+              user?.cp_rooms.map((room: Room) => (
+                <option key={room.title} value={room.title}>
+                  {room.title} ({room.openType})
+                </option>
+              ))
+            ) : (
+              <option>"방을 만들어주세요"</option>
+            )}
           </TextField>
         </Box>
         <Paper sx={{ mt: 3 }} variant="outlined">
           <WebEditor
             editorRef={editorRef}
-            contents={values.description}
+            contents={
+              newExpert.contents
+                ? newExpert.contents
+                : newExpert.description
+            }
           />
         </Paper>
         {error && (

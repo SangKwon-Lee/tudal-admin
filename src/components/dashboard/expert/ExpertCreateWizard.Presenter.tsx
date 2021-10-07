@@ -9,40 +9,31 @@ import {
 } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import ExpertContentFormContainer from './ExpertContentForm.Container';
-import { Expert } from 'src/types/expert';
 import { FC } from 'react';
 
-interface IExpertCreateWizardProps {
-  newExpert: Expert;
-  mode: string;
+interface newState {
   completed: boolean;
-  loading: boolean;
+}
+
+interface IExpertCreateWizardProps {
+  newState: newState;
+  mode: string;
   handleComplete: () => void;
-  handleSetNewExpert: (values: any) => void;
 }
 
 const ExpertCreateWizardPresenter: FC<IExpertCreateWizardProps> = (
   props,
 ) => {
-  const {
-    completed,
-    loading,
-    mode,
-    handleComplete,
-    handleSetNewExpert,
-    newExpert,
-  } = props;
+  const { newState, mode, handleComplete } = props;
+  const { completed } = newState;
 
   return (
     <>
       {!completed ? (
         <>
-          {(mode === 'edit' && loading === false) ||
-          mode === 'create' ? (
+          {mode === 'edit' || mode === 'create' ? (
             <ExpertContentFormContainer
               onComplete={handleComplete}
-              setValues={handleSetNewExpert}
-              values={newExpert}
               mode={mode}
             />
           ) : null}

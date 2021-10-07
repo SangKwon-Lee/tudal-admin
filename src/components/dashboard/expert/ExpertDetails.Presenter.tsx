@@ -9,23 +9,40 @@ import {
   TableRow,
   Typography,
   Container,
+  LinearProgress,
 } from '@material-ui/core';
 import type { Expert } from '../../../types/expert';
 import moment from 'moment';
 import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
 import { FC } from 'react';
+import { AxiosError } from 'axios';
+import useAuth from 'src/hooks/useAuth';
+
+interface newState {
+  expert: Expert;
+  loading: boolean;
+  error: AxiosError<any> | boolean;
+}
 
 interface IExpertDetails {
-  expert: Expert;
+  newState: newState;
 }
 
 const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
-  const { expert, ...other } = props;
+  const { newState, ...other } = props;
+  const { expert, loading } = newState;
+  const { user } = useAuth();
 
   return (
     <>
       <Card {...other}>
         <CardHeader title="달인 상세내용" />
+        {loading && (
+          <div data-testid="news-list-loading">
+            <LinearProgress />
+          </div>
+        )}
         <Divider />
         <Table>
           <TableBody>
@@ -49,7 +66,11 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${expert.author}`}
+                  {`${
+                    typeof expert.author === 'string'
+                      ? expert.author
+                      : user.nickname
+                  }`}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -61,8 +82,9 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {/* {expert.type} */}
-                  뉴스픽 (임시)
+                  {expert?.cp_room?.title
+                    ? expert.cp_room.title
+                    : expert.type}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -133,7 +155,12 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
           </Typography>
           <Box sx={{ py: 3 }}>
             <Container maxWidth="md">
-              <Viewer initialValue={expert.description} />
+              {expert.description && (
+                <Viewer initialValue={expert.description} />
+              )}
+              {expert.contents && (
+                <Viewer initialValue={expert.contents} />
+              )}
             </Container>
           </Box>
         </Box>

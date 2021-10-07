@@ -20,6 +20,7 @@ import {
   TextField,
   Typography,
   Dialog,
+  LinearProgress,
 } from '@material-ui/core';
 import ArrowRightIcon from '../../../icons/ArrowRight';
 import PencilAltIcon from '../../../icons/PencilAlt';
@@ -28,6 +29,8 @@ import type { Expert } from '../../../types/expert';
 import Scrollbar from '../../layout/Scrollbar';
 import ConfirmModal from '../../widgets/modals/ConfirmModal';
 import { ChangeEvent, FC } from 'react';
+import { AxiosError } from 'axios';
+import useAuth from 'src/hooks/useAuth';
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
 // const Bar = forwardRef((props: any, ref: any) => (
@@ -84,28 +87,34 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-interface IExpertListTableProps {
+interface newState {
   experts: Expert[];
-  handleTabsChange: (__: ChangeEvent<{}>, value: string) => void;
+  page: number;
+  limit: number;
+  query: string;
+  open: boolean;
+  sort: Sort;
+  roomSort: any;
+  selectedExperts: number[];
+  loading: boolean;
+  error: AxiosError<any> | boolean;
+}
+interface IExpertListTableProps {
+  newState: newState;
   currentTab: string;
   handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  query: string;
   handleSortChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  sort: Sort;
+  handleRoomChange: (event: ChangeEvent<HTMLInputElement>) => void;
   enableBulkActions: boolean;
   onClickDelete: () => void;
   paginatedExperts: any[];
-  selectedExperts: number[];
   handleSelectOneExpert: (
     __: ChangeEvent<HTMLInputElement>,
     expertId: number,
   ) => void;
   handlePageChange: (__: any, newPage: number) => void;
   handleLimitChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  page: number;
-  limit: number;
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClickDeleteClose: () => void;
   handleDelete: () => Promise<void>;
   reload: () => void;
 }
@@ -113,35 +122,46 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
   props,
 ) => {
   const {
-    handleTabsChange,
-    experts,
+    newState,
     reload,
     currentTab,
     handleQueryChange,
-    query,
     handleSortChange,
+    handleRoomChange,
     handleSelectOneExpert,
     enableBulkActions,
-    sort,
     onClickDelete,
     paginatedExperts,
-    selectedExperts,
     handlePageChange,
     handleLimitChange,
-    page,
-    limit,
-    open,
-    setOpen,
+    onClickDeleteClose,
     handleDelete,
     ...other
   } = props;
+  const {
+    experts,
+    page,
+    limit,
+    open,
+    sort,
+    query,
+    roomSort,
+    selectedExperts,
+    loading,
+  } = newState;
+  const { user } = useAuth();
+  const roomOption = [{ id: 0, title: '전체' }, ...user.cp_rooms];
 
   return (
     <>
       <Card {...other}>
+        {loading && (
+          <div data-testid="news-list-loading">
+            <LinearProgress />
+          </div>
+        )}
         <Tabs
           indicatorColor="primary"
-          onChange={handleTabsChange}
           scrollButtons="auto"
           textColor="primary"
           value={currentTab}
@@ -209,6 +229,26 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                   </option>
                 ))}
             </TextField>
+            <TextField
+              label={'방 정렬'}
+              name="sort"
+              onChange={handleRoomChange}
+              select
+              SelectProps={{ native: true }}
+              value={roomSort}
+              variant="outlined"
+              sx={{ mx: 1 }}
+            >
+              {roomOption.length > 0 ? (
+                roomOption.map((option) => (
+                  <option key={option.title} value={option.title}>
+                    {option.title}
+                  </option>
+                ))
+              ) : (
+                <option>방이 없습니다</option>
+              )}
+            </TextField>
           </Box>
         </Box>
         {enableBulkActions && (
@@ -216,18 +256,11 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
             <Box
               sx={{
                 backgroundColor: 'background.paper',
-                // position: 'absolute',
                 px: '4px',
                 width: '100%',
                 zIndex: 2,
               }}
             >
-              {/* <Checkbox
-                checked={selectedAllExperts}
-                color="primary"
-                indeterminate={selectedSomeExperts}
-                onChange={handleSelectAllExperts}
-              /> */}
               <Button
                 color="primary"
                 sx={{ ml: 2 }}
@@ -253,17 +286,11 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox">
-                    {/* <Checkbox
-                      checked={selectedAllExperts}
-                      color="primary"
-                      indeterminate={selectedSomeExperts}
-                      onChange={handleSelectAllExperts}
-                    /> */}
-                  </TableCell>
+                  <TableCell padding="checkbox"></TableCell>
                   <TableCell>제목</TableCell>
                   <TableCell>등록일</TableCell>
                   <TableCell>수정일</TableCell>
+                  <TableCell>방 이름</TableCell>
                   <TableCell>좋아요</TableCell>
                   <TableCell>조회수</TableCell>
                   <TableCell align="right">Actions</TableCell>
@@ -304,14 +331,19 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                               to={`/dashboard/expert/${expert.id}`}
                               variant="subtitle2"
                             >
-                              타이틀
-                              {expert.title}
+                              {expert.title
+                                ? expert.title
+                                : '제목이 없습니다.'}
                             </Link>
                             <Typography
                               color="textSecondary"
                               variant="body2"
                             >
-                              {expert.author && expert.author}
+                              {`${
+                                typeof expert.author === 'string'
+                                  ? expert.author
+                                  : user.nickname
+                              }`}
                             </Typography>
                           </Box>
                         </Box>
@@ -327,10 +359,11 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                         )}`}
                       </TableCell>
                       <TableCell>
-                        {moment(expert.updated_at).format(
+                        {moment(expert?.updated_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
+                      <TableCell>{expert?.cp_room?.title}</TableCell>
                       <TableCell>0</TableCell>
                       <TableCell>0</TableCell>
                       <TableCell align="right">
@@ -367,14 +400,14 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
       <Dialog
         aria-labelledby="ConfirmModal"
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={onClickDeleteClose}
       >
         <ConfirmModal
           title={'정말 삭제하시겠습니까?'}
           content={'삭제시 큰 주의가 필요합니다.'}
           confirmTitle={'삭제'}
           handleOnClick={handleDelete}
-          handleOnCancel={() => setOpen(false)}
+          handleOnCancel={onClickDeleteClose}
         />
       </Dialog>
     </>

@@ -1,32 +1,36 @@
 import moment from 'moment';
 
-export const applyFilters = (list: any, query: string, filters?) =>
+export const applyFilters = (list: any, query?: string, filters?) =>
   list.filter((list) => {
     let matches = true;
 
     if (query) {
-      const properties = ['title', 'author-username'];
+      // const properties = ['title', 'author-username'];
       let containsQuery = false;
-
-      properties.forEach((property) => {
-        if (property.indexOf('-') > -1) {
-          const strArray = property.split('-');
-          if (
-            list[strArray[0]][strArray[1]]
-              .toLowerCase()
-              .includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
-        } else {
-          if (
-            list[property].toLowerCase().includes(query.toLowerCase())
-          ) {
-            containsQuery = true;
-          }
+      if (list.title) {
+        if (list.title.toLowerCase().includes(query.toLowerCase())) {
+          containsQuery = true;
         }
-      });
-
+      }
+      // let containsQuery = false;
+      // properties.forEach((property) => {
+      //   if (property.indexOf('-') > -1) {
+      //     const strArray = property.split('-');
+      //     if (
+      //       list[strArray[0]][strArray[1]]
+      //         .toLowerCase()
+      //         .includes(query.toLowerCase())
+      //     ) {
+      //       containsQuery = true;
+      //     }
+      //   } else {
+      //     if (
+      //       list[property].toLowerCase().includes(query.toLowerCase())
+      //     ) {
+      //       containsQuery = true;
+      //     }
+      //   }
+      // });
       if (!containsQuery) {
         matches = false;
       }
@@ -73,6 +77,7 @@ export const applyPagination = (
   page: number,
   limit: number,
 ): any[] => list.slice(page * limit, page * limit + limit);
+
 export const descendingComparator = (
   a: any,
   b: any,
@@ -87,6 +92,7 @@ export const descendingComparator = (
       return 1;
     }
   }
+
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -106,11 +112,20 @@ export const getComparator = (
     ? (a: any, b: any) => descendingComparator(a, b, orderBy)
     : (a: any, b: any) => -descendingComparator(a, b, orderBy);
 
-export const applySort = (list: any[], sort: any): any[] => {
+export const applySort = (
+  list: any[],
+  sort: any,
+  room?: any,
+): any[] => {
+  if (room && room !== '전체') {
+    list = list.filter((data) => data.cp_room);
+    list = list.filter((data) => data.cp_room.title === room);
+  }
   const [orderBy, order] = sort.split('|') as [
     string,
     'asc' | 'desc',
   ];
+
   const comparator = getComparator(order, orderBy);
 
   const stabilizedThis = list.map((el, index) => [el, index]);

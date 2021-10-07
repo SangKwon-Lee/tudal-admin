@@ -69,7 +69,7 @@ const ExpertsListPage: FC = () => {
                   sx={{ m: 1 }}
                   variant="contained"
                   component={RouterLink}
-                  to="/dashboard/experts/new"
+                  to="/dashboard/expert/new"
                 >
                   달인 추가
                 </Button>

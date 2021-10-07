@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { cmsServer } from '../../../lib/axios';
 import {
@@ -9,6 +9,8 @@ import {
 import { APIExpert } from 'src/lib/api';
 import ExpertListTablePresenter from './ExpertListTable.Presenter';
 import useMounted from 'src/hooks/useMounted';
+import { AxiosError } from 'axios';
+import useAuth from 'src/hooks/useAuth';
 
 // 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
 // const Bar = forwardRef((props: any, ref: any) => (
@@ -58,29 +60,147 @@ const sortOptions: SortOption[] = [
   },
 ];
 
+enum ExpertListTableActionKind {
+  LOADING = 'LOADING',
+  ERROR = 'ERROR',
+  GET_EXPERTS = 'GET_EXPERTS',
+  CONFIRM_MODAL_OPEN = 'CONFIRM_MODAL_OPEN',
+  DELETE_EXPERT = 'DELETE_EXPERT',
+  CHANGE_QUERY = 'CHANGE_QUERY',
+  CHANGE_SORT = 'CHANGE_SORT',
+  CHANGE_PAGE = 'CHANGE_PAGE',
+  CHANGE_LIMIT = 'CHANGE_LIMIT',
+  CHANGE_ROOM = 'CHANGE_ROOM',
+  SELECT_ONE_EXPERT = 'SELECT_ONE_EXPERT',
+  CONFIRM_MODAL_CLOSE = 'CONFIRM_MODAL_CLOSE',
+}
+
+interface ExpertListTableAction {
+  type: ExpertListTableActionKind;
+  payload?: any;
+}
+
+interface newState {
+  experts: any;
+  page: number;
+  limit: number;
+  query: string;
+  open: boolean;
+  sort: Sort;
+  selectedExperts: number[];
+  loading: boolean;
+  error: AxiosError<any> | boolean;
+  roomSort: any;
+}
+
+const ExpertListTableReducer = (
+  state: newState,
+  action: ExpertListTableAction,
+): newState => {
+  const { type, payload } = action;
+  switch (type) {
+    case ExpertListTableActionKind.LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ExpertListTableActionKind.GET_EXPERTS:
+      return {
+        ...state,
+        experts: payload,
+        loading: false,
+      };
+    case ExpertListTableActionKind.CHANGE_QUERY:
+      return {
+        ...state,
+        query: payload,
+      };
+    case ExpertListTableActionKind.CHANGE_PAGE:
+      return {
+        ...state,
+        page: payload,
+      };
+    case ExpertListTableActionKind.CHANGE_SORT:
+      return {
+        ...state,
+        sort: payload,
+      };
+    case ExpertListTableActionKind.CHANGE_LIMIT:
+      return {
+        ...state,
+        limit: payload,
+      };
+    case ExpertListTableActionKind.CHANGE_ROOM:
+      return {
+        ...state,
+        roomSort: payload,
+      };
+    case ExpertListTableActionKind.SELECT_ONE_EXPERT:
+      return {
+        ...state,
+        selectedExperts: payload,
+      };
+    case ExpertListTableActionKind.CONFIRM_MODAL_OPEN:
+      return {
+        ...state,
+        open: true,
+      };
+    case ExpertListTableActionKind.CONFIRM_MODAL_CLOSE:
+      return {
+        ...state,
+        open: false,
+        loading: false,
+      };
+    case ExpertListTableActionKind.ERROR:
+      return {
+        ...state,
+        error: payload,
+      };
+  }
+};
+
 const ExpertListTableContainer = () => {
   const [currentTab, setCurrentTab] = useState<string>('all');
-  const [selectedExperts, setSelectedExperts] = useState<number[]>(
-    [],
-  );
-  const mounted = useMounted();
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
-  const [query, setQuery] = useState<string>('');
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
-  const [open, setOpen] = useState<boolean>(false);
-  const [experts, setExperts] = useState([]);
+  const { user } = useAuth();
 
+  const roomOption = [{ id: 0, title: '전체' }, ...user.cp_rooms];
+
+  const initialState: newState = {
+    experts: [],
+    loading: false,
+    error: null,
+    page: 0,
+    limit: 5,
+    query: '',
+    sort: sortOptions[0].value,
+    open: false,
+    selectedExperts: [],
+    roomSort: roomOption[0].title,
+  };
+  const [newState, dispatch] = useReducer(
+    ExpertListTableReducer,
+    initialState,
+  );
+
+  const mounted = useMounted();
   const getExperts = useCallback(
     async (reload = false) => {
+      dispatch({ type: ExpertListTableActionKind.LOADING });
       try {
         const response = await APIExpert.getList();
-        console.log(response.data);
+        const CPresponse = await APIExpert.getCPList();
         if (mounted || reload) {
-          setExperts(response.data);
+          dispatch({
+            type: ExpertListTableActionKind.GET_EXPERTS,
+            payload: [...CPresponse.data, ...response.data],
+          });
         }
       } catch (err) {
         console.error(err);
+        dispatch({
+          type: ExpertListTableActionKind.ERROR,
+          payload: err,
+        });
       }
     },
     [mounted],
@@ -88,51 +208,52 @@ const ExpertListTableContainer = () => {
 
   useEffect(() => {
     getExperts();
+    setCurrentTab('all');
   }, [getExperts]);
 
-  //* 탭 변경
-  const handleTabsChange = (
-    __: ChangeEvent<{}>,
-    value: string,
-  ): void => {
-    const updatedFilters = {
-      beforeSale: null,
-      onSale: null,
-      afterSale: null,
-      public: null,
-    };
-
-    if (value !== 'all') {
-      updatedFilters[value] = true;
-    }
-    setSelectedExperts([]);
-    setCurrentTab(value);
+  //* 삭제 모달 열기
+  const onClickDelete = () => {
+    dispatch({ type: ExpertListTableActionKind.CONFIRM_MODAL_OPEN });
   };
 
-  //* 삭제 모달
-  const onClickDelete = () => {
-    setOpen(true);
+  //* 삭제 모달 닫기
+  const onClickDeleteClose = () => {
+    dispatch({ type: ExpertListTableActionKind.CONFIRM_MODAL_CLOSE });
   };
 
   const reload = () => {
     getExperts();
   };
+
   const handleDelete = async () => {
+    dispatch({ type: ExpertListTableActionKind.LOADING });
     try {
-      const expertId = selectedExperts[0];
+      const expertId = newState.selectedExperts[0];
       console.log(expertId);
       const response = await cmsServer.put(
-        `/expert-feeds/${expertId.toString()}`,
+        `/cp-feeds/${expertId.toString()}`,
         {
           isDeleted: true,
         },
       );
+
       if (response.status === 200) {
         reload();
       }
+      dispatch({
+        type: ExpertListTableActionKind.SELECT_ONE_EXPERT,
+        payload: [],
+      });
     } catch (e) {
+      dispatch({ type: ExpertListTableActionKind.ERROR, payload: e });
     } finally {
-      setOpen(false);
+      dispatch({
+        type: ExpertListTableActionKind.CONFIRM_MODAL_CLOSE,
+      });
+      dispatch({
+        type: ExpertListTableActionKind.SELECT_ONE_EXPERT,
+        payload: [],
+      });
     }
   };
 
@@ -140,26 +261,47 @@ const ExpertListTableContainer = () => {
   const handleQueryChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
-    setQuery(event.target.value);
+    dispatch({
+      type: ExpertListTableActionKind.CHANGE_QUERY,
+      payload: String(event.target.value),
+    });
   };
 
   //* 정렬 변경
   const handleSortChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
-    setSort(event.target.value as Sort);
+    dispatch({
+      type: ExpertListTableActionKind.CHANGE_SORT,
+      payload: event.target.value as Sort,
+    });
+  };
+  //* 방 정렬 변경
+  const handleRoomChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
+    dispatch({
+      type: ExpertListTableActionKind.CHANGE_ROOM,
+      payload: event.target.value,
+    });
   };
 
   //* 페이지 변경
   const handlePageChange = (__: any, newPage: number): void => {
-    setPage(newPage);
+    dispatch({
+      type: ExpertListTableActionKind.CHANGE_PAGE,
+      payload: newPage,
+    });
   };
 
   //* 리스트 수 변경
   const handleLimitChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
-    setLimit(parseInt(event.target.value, 10));
+    dispatch({
+      type: ExpertListTableActionKind.CHANGE_LIMIT,
+      payload: parseInt(event.target.value, 10),
+    });
   };
 
   //* 리스트에서 게시글 선택
@@ -167,45 +309,50 @@ const ExpertListTableContainer = () => {
     __: ChangeEvent<HTMLInputElement>,
     expertId: number,
   ): void => {
-    if (!selectedExperts.includes(expertId)) {
-      setSelectedExperts((prevSelected) => [expertId]);
+    if (!newState.selectedExperts.includes(expertId)) {
+      dispatch({
+        type: ExpertListTableActionKind.SELECT_ONE_EXPERT,
+        payload: [expertId],
+      });
     } else {
-      setSelectedExperts((prevSelected) =>
-        prevSelected.filter((id) => id !== expertId),
-      );
+      dispatch({
+        type: ExpertListTableActionKind.SELECT_ONE_EXPERT,
+        payload: newState.selectedExperts.filter(
+          (id) => id !== expertId,
+        ),
+      });
     }
   };
-
   //* 최종 리스트, 정렬 데이터
-  const filteredExperts = applyFilters(experts, query);
-  const sortedExperts = applySort(filteredExperts, sort);
+  const filteredExperts = applyFilters(
+    newState.experts,
+    newState.query,
+  );
+  const sortedExperts = applySort(
+    filteredExperts,
+    newState.sort,
+    newState.roomSort,
+  );
   const paginatedExperts = applyPagination(
     sortedExperts,
-    page,
-    limit,
+    newState.page,
+    newState.limit,
   );
-  const enableBulkActions = selectedExperts.length > 0;
-
+  const enableBulkActions = newState.selectedExperts.length > 0;
   return (
     <ExpertListTablePresenter
-      experts={experts}
-      handleTabsChange={handleTabsChange}
+      newState={newState}
       currentTab={currentTab}
       handleQueryChange={handleQueryChange}
-      query={query}
       handleSortChange={handleSortChange}
-      sort={sort}
       enableBulkActions={enableBulkActions}
       onClickDelete={onClickDelete}
       paginatedExperts={paginatedExperts}
-      selectedExperts={selectedExperts}
       handleSelectOneExpert={handleSelectOneExpert}
       handlePageChange={handlePageChange}
       handleLimitChange={handleLimitChange}
-      page={page}
-      limit={limit}
-      open={open}
-      setOpen={setOpen}
+      handleRoomChange={handleRoomChange}
+      onClickDeleteClose={onClickDeleteClose}
       handleDelete={handleDelete}
       reload={reload}
     />
