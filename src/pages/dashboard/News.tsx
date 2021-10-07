@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useReducer,
   useRef,
+  useMemo,
 } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
@@ -125,7 +126,6 @@ const News: React.FC = () => {
   const [minutesRefresh, setMinutesRefresh] = useState<number>(3);
   const [isOpen, setOpen] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const {
     news: newsList,
@@ -137,7 +137,6 @@ const News: React.FC = () => {
     () => setOpen((prev) => !prev),
     [],
   );
-
   const handleConfirmModal = useCallback(() => {
     if (newsState.isOpenConfirm) {
       dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM });
@@ -146,11 +145,13 @@ const News: React.FC = () => {
     }
   }, [newsState.isOpenConfirm]);
 
-  const getNewsList = useCallback(async () => {
+  const getNewsList = async () => {
     dispatch({ type: NewsActionKind.LOADING });
     try {
       const { data } = await APINews.getList(
         searchInput?.current.value,
+        0,
+        page === 0 ? (page + 2) * limit : newsList.length,
       );
       dispatch({
         type: NewsActionKind.RELOAD_NEWS,
@@ -160,8 +161,7 @@ const News: React.FC = () => {
       console.error(error);
       dispatch({ type: NewsActionKind.ERROR, payload: error });
     }
-  }, []);
-
+  };
   const getNews = useCallback(async () => {
     try {
       const { data, status } = await APINews.getNews(targetNews.id);
@@ -182,8 +182,10 @@ const News: React.FC = () => {
     try {
       const { data } = await APINews.getList(
         searchInput?.current.value,
-        (page + 1) * limit,
+        newsList.length,
+        50,
       );
+
       dispatch({ type: NewsActionKind.ADD_NEWS, payload: data });
       setShouldUpdate(false);
     } catch (error) {}
@@ -209,7 +211,7 @@ const News: React.FC = () => {
       success: '완료했습니다 :)',
       error: '처리하는 도중 에러가 발생했습니다. :(',
     });
-  }, [tick, getNewsList]);
+  }, [tick]);
 
   useEffect(() => {
     scrollRef &&
@@ -223,14 +225,28 @@ const News: React.FC = () => {
       user.id,
     );
     dispatch({ type: NewsActionKind.CLOSE_SELECT_CONFIRM });
-
     getNewsList();
+    // try {
+    //   const { data } = await APINews.getList(
+    //     searchInput?.current.value,
+    //     0,
+    //     newsList.length,
+    //   );
+    //   dispatch({
+    //     type: NewsActionKind.RELOAD_NEWS,
+    //     payload: data,
+    //   });
+    // } catch (error) {
+    //   console.error(error);
+    //   dispatch({ type: NewsActionKind.ERROR, payload: error });
+    // }
   };
 
   const handlePageChange = (event: any, newPage: number): void => {
     if ((page + 1) * limit >= newsList.length - limit) {
       setShouldUpdate(true);
     }
+
     setPage(newPage);
   };
 

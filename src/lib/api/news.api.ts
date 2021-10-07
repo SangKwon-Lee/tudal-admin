@@ -9,13 +9,20 @@ export async function getNews(newsId) {
   );
 }
 
-export async function getList(search: string, start?: number) {
+export async function getList(
+  search: string,
+  start?: number,
+  limit?: number,
+) {
   let q: any = {};
   if (search) {
     q._q = search;
   }
   if (start) {
     q._start = start;
+  }
+  if (limit) {
+    q._limit = limit;
   }
   return await axios.get<INews[]>(
     `/general-news-with-stocks?_sort=publishDate:DESC&${qs.stringify(
