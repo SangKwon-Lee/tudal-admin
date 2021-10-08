@@ -62,11 +62,11 @@ const tabs = [
 
 const sortOptions: SortOption[] = [
   {
-    label: '최신순',
+    label: '최신순 (수정일 기준)',
     value: 'updated_at|desc',
   },
   {
-    label: '오래된순',
+    label: '오래된순 (수정일 기준)',
     value: 'updated_at|asc',
   },
   {
@@ -363,7 +363,9 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
-                      <TableCell>{expert?.cp_room?.title}</TableCell>
+                      <TableCell>
+                        {expert?.master_room?.title}
+                      </TableCell>
                       <TableCell>0</TableCell>
                       <TableCell>0</TableCell>
                       <TableCell align="right">

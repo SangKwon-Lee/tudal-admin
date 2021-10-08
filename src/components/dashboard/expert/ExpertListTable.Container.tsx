@@ -188,11 +188,11 @@ const ExpertListTableContainer = () => {
       dispatch({ type: ExpertListTableActionKind.LOADING });
       try {
         const response = await APIExpert.getList();
-        const CPresponse = await APIExpert.getCPList();
+        const masterresponse = await APIExpert.getMasterList();
         if (mounted || reload) {
           dispatch({
             type: ExpertListTableActionKind.GET_EXPERTS,
-            payload: [...CPresponse.data, ...response.data],
+            payload: [...masterresponse.data, ...response.data],
           });
         }
       } catch (err) {
@@ -231,7 +231,7 @@ const ExpertListTableContainer = () => {
       const expertId = newState.selectedExperts[0];
       console.log(expertId);
       const response = await cmsServer.put(
-        `/cp-feeds/${expertId.toString()}`,
+        `/master-feeds/${expertId.toString()}`,
         {
           isDeleted: true,
         },

@@ -16,9 +16,9 @@ export interface Expert {
   updated_at?: string;
   likes?: [];
   viewCount?: string;
-  cp_feed_histories?: [];
-  cp_feed_likes?: [];
-  cp_room?: Room;
+  master_feed_histories?: [];
+  master_feed_likes?: [];
+  master_room?: Room;
   contents?: string;
   isDeleted?: boolean;
 }

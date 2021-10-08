@@ -8,9 +8,9 @@ export async function getList() {
   return expertFeeds;
 }
 
-export async function getCPList() {
-  const CPFeeds = await axios.get(
-    `/cp-feeds?&_sort=created_at:DESC&_start=0&_limit=10000&isDeleted=0`,
+export async function getMasterList() {
+  const masterFeeds = await axios.get(
+    `/master-feeds?&_sort=created_at:DESC&_start=0&_limit=10000&isDeleted=0`,
   );
-  return CPFeeds;
+  return masterFeeds;
 }

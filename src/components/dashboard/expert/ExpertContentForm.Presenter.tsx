@@ -93,7 +93,7 @@ const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
           >
             {user?.cp_rooms ? (
               user?.cp_rooms.map((room: Room) => (
-                <option key={room.title} value={room.title}>
+                <option key={room.title} value={room.id}>
                   {room.title} ({room.openType})
                 </option>
               ))
@@ -106,7 +106,7 @@ const ExpertContentFormPresenter: FC<IExpertContentFormProps> = (
           <WebEditor
             editorRef={editorRef}
             contents={
-              newExpert.contents
+              newExpert?.contents
                 ? newExpert.contents
                 : newExpert.description
             }

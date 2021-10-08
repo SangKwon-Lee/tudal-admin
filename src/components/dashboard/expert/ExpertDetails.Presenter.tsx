@@ -82,8 +82,8 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {expert?.cp_room?.title
-                    ? expert.cp_room.title
+                  {expert?.master_room?.title
+                    ? expert.master_room.title
                     : expert.type}
                 </Typography>
               </TableCell>

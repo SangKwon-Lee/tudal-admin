@@ -118,8 +118,8 @@ export const applySort = (
   room?: any,
 ): any[] => {
   if (room && room !== '전체') {
-    list = list.filter((data) => data.cp_room);
-    list = list.filter((data) => data.cp_room.title === room);
+    list = list.filter((data) => data.master_room);
+    list = list.filter((data) => data.master_room.title === room);
   }
   const [orderBy, order] = sort.split('|') as [
     string,

@@ -4,7 +4,7 @@ import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { cmsServer } from '../../../lib/axios';
 import ExpertContentFormPresenter from './ExpertContentForm.Presenter';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 import { useParams } from 'react-router-dom';
 import { Expert } from 'src/types/expert';
@@ -74,7 +74,7 @@ const ExpertContentFormReducer = (
         ...state,
         newExpert: {
           ...state.newExpert,
-          cp_room: payload,
+          master_room: payload,
         },
       };
   }
@@ -86,11 +86,11 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
   const initialState: newState = {
     newExpert: {
       title: '',
-      cp_room: user?.cp_rooms[0]?.id || null,
+      master_room: user?.cp_rooms[0]?.id || null,
       description: '',
       contents: '',
       author: user?.id,
-      source: 'cpPage',
+      source: 'web',
     },
     isSubmitting: false,
     loading: false,
@@ -109,17 +109,16 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
     try {
       if (expertId.toString() === '0') return;
       const response = await cmsServer.get<Expert>(
-        `/cp-feeds/${expertId.toString()}`,
+        `/master-feeds/${expertId.toString()}`,
       );
       if (response.status === 200) {
         const data = response.data;
         const newExpertData = {
           id: data.id,
           title: data.title,
-          description: data.contents,
           contents: data.contents,
           author: data.author,
-          room: data.cp_room.id,
+          room: data.master_room.id,
         };
         dispatch({
           type: ExpertContentFormActionKind.GET_EXPERT,
@@ -127,9 +126,10 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
         });
       }
     } catch (err) {
-      const response = await axios.get<Expert>(
+      const response = await cmsServer.get<Expert>(
         `/expert-feeds/${expertId.toString()}`,
       );
+      console.log(response);
       if (response.status === 200) {
         const data = response.data;
         const newExpertData = {
@@ -144,11 +144,7 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
           payload: newExpertData,
         });
       }
-      console.error(err);
-      dispatch({
-        type: ExpertContentFormActionKind.ERROR,
-        payload: err,
-      });
+      console.log(err);
     }
   };
 
@@ -167,7 +163,7 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
       return editorRef.current.getContent();
     }
   };
-
+  console.log(newState.newExpert);
   //* Submit
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
@@ -179,16 +175,13 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
         const contents = log();
         const newExpert = {
           ...newState.newExpert,
-          title: newState.newExpert.title,
-          cp_room: newState.newExpert.cp_room,
-          contents: contents,
+          contents,
           isDeleted: 0,
-          source: 'cpPage',
         };
         if (mode === 'create') {
           try {
             const response = await cmsServer.post(
-              '/cp-feeds',
+              '/master-feeds',
               newExpert,
             );
             if (response.status === 200) {
@@ -215,45 +208,47 @@ const ExpertContentFormContainer: FC<ExpertFormProps> = (props) => {
         } else {
           const newExpert = {
             ...newState.newExpert,
-            title: newState.newExpert.title,
-            cp_room: newState.newExpert.cp_room,
-            contents: contents,
-            source: 'cpPage',
+            contents,
           };
-          try {
-            const response = await cmsServer.put(
-              `/cp-feeds/${newExpert.id}`,
-              newExpert,
-            );
-            if (response.status === 200) {
-              if (onComplete) {
-                onComplete();
+          if (!newState.newExpert.description) {
+            try {
+              const response = await cmsServer.put(
+                `/master-feeds/${newExpert.id}`,
+                newExpert,
+              );
+              if (response.status === 200) {
+                if (onComplete) {
+                  onComplete();
+                }
+              } else {
+                return;
               }
-            } else {
-              return;
-            }
-          } catch (e) {
-            console.log(e);
-          }
-          const response = await cmsServer.put(
-            `/expert-feeds/${newExpert.id}`,
-            newExpert,
-          );
-          if (response.status === 200) {
-            if (onComplete) {
-              onComplete();
+            } catch (err) {
+              console.log(err);
             }
           } else {
-            return;
+            try {
+              const response = await cmsServer.put(
+                `/expert-feeds/${newExpert.id}`,
+                newExpert,
+              );
+              if (response.status === 200) {
+                if (onComplete) {
+                  onComplete();
+                }
+              } else {
+                return;
+              }
+            } catch (err) {
+              dispatch({
+                type: ExpertContentFormActionKind.ERROR,
+                payload: err.message,
+              });
+              console.error(err);
+            }
           }
         }
       }
-    } catch (err) {
-      dispatch({
-        type: ExpertContentFormActionKind.ERROR,
-        payload: err.message,
-      });
-      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
