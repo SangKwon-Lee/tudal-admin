@@ -55,7 +55,7 @@ const ReportMaker = Loadable(
 );
 
 const ScheduleList = Loadable(
-  lazy(() => import('./pages/dashboard/Schedule')),
+  lazy(() => import('./pages/dashboard/Schedule.Page')),
 );
 
 const StockList = Loadable(
