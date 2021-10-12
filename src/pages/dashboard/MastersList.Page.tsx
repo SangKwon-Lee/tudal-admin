@@ -14,10 +14,10 @@ import {
 } from '@material-ui/core';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PlusIcon from '../../icons/Plus';
-import ExpertListTableContainer from '../../components/dashboard/expert/ExpertListTable.Container';
+import MasterListTableContainer from '../../components/dashboard/master/MasterListTable.Container';
 // import useAuth from 'src/hooks/useAuth';
 
-const ExpertsListPage: FC = () => {
+const MastersListPage: FC = () => {
   const { settings } = useSettings();
   // const { user } = useAuth();
   useEffect(() => {
@@ -27,9 +27,9 @@ const ExpertsListPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Experts List | TUDAL Admin</title>
+        <title>Dashboard: Masters List | TUDAL Admin</title>
       </Helmet>
-      {/* {user.role.expert ? ( */}
+      {/* {user.role.master ? ( */}
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -69,7 +69,7 @@ const ExpertsListPage: FC = () => {
                   sx={{ m: 1 }}
                   variant="contained"
                   component={RouterLink}
-                  to="/dashboard/expert/new"
+                  to="/dashboard/master/new"
                 >
                   달인 추가
                 </Button>
@@ -77,7 +77,7 @@ const ExpertsListPage: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertListTableContainer />
+            <MasterListTableContainer />
           </Box>
         </Container>
       </Box>
@@ -102,4 +102,4 @@ const ExpertsListPage: FC = () => {
   );
 };
 
-export default ExpertsListPage;
+export default MastersListPage;

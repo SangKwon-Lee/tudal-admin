@@ -13,9 +13,9 @@ import {
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
-import ExpertCreateWizardContainer from 'src/components/dashboard/expert/ExpertCreateWizard.Container';
+import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
 
-const ExpertCreatePage: FC = () => {
+const MasterCreatePage: FC = () => {
   const { settings } = useSettings();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const ExpertCreatePage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Expert Create | TUDAL Admin</title>
+        <title>Dashboard: Master Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -53,7 +53,7 @@ const ExpertCreatePage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/experts"
+                  to="/dashboard/masters"
                   variant="subtitle2"
                 >
                   달인
@@ -65,7 +65,7 @@ const ExpertCreatePage: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertCreateWizardContainer />
+            <MasterCreateWizardContainer />
           </Box>
         </Container>
       </Box>
@@ -73,4 +73,4 @@ const ExpertCreatePage: FC = () => {
   );
 };
 
-export default ExpertCreatePage;
+export default MasterCreatePage;

@@ -13,9 +13,9 @@ import {
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
-import ExpertCreateWizardContainer from 'src/components/dashboard/expert/ExpertCreateWizard.Container';
+import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
 
-const ExpertEditPage: FC = () => {
+const MasterEditPage: FC = () => {
   const { settings } = useSettings();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const ExpertEditPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Expert Create | TUDAL Admin</title>
+        <title>Dashboard: Master Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -65,7 +65,7 @@ const ExpertEditPage: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertCreateWizardContainer mode={'edit'} />
+            <MasterCreateWizardContainer mode={'edit'} />
           </Box>
         </Container>
       </Box>
@@ -73,4 +73,4 @@ const ExpertEditPage: FC = () => {
   );
 };
 
-export default ExpertEditPage;
+export default MasterEditPage;

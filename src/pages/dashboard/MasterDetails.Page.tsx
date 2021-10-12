@@ -14,7 +14,7 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import ExpertDetailsContainer from '../../components/dashboard/expert/ExpertDetails.Container';
+import MasterDetailsContainer from '../../components/dashboard/master/MasterDetails.Container';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
@@ -22,10 +22,10 @@ import useSettings from '../../hooks/useSettings';
 
 const tabs = [{ label: '달인내용', value: 'details' }];
 
-const ExpertDetailsPage: FC = () => {
+const MasterDetailsPage: FC = () => {
   const { settings } = useSettings();
   const [currentTab, setCurrentTab] = useState<string>('details');
-  const { expertId } = useParams();
+  const { masterId } = useParams();
 
   useEffect(() => {
     gtm.push({ event: 'page_view' });
@@ -35,7 +35,7 @@ const ExpertDetailsPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Expert Details | TUDAL Admin</title>
+        <title>Dashboard: Master Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -58,7 +58,7 @@ const ExpertDetailsPage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/expert"
+                  to="/dashboard/master"
                   variant="subtitle2"
                 >
                   달인
@@ -76,7 +76,7 @@ const ExpertDetailsPage: FC = () => {
                   component={RouterLink}
                   startIcon={<PencilAltIcon fontSize="small" />}
                   sx={{ m: 1 }}
-                  to={`/dashboard/expert/${expertId}/edit`}
+                  to={`/dashboard/master/${masterId}/edit`}
                   variant="contained"
                 >
                   편집
@@ -113,7 +113,7 @@ const ExpertDetailsPage: FC = () => {
                   xl={settings.compact ? 12 : 8}
                   xs={12}
                 >
-                  <ExpertDetailsContainer />
+                  <MasterDetailsContainer />
                 </Grid>
               </Grid>
             )}
@@ -124,4 +124,4 @@ const ExpertDetailsPage: FC = () => {
   );
 };
 
-export default ExpertDetailsPage;
+export default MasterDetailsPage;

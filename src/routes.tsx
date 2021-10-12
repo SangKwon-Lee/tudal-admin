@@ -69,17 +69,20 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category')),
 );
 
-const ExpertsListPage = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertsList.Page')),
+const MastersListPage = Loadable(
+  lazy(() => import('./pages/dashboard/MastersList.Page')),
 );
-const ExpertCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertCreate.Page')),
+const MasterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterCreate.Page')),
 );
-const ExpertDetailsPage = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertDetails.Page')),
+const MasterDetailsPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterDetails.Page')),
 );
-const ExpertEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/ExpertEdit.Page')),
+const MasterEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterEdit.Page')),
+);
+const MasterRoomPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterRoom.Page')),
 );
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -242,23 +245,27 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'expert',
+        path: 'master',
         children: [
           {
             path: '/',
-            element: <ExpertsListPage />,
+            element: <MastersListPage />,
           },
           {
             path: '/new',
-            element: <ExpertCreatePage />,
+            element: <MasterCreatePage />,
           },
           {
-            path: ':expertId',
-            element: <ExpertDetailsPage />,
+            path: ':masterId',
+            element: <MasterDetailsPage />,
           },
           {
-            path: ':expertId/edit',
-            element: <ExpertEditPage />,
+            path: ':masterId/edit',
+            element: <MasterEditPage />,
+          },
+          {
+            path: 'room',
+            element: <MasterRoomPage />,
           },
         ],
       },

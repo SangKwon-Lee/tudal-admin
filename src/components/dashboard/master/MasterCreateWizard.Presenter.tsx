@@ -8,20 +8,20 @@ import {
   Typography,
 } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
-import ExpertContentFormContainer from './ExpertContentForm.Container';
+import MasterContentFormContainer from './MasterContentForm.Container';
 import { FC } from 'react';
 
 interface newState {
   completed: boolean;
 }
 
-interface IExpertCreateWizardProps {
+interface IMasterCreateWizardProps {
   newState: newState;
   mode: string;
   handleComplete: () => void;
 }
 
-const ExpertCreateWizardPresenter: FC<IExpertCreateWizardProps> = (
+const MasterCreateWizardPresenter: FC<IMasterCreateWizardProps> = (
   props,
 ) => {
   const { newState, mode, handleComplete } = props;
@@ -32,7 +32,7 @@ const ExpertCreateWizardPresenter: FC<IExpertCreateWizardProps> = (
       {!completed ? (
         <>
           {mode === 'edit' || mode === 'create' ? (
-            <ExpertContentFormContainer
+            <MasterContentFormContainer
               onComplete={handleComplete}
               mode={mode}
             />
@@ -92,7 +92,7 @@ const ExpertCreateWizardPresenter: FC<IExpertCreateWizardProps> = (
                 <Button
                   color="primary"
                   component={RouterLink}
-                  to="/dashboard/expert"
+                  to="/dashboard/master"
                   variant="contained"
                 >
                   달인 보기
@@ -106,4 +106,4 @@ const ExpertCreateWizardPresenter: FC<IExpertCreateWizardProps> = (
   );
 };
 
-export default ExpertCreateWizardPresenter;
+export default MasterCreateWizardPresenter;

@@ -25,7 +25,7 @@ import {
 import ArrowRightIcon from '../../../icons/ArrowRight';
 import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
-import type { Expert } from '../../../types/expert';
+import type { Master } from '../../../types/expert';
 import Scrollbar from '../../layout/Scrollbar';
 import ConfirmModal from '../../widgets/modals/ConfirmModal';
 import { ChangeEvent, FC } from 'react';
@@ -88,18 +88,19 @@ const sortOptions: SortOption[] = [
 ];
 
 interface newState {
-  experts: Expert[];
+  masters: Master[];
   page: number;
   limit: number;
   query: string;
   open: boolean;
   sort: Sort;
   roomSort: any;
-  selectedExperts: number[];
+  selectedMasters: number[];
   loading: boolean;
   error: AxiosError<any> | boolean;
+  master_room: any;
 }
-interface IExpertListTableProps {
+interface IMasterListTableProps {
   newState: newState;
   currentTab: string;
   handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -107,10 +108,10 @@ interface IExpertListTableProps {
   handleRoomChange: (event: ChangeEvent<HTMLInputElement>) => void;
   enableBulkActions: boolean;
   onClickDelete: () => void;
-  paginatedExperts: any[];
-  handleSelectOneExpert: (
+  paginatedMasters: any[];
+  handleSelectOneMaster: (
     __: ChangeEvent<HTMLInputElement>,
-    expertId: number,
+    masterId: number,
   ) => void;
   handlePageChange: (__: any, newPage: number) => void;
   handleLimitChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -118,7 +119,7 @@ interface IExpertListTableProps {
   handleDelete: () => Promise<void>;
   reload: () => void;
 }
-const ExpertListTablePresenter: FC<IExpertListTableProps> = (
+const MasterListTablePresenter: FC<IMasterListTableProps> = (
   props,
 ) => {
   const {
@@ -128,10 +129,10 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
     handleQueryChange,
     handleSortChange,
     handleRoomChange,
-    handleSelectOneExpert,
+    handleSelectOneMaster,
     enableBulkActions,
     onClickDelete,
-    paginatedExperts,
+    paginatedMasters,
     handlePageChange,
     handleLimitChange,
     onClickDeleteClose,
@@ -139,18 +140,17 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
     ...other
   } = props;
   const {
-    experts,
+    masters,
     page,
     limit,
     open,
     sort,
     query,
     roomSort,
-    selectedExperts,
+    selectedMasters,
     loading,
   } = newState;
   const { user } = useAuth();
-  const roomOption = [{ id: 0, title: '전체' }, ...user.cp_rooms];
 
   return (
     <>
@@ -239,8 +239,8 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {roomOption.length > 0 ? (
-                roomOption.map((option) => (
+              {newState.master_room.length > 0 ? (
+                newState.master_room.map((option) => (
                   <option key={option.title} value={option.title}>
                     {option.title}
                   </option>
@@ -274,7 +274,7 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                 sx={{ ml: 2 }}
                 variant="outlined"
                 component={RouterLink}
-                to={`/dashboard/expert/${selectedExperts[0]}/edit`}
+                to={`/dashboard/master/${selectedMasters[0]}/edit`}
               >
                 수정
               </Button>
@@ -297,24 +297,24 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedExperts.map((expert) => {
-                  const isExpertSelected = selectedExperts.includes(
-                    expert.id,
+                {paginatedMasters.map((master) => {
+                  const isMasterSelected = selectedMasters.includes(
+                    master.id,
                   );
                   return (
                     <TableRow
                       hover
-                      key={expert.id}
-                      selected={isExpertSelected}
+                      key={master.id}
+                      selected={isMasterSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
-                          checked={isExpertSelected}
+                          checked={isMasterSelected}
                           color="primary"
                           onChange={(event) =>
-                            handleSelectOneExpert(event, expert.id)
+                            handleSelectOneMaster(event, master.id)
                           }
-                          value={isExpertSelected}
+                          value={isMasterSelected}
                         />
                       </TableCell>
                       <TableCell>
@@ -328,11 +328,11 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to={`/dashboard/expert/${expert.id}`}
+                              to={`/dashboard/master/${master.id}`}
                               variant="subtitle2"
                             >
-                              {expert.title
-                                ? expert.title
+                              {master.title
+                                ? master.title
                                 : '제목이 없습니다.'}
                             </Link>
                             <Typography
@@ -340,8 +340,8 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                               variant="body2"
                             >
                               {`${
-                                typeof expert.author === 'string'
-                                  ? expert.author
+                                typeof master.author === 'string'
+                                  ? master.author
                                   : user.nickname
                               }`}
                             </Typography>
@@ -354,30 +354,30 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
                           minWidth: '180px',
                         }}
                       >
-                        {`${moment(expert.created_at).format(
+                        {`${moment(master.created_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}`}
                       </TableCell>
                       <TableCell>
-                        {moment(expert?.updated_at).format(
+                        {moment(master?.updated_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
                       <TableCell>
-                        {expert?.master_room?.title}
+                        {master?.master_room?.title}
                       </TableCell>
                       <TableCell>0</TableCell>
                       <TableCell>0</TableCell>
                       <TableCell align="right">
                         <IconButton
                           component={RouterLink}
-                          to={`/dashboard/expert/${expert.id}/edit`}
+                          to={`/dashboard/master/${master.id}/edit`}
                         >
                           <PencilAltIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           component={RouterLink}
-                          to={`/dashboard/expert/${expert.id}`}
+                          to={`/dashboard/master/${master.id}`}
                         >
                           <ArrowRightIcon fontSize="small" />
                         </IconButton>
@@ -391,7 +391,7 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
         </Scrollbar>
         <TablePagination
           component="div"
-          count={experts.length ? experts.length : 0}
+          count={masters.length ? masters.length : 0}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -416,4 +416,4 @@ const ExpertListTablePresenter: FC<IExpertListTableProps> = (
   );
 };
 
-export default ExpertListTablePresenter;
+export default MasterListTablePresenter;

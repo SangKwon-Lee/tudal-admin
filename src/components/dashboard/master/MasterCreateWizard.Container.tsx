@@ -1,13 +1,13 @@
 import { useReducer } from 'react';
 import type { FC } from 'react';
-import ExpertCreateWizardPresenter from './ExpertCreateWizard.Presenter';
+import MasterCreateWizardPresenter from './MasterCreateWizard.Presenter';
 
-enum ExpertCreateWizardActionKind {
+enum MasterCreateWizardActionKind {
   HANDLE_COMPLETE = 'HANDLE_COMPLETE',
 }
 
-interface ExpertCreateWizardAction {
-  type: ExpertCreateWizardActionKind;
+interface MasterCreateWizardAction {
+  type: MasterCreateWizardActionKind;
   payload?: any;
 }
 
@@ -15,17 +15,17 @@ interface newState {
   completed: boolean;
 }
 
-interface ExpertCreateWizardProps {
+interface MasterCreateWizardProps {
   mode?: string;
 }
 
-const ExpertCreateWizardReducer = (
+const MasterCreateWizardReducer = (
   state: newState,
-  action: ExpertCreateWizardAction,
+  action: MasterCreateWizardAction,
 ): newState => {
   const { type } = action;
   switch (type) {
-    case ExpertCreateWizardActionKind.HANDLE_COMPLETE:
+    case MasterCreateWizardActionKind.HANDLE_COMPLETE:
       return {
         ...state,
         completed: true,
@@ -33,26 +33,26 @@ const ExpertCreateWizardReducer = (
   }
 };
 
-const ExpertCreateWizardContainer: FC<ExpertCreateWizardProps> = (
+const MasterCreateWizardContainer: FC<MasterCreateWizardProps> = (
   props,
 ) => {
   const initialState: newState = {
     completed: false,
   };
   const [newState, dispatch] = useReducer(
-    ExpertCreateWizardReducer,
+    MasterCreateWizardReducer,
     initialState,
   );
   const mode = props.mode || 'create';
 
   //* 게시글 작성시 완료 페이지로 이동
   const handleComplete = (): void => {
-    dispatch({ type: ExpertCreateWizardActionKind.HANDLE_COMPLETE });
+    dispatch({ type: MasterCreateWizardActionKind.HANDLE_COMPLETE });
   };
 
   return (
     <>
-      <ExpertCreateWizardPresenter
+      <MasterCreateWizardPresenter
         newState={newState}
         handleComplete={handleComplete}
         mode={mode}
@@ -61,4 +61,4 @@ const ExpertCreateWizardContainer: FC<ExpertCreateWizardProps> = (
   );
 };
 
-export default ExpertCreateWizardContainer;
+export default MasterCreateWizardContainer;

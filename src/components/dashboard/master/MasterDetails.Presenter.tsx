@@ -11,7 +11,7 @@ import {
   Container,
   LinearProgress,
 } from '@material-ui/core';
-import type { Expert } from '../../../types/expert';
+import type { Master } from '../../../types/expert';
 import moment from 'moment';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -20,18 +20,18 @@ import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 
 interface newState {
-  expert: Expert;
+  master: Master;
   loading: boolean;
   error: AxiosError<any> | boolean;
 }
 
-interface IExpertDetails {
+interface IMasterDetails {
   newState: newState;
 }
 
-const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
+const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
   const { newState, ...other } = props;
-  const { expert, loading } = newState;
+  const { master, loading } = newState;
   const { user } = useAuth();
 
   return (
@@ -54,7 +54,7 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {expert.title}
+                  {master.title}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -67,8 +67,8 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
                   {`${
-                    typeof expert.author === 'string'
-                      ? expert.author
+                    typeof master.author === 'string'
+                      ? master.author
                       : user.nickname
                   }`}
                 </Typography>
@@ -82,9 +82,9 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {expert?.master_room?.title
-                    ? expert.master_room.title
-                    : expert.type}
+                  {master?.master_room?.title
+                    ? master.master_room.title
+                    : master.type}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -96,7 +96,7 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(expert.created_at).format(
+                  {`${moment(master.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -110,7 +110,7 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(expert.updated_at).format(
+                  {`${moment(master.updated_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -124,7 +124,7 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {/* {expert.likes.length} */}0
+                  {/* {master.likes.length} */}0
                 </Typography>
               </TableCell>
             </TableRow>
@@ -136,7 +136,7 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {/* {expert.viewCount ? expert.viewCount : 0} */}0
+                  {/* {master.viewCount ? master.viewCount : 0} */}0
                 </Typography>
               </TableCell>
             </TableRow>
@@ -155,11 +155,11 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
           </Typography>
           <Box sx={{ py: 3 }}>
             <Container maxWidth="md">
-              {expert.description && (
-                <Viewer initialValue={expert.description} />
+              {master.description && (
+                <Viewer initialValue={master.description} />
               )}
-              {expert.contents && (
-                <Viewer initialValue={expert.contents} />
+              {master.contents && (
+                <Viewer initialValue={master.contents} />
               )}
             </Container>
           </Box>
@@ -169,4 +169,4 @@ const ExpertDetailsPresenter: FC<IExpertDetails> = (props) => {
   );
 };
 
-export default ExpertDetailsPresenter;
+export default MasterDetailsPresenter;
