@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
-import { Channel, Room } from 'src/types/expert';
+import { Channel, Room } from 'src/types/master';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -10,14 +10,14 @@ import toast from 'react-hot-toast';
 
 export enum MasterRoomActionKind {
   LOADING = 'LOADING',
+  IS_ORDER = 'IS_ORDER',
+  SORT_CHANNEL = 'SORT_CHANNEL',
   GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   CHANGE_ROOM = 'CHANGE_ROOM',
-  IS_ORDER = 'IS_ORDER',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_TYPE = 'CHANGE_TYPE',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
-  SORT_CHANNEL = 'SORT_CHANNEL',
 }
 
 export interface MasterRoomAction {

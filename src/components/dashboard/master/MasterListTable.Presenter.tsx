@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import {
@@ -9,175 +10,50 @@ import {
   IconButton,
   InputAdornment,
   Link,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
-  Tabs,
   TextField,
   Typography,
   Dialog,
   LinearProgress,
+  Pagination,
 } from '@material-ui/core';
-import ArrowRightIcon from '../../../icons/ArrowRight';
-import PencilAltIcon from '../../../icons/PencilAlt';
-import SearchIcon from '../../../icons/Search';
-import type { Master } from '../../../types/expert';
-import Scrollbar from '../../layout/Scrollbar';
-import ConfirmModal from '../../widgets/modals/ConfirmModal';
-import { ChangeEvent, FC } from 'react';
-import { AxiosError } from 'axios';
+import ArrowRightIcon from 'src/icons/ArrowRight';
+import PencilAltIcon from 'src/icons/PencilAlt';
+import SearchIcon from 'src/icons/Search';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import useAuth from 'src/hooks/useAuth';
+import {
+  IMasterListState,
+  MasterListTableAction,
+  MasterListTableActionKind,
+} from './MasterListTable.Container';
+import Scrollbar from 'src/components/layout/Scrollbar';
 
-// 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
-// const Bar = forwardRef((props: any, ref: any) => (
-//   <div {...props} ref={ref}>
-//     {props.children}
-//   </div>
-// ));
-
-// 정렬 로직
-type Sort =
-  | 'updated_at|desc'
-  | 'updated_at|asc'
-  | 'likes|desc'
-  | 'likes|asc'
-  | 'viewCount|desc'
-  | 'viewCount|asc';
-
-interface SortOption {
-  value: Sort;
-  label: string;
-}
-
-const tabs = [
-  {
-    label: '전체',
-    value: 'all',
-  },
-];
-
-const sortOptions: SortOption[] = [
-  {
-    label: '최신순 (수정일 기준)',
-    value: 'updated_at|desc',
-  },
-  {
-    label: '오래된순 (수정일 기준)',
-    value: 'updated_at|asc',
-  },
-  {
-    label: '좋아요 높은순',
-    value: 'likes|desc',
-  },
-  {
-    label: '좋아요 낮은순',
-    value: 'likes|asc',
-  },
-  {
-    label: '조회수 높은순',
-    value: 'viewCount|desc',
-  },
-  {
-    label: '조회수 낮은순',
-    value: 'viewCount|asc',
-  },
-];
-
-interface newState {
-  masters: Master[];
-  page: number;
-  limit: number;
-  query: string;
-  open: boolean;
-  sort: Sort;
-  roomSort: any;
-  selectedMasters: number[];
-  loading: boolean;
-  error: AxiosError<any> | boolean;
-  master_room: any;
-  channel: any;
-}
 interface IMasterListTableProps {
-  newState: newState;
-  currentTab: string;
-  handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleSortChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleRoomChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  enableBulkActions: boolean;
-  onClickDelete: () => void;
-  paginatedMasters: any[];
-  handleSelectOneMaster: (
-    __: ChangeEvent<HTMLInputElement>,
-    masterId: number,
-  ) => void;
-  handlePageChange: (__: any, newPage: number) => void;
-  handleLimitChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onClickDeleteClose: () => void;
-  handleDelete: () => Promise<void>;
-  reload: () => void;
-  handleChangeChannel: (e: any) => void;
+  newState: IMasterListState;
+  dispatch: (params: MasterListTableAction) => void;
+  handleDelete: () => void;
 }
-const MasterListTablePresenter: FC<IMasterListTableProps> = (
+const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
   props,
 ) => {
-  const {
-    newState,
-    reload,
-    currentTab,
-    handleQueryChange,
-    handleSortChange,
-    handleRoomChange,
-    handleSelectOneMaster,
-    enableBulkActions,
-    onClickDelete,
-    paginatedMasters,
-    handlePageChange,
-    handleLimitChange,
-    onClickDeleteClose,
-    handleDelete,
-    handleChangeChannel,
-    ...other
-  } = props;
-  const {
-    masters,
-    page,
-    limit,
-    open,
-    sort,
-    query,
-    roomSort,
-    selectedMasters,
-    loading,
-  } = newState;
+  const { newState, dispatch, handleDelete } = props;
+
   const { user } = useAuth();
 
   return (
     <>
-      <Card {...other}>
-        {loading && (
+      <Card>
+        {newState.loading && (
           <div data-testid="news-list-loading">
             <LinearProgress />
           </div>
         )}
-        <Tabs
-          indicatorColor="primary"
-          scrollButtons="auto"
-          textColor="primary"
-          value={currentTab}
-          variant="scrollable"
-        >
-          {tabs.map((tab) => (
-            <Tab
-              key={tab.value}
-              label={tab.label}
-              value={tab.value}
-            />
-          ))}
-        </Tabs>
+
         <Divider />
         <Box
           sx={{
@@ -204,9 +80,14 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                   </InputAdornment>
                 ),
               }}
-              onChange={handleQueryChange}
+              onChange={(event) => {
+                dispatch({
+                  type: MasterListTableActionKind.CHANGE_QUERY,
+                  payload: event.target.value,
+                });
+              }}
               placeholder="달인 검색"
-              value={query}
+              value={newState.query._q}
               variant="outlined"
             />
           </Box>
@@ -216,36 +97,24 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
             }}
           >
             <TextField
-              label="정렬"
-              name="sort"
-              onChange={handleSortChange}
-              select
-              SelectProps={{ native: true }}
-              value={sort}
-              variant="outlined"
-              sx={{ mx: 1 }}
-            >
-              {sortOptions &&
-                sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-            </TextField>
-            <TextField
               label={'채널 선택'}
               name="sort"
-              onChange={handleChangeChannel}
+              onChange={(event) => {
+                console.log(event.target.value);
+                dispatch({
+                  type: MasterListTableActionKind.CHANGE_CHANNEL,
+                  payload: event.target.value,
+                });
+              }}
               select
               SelectProps={{ native: true }}
-              // value={roomSort}
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {newState.channel.length > 0 ? (
-                newState.channel.map((channel) => (
+              {newState.list.channel.length > 0 ? (
+                newState.list.channel.map((channel) => (
                   //@ts-ignore
-                  <option key={channel.name} value={channel.id}>
+                  <option key={channel.id} value={channel.id}>
                     {channel.name}
                   </option>
                 ))
@@ -256,16 +125,22 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
             <TextField
               label={'방 정렬'}
               name="sort"
-              onChange={handleRoomChange}
+              onChange={(event) => {
+                console.log(event.target.value);
+                dispatch({
+                  type: MasterListTableActionKind.CHANGE_ROOM,
+                  payload: event.target.value,
+                });
+              }}
               select
               SelectProps={{ native: true }}
-              value={roomSort}
+              // value={roomSort}
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {newState.master_room.length > 0 ? (
-                newState.master_room.map((option) => (
-                  <option key={option.title} value={option.title}>
+              {newState.list.room.length > 0 ? (
+                newState.list.room.map((option) => (
+                  <option key={option.id} value={option.id}>
                     {option.title}
                   </option>
                 ))
@@ -275,7 +150,7 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
             </TextField>
           </Box>
         </Box>
-        {enableBulkActions && (
+        {newState.selected && (
           <Box sx={{ position: 'relative' }}>
             <Box
               sx={{
@@ -289,7 +164,11 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                 color="primary"
                 sx={{ ml: 2 }}
                 variant="outlined"
-                onClick={onClickDelete}
+                onClick={() => {
+                  dispatch({
+                    type: MasterListTableActionKind.OPEN_DELETE_DIALOG,
+                  });
+                }}
               >
                 삭제
               </Button>
@@ -298,7 +177,7 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                 sx={{ ml: 2 }}
                 variant="outlined"
                 component={RouterLink}
-                to={`/dashboard/master/${selectedMasters[0]}/edit`}
+                to={`/dashboard/master/${newState.selected}/edit`}
               >
                 수정
               </Button>
@@ -321,24 +200,23 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedMasters.map((master) => {
-                  const isMasterSelected = selectedMasters.includes(
-                    master.id,
-                  );
+                {newState.list.feed.map((feed) => {
+                  const isMasterSelected =
+                    newState.selected === feed.id;
+
                   return (
-                    <TableRow
-                      hover
-                      key={master.id}
-                      selected={isMasterSelected}
-                    >
+                    <TableRow hover key={feed.id}>
                       <TableCell padding="checkbox">
                         <Checkbox
+                          value={isMasterSelected}
                           checked={isMasterSelected}
                           color="primary"
-                          onChange={(event) =>
-                            handleSelectOneMaster(event, master.id)
-                          }
-                          value={isMasterSelected}
+                          onChange={(event) => {
+                            dispatch({
+                              type: MasterListTableActionKind.SELECT_FEED,
+                              payload: feed.id,
+                            });
+                          }}
                         />
                       </TableCell>
                       <TableCell>
@@ -352,11 +230,11 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to={`/dashboard/master/${master.id}`}
+                              to={`/dashboard/master/${feed.id}`}
                               variant="subtitle2"
                             >
-                              {master.title
-                                ? master.title
+                              {feed.title
+                                ? feed.title
                                 : '제목이 없습니다.'}
                             </Link>
                             <Typography
@@ -364,8 +242,8 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                               variant="body2"
                             >
                               {`${
-                                typeof master.author === 'string'
-                                  ? master.author
+                                typeof feed.master === 'string'
+                                  ? feed.master
                                   : user.nickname
                               }`}
                             </Typography>
@@ -378,30 +256,30 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                           minWidth: '180px',
                         }}
                       >
-                        {`${moment(master.created_at).format(
+                        {`${moment(feed.created_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}`}
                       </TableCell>
                       <TableCell>
-                        {moment(master?.updated_at).format(
+                        {moment(feed.updated_at).format(
                           'YYYY년 M월 D일 HH:mm',
                         )}
                       </TableCell>
+                      <TableCell>{feed.master_room?.title}</TableCell>
                       <TableCell>
-                        {master?.master_room?.title}
+                        {feed.master_feed_likes.length}
                       </TableCell>
-                      <TableCell>0</TableCell>
-                      <TableCell>0</TableCell>
+                      <TableCell>{feed.viewCount}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           component={RouterLink}
-                          to={`/dashboard/master/${master.id}/edit`}
+                          to={`/dashboard/master/${feed.id}/edit`}
                         >
                           <PencilAltIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           component={RouterLink}
-                          to={`/dashboard/master/${master.id}`}
+                          to={`/dashboard/master/${feed.id}`}
                         >
                           <ArrowRightIcon fontSize="small" />
                         </IconButton>
@@ -413,27 +291,36 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
             </Table>
           </Box>
         </Scrollbar>
-        <TablePagination
-          component="div"
-          count={masters.length ? masters.length : 0}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleLimitChange}
-          page={page}
-          rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25]}
+        <Pagination
+          count={Math.ceil(newState.list.feedLength / 20)}
+          variant="outlined"
+          onChange={(event, page) => {
+            dispatch({
+              type: MasterListTableActionKind.CHANGE_PAGE,
+              payload: page,
+            });
+          }}
         />
       </Card>
       <Dialog
         aria-labelledby="ConfirmModal"
-        open={open}
-        onClose={onClickDeleteClose}
+        open={newState.delete.isDeleting}
+        onClose={() =>
+          dispatch({
+            type: MasterListTableActionKind.CLOSE_DELETE_DIALOG,
+          })
+        }
       >
         <ConfirmModal
           title={'정말 삭제하시겠습니까?'}
           content={'삭제시 큰 주의가 필요합니다.'}
           confirmTitle={'삭제'}
           handleOnClick={handleDelete}
-          handleOnCancel={onClickDeleteClose}
+          handleOnCancel={() => {
+            dispatch({
+              type: MasterListTableActionKind.CLOSE_DELETE_DIALOG,
+            });
+          }}
         />
       </Dialog>
     </>

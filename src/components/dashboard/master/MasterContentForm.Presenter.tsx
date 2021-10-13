@@ -16,7 +16,7 @@ import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
 import { AxiosError } from 'axios';
-import { Channel, Master, Room } from 'src/types/expert';
+import { Master, Room, Channel } from 'src/types/master';
 import { Stock, Tag } from 'src/types/schedule';
 import { Formik } from 'formik';
 

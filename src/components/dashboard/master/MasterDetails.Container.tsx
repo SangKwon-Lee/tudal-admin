@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import type { Master } from '../../../types/expert';
+import type { Master } from '../../../types/master';
 import axios from 'src/lib/axios';
 import { useParams } from 'react-router-dom';
 import useMounted from 'src/hooks/useMounted';
