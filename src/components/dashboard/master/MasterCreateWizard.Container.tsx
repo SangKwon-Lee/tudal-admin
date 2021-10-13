@@ -32,7 +32,6 @@ const MasterCreateWizardReducer = (
       };
   }
 };
-
 const MasterCreateWizardContainer: FC<MasterCreateWizardProps> = (
   props,
 ) => {

@@ -62,3 +62,12 @@ export interface Room {
   master?: any;
   master_channel?: any;
 }
+
+export interface Channel {
+  id?: number;
+  name?: string;
+  master?: string;
+  created_at?: string;
+  updated_at?: string;
+  master_rooms?: [];
+}

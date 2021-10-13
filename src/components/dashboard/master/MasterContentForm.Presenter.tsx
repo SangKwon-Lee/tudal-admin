@@ -16,7 +16,7 @@ import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
 import { AxiosError } from 'axios';
-import { Master, Room } from 'src/types/expert';
+import { Channel, Master, Room } from 'src/types/expert';
 import { Stock, Tag } from 'src/types/schedule';
 import { Formik } from 'formik';
 
@@ -26,6 +26,7 @@ interface newState {
   error: AxiosError<any> | boolean;
   isSubmitting: boolean;
   master_room: Room[];
+  master_channels: Channel[];
 }
 
 interface IMasterContentFormProps {
@@ -46,6 +47,7 @@ interface IMasterContentFormProps {
   handleStockChange: _.DebouncedFunc<() => void>;
   handleTagChange: _.DebouncedFunc<() => void>;
   handleChangeStocks: (item) => void;
+  handleChangeChannel: (e: any) => void;
 }
 
 const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
@@ -68,6 +70,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     stockInput,
     handleStockChange,
     handleTagChange,
+    handleChangeChannel,
     handleChangeStocks,
   } = props;
 
@@ -102,6 +105,32 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                 value={newMaster?.title || ''}
                 variant="outlined"
               />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              {newState.master_channels.length > 0 ? (
+                <TextField
+                  select
+                  fullWidth
+                  label={'채널 선택'}
+                  name="room"
+                  SelectProps={{ native: true }}
+                  variant="outlined"
+                  onChange={handleChangeChannel}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  {newState?.master_channels.map((channel: any) => (
+                    <option key={channel.name} value={channel.id}>
+                      {channel.name}
+                    </option>
+                  ))}
+                </TextField>
+              ) : (
+                '글을 작성하기 채널을 먼저 만들어주세요.'
+              )}
             </Box>
             <Box sx={{ my: 2 }}>
               {newState.master_room.length > 0 ? (

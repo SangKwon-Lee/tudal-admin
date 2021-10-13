@@ -63,6 +63,7 @@ const sortOptions: SortOption[] = [
 enum MasterListTableActionKind {
   LOADING = 'LOADING',
   ERROR = 'ERROR',
+  GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   GET_EXPERTS = 'GET_EXPERTS',
   CONFIRM_MODAL_OPEN = 'CONFIRM_MODAL_OPEN',
@@ -72,8 +73,10 @@ enum MasterListTableActionKind {
   CHANGE_PAGE = 'CHANGE_PAGE',
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ROOM = 'CHANGE_ROOM',
+  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
   SELECT_ONE_EXPERT = 'SELECT_ONE_EXPERT',
   CONFIRM_MODAL_CLOSE = 'CONFIRM_MODAL_CLOSE',
+  CHANNEL_SORT = 'CHANNEL_SORT',
 }
 
 interface MasterListTableAction {
@@ -93,6 +96,8 @@ interface newState {
   error: AxiosError<any> | boolean;
   roomSort: any;
   master_room: any;
+  channel: [];
+  channelSort: string;
 }
 
 const MasterListTableReducer = (
@@ -164,6 +169,25 @@ const MasterListTableReducer = (
         master_room: payload,
       };
     }
+    case MasterListTableActionKind.GET_CHANNEL: {
+      return {
+        ...state,
+        channel: payload,
+      };
+    }
+    case MasterListTableActionKind.CHANGE_CHANNEL: {
+      return {
+        ...state,
+        master_room: payload,
+        roomSort: payload[0].title,
+      };
+    }
+    case MasterListTableActionKind.CHANNEL_SORT: {
+      return {
+        ...state,
+        channelSort: payload,
+      };
+    }
   }
 };
 
@@ -175,21 +199,39 @@ const MasterListTableContainer = () => {
     loading: false,
     error: null,
     page: 0,
-    limit: 5,
+    limit: 50,
     query: '',
     sort: sortOptions[0].value,
     open: false,
+    channel: [],
     selectedMasters: [],
     roomSort: '',
-    master_room: [],
+    master_room: '',
+    channelSort: '',
   };
   const [newState, dispatch] = useReducer(
     MasterListTableReducer,
     initialState,
   );
-
   const mounted = useMounted();
   const { user } = useAuth();
+
+  const getMasterChannel = async () => {
+    try {
+      const response = await cmsServer.get(
+        `/master-channels?master.id=${user.id}`,
+      );
+      if (response.status === 200) {
+        dispatch({
+          type: MasterListTableActionKind.GET_CHANNEL,
+          payload: [{ name: '전체' }, ...response.data],
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const getMasterRoom = async () => {
     try {
       const { data } = await cmsServer.get(
@@ -203,9 +245,10 @@ const MasterListTableContainer = () => {
       console.log(error);
     }
   };
-  console.log(newState.master_room);
+
   //* 방 정보 불러오는 useEffect
   useEffect(() => {
+    getMasterChannel();
     getMasterRoom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -303,6 +346,56 @@ const MasterListTableContainer = () => {
       payload: event.target.value as Sort,
     });
   };
+
+  //* 채널 변경
+  const handleChangeChannel = async (event: any) => {
+    dispatch({
+      type: MasterListTableActionKind.CHANNEL_SORT,
+      payload: event.target.value || '전체',
+    });
+    if (event.target.value === '전체') {
+      try {
+        const response = await cmsServer.get(
+          `master-rooms?master.id=${user.id}`,
+        );
+        dispatch({
+          type: MasterListTableActionKind.CHANGE_CHANNEL,
+          payload: [{ title: '전체' }, ...response.data],
+        });
+      } catch (error) {
+        dispatch({
+          type: MasterListTableActionKind.ERROR,
+          payload: error,
+        });
+      }
+    } else {
+      try {
+        const response = await cmsServer.get(
+          `master-channels?id=${event.target.value}`,
+        );
+        if (response.data[0].master_rooms.length > 0) {
+          dispatch({
+            type: MasterListTableActionKind.CHANGE_CHANNEL,
+            payload: [
+              { title: '전체' },
+              ...response.data[0].master_rooms,
+            ],
+          });
+        } else {
+          dispatch({
+            type: MasterListTableActionKind.CHANGE_CHANNEL,
+            payload: [],
+          });
+        }
+      } catch (error) {
+        dispatch({
+          type: MasterListTableActionKind.ERROR,
+          payload: error,
+        });
+      }
+    }
+  };
+
   //* 방 정렬 변경
   const handleRoomChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -350,6 +443,7 @@ const MasterListTableContainer = () => {
       });
     }
   };
+
   //* 최종 리스트, 정렬 데이터
   const filteredMasters = applyFilters(
     newState.masters,
@@ -382,6 +476,7 @@ const MasterListTableContainer = () => {
       onClickDeleteClose={onClickDeleteClose}
       handleDelete={handleDelete}
       reload={reload}
+      handleChangeChannel={handleChangeChannel}
     />
   );
 };

@@ -33,7 +33,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
   const { newState, ...other } = props;
   const { master, loading } = newState;
   const { user } = useAuth();
-
+  console.log(master);
   return (
     <>
       <Card {...other}>
@@ -54,7 +54,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.title}
+                  {master?.title}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -74,6 +74,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
                 </Typography>
               </TableCell>
             </TableRow>
+
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
@@ -96,7 +97,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master.created_at).format(
+                  {`${moment(master?.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -110,9 +111,37 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master.updated_at).format(
+                  {`${moment(master?.updated_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  키워드
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.tags &&
+                    master.tags.length > 0 &&
+                    master.tags.map((data) => data.name)}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  종목
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.stocks &&
+                    master.stocks.length > 0 &&
+                    master.stocks.map((data) => data.name)}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -136,7 +165,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {/* {master.viewCount ? master.viewCount : 0} */}0
+                  {master?.viewCount ? master.viewCount : 0}
                 </Typography>
               </TableCell>
             </TableRow>

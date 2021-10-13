@@ -13,7 +13,7 @@ import MasterContentFormPresenter from './MasterContentForm.Presenter';
 import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { Master, Room } from 'src/types/expert';
+import { Channel, Master, Room } from 'src/types/expert';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
 import { APIStock, APITag } from 'src/lib/api';
@@ -28,13 +28,13 @@ enum MasterContentFormActionKind {
   LOADING = 'LOADING',
   ERROR = 'ERROR',
   GET_EXPERT = 'GET_EXPERT',
-  CHANGE_TITLE = 'CHANGE_TITLE',
-  GET_ROOM = 'GET_ROOM',
   GET_CHANNEL = 'GET_CHANNEL',
+  CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_LINK = 'CHANGE_LINK',
   CHANGE_TAGS = 'CHANGE_TAGS',
   CHANGE_STOCKS = 'CHANGE_STOCKS',
+  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
 }
 interface MasterContentFormAction {
   type: MasterContentFormActionKind;
@@ -47,7 +47,7 @@ interface newState {
   error: AxiosError<any> | boolean;
   isSubmitting: boolean;
   master_room: Room[];
-  master_channels: [];
+  master_channels: Channel[];
 }
 
 const MasterContentFormReducer = (
@@ -60,15 +60,6 @@ const MasterContentFormReducer = (
       return {
         ...state,
         loading: true,
-      };
-    case MasterContentFormActionKind.GET_ROOM:
-      return {
-        ...state,
-        master_room: payload,
-        newMaster: {
-          ...state.newMaster,
-          master_room: payload[0].id,
-        },
       };
     case MasterContentFormActionKind.ERROR:
       return {
@@ -125,6 +116,16 @@ const MasterContentFormReducer = (
       return {
         ...state,
         master_channels: payload,
+        master_room: payload[0].master_rooms,
+        newMaster: {
+          ...state.newMaster,
+          master_room: payload[0].master_rooms[0].id,
+        },
+      };
+    case MasterContentFormActionKind.CHANGE_CHANNEL:
+      return {
+        ...state,
+        master_room: payload,
       };
   }
 };
@@ -163,29 +164,48 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 채널 정보 불러오기
   const getMasterChannel = async () => {
     try {
-      const { data } = await cmsServer.get(
+      const response = await cmsServer.get(
         `/master-channels?master.id=${user.id}`,
       );
+      if (response.status === 200 && response.data.length > 0) {
+        dispatch({
+          type: MasterContentFormActionKind.GET_CHANNEL,
+          payload: response.data,
+        });
+      }
     } catch (err) {
       console.log(err);
     }
   };
-  //* 계정 방 정보 불러오기
-  const getMasterRoom = async () => {
+  const handleChangeChannel = async (event: any) => {
     try {
-      const { data } = await cmsServer.get(
-        `/master-rooms?master.id=${user.id}`,
+      const response = await cmsServer.get(
+        `master-channels?id=${event.target.value}`,
       );
-      dispatch({
-        type: MasterContentFormActionKind.GET_ROOM,
-        payload: data,
-      });
+      if (
+        response.status === 200 &&
+        response.data[0].master_rooms.length > 0
+      ) {
+        dispatch({
+          type: MasterContentFormActionKind.CHANGE_CHANNEL,
+          payload: response.data[0].master_rooms,
+        });
+        dispatch({
+          type: MasterContentFormActionKind.CHANGE_ROOM,
+          payload: response.data[0].master_rooms[0].id,
+        });
+      } else {
+        dispatch({
+          type: MasterContentFormActionKind.CHANGE_CHANNEL,
+          payload: [],
+        });
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  //* 방 채널 불러오는 useEffect
+  //* 채널 불러오는 useEffect
   useEffect(() => {
     getMasterChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,12 +216,10 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     dispatch({ type: MasterContentFormActionKind.LOADING });
     try {
       if (masterId.toString() === '0') return;
-      const response = await cmsServer.get<Master>(
+      const { status, data } = await cmsServer.get<Master>(
         `/master-feeds/${masterId.toString()}`,
       );
-
-      if (response.status === 200) {
-        const data = response.data;
+      if (status === 200) {
         const newMasterData = {
           id: data.id,
           title: data.title,
@@ -218,11 +236,10 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
         });
       }
     } catch (err) {
-      const response = await cmsServer.get<Master>(
+      const { status, data } = await cmsServer.get<Master>(
         `/expert-feeds/${masterId.toString()}`,
       );
-      if (response.status === 200) {
-        const data = response.data;
+      if (status === 200) {
         const newMasterData = {
           id: data.id,
           title: data.title,
@@ -374,7 +391,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   };
 
   //* 링크 변경
-
   const handleChangeLink = (event: any): void => {
     dispatch({
       type: MasterContentFormActionKind.CHANGE_LINK,
@@ -385,7 +401,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 태그 관련
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
-
     return APITag.getList(value);
   }, [tagInput]);
 
@@ -435,6 +450,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       stockInput={stockInput}
       handleStockChange={handleStockChange}
       handleChangeStocks={handleChangeStocks}
+      handleChangeChannel={handleChangeChannel}
     />
   );
 };

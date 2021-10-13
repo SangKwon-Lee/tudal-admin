@@ -99,6 +99,7 @@ interface newState {
   loading: boolean;
   error: AxiosError<any> | boolean;
   master_room: any;
+  channel: any;
 }
 interface IMasterListTableProps {
   newState: newState;
@@ -118,6 +119,7 @@ interface IMasterListTableProps {
   onClickDeleteClose: () => void;
   handleDelete: () => Promise<void>;
   reload: () => void;
+  handleChangeChannel: (e: any) => void;
 }
 const MasterListTablePresenter: FC<IMasterListTableProps> = (
   props,
@@ -137,6 +139,7 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
     handleLimitChange,
     onClickDeleteClose,
     handleDelete,
+    handleChangeChannel,
     ...other
   } = props;
   const {
@@ -228,6 +231,27 @@ const MasterListTablePresenter: FC<IMasterListTableProps> = (
                     {option.label}
                   </option>
                 ))}
+            </TextField>
+            <TextField
+              label={'채널 선택'}
+              name="sort"
+              onChange={handleChangeChannel}
+              select
+              SelectProps={{ native: true }}
+              // value={roomSort}
+              variant="outlined"
+              sx={{ mx: 1 }}
+            >
+              {newState.channel.length > 0 ? (
+                newState.channel.map((channel) => (
+                  //@ts-ignore
+                  <option key={channel.name} value={channel.id}>
+                    {channel.name}
+                  </option>
+                ))
+              ) : (
+                <option>채널이 없습니다.</option>
+              )}
             </TextField>
             <TextField
               label={'방 정렬'}
