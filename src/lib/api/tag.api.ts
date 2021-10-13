@@ -1,33 +1,21 @@
 import { AxiosResponse } from 'axios';
 import qs from 'qs';
+import { IKeywordListStatus } from 'src/components/dashboard/keyword/KeywordList.Container';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
+import { removeEmpty } from 'src/utils/helper';
 
 export async function find(name) {
   return await axios.get<Tag[]>(`/tags?name=${name}`);
 }
 
-export async function getList(
-  search: string,
-  sort: string = '',
-  filters = [],
-  _alias: boolean = false,
-  _start: number = 0,
-  _limit: number = 100,
-) {
-  const q: any = { _alias, _start, _limit };
-  if (search) {
-    q._q = search;
-  }
-  if (sort) {
-    q._sort = sort;
-  }
-  filters.forEach((filter) => {
-    if (filter.value) {
-      q[filter.name] = filter.value;
-    }
-  });
-  return await axios.get<Tag[]>('/tags?' + qs.stringify(q));
+export async function getList(params: IKeywordListStatus) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Tag[]>(`/tag-excluded?${query}`);
+}
+
+export async function getListCount() {
+  return await axios.get<Number>(`/tags/count`);
 }
 
 export async function getItem(id: number) {
