@@ -4,114 +4,17 @@ import {
   Card,
   Divider,
   TextField,
+  LinearProgress,
   Typography,
 } from '@material-ui/core';
 import { AxiosError } from 'axios';
-import { FC, useRef } from 'react';
+import { FC } from 'react';
 import PlusIcon from '../../../icons/Plus';
-import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
-import { XYCoord } from 'dnd-core';
-const style = {
-  cursor: 'move',
-  display: 'flex',
-};
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
-}
-
-export interface CardProps {
-  id: any;
-  title: string;
-  index: number;
-  openType: string;
-  moveCard: (dragIndex: number, hoverIndex: number) => void;
-}
-
-// React DND card component
-export const DraggableCard: React.FC<CardProps> = ({
-  id,
-  title,
-  index,
-  moveCard,
-  openType,
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop({
-    accept: 'card',
-
-    // drop된 item의 id를 가져온다
-    collect(monitor) {
-      return { handlerId: monitor.getHandlerId() };
-    },
-    hover(item: DragItem, monitor: DropTargetMonitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-      const hoverMiddleY =
-        (hoverBoundingRect.left - hoverBoundingRect.right) / 2;
-
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverClientY =
-        (clientOffset as XYCoord).x - hoverBoundingRect.right;
-
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
-      // Time to actually perform the action
-      moveCard(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: 'card',
-    item: () => {
-      return { id, index };
-    },
-    collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-  const opacity = isDragging ? 0 : 1;
-
-  drag(drop(ref));
-
-  return (
-    <Card sx={{ m: 2, p: 2 }}>
-      <div
-        ref={ref}
-        style={{ ...style, opacity }}
-        data-handler-id={handlerId}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography sx={{ my: 1 }}>이름 : {title}</Typography>
-          <Typography>타입 : {openType}</Typography>
-        </Box>
-      </div>
-    </Card>
-  );
-};
+import {
+  MasterRoomAction,
+  MasterRoomActionKind,
+} from './MasterRoom.Container';
+import DraggableCard from './MasterRoomDnD.Container';
 
 const roomType = [
   {
@@ -132,26 +35,32 @@ interface newState {
 
 interface IMasterRoomProps {
   newState: any;
-  changeRoomInput: (e: any) => void;
-  changeTypeInput: (e: any) => void;
-  handleChangeChannel: (e: any) => void;
   handleChangeChannelSort: (e: any) => void;
   createRoom: () => void;
   moveCard: any;
+  getChannel: () => void;
+  dispatch: (params: MasterRoomAction) => void;
+  handleOrderSave: () => void;
 }
 
 const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
   const {
     newState,
-    changeRoomInput,
     moveCard,
-    changeTypeInput,
     createRoom,
-    handleChangeChannel,
     handleChangeChannelSort,
+    getChannel,
+    handleOrderSave,
+    dispatch,
   } = props;
-  const { master_room, master_channel, selectChannel, sortChannel } =
-    newState;
+  const {
+    master_room,
+    master_channel,
+    selectChannel,
+    sortChannel,
+    orderEdit,
+    loading,
+  } = newState;
   return (
     <>
       <Card sx={{ p: 3 }}>
@@ -167,7 +76,6 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
           </Typography>
           <Button
             color="primary"
-            // eslint-disable-next-line react/jsx-no-undef
             startIcon={<PlusIcon fontSize="small" />}
             sx={{ mb: 3 }}
             onClick={createRoom}
@@ -183,13 +91,23 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
             label="방 이름"
             placeholder="방 이름"
             variant="outlined"
-            onChange={changeRoomInput}
+            onChange={(event) => {
+              dispatch({
+                type: MasterRoomActionKind.CHANGE_TITLE,
+                payload: event.target.value,
+              });
+            }}
             name="title"
           />
           <TextField
             sx={{ width: 200, mr: 2 }}
             label="채널"
-            onChange={handleChangeChannel}
+            onChange={(event) => {
+              dispatch({
+                type: MasterRoomActionKind.CHANGE_CHANNEL,
+                payload: event.target.value,
+              });
+            }}
             value={selectChannel}
             name="channel"
             select
@@ -197,7 +115,8 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
             variant="outlined"
             SelectProps={{ native: true }}
           >
-            {master_channel.length > 0 &&
+            {master_channel &&
+              master_channel.length > 0 &&
               master_channel.map((master, i) => (
                 <option key={i} value={master.id}>
                   {master.name}
@@ -207,7 +126,12 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
           <TextField
             sx={{ width: 200 }}
             label="방 타입"
-            onChange={changeTypeInput}
+            onChange={(event) => {
+              dispatch({
+                type: MasterRoomActionKind.CHANGE_TYPE,
+                payload: event.target.value,
+              });
+            }}
             name="openType"
             select
             placeholder="방 타입"
@@ -224,42 +148,112 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
       </Card>
 
       <Card sx={{ p: 3, mt: 3 }}>
+        {loading && <LinearProgress />}
         <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
           방 목록
         </Typography>
-        <TextField
-          sx={{ width: 200, my: 2 }}
-          label="채널"
-          onChange={handleChangeChannelSort}
-          value={sortChannel}
-          name="channel"
-          select
-          placeholder="채널"
-          variant="outlined"
-          SelectProps={{ native: true }}
+        <Box
+          sx={{ display: 'flex', justifyContent: 'space-between' }}
         >
-          {master_channel.length > 0 &&
-            master_channel.map((master, i) => (
-              <option key={i} value={master.id}>
-                {master.name}
-              </option>
-            ))}
-        </TextField>
+          <TextField
+            sx={{ width: 200, my: 2 }}
+            label="채널"
+            onChange={handleChangeChannelSort}
+            value={sortChannel}
+            name="channel"
+            select
+            placeholder="채널"
+            variant="outlined"
+            SelectProps={{ native: true }}
+          >
+            {master_channel &&
+              master_channel.length > 0 &&
+              master_channel.map((master, i) => (
+                <option key={i} value={master.id}>
+                  {master.name}
+                </option>
+              ))}
+          </TextField>{' '}
+          {orderEdit ? (
+            <>
+              <Button
+                color="primary"
+                sx={{ height: 40 }}
+                startIcon={<PlusIcon fontSize="small" />}
+                variant="contained"
+                onClick={handleOrderSave}
+              >
+                방 저장
+              </Button>
+              <Button
+                color="primary"
+                sx={{ height: 40 }}
+                startIcon={<PlusIcon fontSize="small" />}
+                variant="contained"
+                onClick={handleOrderSave}
+              >
+                취소
+              </Button>
+            </>
+          ) : (
+            <Button
+              color="primary"
+              sx={{ height: 40 }}
+              startIcon={<PlusIcon fontSize="small" />}
+              onClick={() => {
+                dispatch({
+                  type: MasterRoomActionKind.IS_ORDER,
+                  payload: true,
+                });
+              }}
+              variant="contained"
+            >
+              방 순서 변경
+            </Button>
+          )}
+        </Box>
         <Divider sx={{ my: 2 }} />
-        <div style={style}>
-          {master_room
-            .sort((a, b) => a.order - b.order)
-            .map((room, i) => (
-              <DraggableCard
-                key={i}
-                id={room.id}
-                title={room.title}
-                openType={room.openType}
-                index={room.order}
-                moveCard={moveCard}
-              />
-            ))}
-        </div>
+        <Box>
+          {orderEdit && (
+            <Typography sx={{ my: 2 }}>
+              방 순서는 Drag & Drop으로 변경 가능합니다.
+            </Typography>
+          )}
+          <div
+            style={{
+              cursor: orderEdit ? 'move' : 'none',
+              display: 'flex',
+            }}
+          >
+            {orderEdit
+              ? master_room.map((room, i) => (
+                  <DraggableCard
+                    key={i}
+                    id={room.id}
+                    title={room.title}
+                    openType={room.openType}
+                    index={i + 1}
+                    orderEdit={orderEdit}
+                    moveCard={moveCard}
+                    getChannel={getChannel}
+                  />
+                ))
+              : master_room
+                  .sort((a, b) => a.order - b.order)
+                  .map((room, i) => (
+                    <DraggableCard
+                      key={i}
+                      id={room.id}
+                      title={room.title}
+                      openType={room.openType}
+                      index={room.order}
+                      orderEdit={orderEdit}
+                      moveCard={moveCard}
+                      getChannel={getChannel}
+                    />
+                  ))}
+          </div>
+        </Box>
       </Card>
     </>
   );

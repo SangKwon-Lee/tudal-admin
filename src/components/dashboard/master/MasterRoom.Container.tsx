@@ -6,22 +6,21 @@ import { Channel, Room } from 'src/types/expert';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import toast from 'react-hot-toast';
 
-enum MasterRoomActionKind {
+export enum MasterRoomActionKind {
   LOADING = 'LOADING',
-  ERROR = 'ERROR',
   GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   CHANGE_ROOM = 'CHANGE_ROOM',
-  RELOAD = 'RELOAD',
-  EDIT = 'EDIT',
+  IS_ORDER = 'IS_ORDER',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_TYPE = 'CHANGE_TYPE',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
   SORT_CHANNEL = 'SORT_CHANNEL',
 }
 
-interface MasterRoomAction {
+export interface MasterRoomAction {
   type: MasterRoomActionKind;
   payload?: any;
 }
@@ -37,6 +36,7 @@ interface newState {
   selectChannel: number | string;
   order: number;
   sortChannel: number | string;
+  orderEdit: boolean;
 }
 
 const MasterRoomReducer = (
@@ -60,31 +60,21 @@ const MasterRoomReducer = (
       return {
         ...state,
         master_channel: payload,
-        loading: false,
         selectChannel: Number(payload[0].id) || '',
         sortChannel: Number(payload[0].id) || '',
+        loading: false,
       };
+
     case MasterRoomActionKind.CHANGE_ROOM:
       return {
         ...state,
         master_room: payload,
         loading: false,
       };
-    case MasterRoomActionKind.RELOAD:
+    case MasterRoomActionKind.IS_ORDER:
       return {
         ...state,
-        master_room: payload,
-        loading: false,
-      };
-    case MasterRoomActionKind.EDIT:
-      return {
-        ...state,
-        edit: true,
-      };
-    case MasterRoomActionKind.ERROR:
-      return {
-        ...state,
-        error: payload,
+        orderEdit: payload,
       };
     case MasterRoomActionKind.CHANGE_TITLE:
       return {
@@ -119,6 +109,7 @@ const initialState: newState = {
   order: 0,
   selectChannel: '',
   sortChannel: '',
+  orderEdit: false,
 };
 const MasterRoomContainer = () => {
   const { user } = useAuth();
@@ -128,6 +119,7 @@ const MasterRoomContainer = () => {
   );
 
   const getChannel = async () => {
+    dispatch({ type: MasterRoomActionKind.LOADING });
     try {
       const { status, data } = await cmsServer.get(
         `/master-channels?master.id=${user.id}`,
@@ -137,6 +129,13 @@ const MasterRoomContainer = () => {
           type: MasterRoomActionKind.GET_CHANNEL,
           payload: data,
         });
+        const response = await cmsServer.get(
+          `/master-rooms?master_channel=${data[0].id}&isDeleted=0`,
+        );
+        dispatch({
+          type: MasterRoomActionKind.GET_ROOM,
+          payload: response.data,
+        });
       } else {
         dispatch({
           type: MasterRoomActionKind.GET_CHANNEL,
@@ -144,16 +143,25 @@ const MasterRoomContainer = () => {
         });
       }
     } catch (error) {
-      dispatch({
-        type: MasterRoomActionKind.ERROR,
-        payload: error,
-      });
+      console.log(error);
     }
   };
 
-  const getRoom = async () => {
+  useEffect(() => {
+    getChannel();
+  }, []);
+
+  //* 채널 변경 (방 목록)
+  const handleChangeChannelSort = async (event) => {
+    dispatch({ type: MasterRoomActionKind.LOADING });
+    dispatch({
+      type: MasterRoomActionKind.SORT_CHANNEL,
+      payload: Number(event.target.value),
+    });
     const { data } = await cmsServer.get(
-      `/master-rooms?master.id=${user.id}`,
+      `/master-rooms?master_channel=${Number(
+        event.target.value,
+      )}&isDeleted=0`,
     );
     dispatch({
       type: MasterRoomActionKind.GET_ROOM,
@@ -161,56 +169,9 @@ const MasterRoomContainer = () => {
     });
   };
 
-  useEffect(() => {
-    getChannel();
-    getRoom();
-  }, []);
-
-  //* 방 이름 변경
-  const changeRoomInput = (event) => {
-    dispatch({
-      type: MasterRoomActionKind.CHANGE_TITLE,
-      payload: event.target.value,
-    });
-  };
-  //* 방 타입 변경
-  const changeTypeInput = (event) => {
-    dispatch({
-      type: MasterRoomActionKind.CHANGE_TYPE,
-      payload: event.target.value,
-    });
-  };
-
-  //* 채널 변경 (방 만들 때 )
-  const handleChangeChannel = (event) => {
-    dispatch({
-      type: MasterRoomActionKind.CHANGE_CHANNEL,
-      payload: event.target.value,
-    });
-  };
-
-  //* 채널 변경 (방 목록)
-  const handleChangeChannelSort = (event) => {
-    dispatch({
-      type: MasterRoomActionKind.SORT_CHANNEL,
-      payload: Number(event.target.value),
-    });
-  };
-
-  //* 채널 변경시 방 목록 변경
-  useEffect(() => {
-    let roomFilter = newState.master_channel.filter(
-      (data) => data.id === newState.sortChannel,
-    );
-    if (roomFilter[0]) {
-      dispatch({
-        type: MasterRoomActionKind.CHANGE_ROOM,
-        payload: roomFilter[0].master_rooms,
-      });
-    }
-  }, [newState.sortChannel, newState.master_room]);
-
+  //* 방 생성
   const createRoom = async () => {
+    dispatch({ type: MasterRoomActionKind.LOADING });
     try {
       const response = await cmsServer.post(`/master-rooms`, {
         title: newState.title,
@@ -220,35 +181,54 @@ const MasterRoomContainer = () => {
           newState.master_channel.filter(
             (data) => data.id === Number(newState.selectChannel),
           )[0].master_rooms.length + 1,
-        openType: newState.openType + 'as#',
+        openType: newState.openType + '13',
       });
+      toast.success('방이 추가되었습니다.');
       getChannel();
-      getRoom();
     } catch (error) {
-      dispatch({
-        type: MasterRoomActionKind.ERROR,
-        payload: error,
-      });
+      console.log(error);
     }
   };
 
-  const moveCard = async (dragIndex: number, hoverIndex: number) => {
-    console.log('drag, hover', dragIndex, hoverIndex);
+  //* Drag * Drop
+  const moveCard = async (
+    dragIndex?: number,
+    hoverIndex?: number,
+  ) => {
     const dragCard = newState.master_room[dragIndex - 1];
-    console.log(dragCard, 'drag');
     let card = [...newState.master_room];
     let cardSlice = card.splice(dragIndex - 1, 1);
     card.splice(hoverIndex - 1, 0, cardSlice[0]);
+    console.log(card);
+    dispatch({
+      type: MasterRoomActionKind.GET_ROOM,
+      payload: card,
+    });
+  };
+
+  const handleOrderSave = async () => {
     try {
       const response = await Promise.all(
-        card.map(async (data, i) => {
-          return await cmsServer.put(`/master-rooms/${data.id}`, {
-            order: i + 1,
-          });
+        newState.master_room.map(async (data, i) => {
+          return await cmsServer.put(
+            `/master-rooms/${data.id}?isDeleted=0`,
+            {
+              order: i + 1,
+            },
+          );
         }),
       );
-      getChannel();
-      // getRoom();
+      const { data } = await cmsServer.get(
+        `/master-rooms?master_channel=${newState.sortChannel}&isDeleted=0`,
+      );
+      dispatch({
+        type: MasterRoomActionKind.GET_ROOM,
+        payload: data,
+      });
+      dispatch({
+        type: MasterRoomActionKind.IS_ORDER,
+        payload: false,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -259,11 +239,11 @@ const MasterRoomContainer = () => {
       <MasterRoomPresenter
         newState={newState}
         moveCard={moveCard}
-        changeRoomInput={changeRoomInput}
-        changeTypeInput={changeTypeInput}
-        handleChangeChannel={handleChangeChannel}
         handleChangeChannelSort={handleChangeChannelSort}
         createRoom={createRoom}
+        getChannel={getChannel}
+        handleOrderSave={handleOrderSave}
+        dispatch={dispatch}
       />
     </DndProvider>
   );
