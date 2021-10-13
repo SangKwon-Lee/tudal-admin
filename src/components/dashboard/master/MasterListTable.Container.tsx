@@ -1,109 +1,90 @@
-import { useCallback, useEffect, useReducer, useState } from 'react';
-import type { ChangeEvent } from 'react';
-import { cmsServer } from '../../../lib/axios';
-import {
-  applyFilters,
-  applyPagination,
-  applySort,
-} from '../../../utils/sort';
+import { useCallback, useEffect, useReducer } from 'react';
 import { APIMaster } from 'src/lib/api';
 import MasterListTablePresenter from './MasterListTable.Presenter';
-import useMounted from 'src/hooks/useMounted';
-import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
+import {
+  IMasterChannel,
+  IMasterFeed,
+  IMasterRoom,
+} from 'src/types/master';
 
-// 감싼 컴포넌트에 React.forwardRef를 사용해 ref를 제공해주면 된다.
-// const Bar = forwardRef((props: any, ref: any) => (
-//   <div {...props} ref={ref}>
-//     {props.children}
-//   </div>
-// ));
-
-// 정렬 로직
-type Sort =
-  | 'updated_at|desc'
-  | 'updated_at|asc'
-  | 'likes|desc'
-  | 'likes|asc'
-  | 'viewCount|desc'
-  | 'viewCount|asc';
-
-interface SortOption {
-  value: Sort;
-  label: string;
-}
-
-const sortOptions: SortOption[] = [
-  {
-    label: '최신순',
-    value: 'updated_at|desc',
-  },
-  {
-    label: '오래된순',
-    value: 'updated_at|asc',
-  },
-  {
-    label: '좋아요 높은순',
-    value: 'likes|desc',
-  },
-  {
-    label: '좋아요 낮은순',
-    value: 'likes|asc',
-  },
-  {
-    label: '조회수 높은순',
-    value: 'viewCount|desc',
-  },
-  {
-    label: '조회수 낮은순',
-    value: 'viewCount|asc',
-  },
-];
-
-enum MasterListTableActionKind {
+export enum MasterListTableActionKind {
   LOADING = 'LOADING',
-  ERROR = 'ERROR',
+
+  // Load APIS
   GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
-  GET_EXPERTS = 'GET_EXPERTS',
-  CONFIRM_MODAL_OPEN = 'CONFIRM_MODAL_OPEN',
-  DELETE_EXPERT = 'DELETE_EXPERT',
+  GET_FEED = 'GET_FEED',
+  GET_FEED_LENGTH = 'GET_FEED_LENGTH',
+
+  // changes
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_SORT = 'CHANGE_SORT',
   CHANGE_PAGE = 'CHANGE_PAGE',
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
-  SELECT_ONE_EXPERT = 'SELECT_ONE_EXPERT',
-  CONFIRM_MODAL_CLOSE = 'CONFIRM_MODAL_CLOSE',
-  CHANNEL_SORT = 'CHANNEL_SORT',
+
+  // delete & update
+  SELECT_FEED = 'SELECT_FEED',
+  OPEN_DELETE_DIALOG = 'OPEN_DELETE_DIALOG',
+  CLOSE_DELETE_DIALOG = 'CLOSE_DELETE_DIALOG',
 }
 
-interface MasterListTableAction {
+export interface MasterListTableAction {
   type: MasterListTableActionKind;
   payload?: any;
 }
 
-interface newState {
-  masters: any;
+export interface IMasterListState {
   page: number;
-  limit: number;
-  query: string;
-  open: boolean;
-  sort: Sort;
-  selectedMasters: number[];
   loading: boolean;
-  error: AxiosError<any> | boolean;
-  roomSort: any;
-  master_room: any;
-  channel: [];
-  channelSort: string;
+  selected: number;
+  list: {
+    feed: IMasterFeed[];
+    feedLength: number;
+    channel: IMasterChannel[];
+    room: IMasterRoom[];
+  };
+  delete: {
+    isDeleting: boolean;
+    target: number;
+  };
+  query: {
+    _start: number;
+    _limit: number;
+    _q: string;
+    isDeleted: boolean;
+    'master.id': number;
+    'master_room.id': number;
+    'master_room.master_channel.id': number;
+  };
 }
 
+const initialState: IMasterListState = {
+  list: { feed: [], feedLength: 0, channel: [], room: [] },
+  selected: null,
+  page: 1,
+  delete: {
+    isDeleting: false,
+    target: null,
+  },
+  loading: false,
+  query: {
+    _q: '',
+    _start: 0,
+    _limit: 20,
+    isDeleted: false,
+    'master.id': null,
+    'master_room.id': null,
+    'master_room.master_channel.id': null,
+  },
+};
+
 const MasterListTableReducer = (
-  state: newState,
+  state: IMasterListState,
   action: MasterListTableAction,
-): newState => {
+): IMasterListState => {
   const { type, payload } = action;
   switch (type) {
     case MasterListTableActionKind.LOADING:
@@ -111,372 +92,199 @@ const MasterListTableReducer = (
         ...state,
         loading: true,
       };
-    case MasterListTableActionKind.GET_EXPERTS:
-      return {
-        ...state,
-        masters: payload,
-        loading: false,
-      };
     case MasterListTableActionKind.CHANGE_QUERY:
       return {
         ...state,
-        query: payload,
+        query: {
+          ...state.query,
+          _q: payload,
+        },
       };
     case MasterListTableActionKind.CHANGE_PAGE:
       return {
         ...state,
         page: payload,
+        query: {
+          ...state.query,
+          _start: (payload - 1) * 20,
+        },
       };
-    case MasterListTableActionKind.CHANGE_SORT:
-      return {
-        ...state,
-        sort: payload,
-      };
+
     case MasterListTableActionKind.CHANGE_LIMIT:
       return {
         ...state,
-        limit: payload,
+        query: { ...state.query, _limit: payload },
       };
-    case MasterListTableActionKind.CHANGE_ROOM:
+
+    case MasterListTableActionKind.OPEN_DELETE_DIALOG:
       return {
         ...state,
-        roomSort: payload,
+        delete: {
+          isDeleting: true,
+          target: payload,
+        },
       };
-    case MasterListTableActionKind.SELECT_ONE_EXPERT:
+    case MasterListTableActionKind.CLOSE_DELETE_DIALOG:
       return {
         ...state,
-        selectedMasters: payload,
+        delete: {
+          isDeleting: false,
+          target: null,
+        },
       };
-    case MasterListTableActionKind.CONFIRM_MODAL_OPEN:
-      return {
-        ...state,
-        open: true,
-      };
-    case MasterListTableActionKind.CONFIRM_MODAL_CLOSE:
-      return {
-        ...state,
-        open: false,
-        loading: false,
-      };
-    case MasterListTableActionKind.ERROR:
-      return {
-        ...state,
-        error: payload,
-      };
+
     case MasterListTableActionKind.GET_ROOM: {
       return {
         ...state,
-        master_room: payload,
+        list: { ...state.list, room: payload },
       };
     }
     case MasterListTableActionKind.GET_CHANNEL: {
       return {
         ...state,
-        channel: payload,
+        list: { ...state.list, channel: payload },
       };
     }
+    case MasterListTableActionKind.GET_FEED: {
+      return {
+        ...state,
+        loading: false,
+        list: { ...state.list, feed: payload },
+      };
+    }
+
     case MasterListTableActionKind.CHANGE_CHANNEL: {
       return {
         ...state,
-        master_room: payload,
-        roomSort: payload[0].title,
+
+        query: {
+          ...state.query,
+          'master_room.master_channel.id': payload,
+        },
       };
     }
-    case MasterListTableActionKind.CHANNEL_SORT: {
+    case MasterListTableActionKind.CHANGE_ROOM: {
       return {
         ...state,
-        channelSort: payload,
+        query: {
+          ...state.query,
+          'master_room.id': payload,
+        },
+      };
+    }
+    case MasterListTableActionKind.SELECT_FEED: {
+      return {
+        ...state,
+        selected: payload,
+      };
+    }
+    case MasterListTableActionKind.GET_FEED_LENGTH: {
+      return {
+        ...state,
+        list: { ...state.list, feedLength: payload },
       };
     }
   }
 };
 
 const MasterListTableContainer = () => {
-  const [currentTab, setCurrentTab] = useState<string>('all');
-
-  const initialState: newState = {
-    masters: [],
-    loading: false,
-    error: null,
-    page: 0,
-    limit: 50,
-    query: '',
-    sort: sortOptions[0].value,
-    open: false,
-    channel: [],
-    selectedMasters: [],
-    roomSort: '',
-    master_room: '',
-    channelSort: '',
-  };
-  const [newState, dispatch] = useReducer(
+  const [masterListState, dispatch] = useReducer(
     MasterListTableReducer,
     initialState,
   );
-  const mounted = useMounted();
+
   const { user } = useAuth();
 
-  const getMasterChannel = async () => {
+  const getChannels = useCallback(async () => {
     try {
-      const response = await cmsServer.get(
-        `/master-channels?master.id=${user.id}`,
-      );
+      const response = await APIMaster.getChannels(user.id);
       if (response.status === 200) {
         dispatch({
           type: MasterListTableActionKind.GET_CHANNEL,
-          payload: [{ name: '전체' }, ...response.data],
+          payload: response.data,
         });
       }
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [user]);
 
-  const getMasterRoom = async () => {
+  const getRooms = useCallback(async () => {
     try {
-      const { data } = await cmsServer.get(
-        `/master-rooms?master.id=${user.id}`,
-      );
+      const response = await APIMaster.getRooms(user.id);
       dispatch({
         type: MasterListTableActionKind.GET_ROOM,
-        payload: [{ title: '전체' }, ...data],
+        payload: response.data,
       });
     } catch (error) {
       console.log(error);
     }
-  };
-
-  //* 방 정보 불러오는 useEffect
-  useEffect(() => {
-    getMasterChannel();
-    getMasterRoom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const getMasters = useCallback(
-    async (reload = false) => {
-      dispatch({ type: MasterListTableActionKind.LOADING });
-      try {
-        const response = await APIMaster.getList();
-        const masterresponse = await APIMaster.getMasterList();
-        if (mounted || reload) {
-          dispatch({
-            type: MasterListTableActionKind.GET_EXPERTS,
-            payload: [...masterresponse.data, ...response.data],
-          });
-        }
-      } catch (err) {
-        console.error(err);
+  const getFeeds = useCallback(async () => {
+    dispatch({ type: MasterListTableActionKind.LOADING });
+
+    try {
+      const { data, status } = await APIMaster.getFeeds(
+        masterListState.query,
+      );
+      if (status === 200) {
         dispatch({
-          type: MasterListTableActionKind.ERROR,
-          payload: err,
+          type: MasterListTableActionKind.GET_FEED,
+          payload: data,
         });
       }
-    },
-    [mounted],
-  );
+    } catch (err) {
+      console.error(err);
+    }
+  }, [masterListState.query]);
 
-  useEffect(() => {
-    getMasters();
-    setCurrentTab('all');
-  }, [getMasters]);
-
-  //* 삭제 모달 열기
-  const onClickDelete = () => {
-    dispatch({ type: MasterListTableActionKind.CONFIRM_MODAL_OPEN });
-  };
-
-  //* 삭제 모달 닫기
-  const onClickDeleteClose = () => {
-    dispatch({ type: MasterListTableActionKind.CONFIRM_MODAL_CLOSE });
-  };
-
-  const reload = () => {
-    getMasters();
-  };
+  const getFeedLength = useCallback(async () => {
+    try {
+      const { data, status } = await APIMaster.getFeedLength(user.id);
+      if (status === 200) {
+        dispatch({
+          type: MasterListTableActionKind.GET_FEED_LENGTH,
+          payload: data,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [user]);
 
   const handleDelete = async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
     try {
-      const masterId = newState.selectedMasters[0];
-      console.log(masterId);
-      const response = await cmsServer.put(
-        `/master-feeds/${masterId.toString()}`,
-        {
-          isDeleted: true,
-        },
+      const { status } = await APIMaster.deleteFeed(
+        masterListState.selected,
       );
-
-      if (response.status === 200) {
-        reload();
+      if (status === 200) {
+        dispatch({
+          type: MasterListTableActionKind.CLOSE_DELETE_DIALOG,
+        });
+        getFeeds();
       }
-      dispatch({
-        type: MasterListTableActionKind.SELECT_ONE_EXPERT,
-        payload: [],
-      });
     } catch (e) {
-      dispatch({ type: MasterListTableActionKind.ERROR, payload: e });
-    } finally {
-      dispatch({
-        type: MasterListTableActionKind.CONFIRM_MODAL_CLOSE,
-      });
-      dispatch({
-        type: MasterListTableActionKind.SELECT_ONE_EXPERT,
-        payload: [],
-      });
+      console.log(e);
     }
   };
 
-  //* 검색어
-  const handleQueryChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    dispatch({
-      type: MasterListTableActionKind.CHANGE_QUERY,
-      payload: String(event.target.value),
-    });
-  };
+  useEffect(() => {
+    getFeeds();
+  }, [getFeeds]);
 
-  //* 정렬 변경
-  const handleSortChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    dispatch({
-      type: MasterListTableActionKind.CHANGE_SORT,
-      payload: event.target.value as Sort,
-    });
-  };
+  useEffect(() => {
+    getChannels();
+    getRooms();
+    getFeedLength();
+  }, [getChannels, getRooms, getFeedLength]);
 
-  //* 채널 변경
-  const handleChangeChannel = async (event: any) => {
-    dispatch({
-      type: MasterListTableActionKind.CHANNEL_SORT,
-      payload: event.target.value || '전체',
-    });
-    if (event.target.value === '전체') {
-      try {
-        const response = await cmsServer.get(
-          `master-rooms?master.id=${user.id}`,
-        );
-        dispatch({
-          type: MasterListTableActionKind.CHANGE_CHANNEL,
-          payload: [{ title: '전체' }, ...response.data],
-        });
-      } catch (error) {
-        dispatch({
-          type: MasterListTableActionKind.ERROR,
-          payload: error,
-        });
-      }
-    } else {
-      try {
-        const response = await cmsServer.get(
-          `master-channels?id=${event.target.value}`,
-        );
-        if (response.data[0].master_rooms.length > 0) {
-          dispatch({
-            type: MasterListTableActionKind.CHANGE_CHANNEL,
-            payload: [
-              { title: '전체' },
-              ...response.data[0].master_rooms,
-            ],
-          });
-        } else {
-          dispatch({
-            type: MasterListTableActionKind.CHANGE_CHANNEL,
-            payload: [],
-          });
-        }
-      } catch (error) {
-        dispatch({
-          type: MasterListTableActionKind.ERROR,
-          payload: error,
-        });
-      }
-    }
-  };
-
-  //* 방 정렬 변경
-  const handleRoomChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    dispatch({
-      type: MasterListTableActionKind.CHANGE_ROOM,
-      payload: event.target.value,
-    });
-  };
-
-  //* 페이지 변경
-  const handlePageChange = (__: any, newPage: number): void => {
-    dispatch({
-      type: MasterListTableActionKind.CHANGE_PAGE,
-      payload: newPage,
-    });
-  };
-
-  //* 리스트 수 변경
-  const handleLimitChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    dispatch({
-      type: MasterListTableActionKind.CHANGE_LIMIT,
-      payload: parseInt(event.target.value, 10),
-    });
-  };
-
-  //* 리스트에서 게시글 선택
-  const handleSelectOneMaster = (
-    __: ChangeEvent<HTMLInputElement>,
-    masterId: number,
-  ): void => {
-    if (!newState.selectedMasters.includes(masterId)) {
-      dispatch({
-        type: MasterListTableActionKind.SELECT_ONE_EXPERT,
-        payload: [masterId],
-      });
-    } else {
-      dispatch({
-        type: MasterListTableActionKind.SELECT_ONE_EXPERT,
-        payload: newState.selectedMasters.filter(
-          (id) => id !== masterId,
-        ),
-      });
-    }
-  };
-
-  //* 최종 리스트, 정렬 데이터
-  const filteredMasters = applyFilters(
-    newState.masters,
-    newState.query,
-  );
-  const sortedMasters = applySort(
-    filteredMasters,
-    newState.sort,
-    newState.roomSort,
-  );
-  const paginatedMasters = applyPagination(
-    sortedMasters,
-    newState.page,
-    newState.limit,
-  );
-  const enableBulkActions = newState.selectedMasters.length > 0;
   return (
     <MasterListTablePresenter
-      newState={newState}
-      currentTab={currentTab}
-      handleQueryChange={handleQueryChange}
-      handleSortChange={handleSortChange}
-      enableBulkActions={enableBulkActions}
-      onClickDelete={onClickDelete}
-      paginatedMasters={paginatedMasters}
-      handleSelectOneMaster={handleSelectOneMaster}
-      handlePageChange={handlePageChange}
-      handleLimitChange={handleLimitChange}
-      handleRoomChange={handleRoomChange}
-      onClickDeleteClose={onClickDeleteClose}
+      newState={masterListState}
+      dispatch={dispatch}
       handleDelete={handleDelete}
-      reload={reload}
-      handleChangeChannel={handleChangeChannel}
     />
   );
 };

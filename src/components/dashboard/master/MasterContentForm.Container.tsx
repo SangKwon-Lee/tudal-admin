@@ -13,7 +13,7 @@ import MasterContentFormPresenter from './MasterContentForm.Presenter';
 import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { Channel, Master, Room } from 'src/types/expert';
+import { Room, Master, Channel } from 'src/types/master';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
 import { APIStock, APITag } from 'src/lib/api';

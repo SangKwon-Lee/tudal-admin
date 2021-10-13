@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
-import { Channel, Room } from 'src/types/expert';
+import { Channel, Room } from 'src/types/master';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

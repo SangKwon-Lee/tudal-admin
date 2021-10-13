@@ -11,7 +11,7 @@ import {
   Container,
   LinearProgress,
 } from '@material-ui/core';
-import type { Master } from '../../../types/expert';
+import type { Master } from '../../../types/master';
 import moment from 'moment';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
