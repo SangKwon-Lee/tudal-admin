@@ -1,10 +1,9 @@
-import React, { ChangeEvent, useState, RefObject } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { ChangeEvent } from 'react';
 import {
   Box,
   Card,
   IconButton,
+  LinearProgress,
   InputAdornment,
   Link,
   Table,
@@ -30,12 +29,6 @@ import {
   IScheduleListState,
   ScheduleActionKind,
 } from './ScheduleList.Container';
-
-const applyPagination = (
-  schedules: Schedule[],
-  page: number,
-  limit: number,
-): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
 const getPriorityLabel = (priority) => {
   const scale =
@@ -65,11 +58,10 @@ const getPriorityLabel = (priority) => {
 
 interface ScheduleListTableProps {
   state: IScheduleListState;
+  sortOptions: Array<{ value: string; label: string }>;
   dispatch: (param: IScheduleListDispatch) => void;
   setTargetModify: (schedule: Schedule) => void;
-  setShouldUpdate: (value: boolean) => void;
-  sortOptions: Array<{ value: string; label: string }>;
-  postDelete: (id: number) => void;
+  postDelete: () => void;
 }
 
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
@@ -81,32 +73,21 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
     sortOptions,
     postDelete,
     setTargetModify,
-    setShouldUpdate,
   } = props;
 
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    _.debounce(
-      () =>
-        dispatch({
-          type: ScheduleActionKind.CHANGE_SEARCH,
-          payload: event.target.value,
-        }),
-      300,
-    );
+  const pageCount = Math.ceil(state.listLength / 50);
+
+  const _handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: ScheduleActionKind.CHANGE_SEARCH,
+      payload: e.target.value,
+    });
   };
 
-  const paginatedSchedule = applyPagination(
-    state.list,
-    state.page,
-    50,
-  );
-
+  const handleSearch = _.debounce(_handleSearch, 300);
   return (
-    <Box
-      sx={{
-        backgroundColor: 'background.default',
-      }}
-    >
+    <>
+      {state.loading && <LinearProgress />}
       <Card>
         <Box
           sx={{
@@ -269,7 +250,6 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                           label={category.name}
                         />
                       ))}
-                      {/* </div> */}
                     </TableCell>
                     <TableCell>
                       {getPriorityLabel(priority)}
@@ -277,11 +257,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     <TableCell>
                       {author ? author.username : '알 수 없음'}
                     </TableCell>
-                    <TableCell>{`${dayjs(startDate).format(
-                      'YYYY-MM-DD',
-                    )} ~ ${dayjs(endDate).format(
-                      'YYYY-MM-DD',
-                    )}`}</TableCell>
+                    <TableCell>{`${startDate} ~ ${endDate}`}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
@@ -309,16 +285,17 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
             </TableBody>
           </Table>
           <Pagination
-            page={state.page}
+            page={state.status._page}
             onChange={(e, page) =>
               dispatch({
                 type: ScheduleActionKind.CHANGE_PAGE,
                 payload: page,
               })
             }
-            count={10}
+            count={pageCount}
             variant="outlined"
             shape="rounded"
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
           />
         </Box>
 
@@ -336,9 +313,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               title={`${state.delete.target.title} 일정을 삭제하시겠습니까?`}
               content={`삭제하면 되돌리기 어렵습니다.`}
               confirmTitle={'네 삭제합니다.'}
-              handleOnClick={() => {
-                postDelete(state.delete.target.id);
-              }}
+              handleOnClick={postDelete}
               handleOnCancel={() => {
                 dispatch({
                   type: ScheduleActionKind.CLOSE_DELETE_DIALOG,
@@ -348,7 +323,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
           </Dialog>
         )}
       </Card>
-    </Box>
+    </>
   );
 };
 

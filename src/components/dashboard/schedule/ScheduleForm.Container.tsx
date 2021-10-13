@@ -1,31 +1,12 @@
 import React, {
   useEffect,
-  useCallback,
   useRef,
   useReducer,
   ChangeEvent,
 } from 'react';
 import dayjs from 'dayjs';
 import { debounce } from 'lodash';
-import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
-import PlusIcon from 'src/icons/Plus';
-import Cancel from '@material-ui/icons/Cancel';
-import SaveAlt from '@material-ui/icons/SaveAlt';
 import * as _ from 'lodash';
-import {
-  Box,
-  Button,
-  Grid,
-  Select,
-  MenuItem,
-  TextField,
-  Dialog,
-  InputLabel,
-  FormControl,
-  Autocomplete,
-} from '@material-ui/core';
-
-import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import {
   Priority,
   Stock,
@@ -33,10 +14,8 @@ import {
   Category,
   Schedule,
 } from 'src/types/schedule';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+
 import useAuth from 'src/hooks/useAuth';
-import { IRoleType } from 'src/types/user';
 import useAsync from 'src/hooks/useAsync';
 import {
   APICategory,
@@ -51,22 +30,12 @@ import {
   extractKeywords,
 } from 'src/utils/extractKeywords';
 import ScheduleFormPresenter from './ScheduleForm.Presenter';
-
-const customFilter = createFilterOptions<any>();
-const categoryFilter = createFilterOptions<any>();
+import toast from 'react-hot-toast';
 
 const formatDate = (date): string => dayjs(date).format('YYYY-MM-DD');
 
-const createStockNameMap = (stockList: Stock[]) => {
-  let map = {};
-  for (let stock of stockList) {
-    map[stock.stockname] = stock;
-  }
-  return map;
-};
-
 interface scheduleFormProps {
-  reload: () => void;
+  handleUpdate: (shouldUpdate: boolean) => void;
   clearTargetModify: () => void;
   targetModify: Schedule;
 }
@@ -196,7 +165,7 @@ const scheduleFormReducer = (
 };
 
 const ScheduleForm: React.FC<scheduleFormProps> = ({
-  reload,
+  handleUpdate,
   targetModify,
   clearTargetModify,
 }) => {
@@ -218,7 +187,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     });
   }, [targetModify]);
 
-  const { showConfirm, submitForm } = newScheduleForm;
+  const { showConfirm } = newScheduleForm;
   const [stockListState] = useAsync<Stock[]>(
     APIStock.getList,
     [],
@@ -293,7 +262,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     })
       .then(({ status }) => {
         if (status === 200) {
-          reload();
+          handleUpdate(true);
           clearTargetModify();
           dispatch({ type: ScheduleActionKind.CLEAR });
           dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
@@ -310,6 +279,13 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
 
     const { title, comment, priority, startDate, endDate } =
       newScheduleForm;
+
+    if (!title) {
+      toast.error('제목을 입력해주세요.');
+      dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
+
+      return;
+    }
     await APISchedule.create({
       title,
       comment,
@@ -323,7 +299,7 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     })
       .then(({ status }) => {
         if (status === 200) {
-          reload();
+          handleUpdate(true);
           dispatch({ type: ScheduleActionKind.CLEAR });
           dispatch({ type: ScheduleActionKind.CLOSE_CONFIRM });
         }
@@ -333,35 +309,34 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
       });
   };
 
-  const handleExtract = useCallback(
-    _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
-      const sentence = e.target.value;
-      try {
-        const tokens = tokenize(sentence);
-        if (!tokens) return;
-        const { extractedStocks: stocks, tokenized: afterStock } =
-          extractStocks(stockList, tokens);
+  const _handleExtract = async (e: ChangeEvent<HTMLInputElement>) => {
+    const sentence = e.target.value;
+    try {
+      const tokens = tokenize(sentence);
+      if (!tokens) return;
+      const { extractedStocks: stocks, tokenized: afterStock } =
+        extractStocks(stockList, tokens);
 
-        const tags = await extractKeywords(afterStock);
-        stocks.forEach((stock) => {
-          dispatch({
-            type: ScheduleActionKind.ADD_STOCK,
-            payload: stock,
-          });
+      const tags = await extractKeywords(afterStock);
+      stocks.forEach((stock) => {
+        dispatch({
+          type: ScheduleActionKind.ADD_STOCK,
+          payload: stock,
         });
+      });
 
-        tags.forEach((tag) =>
-          dispatch({
-            type: ScheduleActionKind.ADD_KEYWORD,
-            payload: tag,
-          }),
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300),
-    [stockList],
-  );
+      tags.forEach((tag) =>
+        dispatch({
+          type: ScheduleActionKind.ADD_KEYWORD,
+          payload: tag,
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleExtract = _.debounce(_handleExtract, 300);
 
   return (
     <ScheduleFormPresenter
@@ -379,7 +354,6 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
       showConfirm={showConfirm}
       updateSchedule={updateSchedule}
       createSchedule={createSchedule}
-      reload={reload}
     />
   );
 };

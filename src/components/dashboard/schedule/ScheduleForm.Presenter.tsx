@@ -1,6 +1,4 @@
 import React, { ChangeEvent } from 'react';
-import dayjs from 'dayjs';
-import { debounce } from 'lodash';
 import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
 import PlusIcon from 'src/icons/Plus';
 import Cancel from '@material-ui/icons/Cancel';
@@ -57,7 +55,6 @@ interface scheduleFormProps {
   tagLoading: boolean;
   categoryList: Category[];
   refetchTag: () => void;
-  reload: () => void;
 
   tagInput: React.RefObject<HTMLInputElement>;
   targetModify: Schedule;

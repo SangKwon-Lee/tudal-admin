@@ -9,6 +9,10 @@ export async function getList(params: IScheduleListStatus) {
   return await axios.get<Schedule[]>(`/schedules?${query}`);
 }
 
+export async function getTotalCount() {
+  return await axios.get<number>(`/schedules/count`);
+}
+
 export async function create(schedule: IScheduleForm) {
   return await axios.post('/schedules', schedule);
 }

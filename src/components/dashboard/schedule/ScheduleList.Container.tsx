@@ -1,27 +1,18 @@
-import React, {
-  ChangeEvent,
-  useState,
-  RefObject,
-  useEffect,
-  useCallback,
-  useReducer,
-} from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useCallback, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { APISchedule } from 'src/lib/api';
 import { AxiosError } from 'axios';
 
-import Label from '../../widgets/Label';
 import { Schedule } from '../../../types/schedule';
 import { ScheduleListPresenter } from '.';
 
-import useMounted from 'src/hooks/useMounted';
 import * as _ from 'lodash';
 
 export enum ScheduleActionKind {
   LOADING = 'LOADING',
   ADD_SCHEDULE = 'ADD_SCHEDULE',
   LOAD_SCHEDULE = 'LOAD_SCHEDULE',
+  LOAD_COUNT = 'LOAD_COUNT',
   SHOW_SELECT_CONFIRM = 'SHOW_SELECT_CONFIRM',
   CLOSE_SELECT_CONFIRM = 'CLOSE_SELECT_CONFIRM',
   ERROR = 'ERROR',
@@ -97,10 +88,11 @@ export interface IScheduleListStatus {
 }
 export interface IScheduleListState {
   list: Schedule[];
+  listLength: number;
   loading: boolean;
   isOpenConfirm: boolean;
   error: AxiosError<any> | boolean;
-  page: number;
+
   delete: {
     isDeleting: boolean;
     target: Schedule;
@@ -108,15 +100,13 @@ export interface IScheduleListState {
   status: IScheduleListStatus;
 }
 
-const rowsPerPage = 50;
 const initialState: IScheduleListState = {
   list: [],
+  listLength: 0,
   delete: { isDeleting: false, target: null },
   loading: true,
   error: null,
   isOpenConfirm: false,
-  page: 0,
-
   status: {
     _q: '',
     _sort: sortOptions[0].value,
@@ -144,6 +134,11 @@ const scheduleReducer = (
         ...state,
         loading: false,
         list: payload,
+      };
+    case ScheduleActionKind.LOAD_COUNT:
+      return {
+        ...state,
+        listLength: payload,
       };
 
     case ScheduleActionKind.ADD_SCHEDULE:
@@ -175,7 +170,6 @@ const scheduleReducer = (
     case ScheduleActionKind.CHANGE_PAGE:
       return {
         ...state,
-        page: payload,
         status: {
           ...state.status,
           _page: payload,
@@ -218,25 +212,26 @@ const scheduleReducer = (
 };
 
 interface ScheduleListTableProps {
+  pageTopRef: React.RefObject<HTMLDivElement>;
   shouldUpdate: boolean;
+  handleUpdate: (shouldUpdate: boolean) => void;
   setTargetModify: (target: Schedule) => void;
-  setShouldUpdate: (value: boolean) => void;
 }
 
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
-  const mounted = useMounted();
-  const { shouldUpdate, setShouldUpdate, setTargetModify } = props;
+  const { shouldUpdate, handleUpdate, setTargetModify, pageTopRef } =
+    props;
   const [scheduleListState, dispatch] = useReducer(
     scheduleReducer,
     initialState,
   );
 
-  const { list, page, status } = scheduleListState;
+  const { list, status } = scheduleListState;
 
   const getSchedule = useCallback(
-    async (reload = false) => {
+    async (scrollTop = true) => {
       dispatch({ type: ScheduleActionKind.LOADING });
 
       try {
@@ -246,21 +241,41 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
           type: ScheduleActionKind.LOAD_SCHEDULE,
           payload: data,
         });
+        scrollTop &&
+          pageTopRef.current?.scrollIntoView({ behavior: 'smooth' });
       } catch (error) {
         console.error(error);
-        dispatch({ type: ScheduleActionKind.ERROR, payload: error });
       }
     },
     [status],
   );
 
-  const postDelete = async (id: number) => {
+  const getListCount = useCallback(async () => {
+    dispatch({ type: ScheduleActionKind.LOADING });
+
     try {
-      const { status } = await APISchedule.deleteItem(id);
+      const { data } = await APISchedule.getTotalCount();
+      dispatch({
+        type: ScheduleActionKind.LOAD_COUNT,
+        payload: data,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const postDelete = async () => {
+    try {
+      const { target } = scheduleListState.delete;
+      if (!target) {
+        toast.error('에러가 발생했습니다.');
+        return;
+      }
+      const { status } = await APISchedule.deleteItem(target.id);
       if (status === 200) {
         dispatch({ type: ScheduleActionKind.CLOSE_DELETE_DIALOG });
-
         toast.success('삭제되었습니다');
+        getSchedule(false);
       }
     } catch (error) {
       toast.error(
@@ -271,7 +286,13 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
 
   useEffect(() => {
     getSchedule();
-  }, [getSchedule]);
+    getListCount();
+  }, [getSchedule, getListCount]);
+
+  useEffect(() => {
+    shouldUpdate && getSchedule();
+    handleUpdate(false);
+  }, [shouldUpdate, getSchedule, handleUpdate]);
 
   return (
     <ScheduleListPresenter
@@ -279,7 +300,6 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
       dispatch={dispatch}
       sortOptions={sortOptions}
       postDelete={postDelete}
-      setShouldUpdate={setShouldUpdate}
       setTargetModify={setTargetModify}
     />
   );

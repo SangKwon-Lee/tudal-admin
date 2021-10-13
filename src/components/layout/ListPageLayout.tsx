@@ -15,10 +15,11 @@ import { Link as RouterLink } from 'react-router-dom';
 interface IPageLayoutProps {
   mainTopic: string;
   pageTitle: string;
+  pageTopRef?: React.RefObject<HTMLDivElement>;
 }
 
 const PageLayout: React.FC<IPageLayoutProps> = (props) => {
-  const { mainTopic, pageTitle } = props;
+  const { mainTopic, pageTitle, pageTopRef } = props;
   const { settings } = useSettings();
 
   return (
@@ -33,6 +34,7 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
           minHeight: '100%',
           py: 8,
         }}
+        ref={pageTopRef}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
@@ -67,8 +69,8 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
               </Breadcrumbs>
             </Grid>
           </Grid>
+          {props.children}
         </Container>
-        {props.children}
       </Box>
     </>
   );
