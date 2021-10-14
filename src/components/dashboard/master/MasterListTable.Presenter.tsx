@@ -20,6 +20,8 @@ import {
   Dialog,
   LinearProgress,
   Pagination,
+  CircularProgress,
+  Skeleton,
 } from '@material-ui/core';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import PencilAltIcon from 'src/icons/PencilAlt';
@@ -55,6 +57,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
         )}
 
         <Divider />
+
         <Box
           sx={{
             alignItems: 'center',
@@ -122,7 +125,9 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                 <option>채널이 없습니다.</option>
               )}
             </TextField>
+
             <TextField
+              select
               label={'방 정렬'}
               name="sort"
               onChange={(event) => {
@@ -132,9 +137,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                   payload: event.target.value,
                 });
               }}
-              select
               SelectProps={{ native: true }}
-              // value={roomSort}
               variant="outlined"
               sx={{ mx: 1 }}
             >
@@ -242,9 +245,8 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                               variant="body2"
                             >
                               {`${
-                                typeof feed.master === 'string'
-                                  ? feed.master
-                                  : user.nickname
+                                feed.master?.nickname ||
+                                '유저를 찾을 수 없습니다.'
                               }`}
                             </Typography>
                           </Box>
