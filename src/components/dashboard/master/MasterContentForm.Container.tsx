@@ -5,7 +5,7 @@ import {
   useEffect,
   useCallback,
 } from 'react';
-import type { FC, FormEvent } from 'react';
+import type { FC } from 'react';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { cmsServer } from '../../../lib/axios';
@@ -16,44 +16,54 @@ import { useParams } from 'react-router-dom';
 import { Room, Master, Channel } from 'src/types/master';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
-import { APIStock, APITag } from 'src/lib/api';
+import { APIMaster, APIStock, APITag } from 'src/lib/api';
 import _ from 'lodash';
+import toast from 'react-hot-toast';
 
 interface MasterFormProps {
   onComplete?: () => void;
   mode: string;
 }
 
-enum MasterContentFormActionKind {
+export enum MasterContentFormActionKind {
   LOADING = 'LOADING',
   ERROR = 'ERROR',
+
+  // Load APIS
   GET_EXPERT = 'GET_EXPERT',
   GET_CHANNEL = 'GET_CHANNEL',
+  GET_ROOM = 'GET_ROOM',
+  // Changes
+  NO_ROOM = 'NO_ROOM',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_LINK = 'CHANGE_LINK',
   CHANGE_TAGS = 'CHANGE_TAGS',
   CHANGE_STOCKS = 'CHANGE_STOCKS',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
+  REGEX_LINK = 'REGEX_LINK',
+  IS_HAS_ROOM = 'IS_HAS_ROOM',
 }
-interface MasterContentFormAction {
+export interface MasterContentFormAction {
   type: MasterContentFormActionKind;
   payload?: any;
 }
 
-interface newState {
+export interface MasterContentFormState {
   newMaster: Master;
   loading: boolean;
   error: AxiosError<any> | boolean;
   isSubmitting: boolean;
   master_room: Room[];
   master_channels: Channel[];
+  submitError: boolean;
+  isHasRoom: boolean;
 }
 
 const MasterContentFormReducer = (
-  state: newState,
+  state: MasterContentFormState,
   action: MasterContentFormAction,
-): newState => {
+): MasterContentFormState => {
   const { type, payload } = action;
   switch (type) {
     case MasterContentFormActionKind.LOADING:
@@ -71,6 +81,15 @@ const MasterContentFormReducer = (
         ...state,
         newMaster: payload,
         loading: false,
+      };
+    case MasterContentFormActionKind.GET_ROOM:
+      return {
+        ...state,
+        master_room: payload,
+        newMaster: {
+          ...state.newMaster,
+          master_room: payload[0].id,
+        },
       };
     case MasterContentFormActionKind.CHANGE_TITLE:
       return {
@@ -116,16 +135,26 @@ const MasterContentFormReducer = (
       return {
         ...state,
         master_channels: payload,
-        master_room: payload[0].master_rooms,
-        newMaster: {
-          ...state.newMaster,
-          master_room: payload[0].master_rooms[0].id,
-        },
       };
     case MasterContentFormActionKind.CHANGE_CHANNEL:
       return {
         ...state,
         master_room: payload,
+      };
+    case MasterContentFormActionKind.REGEX_LINK:
+      return {
+        ...state,
+        submitError: payload,
+      };
+    case MasterContentFormActionKind.NO_ROOM:
+      return {
+        ...state,
+        master_room: payload,
+      };
+    case MasterContentFormActionKind.IS_HAS_ROOM:
+      return {
+        ...state,
+        isHasRoom: payload,
       };
   }
 };
@@ -133,12 +162,11 @@ const MasterContentFormReducer = (
 const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const { mode, onComplete } = props;
   const { user } = useAuth();
-  const initialState: newState = {
+  const initialState: MasterContentFormState = {
     newMaster: {
       title: '',
       external_link: '',
       master_room: '',
-      description: '',
       contents: '',
       author: user?.id,
       source: 'web',
@@ -151,8 +179,10 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     isSubmitting: false,
     loading: false,
     error: null,
+    submitError: false,
+    isHasRoom: false,
   };
-  const [newState, dispatch] = useReducer(
+  const [masterContentFormState, dispatch] = useReducer(
     MasterContentFormReducer,
     initialState,
   );
@@ -161,42 +191,65 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
+  const getMasterRoom = async () => {
+    const { data } = await cmsServer.get(
+      `/master-rooms?master.id=${user.id}&isDeleted=0`,
+    );
+    if (data.length === 0) {
+      dispatch({
+        type: MasterContentFormActionKind.IS_HAS_ROOM,
+        payload: true,
+      });
+    } else {
+      dispatch({
+        type: MasterContentFormActionKind.IS_HAS_ROOM,
+        payload: false,
+      });
+    }
+  };
+
   //* 채널 정보 불러오기
   const getMasterChannel = async () => {
     try {
-      const response = await cmsServer.get(
-        `/master-channels?master.id=${user.id}`,
+      const { data, status } = await APIMaster.getMasterChannel(
+        user.id,
       );
-      if (response.status === 200 && response.data.length > 0) {
+      if (status === 200 && data.length > 0) {
         dispatch({
           type: MasterContentFormActionKind.GET_CHANNEL,
-          payload: response.data,
+          payload: data,
         });
+        if (data[0].master_rooms) {
+          const roomData = data[0].master_rooms.filter(
+            (data) => data.isDeleted === false,
+          );
+          if (roomData.length > 0) {
+            dispatch({
+              type: MasterContentFormActionKind.GET_ROOM,
+              payload: roomData,
+            });
+          }
+        }
       }
     } catch (err) {
       console.log(err);
     }
   };
+
+  //* 채널 변경시 방 데이터 불러오기
   const handleChangeChannel = async (event: any) => {
     try {
-      const response = await cmsServer.get(
-        `master-channels?id=${event.target.value}`,
+      const { data, status } = await APIMaster.getMasterRoom(
+        Number(event.target.value),
       );
-      if (
-        response.status === 200 &&
-        response.data[0].master_rooms.length > 0
-      ) {
+      if (status === 200 && data.length > 0) {
         dispatch({
-          type: MasterContentFormActionKind.CHANGE_CHANNEL,
-          payload: response.data[0].master_rooms,
-        });
-        dispatch({
-          type: MasterContentFormActionKind.CHANGE_ROOM,
-          payload: response.data[0].master_rooms[0].id,
+          type: MasterContentFormActionKind.GET_ROOM,
+          payload: data,
         });
       } else {
         dispatch({
-          type: MasterContentFormActionKind.CHANGE_CHANNEL,
+          type: MasterContentFormActionKind.NO_ROOM,
           payload: [],
         });
       }
@@ -208,6 +261,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 채널 불러오는 useEffect
   useEffect(() => {
     getMasterChannel();
+    getMasterRoom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -216,8 +270,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     dispatch({ type: MasterContentFormActionKind.LOADING });
     try {
       if (masterId.toString() === '0') return;
-      const { status, data } = await cmsServer.get<Master>(
-        `/master-feeds/${masterId.toString()}`,
+      const { status, data } = await APIMaster.getDetailFeed(
+        masterId.toString(),
       );
       if (status === 200) {
         const newMasterData = {
@@ -236,22 +290,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
         });
       }
     } catch (err) {
-      const { status, data } = await cmsServer.get<Master>(
-        `/expert-feeds/${masterId.toString()}`,
-      );
-      if (status === 200) {
-        const newMasterData = {
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          contents: data.description,
-          author: data.author,
-        };
-        dispatch({
-          type: MasterContentFormActionKind.GET_EXPERT,
-          payload: newMasterData,
-        });
-      }
       console.log(err);
     }
   };
@@ -273,21 +311,27 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   };
 
   //* Submit
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-  ): Promise<void> => {
+  const handleSubmit = async (event: any): Promise<void> => {
     event.preventDefault();
+    if (masterContentFormState.submitError) {
+      toast.error('내용을 다시 확인해주세요');
+      return;
+    }
     try {
       setIsSubmitting(true);
       if (editorRef.current) {
         const contents = log();
         const newMaster = {
-          ...newState.newMaster,
-          tags: newState.newMaster.tags.map((data) => data.id) || [],
+          ...masterContentFormState.newMaster,
+          tags:
+            masterContentFormState.newMaster.tags.map(
+              (data) => data.id,
+            ) || [],
           stocks:
-            newState.newMaster.stocks.map((data) => data.id) || [],
+            masterContentFormState.newMaster.stocks.map(
+              (data) => data.id,
+            ) || [],
           contents,
-          isDeleted: 0,
         };
         if (mode === 'create') {
           try {
@@ -303,8 +347,24 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
               return;
             }
           } catch (e) {
-            const response = await cmsServer.post(
-              '/expert-feeds',
+            console.log(e);
+          }
+        } else {
+          const newMaster = {
+            ...masterContentFormState.newMaster,
+            tags:
+              masterContentFormState.newMaster.tags.map(
+                (data) => data.id,
+              ) || [],
+            stocks:
+              masterContentFormState.newMaster.stocks.map(
+                (data) => data.id,
+              ) || [],
+            contents,
+          };
+          try {
+            const response = await cmsServer.put(
+              `/master-feeds/${newMaster.id}`,
               newMaster,
             );
             if (response.status === 200) {
@@ -314,58 +374,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
             } else {
               return;
             }
-            console.log(e);
-          }
-        } else {
-          const newMaster = {
-            ...newState.newMaster,
-            tags:
-              newState.newMaster.tags.map((data) => data.id) || [],
-            stocks:
-              newState.newMaster.stocks.map((data) => data.id) || [],
-            contents,
-            isDeleted: 0,
-          };
-          if (!newState.newMaster.description) {
-            try {
-              const response = await cmsServer.put(
-                `/master-feeds/${newMaster.id}`,
-                newMaster,
-              );
-              if (response.status === 200) {
-                if (onComplete) {
-                  onComplete();
-                }
-              } else {
-                return;
-              }
-            } catch (err) {
-              console.log(err);
-            }
-          } else {
-            const newMaster = {
-              ...newState.newMaster,
-              description: contents,
-            };
-            try {
-              const response = await cmsServer.put(
-                `/expert-feeds/${newMaster.id}`,
-                newMaster,
-              );
-              if (response.status === 200) {
-                if (onComplete) {
-                  onComplete();
-                }
-              } else {
-                return;
-              }
-            } catch (err) {
-              dispatch({
-                type: MasterContentFormActionKind.ERROR,
-                payload: err.message,
-              });
-              console.error(err);
-            }
+          } catch (err) {
+            console.log(err);
           }
         }
       }
@@ -374,28 +384,31 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     }
   };
 
-  //* 제목 변경
-  const handleChangeTitle = (event: any): void => {
-    dispatch({
-      type: MasterContentFormActionKind.CHANGE_TITLE,
-      payload: event.target.value,
-    });
-  };
-
-  //* 방 변경
-  const handleChangeRoom = (event: any): void => {
-    dispatch({
-      type: MasterContentFormActionKind.CHANGE_ROOM,
-      payload: event.target.value,
-    });
-  };
-
-  //* 링크 변경
-  const handleChangeLink = (event: any): void => {
+  //* 링크 입력시 정규식 표현
+  const handleSubmitError = (event) => {
+    console.log(event.target.value);
     dispatch({
       type: MasterContentFormActionKind.CHANGE_LINK,
       payload: event.target.value,
     });
+    const regex = /^http|https/;
+    if (regex.test(event.target.value)) {
+      dispatch({
+        type: MasterContentFormActionKind.REGEX_LINK,
+        payload: false,
+      });
+    } else {
+      dispatch({
+        type: MasterContentFormActionKind.REGEX_LINK,
+        payload: true,
+      });
+    }
+    if (masterContentFormState.newMaster.external_link === '') {
+      dispatch({
+        type: MasterContentFormActionKind.REGEX_LINK,
+        payload: false,
+      });
+    }
   };
 
   //* 태그 관련
@@ -403,54 +416,35 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     const value = tagInput.current ? tagInput.current.value : '';
     return APITag.getList(value);
   }, [tagInput]);
-
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);
-
-  const handleChangeTags = (item): void => {
-    dispatch({
-      type: MasterContentFormActionKind.CHANGE_TAGS,
-      payload: item,
-    });
-  };
   const handleTagChange = _.debounce(refetchTag, 300);
-
   //* 종목 관련
+
   const getStockList = useCallback(() => {
     return APIStock.getSimpleList();
   }, []);
-
   const [{ data: stockList, loading: stockLoading }, refetchStock] =
     useAsync<any>(getStockList, [], []);
-
-  const handleChangeStocks = (item): void => {
-    dispatch({
-      type: MasterContentFormActionKind.CHANGE_STOCKS,
-      payload: item,
-    });
-  };
   const handleStockChange = _.debounce(refetchStock, 300);
 
   return (
     <MasterContentFormPresenter
-      handleChangeTitle={handleChangeTitle}
       editorRef={editorRef}
+      dispatch={dispatch}
       handleSubmit={handleSubmit}
-      newState={newState}
+      masterContentFormState={masterContentFormState}
       isSubmitting={isSubmitting}
-      handleChangeRoom={handleChangeRoom}
-      handleChangeLink={handleChangeLink}
+      handleChangeChannel={handleChangeChannel}
       tagList={tagList}
       tagInput={tagInput}
       tagLoading={tagLoading}
-      handleChangeTags={handleChangeTags}
       handleTagChange={handleTagChange}
       stockList={stockList}
       stockLoading={stockLoading}
       stockInput={stockInput}
       handleStockChange={handleStockChange}
-      handleChangeStocks={handleChangeStocks}
-      handleChangeChannel={handleChangeChannel}
+      handleSubmitError={handleSubmitError}
     />
   );
 };

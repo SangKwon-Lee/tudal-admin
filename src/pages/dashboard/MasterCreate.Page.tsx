@@ -43,7 +43,7 @@ const MasterCreatePage: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 생성
+                달인 피드 생성
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -59,7 +59,7 @@ const MasterCreatePage: FC = () => {
                   달인
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  달인 생성
+                  피드 생성
                 </Typography>
               </Breadcrumbs>
             </Grid>

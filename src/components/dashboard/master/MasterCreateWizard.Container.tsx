@@ -2,16 +2,16 @@ import { useReducer } from 'react';
 import type { FC } from 'react';
 import MasterCreateWizardPresenter from './MasterCreateWizard.Presenter';
 
-enum MasterCreateWizardActionKind {
+export enum MasterCreateWizardActionKind {
   HANDLE_COMPLETE = 'HANDLE_COMPLETE',
 }
 
-interface MasterCreateWizardAction {
+export interface MasterCreateWizardAction {
   type: MasterCreateWizardActionKind;
   payload?: any;
 }
 
-interface newState {
+export interface MasterCreateWizardState {
   completed: boolean;
 }
 
@@ -20,9 +20,9 @@ interface MasterCreateWizardProps {
 }
 
 const MasterCreateWizardReducer = (
-  state: newState,
+  state: MasterCreateWizardState,
   action: MasterCreateWizardAction,
-): newState => {
+): MasterCreateWizardState => {
   const { type } = action;
   switch (type) {
     case MasterCreateWizardActionKind.HANDLE_COMPLETE:
@@ -35,25 +35,21 @@ const MasterCreateWizardReducer = (
 const MasterCreateWizardContainer: FC<MasterCreateWizardProps> = (
   props,
 ) => {
-  const initialState: newState = {
+  const initialState: MasterCreateWizardState = {
     completed: false,
   };
-  const [newState, dispatch] = useReducer(
+  const [MasterCreateWizardState, dispatch] = useReducer(
     MasterCreateWizardReducer,
     initialState,
   );
-  const mode = props.mode || 'create';
 
-  //* 게시글 작성시 완료 페이지로 이동
-  const handleComplete = (): void => {
-    dispatch({ type: MasterCreateWizardActionKind.HANDLE_COMPLETE });
-  };
+  const mode = props.mode || 'create';
 
   return (
     <>
       <MasterCreateWizardPresenter
-        newState={newState}
-        handleComplete={handleComplete}
+        MasterCreateWizardState={MasterCreateWizardState}
+        dispatch={dispatch}
         mode={mode}
       />
     </>

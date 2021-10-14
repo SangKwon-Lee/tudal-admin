@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
@@ -10,14 +9,14 @@ import toast from 'react-hot-toast';
 
 export enum MasterRoomActionKind {
   LOADING = 'LOADING',
-  IS_ORDER = 'IS_ORDER',
-  SORT_CHANNEL = 'SORT_CHANNEL',
   GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_TYPE = 'CHANGE_TYPE',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
+  SORT_CHANNEL = 'SORT_CHANNEL',
+  IS_ORDER = 'IS_ORDER',
 }
 
 export interface MasterRoomAction {
@@ -25,12 +24,11 @@ export interface MasterRoomAction {
   payload?: any;
 }
 
-interface newState {
+export interface MasterRoomState {
   master_room: Room[];
   title: string;
   openType: string;
   loading: boolean;
-  error: AxiosError<any> | null;
   edit: boolean;
   master_channel: Channel[];
   selectChannel: number | string;
@@ -40,9 +38,9 @@ interface newState {
 }
 
 const MasterRoomReducer = (
-  state: newState,
+  state: MasterRoomState,
   action: MasterRoomAction,
-): newState => {
+): MasterRoomState => {
   const { type, payload } = action;
   switch (type) {
     case MasterRoomActionKind.LOADING:
@@ -64,7 +62,6 @@ const MasterRoomReducer = (
         sortChannel: Number(payload[0].id) || '',
         loading: false,
       };
-
     case MasterRoomActionKind.CHANGE_ROOM:
       return {
         ...state,
@@ -98,13 +95,12 @@ const MasterRoomReducer = (
       };
   }
 };
-const initialState: newState = {
+const initialState: MasterRoomState = {
   master_room: [],
   master_channel: [],
   title: '',
   openType: 'free',
   loading: false,
-  error: null,
   edit: false,
   order: 0,
   selectChannel: '',
@@ -113,7 +109,7 @@ const initialState: newState = {
 };
 const MasterRoomContainer = () => {
   const { user } = useAuth();
-  const [newState, dispatch] = useReducer(
+  const [MasterRoomState, dispatch] = useReducer(
     MasterRoomReducer,
     initialState,
   );
@@ -129,13 +125,15 @@ const MasterRoomContainer = () => {
           type: MasterRoomActionKind.GET_CHANNEL,
           payload: data,
         });
-        const response = await cmsServer.get(
-          `/master-rooms?master_channel=${data[0].id}&isDeleted=0`,
-        );
-        dispatch({
-          type: MasterRoomActionKind.GET_ROOM,
-          payload: response.data,
-        });
+        if (data[0].master_rooms) {
+          const roomData = data[0].master_rooms.filter(
+            (data) => data.isDeleted === false,
+          );
+          dispatch({
+            type: MasterRoomActionKind.GET_ROOM,
+            payload: roomData,
+          });
+        }
       } else {
         dispatch({
           type: MasterRoomActionKind.GET_CHANNEL,
@@ -149,6 +147,7 @@ const MasterRoomContainer = () => {
 
   useEffect(() => {
     getChannel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //* 채널 변경 (방 목록)
@@ -171,20 +170,36 @@ const MasterRoomContainer = () => {
 
   //* 방 생성
   const createRoom = async () => {
-    dispatch({ type: MasterRoomActionKind.LOADING });
     try {
-      const response = await cmsServer.post(`/master-rooms`, {
-        title: newState.title,
+      const { status, data } = await cmsServer.get(
+        `/master-rooms?master.id=${user.id}&master_channel=${MasterRoomState.selectChannel}`,
+      );
+
+      if (status === 200) {
+        if (
+          data.filter((data) => data.title === MasterRoomState.title)
+            .length !== data.length
+        ) {
+          toast.error('중복된 이름으로 추가할 수 없습니다.');
+          return;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const { status } = await cmsServer.post(`/master-rooms`, {
+        title: MasterRoomState.title,
         master: user.id,
-        master_channel: Number(newState.selectChannel),
-        order:
-          newState.master_channel.filter(
-            (data) => data.id === Number(newState.selectChannel),
-          )[0].master_rooms.length + 1,
-        openType: newState.openType + '13',
+        master_channel: Number(MasterRoomState.selectChannel),
+        order: MasterRoomState.master_room.length + 1,
+        openType: MasterRoomState.openType,
       });
-      toast.success('방이 추가되었습니다.');
-      getChannel();
+      if (status === 200) {
+        toast.success('방이 추가되었습니다.');
+        getChannel();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -195,11 +210,10 @@ const MasterRoomContainer = () => {
     dragIndex?: number,
     hoverIndex?: number,
   ) => {
-    const dragCard = newState.master_room[dragIndex - 1];
-    let card = [...newState.master_room];
+    // const dragCard = MasterRoomState.master_room[dragIndex - 1];
+    let card = [...MasterRoomState.master_room];
     let cardSlice = card.splice(dragIndex - 1, 1);
     card.splice(hoverIndex - 1, 0, cardSlice[0]);
-    console.log(card);
     dispatch({
       type: MasterRoomActionKind.GET_ROOM,
       payload: card,
@@ -208,8 +222,8 @@ const MasterRoomContainer = () => {
 
   const handleOrderSave = async () => {
     try {
-      const response = await Promise.all(
-        newState.master_room.map(async (data, i) => {
+      await Promise.all(
+        MasterRoomState.master_room.map(async (data, i) => {
           return await cmsServer.put(
             `/master-rooms/${data.id}?isDeleted=0`,
             {
@@ -219,7 +233,7 @@ const MasterRoomContainer = () => {
         }),
       );
       const { data } = await cmsServer.get(
-        `/master-rooms?master_channel=${newState.sortChannel}&isDeleted=0`,
+        `/master-rooms?master_channel=${MasterRoomState.sortChannel}&isDeleted=0`,
       );
       dispatch({
         type: MasterRoomActionKind.GET_ROOM,
@@ -229,20 +243,30 @@ const MasterRoomContainer = () => {
         type: MasterRoomActionKind.IS_ORDER,
         payload: false,
       });
+      toast.success('저장했습니다.');
     } catch (error) {
       console.log(error);
     }
   };
 
+  const handleOrderCancle = () => {
+    dispatch({
+      type: MasterRoomActionKind.IS_ORDER,
+      payload: false,
+    });
+    toast.success('취소했습니다.');
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <MasterRoomPresenter
-        newState={newState}
+        MasterRoomState={MasterRoomState}
         moveCard={moveCard}
         handleChangeChannelSort={handleChangeChannelSort}
         createRoom={createRoom}
         getChannel={getChannel}
         handleOrderSave={handleOrderSave}
+        handleOrderCancle={handleOrderCancle}
         dispatch={dispatch}
       />
     </DndProvider>

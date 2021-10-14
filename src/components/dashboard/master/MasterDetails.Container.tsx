@@ -1,30 +1,31 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import type { Master } from '../../../types/master';
-import axios from 'src/lib/axios';
+import type { IMasterFeedLikes, Master } from '../../../types/master';
 import { useParams } from 'react-router-dom';
 import useMounted from 'src/hooks/useMounted';
 import MasterDetailsPresenter from './MasterDetails.Presenter';
-import { AxiosError } from 'axios';
+import { APIMaster } from 'src/lib/api';
 
-enum MasterDetailsActionKind {
+export enum MasterDetailsActionKind {
   LOADING = 'LOADING',
+
+  // Load APIS
   GET_EXPERT = 'GET_EXPERT',
-  ERROR = 'ERROR',
+  GET_LIKES = 'GET_LIKES',
 }
-interface MasterDetailsAction {
+export interface MasterDetailsAction {
   type: MasterDetailsActionKind;
   payload?: any;
 }
 
-interface newState {
+export interface MasterDetailsState {
   master: Master;
   loading: boolean;
-  error: AxiosError<any> | boolean;
+  likes: IMasterFeedLikes[];
 }
 const MasterDetailsReducer = (
-  state: newState,
+  state: MasterDetailsState,
   action: MasterDetailsAction,
-): newState => {
+): MasterDetailsState => {
   const { type, payload } = action;
   switch (type) {
     case MasterDetailsActionKind.LOADING:
@@ -38,24 +39,25 @@ const MasterDetailsReducer = (
         master: payload,
         loading: false,
       };
-    case MasterDetailsActionKind.ERROR:
+    case MasterDetailsActionKind.GET_LIKES:
       return {
         ...state,
-        error: payload,
+        likes: payload,
+        loading: false,
       };
   }
 };
 
-const initialState: newState = {
+const initialState: MasterDetailsState = {
   master: {},
   loading: false,
-  error: null,
+  likes: [],
 };
 
 const MasterDetailsContainer = () => {
   const mounted = useMounted();
   const { masterId } = useParams();
-  const [newState, dispatch] = useReducer(
+  const [masterDetailState, dispatch] = useReducer(
     MasterDetailsReducer,
     initialState,
   );
@@ -63,26 +65,23 @@ const MasterDetailsContainer = () => {
   const getMaster = useCallback(async () => {
     dispatch({ type: MasterDetailsActionKind.LOADING });
     try {
-      const response = await axios.get<Master>(
-        `/master-feeds/${masterId}`,
+      const { data, status } = await APIMaster.getDetailFeed(
+        masterId,
       );
-
-      if (mounted) {
+      const { data: likeData, status: likeStatus } =
+        await APIMaster.getDetailFeedLike(masterId);
+      if (mounted && status === 200 && likeStatus === 200) {
         dispatch({
           type: MasterDetailsActionKind.GET_EXPERT,
-          payload: response.data,
+          payload: data,
+        });
+        dispatch({
+          type: MasterDetailsActionKind.GET_LIKES,
+          payload: likeData,
         });
       }
     } catch (err) {
-      const response = await axios.get<Master>(
-        `/expert-feeds/${masterId}`,
-      );
-      dispatch({
-        type: MasterDetailsActionKind.GET_EXPERT,
-        payload: response.data,
-      });
       console.log(err);
-      dispatch({ type: MasterDetailsActionKind.ERROR, payload: err });
     }
   }, [mounted, masterId]);
 
@@ -92,7 +91,7 @@ const MasterDetailsContainer = () => {
 
   return (
     <>
-      <MasterDetailsPresenter newState={newState} />
+      <MasterDetailsPresenter masterDetailState={masterDetailState} />
     </>
   );
 };

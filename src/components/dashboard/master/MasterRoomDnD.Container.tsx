@@ -11,6 +11,8 @@ import {
 } from '@material-ui/core';
 import { useReducer, useRef } from 'react';
 import { cmsServer } from 'src/lib/axios';
+import toast from 'react-hot-toast';
+
 const style = {
   cursor: 'move',
   display: 'flex',
@@ -61,6 +63,40 @@ interface newState {
   isDeletedOpen: boolean;
 }
 
+const MasterRoomDnDReducer = (
+  state: newState,
+  action: MasterRommDnDAction,
+): newState => {
+  const { type, payload } = action;
+  switch (type) {
+    case MasterRoomDnDActionKind.EDIT:
+      return {
+        ...state,
+        edit: true,
+      };
+    case MasterRoomDnDActionKind.CHANGE_TITLE:
+      return {
+        ...state,
+        title: payload,
+      };
+    case MasterRoomDnDActionKind.CHANGE_TYPE:
+      return {
+        ...state,
+        openType: payload,
+      };
+    case MasterRoomDnDActionKind.SAVE:
+      return {
+        ...state,
+        edit: false,
+      };
+    case MasterRoomDnDActionKind.IS_DELETED_MODAL:
+      return {
+        ...state,
+        isDeletedOpen: payload,
+      };
+  }
+};
+
 const initialState: newState = {
   edit: false,
   openType: '',
@@ -78,41 +114,6 @@ const DraggableCard: React.FC<CardProps> = ({
   openType,
   getChannel,
 }) => {
-  const MasterRoomDnDReducer = (
-    state: newState,
-    action: MasterRommDnDAction,
-  ): newState => {
-    const { type, payload } = action;
-    switch (type) {
-      case MasterRoomDnDActionKind.EDIT:
-        return {
-          ...state,
-          edit: true,
-          title: title,
-          openType: openType,
-        };
-      case MasterRoomDnDActionKind.CHANGE_TITLE:
-        return {
-          ...state,
-          title: payload,
-        };
-      case MasterRoomDnDActionKind.CHANGE_TYPE:
-        return {
-          ...state,
-          openType: payload,
-        };
-      case MasterRoomDnDActionKind.SAVE:
-        return {
-          ...state,
-          edit: false,
-        };
-      case MasterRoomDnDActionKind.IS_DELETED_MODAL:
-        return {
-          ...state,
-          isDeletedOpen: payload,
-        };
-    }
-  };
   const [newState, dispatch] = useReducer(
     MasterRoomDnDReducer,
     initialState,
@@ -178,30 +179,51 @@ const DraggableCard: React.FC<CardProps> = ({
 
   drag(drop(ref));
 
-  const handleEditRoom = async () => {
+  //* 방 내용 수정 클릭
+  const hadnleEditRoom = () => {
+    dispatch({ type: MasterRoomDnDActionKind.EDIT });
+    dispatch({
+      type: MasterRoomDnDActionKind.CHANGE_TITLE,
+      payload: title,
+    });
+    dispatch({
+      type: MasterRoomDnDActionKind.CHANGE_TYPE,
+      payload: openType,
+    });
+  };
+
+  //* 방 내용 수정 저장
+  const handleSaveRoom = async () => {
     try {
-      const response = await cmsServer.put(`/master-rooms/${id}`, {
+      const { status } = await cmsServer.put(`/master-rooms/${id}`, {
         title: newState.title,
         openType: newState.openType,
       });
-      dispatch({ type: MasterRoomDnDActionKind.SAVE });
-      getChannel();
+      if (status === 200) {
+        toast.success('저장했습니다.');
+        dispatch({ type: MasterRoomDnDActionKind.SAVE });
+        getChannel();
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
+  //* 방 삭제
   const handleDeleteRoom = async () => {
     try {
-      const response = await cmsServer.put(`/master-rooms/${id}`, {
+      const { status } = await cmsServer.put(`/master-rooms/${id}`, {
         isDeleted: true,
       });
-      dispatch({ type: MasterRoomDnDActionKind.SAVE });
-      dispatch({
-        type: MasterRoomDnDActionKind.IS_DELETED_MODAL,
-        payload: false,
-      });
-      getChannel();
+      if (status === 200) {
+        toast.success('삭제했습니다.');
+        dispatch({ type: MasterRoomDnDActionKind.SAVE });
+        dispatch({
+          type: MasterRoomDnDActionKind.IS_DELETED_MODAL,
+          payload: false,
+        });
+        getChannel();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -215,7 +237,7 @@ const DraggableCard: React.FC<CardProps> = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        border: orderEdit ? '1px dotted white' : 'none',
+        border: orderEdit ? '2px solid #5664d2' : 'none',
       }}
     >
       <div
@@ -290,11 +312,23 @@ const DraggableCard: React.FC<CardProps> = ({
                   width: 120,
                   mt: 1,
                 }}
-                onClick={handleEditRoom}
-                // eslint-disable-next-line react/jsx-no-undef
-                // startIcon={<PlusIcon fontSize="small" />}
+                onClick={handleSaveRoom}
               >
                 내용 저장
+              </Button>
+              <Button
+                color="primary"
+                sx={{
+                  height: 35,
+                  width: 120,
+                  mt: 1,
+                }}
+                onClick={() => {
+                  dispatch({ type: MasterRoomDnDActionKind.SAVE });
+                  toast.success('취소했습니다.');
+                }}
+              >
+                취소
               </Button>
             </Box>
           ) : (
@@ -313,9 +347,7 @@ const DraggableCard: React.FC<CardProps> = ({
                   width: 120,
                   mt: 1,
                 }}
-                onClick={() => {
-                  dispatch({ type: MasterRoomDnDActionKind.EDIT });
-                }}
+                onClick={hadnleEditRoom}
               >
                 방 수정
               </Button>

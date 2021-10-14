@@ -7,12 +7,13 @@ import {
   LinearProgress,
   Typography,
 } from '@material-ui/core';
-import { AxiosError } from 'axios';
 import { FC } from 'react';
 import PlusIcon from '../../../icons/Plus';
+import MinusIcon from '../../../icons/Minus';
 import {
   MasterRoomAction,
   MasterRoomActionKind,
+  MasterRoomState,
 } from './MasterRoom.Container';
 import DraggableCard from './MasterRoomDnD.Container';
 
@@ -27,30 +28,26 @@ const roomType = [
   },
 ];
 
-interface newState {
-  room: any;
-  loading: boolean;
-  error: AxiosError<any> | null;
-}
-
 interface IMasterRoomProps {
-  newState: any;
+  MasterRoomState: MasterRoomState;
   handleChangeChannelSort: (e: any) => void;
   createRoom: () => void;
   moveCard: any;
   getChannel: () => void;
   dispatch: (params: MasterRoomAction) => void;
   handleOrderSave: () => void;
+  handleOrderCancle: () => void;
 }
 
 const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
   const {
-    newState,
+    MasterRoomState,
     moveCard,
     createRoom,
     handleChangeChannelSort,
     getChannel,
     handleOrderSave,
+    handleOrderCancle,
     dispatch,
   } = props;
   const {
@@ -60,7 +57,7 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
     sortChannel,
     orderEdit,
     loading,
-  } = newState;
+  } = MasterRoomState;
   return (
     <>
       <Card sx={{ p: 3 }}>
@@ -113,7 +110,9 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
             select
             placeholder="채널"
             variant="outlined"
-            SelectProps={{ native: true }}
+            SelectProps={{
+              native: true,
+            }}
           >
             {master_channel &&
               master_channel.length > 0 &&
@@ -173,12 +172,12 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
                   {master.name}
                 </option>
               ))}
-          </TextField>{' '}
+          </TextField>
           {orderEdit ? (
-            <>
+            <Box>
               <Button
                 color="primary"
-                sx={{ height: 40 }}
+                sx={{ height: 40, mr: 1 }}
                 startIcon={<PlusIcon fontSize="small" />}
                 variant="contained"
                 onClick={handleOrderSave}
@@ -188,13 +187,13 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
               <Button
                 color="primary"
                 sx={{ height: 40 }}
-                startIcon={<PlusIcon fontSize="small" />}
+                startIcon={<MinusIcon fontSize="small" />}
                 variant="contained"
-                onClick={handleOrderSave}
+                onClick={handleOrderCancle}
               >
                 취소
               </Button>
-            </>
+            </Box>
           ) : (
             <Button
               color="primary"

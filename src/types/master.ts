@@ -153,3 +153,9 @@ export interface Channel {
   updated_at?: string;
   master_rooms?: [];
 }
+
+export interface IMasterFeedLikes {
+  id: number;
+  userId: number;
+  master_feed: IMasterFeed;
+}

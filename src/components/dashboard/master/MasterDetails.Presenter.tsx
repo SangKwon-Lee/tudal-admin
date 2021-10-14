@@ -11,38 +11,31 @@ import {
   Container,
   LinearProgress,
 } from '@material-ui/core';
-import type { Master } from '../../../types/master';
 import moment from 'moment';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { FC } from 'react';
-import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
+import { MasterDetailsState } from './MasterDetails.Container';
 
-interface newState {
-  master: Master;
-  loading: boolean;
-  error: AxiosError<any> | boolean;
+interface IMasterDetailsProps {
+  masterDetailState: MasterDetailsState;
 }
 
-interface IMasterDetails {
-  newState: newState;
-}
-
-const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
-  const { newState, ...other } = props;
-  const { master, loading } = newState;
+const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
+  const { masterDetailState, ...other } = props;
+  const { master, loading, likes } = masterDetailState;
   const { user } = useAuth();
-  console.log(master);
+
   return (
     <>
       <Card {...other}>
-        <CardHeader title="달인 상세내용" />
         {loading && (
           <div data-testid="news-list-loading">
             <LinearProgress />
           </div>
         )}
+        <CardHeader title="피드 상세내용" />
         <Divider />
         <Table>
           <TableBody>
@@ -54,7 +47,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.title}
+                  {master?.title ? master.title : '제목이 없습니다.'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -125,9 +118,9 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.tags &&
-                    master.tags.length > 0 &&
-                    master.tags.map((data) => data.name)}
+                  {master?.tags && master.tags.length > 0
+                    ? master.tags.map((data) => data.name + ' ')
+                    : '키워드가 없습니다.'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -139,9 +132,23 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.stocks &&
-                    master.stocks.length > 0 &&
-                    master.stocks.map((data) => data.name)}
+                  {master?.stocks && master.stocks.length > 0
+                    ? master.stocks.map((data) => data.name + ' ')
+                    : '종목이 없습니다.'}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  링크
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.external_link
+                    ? master.external_link
+                    : '링크가 없습니다.'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -153,7 +160,7 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {/* {master.likes.length} */}0
+                  {likes.length}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -184,9 +191,6 @@ const MasterDetailsPresenter: FC<IMasterDetails> = (props) => {
           </Typography>
           <Box sx={{ py: 3 }}>
             <Container maxWidth="md">
-              {master.description && (
-                <Viewer initialValue={master.description} />
-              )}
               {master.contents && (
                 <Viewer initialValue={master.contents} />
               )}

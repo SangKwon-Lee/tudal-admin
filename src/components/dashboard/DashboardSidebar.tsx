@@ -25,16 +25,16 @@ interface DashboardSidebarProps {
 }
 
 const sections = [
-  {
-    title: 'General',
-    items: [
-      {
-        title: 'Overview',
-        path: '/dashboard',
-        icon: <ChartSquareBarIcon fontSize="small" />,
-      },
-    ],
-  },
+  // {
+  //   title: 'General',
+  //   items: [
+  //     {
+  //       title: 'Overview',
+  //       path: '/dashboard',
+  //       icon: <ChartSquareBarIcon fontSize="small" />,
+  //     },
+  //   ],
+  // },
   {
     title: 'Contents',
     items: [
@@ -50,16 +50,20 @@ const sections = [
         children: [
           {
             title: '리스트',
-            path: '/dashboard/master/',
+            path: '/dashboard/master',
+          },
+          {
+            title: '생성',
+            path: '/dashboard/master/new',
           },
           {
             title: '방 관리',
             path: '/dashboard/master/room',
           },
-          {
-            title: '구독현황',
-            path: '/dashboard/master',
-          },
+          // {
+          //   title: '구독현황',
+          //   path: '/dashboard/master',
+          // },
         ],
       },
     ],

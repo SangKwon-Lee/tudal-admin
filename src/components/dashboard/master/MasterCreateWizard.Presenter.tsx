@@ -10,22 +10,23 @@ import {
 import StarIcon from '@material-ui/icons/Star';
 import MasterContentFormContainer from './MasterContentForm.Container';
 import { FC } from 'react';
-
-interface newState {
-  completed: boolean;
-}
+import {
+  MasterCreateWizardAction,
+  MasterCreateWizardActionKind,
+  MasterCreateWizardState,
+} from './MasterCreateWizard.Container';
 
 interface IMasterCreateWizardProps {
-  newState: newState;
+  MasterCreateWizardState: MasterCreateWizardState;
   mode: string;
-  handleComplete: () => void;
+  dispatch(params: MasterCreateWizardAction);
 }
 
 const MasterCreateWizardPresenter: FC<IMasterCreateWizardProps> = (
   props,
 ) => {
-  const { newState, mode, handleComplete } = props;
-  const { completed } = newState;
+  const { MasterCreateWizardState, mode, dispatch } = props;
+  const { completed } = MasterCreateWizardState;
 
   return (
     <>
@@ -33,7 +34,11 @@ const MasterCreateWizardPresenter: FC<IMasterCreateWizardProps> = (
         <>
           {mode === 'edit' || mode === 'create' ? (
             <MasterContentFormContainer
-              onComplete={handleComplete}
+              onComplete={() => {
+                dispatch({
+                  type: MasterCreateWizardActionKind.HANDLE_COMPLETE,
+                });
+              }}
               mode={mode}
             />
           ) : null}

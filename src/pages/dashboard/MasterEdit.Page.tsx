@@ -43,7 +43,7 @@ const MasterEditPage: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 수정
+                피드 수정
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -59,7 +59,7 @@ const MasterEditPage: FC = () => {
                   대시보드
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  달인
+                  피드
                 </Typography>
               </Breadcrumbs>
             </Grid>

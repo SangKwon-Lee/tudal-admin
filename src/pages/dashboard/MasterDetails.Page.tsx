@@ -20,7 +20,7 @@ import PencilAltIcon from '../../icons/PencilAlt';
 import gtm from '../../lib/gtm';
 import useSettings from '../../hooks/useSettings';
 
-const tabs = [{ label: '달인내용', value: 'details' }];
+const tabs = [{ label: '피드내용', value: 'details' }];
 
 const MasterDetailsPage: FC = () => {
   const { settings } = useSettings();
@@ -35,7 +35,7 @@ const MasterDetailsPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Master Details | TUDAL Admin</title>
+        <title>Dashboard: Master Feed Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -48,7 +48,7 @@ const MasterDetailsPage: FC = () => {
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 상세보기
+                피드 상세보기
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -65,7 +65,7 @@ const MasterDetailsPage: FC = () => {
                 </Link>
 
                 <Typography color="textSecondary" variant="subtitle2">
-                  상세보기
+                  피드 상세보기
                 </Typography>
               </Breadcrumbs>
             </Grid>

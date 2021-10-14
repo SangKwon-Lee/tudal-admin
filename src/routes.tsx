@@ -167,7 +167,7 @@ const routes: PartialRouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Overview />,
+        element: <MastersListPage />,
       },
       {
         path: 'hiddenboxes',

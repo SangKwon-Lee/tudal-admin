@@ -1,3 +1,4 @@
+import { cmsServer } from './../axios';
 import axios from '../axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
@@ -31,4 +32,24 @@ export async function getChannels(userId) {
 
 export async function deleteFeed(id) {
   return axios.put(`/master-feeds/${id}`, { isDeleted: true });
+}
+
+export async function getDetailFeed(feedId) {
+  return await axios.get(`/master-feeds/${feedId}`);
+}
+
+export async function getDetailFeedLike(feedId) {
+  return await axios.get(
+    `/master-feed-likes?master_feed.id=${feedId}`,
+  );
+}
+
+export async function getMasterChannel(userId) {
+  return await axios.get(`/master-channels?master.id=${userId}`);
+}
+
+export async function getMasterRoom(channelId) {
+  return await axios.get(
+    `/master-rooms?master_channel=${channelId}&isDeleted=0`,
+  );
 }
