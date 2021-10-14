@@ -71,7 +71,7 @@ const MastersListPage: FC = () => {
                   component={RouterLink}
                   to="/dashboard/master/new"
                 >
-                  달인 추가
+                  피드 추가
                 </Button>
               </Box>
             </Grid>

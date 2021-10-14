@@ -9,7 +9,10 @@ import {
 } from 'src/types/master';
 
 export enum MasterListTableActionKind {
+  // loading
   LOADING = 'LOADING',
+  CHANNEL_LOADING = 'CHANNEL_LOADING',
+  ROOM_LOADING = 'ROOM_LOADING',
 
   // Load APIS
   GET_CHANNEL = 'GET_CHANNEL',
@@ -37,8 +40,11 @@ export interface MasterListTableAction {
 }
 
 export interface IMasterListState {
-  page: number;
   loading: boolean;
+  channelLoading: boolean;
+  roomLoading: boolean;
+
+  page: number;
   selected: number;
   list: {
     feed: IMasterFeed[];
@@ -55,7 +61,6 @@ export interface IMasterListState {
     _limit: number;
     _q: string;
     isDeleted: boolean;
-    'master.id': number;
     'master_room.id': number;
     'master_room.master_channel.id': number;
   };
@@ -63,19 +68,20 @@ export interface IMasterListState {
 
 const initialState: IMasterListState = {
   list: { feed: [], feedLength: 0, channel: [], room: [] },
+  loading: true,
+  channelLoading: true,
+  roomLoading: true,
   selected: null,
   page: 1,
   delete: {
     isDeleting: false,
     target: null,
   },
-  loading: false,
   query: {
     _q: '',
     _start: 0,
     _limit: 20,
     isDeleted: false,
-    'master.id': null,
     'master_room.id': null,
     'master_room.master_channel.id': null,
   },
@@ -136,12 +142,14 @@ const MasterListTableReducer = (
     case MasterListTableActionKind.GET_ROOM: {
       return {
         ...state,
+        roomLoading: false,
         list: { ...state.list, room: payload },
       };
     }
     case MasterListTableActionKind.GET_CHANNEL: {
       return {
         ...state,
+        channelLoading: false,
         list: { ...state.list, channel: payload },
       };
     }
@@ -156,10 +164,10 @@ const MasterListTableReducer = (
     case MasterListTableActionKind.CHANGE_CHANNEL: {
       return {
         ...state,
-
         query: {
           ...state.query,
           'master_room.master_channel.id': payload,
+          'master_room.id': null,
         },
       };
     }
@@ -197,12 +205,19 @@ const MasterListTableContainer = () => {
 
   const getChannels = useCallback(async () => {
     try {
-      const response = await APIMaster.getChannels(user.id);
-      if (response.status === 200) {
+      const { data, status } = await APIMaster.getChannels(user.id);
+      if (status === 200) {
         dispatch({
           type: MasterListTableActionKind.GET_CHANNEL,
-          payload: response.data,
+          payload: data,
         });
+
+        if (data.length >= 1) {
+          dispatch({
+            type: MasterListTableActionKind.CHANGE_CHANNEL,
+            payload: data[0].id,
+          });
+        }
       }
     } catch (err) {
       console.log(err);
@@ -211,15 +226,25 @@ const MasterListTableContainer = () => {
 
   const getRooms = useCallback(async () => {
     try {
-      const response = await APIMaster.getRooms(user.id);
+      const channelId =
+        masterListState.query['master_room.master_channel.id'];
+
+      const response = await APIMaster.getRooms(user.id, channelId);
       dispatch({
         type: MasterListTableActionKind.GET_ROOM,
         payload: response.data,
       });
+
+      if (response.data.length >= 1) {
+        dispatch({
+          type: MasterListTableActionKind.CHANGE_ROOM,
+          payload: response.data[0].id,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
-  }, [user]);
+  }, [user, masterListState.query['master_room.master_channel.id']]);
 
   const getFeeds = useCallback(async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
@@ -227,7 +252,9 @@ const MasterListTableContainer = () => {
     try {
       const { data, status } = await APIMaster.getFeeds(
         masterListState.query,
+        user.id,
       );
+
       if (status === 200) {
         dispatch({
           type: MasterListTableActionKind.GET_FEED,
@@ -237,11 +264,16 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.error(err);
     }
-  }, [masterListState.query]);
+  }, [masterListState.query, user]);
 
   const getFeedLength = useCallback(async () => {
     try {
-      const { data, status } = await APIMaster.getFeedLength(user.id);
+      const roomId = masterListState.query['master_room.id'];
+
+      const { data, status } = await APIMaster.getFeedLength(
+        user.id,
+        roomId,
+      );
       if (status === 200) {
         dispatch({
           type: MasterListTableActionKind.GET_FEED_LENGTH,
@@ -251,7 +283,7 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.error(err);
     }
-  }, [user]);
+  }, [user, masterListState.query['master_room.id']]);
 
   const handleDelete = async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
@@ -276,9 +308,15 @@ const MasterListTableContainer = () => {
 
   useEffect(() => {
     getChannels();
+  }, [getChannels]);
+
+  useEffect(() => {
     getRooms();
+  }, [getRooms]);
+
+  useEffect(() => {
     getFeedLength();
-  }, [getChannels, getRooms, getFeedLength]);
+  }, [getFeedLength]);
 
   return (
     <MasterListTablePresenter
