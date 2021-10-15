@@ -193,9 +193,12 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
 
   const getMasterRoom = async () => {
     const { data } = await cmsServer.get(
+      `/master-channels?master.id=${user.id}`,
+    );
+    const { data: roomData } = await cmsServer.get(
       `/master-rooms?master.id=${user.id}&isDeleted=0`,
     );
-    if (data.length === 0) {
+    if (data.length === 0 || roomData.length === 0) {
       dispatch({
         type: MasterContentFormActionKind.IS_HAS_ROOM,
         payload: true,

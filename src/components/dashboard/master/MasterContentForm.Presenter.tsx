@@ -103,7 +103,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                   />
                 </Box>
                 <Box sx={{ my: 2 }}>
-                  {master_channels.length > 0 ? (
+                  {master_channels.length > 0 && (
                     <TextField
                       select
                       fullWidth
@@ -119,12 +119,10 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         </option>
                       ))}
                     </TextField>
-                  ) : (
-                    '글을 작성하기 채널을 먼저 만들어주세요.'
                   )}
                 </Box>
                 <Box sx={{ my: 2 }}>
-                  {master_room.length > 0 ? (
+                  {master_room.length > 0 && (
                     <TextField
                       select
                       fullWidth
@@ -145,8 +143,6 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         </option>
                       ))}
                     </TextField>
-                  ) : (
-                    '글을 작성하기 전 방을 먼저 생성해주세요.'
                   )}
                 </Box>
                 <Box sx={{ mt: 2 }}>

@@ -58,7 +58,6 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
     orderEdit,
     loading,
   } = MasterRoomState;
-  console.log(MasterRoomState);
   return (
     <>
       {selectChannel !== 0 ? (
