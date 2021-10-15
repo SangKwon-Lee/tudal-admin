@@ -25,16 +25,16 @@ interface DashboardSidebarProps {
 }
 
 const sections = [
-  // {
-  //   title: 'General',
-  //   items: [
-  //     {
-  //       title: 'Overview',
-  //       path: '/dashboard',
-  //       icon: <ChartSquareBarIcon fontSize="small" />,
-  //     },
-  //   ],
-  // },
+  {
+    title: 'General',
+    items: [
+      {
+        title: 'Overview',
+        path: '/dashboard',
+        icon: <ChartSquareBarIcon fontSize="small" />,
+      },
+    ],
+  },
   {
     title: 'Contents',
     items: [
@@ -62,7 +62,7 @@ const sections = [
           },
           // {
           //   title: '구독현황',
-          //   path: '/dashboard/master',
+          //   path: '/dashboard/master/subscribe',
           // },
         ],
       },
@@ -118,6 +118,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   const lgUp = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up('lg'),
   );
+
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -127,12 +128,21 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   }, [location.pathname]);
 
   const handleFilterSection = () => {
-    if (user.role.name === 'Authenticated') {
+    if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.role.name === 'CP') {
+    if (user.type === 'cp') {
+      const section = sections.filter((data) => {
+        return data.title === 'Contents' || data.title === 'General';
+      });
+      setFilterSection(section);
+    }
+    if (user.type === 'cms') {
       const section = sections.filter(
-        (data) => data.title !== 'Management',
+        (data) =>
+          data.title === 'Management' ||
+          data.title === 'General' ||
+          data.title === 'Generator',
       );
       setFilterSection(section);
     }

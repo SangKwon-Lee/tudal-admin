@@ -32,5 +32,7 @@ export interface User {
   confirmed: boolean;
   role: IRole;
   schedules: Schedule[];
+  isHiddenboxAvailable?: boolean;
+  isMasterAvailable?: boolean;
   [key: string]: any;
 }

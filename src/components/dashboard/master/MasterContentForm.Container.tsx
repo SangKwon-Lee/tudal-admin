@@ -386,7 +386,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
 
   //* 링크 입력시 정규식 표현
   const handleSubmitError = (event) => {
-    console.log(event.target.value);
     dispatch({
       type: MasterContentFormActionKind.CHANGE_LINK,
       payload: event.target.value,
