@@ -58,8 +58,8 @@ const MasterRoomReducer = (
       return {
         ...state,
         master_channel: payload,
-        selectChannel: Number(payload[0].id) || '',
-        sortChannel: Number(payload[0].id) || '',
+        selectChannel: Number(payload[0].id),
+        sortChannel: Number(payload[0].id),
         loading: false,
       };
     case MasterRoomActionKind.CHANGE_ROOM:
@@ -103,8 +103,8 @@ const initialState: MasterRoomState = {
   loading: false,
   edit: false,
   order: 0,
-  selectChannel: '',
-  sortChannel: '',
+  selectChannel: 0,
+  sortChannel: 0,
   orderEdit: false,
 };
 const MasterRoomContainer = () => {
@@ -113,7 +113,6 @@ const MasterRoomContainer = () => {
     MasterRoomReducer,
     initialState,
   );
-
   const getChannel = async () => {
     dispatch({ type: MasterRoomActionKind.LOADING });
     try {
@@ -137,7 +136,7 @@ const MasterRoomContainer = () => {
       } else {
         dispatch({
           type: MasterRoomActionKind.GET_CHANNEL,
-          payload: [{ title: '없음' }],
+          payload: [{ name: '없음', id: 0 }],
         });
       }
     } catch (error) {
@@ -173,11 +172,6 @@ const MasterRoomContainer = () => {
     try {
       const { status, data } = await cmsServer.get(
         `/master-rooms?master.id=${user.id}&master_channel=${MasterRoomState.selectChannel}`,
-      );
-      console.log(data.length);
-      console.log(
-        data.filter((data) => data.title === MasterRoomState.title)
-          .length,
       );
 
       if (status === 200) {
@@ -261,7 +255,7 @@ const MasterRoomContainer = () => {
     });
     toast.success('취소했습니다.');
   };
-
+  console.log(MasterRoomState.master_channel);
   return (
     <DndProvider backend={HTML5Backend}>
       <MasterRoomPresenter

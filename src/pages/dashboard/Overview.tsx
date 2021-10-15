@@ -26,9 +26,9 @@ const Overview: FC = () => {
           py: 8,
         }}
       >
-        <Typography color="textPrimary" variant="h5">
+        {/* <Typography color="textPrimary" variant="h5">
           대시보드 개발 중입니다.
-        </Typography>
+        </Typography> */}
       </Box>
     </>
   );
