@@ -174,10 +174,15 @@ const MasterRoomContainer = () => {
       const { status, data } = await cmsServer.get(
         `/master-rooms?master.id=${user.id}&master_channel=${MasterRoomState.selectChannel}`,
       );
+      console.log(data.length);
+      console.log(
+        data.filter((data) => data.title === MasterRoomState.title)
+          .length,
+      );
 
       if (status === 200) {
         if (
-          data.filter((data) => data.title === MasterRoomState.title)
+          data.filter((data) => data.title !== MasterRoomState.title)
             .length !== data.length
         ) {
           toast.error('중복된 이름으로 추가할 수 없습니다.');
