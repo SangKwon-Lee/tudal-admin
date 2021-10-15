@@ -203,92 +203,95 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                 </TableRow>
               </TableHead>
               <TableBody>
-                {newState.list.feed.map((feed) => {
-                  const isMasterSelected =
-                    newState.selected === feed.id;
+                {!newState.loading &&
+                  newState.list.feed.map((feed) => {
+                    const isMasterSelected =
+                      newState.selected === feed.id;
 
-                  return (
-                    <TableRow hover key={feed.id}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          value={isMasterSelected}
-                          checked={isMasterSelected}
-                          color="primary"
-                          onChange={(event) => {
-                            dispatch({
-                              type: MasterListTableActionKind.SELECT_FEED,
-                              payload: feed.id,
-                            });
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                          }}
-                        >
-                          <Box sx={{ ml: 1, maxWidth: '150px' }}>
-                            <Link
-                              color="inherit"
-                              component={RouterLink}
-                              to={`/dashboard/master/${feed.id}`}
-                              variant="subtitle2"
-                            >
-                              {feed.title
-                                ? feed.title
-                                : '제목이 없습니다.'}
-                            </Link>
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                            >
-                              {`${
-                                feed.master?.nickname ||
-                                '유저를 찾을 수 없습니다.'
-                              }`}
-                            </Typography>
+                    return (
+                      <TableRow hover key={feed.id}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            value={isMasterSelected}
+                            checked={isMasterSelected}
+                            color="primary"
+                            onChange={(event) => {
+                              dispatch({
+                                type: MasterListTableActionKind.SELECT_FEED,
+                                payload: feed.id,
+                              });
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Box sx={{ ml: 1, maxWidth: '150px' }}>
+                              <Link
+                                color="inherit"
+                                component={RouterLink}
+                                to={`/dashboard/master/${feed.id}`}
+                                variant="subtitle2"
+                              >
+                                {feed.title
+                                  ? feed.title
+                                  : '제목이 없습니다.'}
+                              </Link>
+                              <Typography
+                                color="textSecondary"
+                                variant="body2"
+                              >
+                                {`${
+                                  feed.master?.nickname ||
+                                  '유저를 찾을 수 없습니다.'
+                                }`}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          maxWidth: '180px',
-                          minWidth: '180px',
-                        }}
-                      >
-                        {`${moment(feed.created_at).format(
-                          'YYYY년 M월 D일 HH:mm',
-                        )}`}
-                      </TableCell>
-                      <TableCell>
-                        {moment(feed.updated_at).format(
-                          'YYYY년 M월 D일 HH:mm',
-                        )}
-                      </TableCell>
-                      <TableCell>{feed.master_room?.title}</TableCell>
-                      <TableCell>
-                        {feed.master_feed_likes.length}
-                      </TableCell>
-                      <TableCell>{feed.viewCount}</TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          component={RouterLink}
-                          to={`/dashboard/master/${feed.id}/edit`}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            maxWidth: '180px',
+                            minWidth: '180px',
+                          }}
                         >
-                          <PencilAltIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          component={RouterLink}
-                          to={`/dashboard/master/${feed.id}`}
-                        >
-                          <ArrowRightIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          {`${moment(feed.created_at).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}`}
+                        </TableCell>
+                        <TableCell>
+                          {moment(feed.updated_at).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {feed.master_room?.title}
+                        </TableCell>
+                        <TableCell>
+                          {feed.master_feed_likes.length}
+                        </TableCell>
+                        <TableCell>{feed.viewCount}</TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            component={RouterLink}
+                            to={`/dashboard/master/${feed.id}/edit`}
+                          >
+                            <PencilAltIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            component={RouterLink}
+                            to={`/dashboard/master/${feed.id}`}
+                          >
+                            <ArrowRightIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </Box>

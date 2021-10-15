@@ -256,10 +256,15 @@ const MasterListTableContainer = () => {
       );
 
       if (status === 200) {
-        dispatch({
-          type: MasterListTableActionKind.GET_FEED,
-          payload: data,
-        });
+        if (
+          masterListState.query['master_room.id'] &&
+          masterListState.query['master_room.master_channel.id']
+        ) {
+          dispatch({
+            type: MasterListTableActionKind.GET_FEED,
+            payload: data,
+          });
+        }
       }
     } catch (err) {
       console.error(err);
