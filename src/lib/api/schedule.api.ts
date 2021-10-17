@@ -1,37 +1,16 @@
 import qs from 'qs';
+import { IScheduleListStatus } from 'src/components/dashboard/schedule/ScheduleList.Container';
 import axios from 'src/lib/axios';
 import { Schedule, IScheduleForm } from 'src/types/schedule';
+import { removeEmpty } from 'src/utils/helper';
 
-export async function getList(
-  search: string,
-  sort,
-  startDate?,
-  endDate?,
-  start: number = 0,
-  limit: number = 100,
-) {
-  let q: any = {};
+export async function getList(params: IScheduleListStatus) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Schedule[]>(`/schedules?${query}`);
+}
 
-  if (search) {
-    q._q = search;
-  }
-  if (startDate) {
-    q._startDate = startDate;
-  }
-  if (endDate) {
-    q._endDate = endDate;
-  }
-  if (start) {
-    q._start = start;
-  }
-
-  if (limit) {
-    q._limit = limit;
-  }
-
-  return await axios.get<Schedule[]>(
-    `/schedules?_sort=${sort}&${qs.stringify(q)}`,
-  );
+export async function getTotalCount() {
+  return await axios.get<number>(`/schedules/count`);
 }
 
 export async function create(schedule: IScheduleForm) {

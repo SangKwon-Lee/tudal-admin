@@ -1,30 +1,34 @@
-import React, { ChangeEvent, useState, RefObject } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { ChangeEvent } from 'react';
 import {
   Box,
   Card,
   IconButton,
+  LinearProgress,
   InputAdornment,
   Link,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
+  Pagination,
   TableRow,
   TextField,
   Dialog,
   Chip,
 } from '@material-ui/core';
 
-// import * as _ from 'lodash';
+import * as _ from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import Label from '../../widgets/Label';
 import SearchIcon from '../../../icons/Search';
 import { Priority, Schedule } from '../../../types/schedule';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import {
+  IScheduleListDispatch,
+  IScheduleListState,
+  ScheduleActionKind,
+} from './ScheduleList.Container';
 
 const getPriorityLabel = (priority) => {
   const scale =
@@ -53,67 +57,37 @@ const getPriorityLabel = (priority) => {
 };
 
 interface ScheduleListTableProps {
-  schedules: Schedule[];
-  page: number;
-  limit: number;
-  search: string;
-  sort: string;
-  startDate: string;
-  endDate: string;
+  state: IScheduleListState;
   sortOptions: Array<{ value: string; label: string }>;
-  scrollRef: RefObject<HTMLDivElement>;
-  handleDate: (startDate, endDate) => void;
-  handleSort: (event: any) => void;
-  handlePage: (event: any, newPage: number) => void;
-  handleLimit: (event: ChangeEvent<HTMLInputElement>) => void;
-  setSearch: (word: string) => void;
-  postDelete: (id: number) => void;
-  reload: () => void;
-  setTargetModify: (target: Schedule) => void;
+  dispatch: (param: IScheduleListDispatch) => void;
+  setTargetModify: (schedule: Schedule) => void;
+  postDelete: () => void;
 }
-
-const applyPagination = (
-  schedules: Schedule[],
-  page: number,
-  limit: number,
-): Schedule[] => schedules.slice(page * limit, page * limit + limit);
 
 const ScheduleListTable: React.FC<ScheduleListTableProps> = (
   props,
 ) => {
   const {
-    schedules,
-    scrollRef,
-    page,
-    limit,
+    state,
+    dispatch,
     sortOptions,
-    startDate,
-    endDate,
-    handleDate,
     postDelete,
-    setSearch,
     setTargetModify,
-    handleSort,
-    handlePage,
-    handleLimit,
   } = props;
-  const [targetSchedule, setTargetDelete] = useState<Schedule>(null);
-  const [isOpenDeleteConfirm, setIsOpenDeleteConfirm] =
-    useState<boolean>(false);
 
-  const scrollToTop = () => {
-    scrollRef.current &&
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  const pageCount = Math.ceil(state.listLength / 50);
+
+  const _handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: ScheduleActionKind.CHANGE_SEARCH,
+      payload: e.target.value,
+    });
   };
 
-  const paginatedSchedule = applyPagination(schedules, page, limit);
-
+  const handleSearch = _.debounce(_handleSearch, 300);
   return (
-    <Box
-      sx={{
-        backgroundColor: 'background.default',
-      }}
-    >
+    <>
+      {state.loading && <LinearProgress />}
       <Card>
         <Box
           sx={{
@@ -142,7 +116,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               }}
               name={'_q'}
               placeholder="제목 또는 코멘트를 검색해주세요"
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={handleSearch}
               variant="outlined"
             />
           </Box>
@@ -158,7 +132,12 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               label="정렬"
               name="priority"
               select
-              onChange={(event) => handleSort(event.target.value)}
+              onChange={(event) =>
+                dispatch({
+                  type: ScheduleActionKind.CHANGE_SORT,
+                  payload: event.target.value,
+                })
+              }
               SelectProps={{ native: true }}
               variant="outlined"
             >
@@ -179,7 +158,12 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
             InputLabelProps={{
               shrink: true,
             }}
-            onChange={(e) => handleDate(e.target.value, null)}
+            onChange={(event) =>
+              dispatch({
+                type: ScheduleActionKind.CHANGE_STARTDATE,
+                payload: event.target.value,
+              })
+            }
           />
 
           <TextField
@@ -189,7 +173,12 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
             InputLabelProps={{
               shrink: true,
             }}
-            onChange={(e) => handleDate(null, e.target.value)}
+            onChange={(event) =>
+              dispatch({
+                type: ScheduleActionKind.CHANGE_ENDDATE,
+                payload: event.target.value,
+              })
+            }
           />
         </Box>
         <Box>
@@ -208,7 +197,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedSchedule.map((schedule) => {
+              {state.list.map((schedule) => {
                 const {
                   comment,
                   priority,
@@ -236,7 +225,6 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                         {comment}
                       </pre>
                       <Box m={1} />
-                      {/* <div className={classes.tags}> */}
                       {keywords.map((keyword) => (
                         <Chip
                           key={keyword.id}
@@ -262,7 +250,6 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                           label={category.name}
                         />
                       ))}
-                      {/* </div> */}
                     </TableCell>
                     <TableCell>
                       {getPriorityLabel(priority)}
@@ -270,16 +257,11 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     <TableCell>
                       {author ? author.username : '알 수 없음'}
                     </TableCell>
-                    <TableCell>{`${dayjs(startDate).format(
-                      'YYYY-MM-DD',
-                    )} ~ ${dayjs(endDate).format(
-                      'YYYY-MM-DD',
-                    )}`}</TableCell>
+                    <TableCell>{`${startDate} ~ ${endDate}`}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
                           setTargetModify(schedule);
-                          scrollToTop();
                         }}
                       >
                         <BuildIcon fontSize="small" />
@@ -288,8 +270,10 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
                     <TableCell align="right">
                       <IconButton
                         onClick={() => {
-                          setTargetDelete(schedule);
-                          setIsOpenDeleteConfirm(true);
+                          dispatch({
+                            type: ScheduleActionKind.SHOW_DELETE_DIALOG,
+                            payload: schedule,
+                          });
                         }}
                       >
                         <DeleteIcon fontSize="small" />
@@ -300,44 +284,47 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
               })}
             </TableBody>
           </Table>
+          <Pagination
+            page={state.status._page}
+            onChange={(e, page) =>
+              dispatch({
+                type: ScheduleActionKind.CHANGE_PAGE,
+                payload: page,
+              })
+            }
+            count={pageCount}
+            variant="outlined"
+            shape="rounded"
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
+          />
         </Box>
-        <TablePagination
-          component="div"
-          count={schedules.length} //TODO
-          onPageChange={handlePage}
-          onRowsPerPageChange={handleLimit}
-          page={page}
-          rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-        />
-        {targetSchedule && (
+
+        {state.delete.target && (
           <Dialog
             aria-labelledby="ConfirmModal"
-            open={isOpenDeleteConfirm}
-            onClose={() => setIsOpenDeleteConfirm(false)}
+            open={state.delete.isDeleting}
+            onClose={() =>
+              dispatch({
+                type: ScheduleActionKind.CLOSE_DELETE_DIALOG,
+              })
+            }
           >
             <ConfirmModal
-              title={`${targetSchedule.title} 일정을 삭제하시겠습니까?`}
+              title={`${state.delete.target.title} 일정을 삭제하시겠습니까?`}
               content={`삭제하면 되돌리기 어렵습니다.`}
               confirmTitle={'네 삭제합니다.'}
-              handleOnClick={() => {
-                postDelete(targetSchedule.id);
-                setTargetDelete(null);
-              }}
+              handleOnClick={postDelete}
               handleOnCancel={() => {
-                setTargetDelete(null);
-                setIsOpenDeleteConfirm(false);
+                dispatch({
+                  type: ScheduleActionKind.CLOSE_DELETE_DIALOG,
+                });
               }}
             />
           </Dialog>
         )}
       </Card>
-    </Box>
+    </>
   );
 };
 
 export default ScheduleListTable;
-
-ScheduleListTable.propTypes = {
-  schedules: PropTypes.array.isRequired,
-};
