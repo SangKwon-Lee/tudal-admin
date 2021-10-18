@@ -159,3 +159,10 @@ export interface IMasterFeedLikes {
   userId: number;
   master_feed: IMasterFeed;
 }
+
+export interface IMasterSubscription {
+  userId?: number;
+  masterId?: number;
+  startDate?: Date;
+  endData?: string;
+}

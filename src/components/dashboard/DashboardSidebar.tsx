@@ -60,10 +60,10 @@ const sections = [
             title: '방 관리',
             path: '/dashboard/master/room',
           },
-          // {
-          //   title: '구독현황',
-          //   path: '/dashboard/master/subscribe',
-          // },
+          {
+            title: '구독현황',
+            path: '/dashboard/master/subscribe',
+          },
         ],
       },
     ],

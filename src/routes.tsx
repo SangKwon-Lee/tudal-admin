@@ -84,9 +84,9 @@ const MasterEditPage = Loadable(
 const MasterRoomPage = Loadable(
   lazy(() => import('./pages/dashboard/MasterRoom.Page')),
 );
-// const MasterSubscribePage = Loadable(
-//   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
-// );
+const MasterSubscribePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -270,10 +270,10 @@ const routes: PartialRouteObject[] = [
             path: 'room',
             element: <MasterRoomPage />,
           },
-          // {
-          //   path: 'subscribe',
-          //   element: <MasterSubscribePage />,
-          // },
+          {
+            path: 'subscribe',
+            element: <MasterSubscribePage />,
+          },
         ],
       },
     ],

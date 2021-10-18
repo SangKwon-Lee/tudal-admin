@@ -65,3 +65,61 @@ export async function getMasterRoom(channelId) {
     `/master-rooms?master_channel=${channelId}&isDeleted=0`,
   );
 }
+
+export async function getAllSubscribe(masterId) {
+  return await axios.get(`/master-subscribes?masterId=${masterId}`);
+}
+
+export async function getYearSubscribe(year) {
+  let monthArr = [];
+  if (Number(year) === new Date().getFullYear()) {
+    for (let i = 1; i < new Date().getMonth() + 2; i++) {
+      if (i.toString().length === 1) {
+        monthArr.push('0' + i.toString());
+      } else {
+        monthArr.push(i.toString());
+      }
+    }
+  } else {
+    monthArr = [
+      '01',
+      '02',
+      '03',
+      '04',
+      '05',
+      '06',
+      '07',
+      '08',
+      '09',
+      '10',
+      '11',
+      '12',
+    ];
+  }
+
+  const data = await Promise.all(
+    monthArr.map(async (month) => {
+      let date = new Date(year, Number(month), 0).getDate();
+      return await axios.get(
+        `/master-subscribes/?startDate_gte=2020-01-01&startDate_lte=${year}-${month}-${date}`,
+      );
+    }),
+  );
+  return data;
+}
+
+export async function getThisMonth() {
+  const year = new Date().getFullYear();
+  const thisMonth = new Date().getMonth() + 1;
+  const lastMonth = new Date().getMonth();
+  const thisDate = new Date(year, thisMonth, 0).getDate();
+  const lastDate = new Date(year, lastMonth, 0).getDate();
+  const This = await axios.get(
+    `/master-subscribes/?startDate_gte=${year}-${thisMonth}-01&startDate_lte=${year}-${thisMonth}-${thisDate}`,
+  );
+  const Last = await axios.get(
+    `/master-subscribes/?startDate_gte=${year}-0${lastMonth}-01&startDate_lte=${year}-0${lastMonth}-${lastDate}`,
+  );
+
+  return [This, Last];
+}
