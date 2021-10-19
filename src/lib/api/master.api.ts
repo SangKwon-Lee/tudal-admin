@@ -67,10 +67,12 @@ export async function getMasterRoom(channelId) {
 }
 
 export async function getAllSubscribe(masterId) {
-  return await axios.get(`/master-subscribes?masterId=${masterId}`);
+  return await axios.get(
+    `/master-subscriptions?master.id=${masterId}`,
+  );
 }
 
-export async function getYearSubscribe(year) {
+export async function getYearSubscribe(year, masterId) {
   let monthArr = [];
   if (Number(year) === new Date().getFullYear()) {
     for (let i = 1; i < new Date().getMonth() + 2; i++) {
@@ -101,24 +103,24 @@ export async function getYearSubscribe(year) {
     monthArr.map(async (month) => {
       let date = new Date(year, Number(month), 0).getDate();
       return await axios.get(
-        `/master-subscribes/?startDate_gte=2020-01-01&startDate_lte=${year}-${month}-${date}`,
+        `/master-subscriptions?startDate_gte=2020-01-01&startDate_lte=${year}-${month}-${date}&master.id=${masterId}`,
       );
     }),
   );
   return data;
 }
 
-export async function getThisMonth() {
+export async function getThisMonth(masterId) {
   const year = new Date().getFullYear();
   const thisMonth = new Date().getMonth() + 1;
   const lastMonth = new Date().getMonth();
   const thisDate = new Date(year, thisMonth, 0).getDate();
   const lastDate = new Date(year, lastMonth, 0).getDate();
   const This = await axios.get(
-    `/master-subscribes/?startDate_gte=${year}-${thisMonth}-01&startDate_lte=${year}-${thisMonth}-${thisDate}`,
+    `/master-subscriptions/?startDate_gte=${year}-${thisMonth}-01&startDate_lte=${year}-${thisMonth}-${thisDate}&master.id=${masterId}`,
   );
   const Last = await axios.get(
-    `/master-subscribes/?startDate_gte=${year}-0${lastMonth}-01&startDate_lte=${year}-0${lastMonth}-${lastDate}`,
+    `/master-subscriptions/?startDate_gte=${year}-0${lastMonth}-01&startDate_lte=${year}-0${lastMonth}-${lastDate}&master.id=${masterId}`,
   );
 
   return [This, Last];
