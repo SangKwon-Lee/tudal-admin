@@ -53,20 +53,24 @@ const Overview = Loadable(
 const ReportMaker = Loadable(
   lazy(() => import('./pages/dashboard/ReportMaker')),
 );
-
 const ScheduleList = Loadable(
   lazy(() => import('./pages/dashboard/Schedule.Page')),
 );
-
 const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
-
 const KeywordList = Loadable(
   lazy(() => import('./pages/dashboard/Keyword')),
 );
 const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category')),
+);
+
+const GoldList = Loadable(
+  lazy(() => import('./pages/dashboard/GoldList.Page')),
+);
+const GoldDetail = Loadable(
+  lazy(() => import('./pages/dashboard/GoldDetail.Page')),
 );
 
 // const ExpertsList = Loadable(
@@ -233,6 +237,23 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <ReportMaker />,
+          },
+        ],
+      },
+      {
+        path: 'gold',
+        children: [
+          {
+            path: '/',
+            element: <GoldList />,
+          },
+          {
+            path: '/detail/:userId',
+            element: <GoldDetail />,
+          },
+          {
+            path: '/detail',
+            element: <GoldDetail />,
           },
         ],
       },

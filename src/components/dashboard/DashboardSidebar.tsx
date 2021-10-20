@@ -92,6 +92,21 @@ const sections = [
         path: '/dashboard/categories',
         icon: <BriefcaseIcon fontSize="small" />,
       },
+      {
+        title: '골드',
+        path: '/dashboard/gold',
+        icon: <PencilIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/gold',
+          },
+          {
+            title: '상세보기',
+            path: '/dashboard/gold/detail',
+          },
+        ],
+      },
     ],
   },
   {
