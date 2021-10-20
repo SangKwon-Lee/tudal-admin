@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -30,8 +30,9 @@ import {
   IGoldDetailAction,
   IGoldDetailState,
 } from './GoldDetail.Container';
-import { IGoldLedger } from 'src/types/gold';
+import { IGoldLedger, IGoldWallet } from 'src/types/gold';
 import { applyPagination } from 'src/utils/pagination';
+import { getStatusLabel } from './GoldList.Presenter';
 
 const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
   const { ledger } = props;
@@ -47,23 +48,16 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>+ / -</TableCell>
-                <TableCell>+ / -</TableCell>
-                <TableCell>Amount (골드 + 보너스골드)</TableCell>
+                <TableCell></TableCell>
+                <TableCell>이름</TableCell>
+                <TableCell>골드(+보너스)</TableCell>
                 <TableCell>날짜</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedLedger.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>
-                    <Typography
-                      color="textPrimary"
-                      variant="subtitle2"
-                    >
-                      {item.type}
-                    </Typography>
-                  </TableCell>
+                  <TableCell>{getStatusLabel(item.type)}</TableCell>
                   <TableCell>{item.category}</TableCell>
                   <TableCell>
                     {item.amount + item.bonusAmount}
@@ -93,6 +87,101 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
   );
 };
 
+const WalletStatus: FC<{
+  wallet: IGoldWallet;
+  total: number;
+  totalByHand: number;
+  handleOpen: () => void;
+}> = ({ wallet, total, totalByHand, handleOpen }) => {
+  return (
+    <>
+      <CardHeader title="유저 포인트 현황" />
+      <Divider />
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
+                유저 ID
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {wallet?.userId}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
+                골드
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {wallet?.gold}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
+                보너스 골드
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {wallet?.bonusGold}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
+                합계
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {total ? total : null}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography color="textPrimary" variant="subtitle2">
+                장부 계산
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="body2">
+                {totalByHand}
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <Box
+        sx={{
+          alignItems: 'flex-start',
+          display: 'flex',
+          flexDirection: 'column',
+          p: 1,
+        }}
+      >
+        <Button
+          color="inherit"
+          onClick={handleOpen}
+          startIcon={<LockIcon fontSize="small" />}
+          variant="text"
+        >
+          골드 관리
+        </Button>
+      </Box>
+    </>
+  );
+};
+
 interface IGoldDetailPresenter {
   userId: number;
   state: IGoldDetailState;
@@ -109,7 +198,6 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   dispatch,
 }) => {
   const { ledger, wallet, loading, totalByHand } = state;
-  console.log('here', ledger);
   const userIdRef = useRef<HTMLInputElement>(null);
   const _handleUser = () => {
     if (!userIdRef.current?.value) {
@@ -154,6 +242,8 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   };
   return (
     <Box sx={{ mt: 5, pr: 10 }}>
+      {warning()}
+
       <Box
         style={{
           display: 'flex',
@@ -176,174 +266,98 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
           유저 검색
         </Button>
       </Box>
-      <Box sx={{ mt: 3 }} style={{ display: 'flex' }}>
-        <Box sx={{ mr: 10 }} maxWidth="30%" minWidth="30%">
-          <CardHeader title="유저 포인트 현황" />
-          <Divider />
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    유저 ID
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography color="textSecondary" variant="body2">
-                    {wallet?.userId}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    골드
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography color="textSecondary" variant="body2">
-                    {wallet?.gold}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    보너스 골드
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography color="textSecondary" variant="body2">
-                    {wallet?.bonusGold}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    합계
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography color="textSecondary" variant="body2">
-                    {total ? total : null}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    hand
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography color="textSecondary" variant="body2">
-                    {state.totalByHand}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-            {warning()}
-          </Table>
-          <Box
-            sx={{
-              alignItems: 'flex-start',
-              display: 'flex',
-              flexDirection: 'column',
-              p: 1,
-            }}
-          >
-            <Button
-              color="inherit"
-              onClick={handleOpen}
-              startIcon={<LockIcon fontSize="small" />}
-              variant="text"
-            >
-              골드 관리
-            </Button>
+      {wallet && ledger && (
+        <Box sx={{ mt: 3 }} style={{ display: 'flex' }}>
+          <Box sx={{ mr: 10 }} maxWidth="30%" minWidth="30%">
+            <WalletStatus
+              wallet={wallet}
+              total={total}
+              handleOpen={handleOpen}
+              totalByHand={totalByHand}
+            />
+          </Box>
+          <Box minWidth="70%" maxWidth="70%">
+            <LedgerTable ledger={ledger} />
           </Box>
         </Box>
-        <Box minWidth="70%" maxWidth="70%">
-          <LedgerTable ledger={ledger} />
-        </Box>
+      )}
 
-        <Dialog open={state.openGoldAddDialog} onClose={handleClose}>
-          <DialogTitle>골드 추가(제거)</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {`${userId} 유저의 골드를 수정합니다.`}
-              <br />
-              {`현재 유저의 골드는 ${total} 골드입니다.`}
-              <br />
-              {`현재 장부상의 모든 기록상 ${totalByHand} 골드입니다.`}
-            </DialogContentText>
-            <Box p={3}>
-              <Box
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
+      <Dialog open={state.openGoldAddDialog} onClose={handleClose}>
+        <DialogTitle>골드 추가(제거)</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`${userId} 유저의 골드를 수정합니다.`}
+            <br />
+            {`현재 유저의 골드는 ${total} 골드입니다.`}
+            <br />
+            {`현재 장부상의 모든 기록상 ${totalByHand} 골드입니다.`}
+          </DialogContentText>
+          <Box p={3}>
+            <Box
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Select
+                size="small"
+                value={state.postForm.type}
+                label="Age"
+                onChange={(e) => {
+                  dispatch({
+                    type: GoldDetailActionKind.CHANGE_TYPE,
+                    payload: e.target.value,
+                  });
                 }}
               >
-                <Select
-                  size="small"
-                  value={state.postForm.type}
-                  label="Age"
-                  onChange={(e) => {
-                    dispatch({
-                      type: GoldDetailActionKind.CHANGE_TYPE,
-                      payload: e.target.value,
-                    });
-                  }}
-                >
-                  <MenuItem value={'add'}>+</MenuItem>
-                  <MenuItem value={'sub'}>-</MenuItem>
-                </Select>
+                <MenuItem value={'add'}>+</MenuItem>
+                <MenuItem value={'sub'}>-</MenuItem>
+              </Select>
 
-                <TextField
-                  type="number"
-                  label="골드"
-                  variant="standard"
-                  onChange={(e) => {
-                    dispatch({
-                      type: GoldDetailActionKind.CHANGE_AMOUNT,
-                      payload: e.target.value,
-                    });
-                  }}
-                />
-                <TextField
-                  type="number"
-                  label="보너스 골드"
-                  variant="standard"
-                  onChange={(e) => {
-                    dispatch({
-                      type: GoldDetailActionKind.CHANGE_BONUSAMOUNT,
-                      payload: e.target.value,
-                    });
-                  }}
-                />
-              </Box>
-              <Box style={{ display: 'flex' }}>
-                <TextField
-                  id="name"
-                  fullWidth
-                  label="충전 사유"
-                  variant="standard"
-                  onChange={(e) => {
-                    dispatch({
-                      type: GoldDetailActionKind.CHANGE_CATEGORY,
-                      payload: e.target.value,
-                    });
-                  }}
-                />
-              </Box>
+              <TextField
+                type="number"
+                label="골드"
+                variant="standard"
+                onChange={(e) => {
+                  dispatch({
+                    type: GoldDetailActionKind.CHANGE_AMOUNT,
+                    payload: e.target.value,
+                  });
+                }}
+              />
+              <TextField
+                type="number"
+                label="보너스 골드"
+                variant="standard"
+                onChange={(e) => {
+                  dispatch({
+                    type: GoldDetailActionKind.CHANGE_BONUSAMOUNT,
+                    payload: e.target.value,
+                  });
+                }}
+              />
             </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={postGold}>Subscribe</Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
+            <Box style={{ display: 'flex' }}>
+              <TextField
+                id="name"
+                fullWidth
+                label="충전 사유"
+                variant="standard"
+                onChange={(e) => {
+                  dispatch({
+                    type: GoldDetailActionKind.CHANGE_CATEGORY,
+                    payload: e.target.value,
+                  });
+                }}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={postGold}>Subscribe</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

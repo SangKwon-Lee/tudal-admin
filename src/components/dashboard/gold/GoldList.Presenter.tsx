@@ -1,21 +1,18 @@
 import React from 'react';
-import { format, subDays, subHours } from 'date-fns';
 import { Link as RouterLink } from 'react-router-dom';
 
-import numeral from 'numeral';
 import {
   Box,
   Card,
-  Checkbox,
   IconButton,
   InputAdornment,
+  LinearProgress,
   Link,
   Pagination,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -32,45 +29,26 @@ import { ISortOption } from './GoldList.Container';
 import Label from 'src/components/widgets/Label';
 import Scrollbar from '../../layout/Scrollbar';
 import ArrowRightIcon from '../../../icons/ArrowRight';
-import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
 import * as _ from 'lodash';
-const now = new Date();
 
-const statusOptions = [
-  {
-    label: 'All',
-    value: 'all',
-  },
-  {
-    label: 'Paid',
-    value: 'paid',
-  },
-  {
-    label: 'Pending',
-    value: 'pending',
-  },
-  {
-    label: 'Canceled',
-    value: 'canceled',
-  },
-];
-
-const getStatusLabel = (invoiceStatus) => {
+export const getStatusLabel = (status) => {
   const map = {
     add: {
       color: 'success',
       text: 'ADD',
+      label: 'Add',
     },
     subtract: {
       color: 'warning',
-      text: 'SUBTRACT',
+      text: 'Sub',
+      label: 'Sub',
     },
   };
 
-  const { text, color }: any = map[invoiceStatus];
+  const { text, color, label }: any = map[status];
 
-  return <Label color={color}>{text}</Label>;
+  return <Label color={color}>{label}</Label>;
 };
 
 interface IGoldListPresenterProps {
@@ -150,33 +128,10 @@ const GoldListPresenter: React.FC<IGoldListPresenterProps> = ({
             ))}
           </TextField>
         </Box>
-        <Box
-          sx={{
-            m: 1,
-            maxWidth: '100%',
-            width: 240,
-          }}
-        >
-          <TextField
-            fullWidth
-            label="Status"
-            name="status"
-            select
-            SelectProps={{ native: true }}
-            variant="outlined"
-          >
-            {statusOptions.map((statusOption) => (
-              <option
-                key={statusOption.value}
-                value={statusOption.value}
-              >
-                {statusOption.label}
-              </option>
-            ))}
-          </TextField>
-        </Box>
       </Box>
       <Scrollbar>
+        {state.loading && <LinearProgress />}
+
         <Box sx={{ minWidth: 1200 }}>
           <Table>
             <TableHead>

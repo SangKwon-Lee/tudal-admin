@@ -17,6 +17,7 @@ import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import FolderOpenIcon from 'src/icons/FolderOpen';
+import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
 
 interface DashboardSidebarProps {
@@ -95,7 +96,7 @@ const sections = [
       {
         title: '골드',
         path: '/dashboard/gold',
-        icon: <PencilIcon fontSize="small" />,
+        icon: <CashIcon fontSize="small" />,
         children: [
           {
             title: '리스트',
