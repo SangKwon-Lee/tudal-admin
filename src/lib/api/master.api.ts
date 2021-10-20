@@ -1,4 +1,3 @@
-import { cmsServer } from './../axios';
 import axios from '../axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';

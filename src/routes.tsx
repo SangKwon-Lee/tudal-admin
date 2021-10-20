@@ -87,6 +87,10 @@ const MasterRoomPage = Loadable(
 const MasterSubscribePage = Loadable(
   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
 );
+
+const CouponListPage = Loadable(
+  lazy(() => import('./pages/dashboard/CouponList.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -273,6 +277,15 @@ const routes: PartialRouteObject[] = [
           {
             path: 'subscribe',
             element: <MasterSubscribePage />,
+          },
+        ],
+      },
+      {
+        path: 'coupons',
+        children: [
+          {
+            path: '/',
+            element: <CouponListPage />,
           },
         ],
       },
