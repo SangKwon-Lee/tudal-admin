@@ -69,13 +69,24 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category')),
 );
 
-// const ExpertsList = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertsList')),
-// );
-// const ExpertCreate = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertCreate')),
-// );
-
+const MastersListPage = Loadable(
+  lazy(() => import('./pages/dashboard/MastersList.Page')),
+);
+const MasterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterCreate.Page')),
+);
+const MasterDetailsPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterDetails.Page')),
+);
+const MasterEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterEdit.Page')),
+);
+const MasterRoomPage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterRoom.Page')),
+);
+const MasterSubscribePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -236,19 +247,35 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
-      // {
-      //   path: 'experts',
-      //   children: [
-      //     {
-      //       path: '/',
-      //       element: <ExpertsList />,
-      //     },
-      //     {
-      //       path: '/new',
-      //       element: <ExpertCreate />,
-      //     },
-      //   ],
-      // },
+      {
+        path: 'master',
+        children: [
+          {
+            path: '/',
+            element: <MastersListPage />,
+          },
+          {
+            path: '/new',
+            element: <MasterCreatePage />,
+          },
+          {
+            path: ':masterId',
+            element: <MasterDetailsPage />,
+          },
+          {
+            path: ':masterId/edit',
+            element: <MasterEditPage />,
+          },
+          {
+            path: 'room',
+            element: <MasterRoomPage />,
+          },
+          {
+            path: 'subscribe',
+            element: <MasterSubscribePage />,
+          },
+        ],
+      },
     ],
   },
 
