@@ -82,42 +82,10 @@ const AccountPopover: FC = () => {
       >
         <Box sx={{ p: 2 }}>
           <Typography color="textPrimary" variant="subtitle2">
-            {user.name}
-          </Typography>
-          <Typography color="textSecondary" variant="subtitle2">
-            Devias
+            {`${user.username}(${user.nickname})`}
           </Typography>
         </Box>
-        <Divider />
-        <Box sx={{ mt: 2 }}>
-          <MenuItem
-            component={RouterLink}
-            to="/dashboard/social/profile"
-          >
-            <ListItemIcon>
-              <UserIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Profile
-                </Typography>
-              }
-            />
-          </MenuItem>
-          <MenuItem component={RouterLink} to="/dashboard/account">
-            <ListItemIcon>
-              <CogIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Settings
-                </Typography>
-              }
-            />
-          </MenuItem>
-        </Box>
+
         <Box sx={{ p: 2 }}>
           <Button
             color="primary"
