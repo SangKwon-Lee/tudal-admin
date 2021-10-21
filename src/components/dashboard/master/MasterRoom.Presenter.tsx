@@ -239,6 +239,7 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
                         orderEdit={orderEdit}
                         moveCard={moveCard}
                         getChannel={getChannel}
+                        selectChannel={selectChannel}
                       />
                     ))
                   : master_room
@@ -253,6 +254,7 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
                           orderEdit={orderEdit}
                           moveCard={moveCard}
                           getChannel={getChannel}
+                          selectChannel={selectChannel}
                         />
                       ))}
               </div>
