@@ -29,6 +29,7 @@ export enum GoldDetailActionKind {
   LOAD_WALLET = 'LOAD_WALLET',
   HANDLE_DIALOG = 'HANDLE_DIALOG',
   CALCULATE_BY_HAND = 'CALCULATE_BY_HAND',
+
   // change form
   CHANGE_USERID = 'CHANGE_USERID',
   CHANGE_AMOUNT = 'CHANGE_AMOUNT',
@@ -221,13 +222,9 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
     try {
       const body = { ...postForm };
       body.code = getStringCode();
-      const { data, status } = await APIGold.postAddGold(body);
+      const { status } = await APIGold.postAddGold(body);
       if (status === 200) {
         toast.success('성공적으로 충전되었습니다.');
-        dispatch({
-          type: GoldDetailActionKind.HANDLE_DIALOG,
-          payload: false,
-        });
         reload();
       }
     } catch (error) {

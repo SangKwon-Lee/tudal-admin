@@ -33,6 +33,7 @@ import {
 import { IGoldLedger, IGoldWallet } from 'src/types/gold';
 import { applyPagination } from 'src/utils/pagination';
 import { getStatusLabel } from './GoldList.Presenter';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
   const { ledger } = props;
@@ -87,12 +88,23 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
   );
 };
 
-const WalletStatus: FC<{
+const WalletTable: FC<{
   wallet: IGoldWallet;
   total: number;
   totalByHand: number;
   handleOpen: () => void;
 }> = ({ wallet, total, totalByHand, handleOpen }) => {
+  const warning = () => {
+    if (totalByHand && total) {
+      if (totalByHand !== total) {
+        return (
+          <div style={{ color: 'red' }}>
+            합계와 장부가 일치하지 않습니다.
+          </div>
+        );
+      }
+    }
+  };
   return (
     <>
       <CardHeader title="유저 포인트 현황" />
@@ -169,6 +181,7 @@ const WalletStatus: FC<{
           p: 1,
         }}
       >
+        {warning()}
         <Button
           color="inherit"
           onClick={handleOpen}
@@ -198,6 +211,7 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   dispatch,
 }) => {
   const { ledger, wallet, loading, totalByHand } = state;
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const userIdRef = useRef<HTMLInputElement>(null);
   const _handleUser = () => {
     if (!userIdRef.current?.value) {
@@ -207,18 +221,8 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   };
 
   const total = wallet?.bonusGold + wallet?.gold;
-  const warning = () => {
-    if (userId && totalByHand && total) {
-      if (totalByHand !== total) {
-        return (
-          <div style={{ color: 'red' }}>
-            합계와 장부가 일치하지 않습니다.
-          </div>
-        );
-      }
-    }
-  };
 
+  // 골드 수정 입력 대화창
   const handleOpen = () => {
     if (!userId) {
       toast.error('유저를 먼저 검색해주세요.');
@@ -240,10 +244,26 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
       payload: false,
     });
   };
+
+  // 골드 컨펌 대화창
+  const handleOpenConfirm = () => {
+    dispatch({
+      type: GoldDetailActionKind.HANDLE_DIALOG,
+      payload: false,
+    });
+    setIsConfirmed(true);
+  };
+  const handleCloseConfirm = () => {
+    setIsConfirmed(false);
+  };
+
+  const handleSubmit = () => {
+    postGold();
+    handleCloseConfirm();
+  };
+
   return (
     <Box sx={{ mt: 5, pr: 10 }}>
-      {warning()}
-
       <Box
         style={{
           display: 'flex',
@@ -269,7 +289,7 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
       {wallet && ledger && (
         <Box sx={{ mt: 3 }} style={{ display: 'flex' }}>
           <Box sx={{ mr: 10 }} maxWidth="30%" minWidth="30%">
-            <WalletStatus
+            <WalletTable
               wallet={wallet}
               total={total}
               handleOpen={handleOpen}
@@ -281,26 +301,47 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
           </Box>
         </Box>
       )}
+      {console.log(isConfirmed)}
+      {isConfirmed && (
+        <Dialog
+          aria-labelledby="ConfirmModal"
+          open={isConfirmed}
+          onClose={handleCloseConfirm}
+        >
+          <ConfirmModal
+            title="골드 수정"
+            confirmTitle="확인"
+            type="CONFIRM"
+            content={`${userId} 유저의 골드를 수정하시겠습니까? `}
+            handleOnCancel={handleCloseConfirm}
+            handleOnClick={handleSubmit}
+          />
+        </Dialog>
+      )}
 
       <Dialog open={state.openGoldAddDialog} onClose={handleClose}>
         <DialogTitle>골드 추가(제거)</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {`${userId} 유저의 골드를 수정합니다.`}
+            <b>{userId}</b> 유저의 골드를 수정합니다.
             <br />
-            {`현재 유저의 골드는 ${total} 골드입니다.`}
+            현재 유저의 골드는 <b>{total}</b> 골드입니다.
             <br />
-            {`현재 장부상의 모든 기록상 ${totalByHand} 골드입니다.`}
+            현재 유저의 골드 내역 총 합계는
+            <b>{totalByHand}</b>
+            골드입니다.
           </DialogContentText>
           <Box p={3}>
             <Box
               style={{
                 display: 'flex',
+                width: '500px',
                 justifyContent: 'space-between',
               }}
             >
               <Select
                 size="small"
+                variant="outlined"
                 value={state.postForm.type}
                 label="Age"
                 onChange={(e) => {
@@ -310,8 +351,8 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
                   });
                 }}
               >
-                <MenuItem value={'add'}>+</MenuItem>
-                <MenuItem value={'sub'}>-</MenuItem>
+                <MenuItem value={'add'}>추가</MenuItem>
+                <MenuItem value={'sub'}>제거</MenuItem>
               </Select>
 
               <TextField
@@ -354,8 +395,8 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={postGold}>Subscribe</Button>
+          <Button onClick={handleClose}>취소</Button>
+          <Button onClick={handleOpenConfirm}>확인</Button>
         </DialogActions>
       </Dialog>
     </Box>
