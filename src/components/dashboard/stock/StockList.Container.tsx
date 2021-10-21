@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import StockListPresenter from './StockList.Presenter';
 import { APIStock } from 'src/lib/api';
 
 export enum StockListActionKind {
   LOADING = 'LOADING',
+  LOAD_STOCK = 'LOAD_STOCK',
   ADD_STOCK = 'ADD_STOCK', // add stocks to existing news
   GET_STOCK = 'GET_STOCK', // first request || reload
   RELOAD_STOCK = 'RELOAD_STOCK', // first request || reload
@@ -49,9 +49,9 @@ const initialState: StockListState = {
   query: {
     _q: '',
     _start: 0,
-    _limit: 50,
+    _limit: 30,
   },
-  page: 1,
+  page: 0,
   commentPage: 0,
   newsPage: 0,
 };
@@ -68,6 +68,12 @@ const stockReducer = (
         loading: true,
       };
     case StockListActionKind.GET_STOCK:
+      return {
+        ...state,
+        loading: false,
+        stocks: payload,
+      };
+    case StockListActionKind.LOAD_STOCK:
       return {
         ...state,
         loading: false,
@@ -124,7 +130,7 @@ const stockReducer = (
         page: payload,
         query: {
           ...state.query,
-          _start: (payload - 1) * 50,
+          _start: (payload - 1) * 30,
         },
       };
     case StockListActionKind.CHANGE_COMMENTPAGE:
@@ -132,7 +138,11 @@ const stockReducer = (
         ...state,
         commentPage: payload,
       };
-      case Sto
+    case StockListActionKind.CHANGE_NEWSPAGE:
+      return {
+        ...state,
+        newsPage: payload,
+      };
   }
 };
 
@@ -155,6 +165,19 @@ const StockListContainer = () => {
     }
   };
 
+  const loadStock = async () => {
+    dispatch({ type: StockListActionKind.LOADING });
+    try {
+      const { data } = await APIStock.getDetailList(stockState.query);
+      dispatch({
+        type: StockListActionKind.LOAD_STOCK,
+        payload: data,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const addStock = useCallback(async () => {
     if (!stockState.shouldUpdate) return;
     try {
@@ -167,9 +190,10 @@ const StockListContainer = () => {
     } catch (error) {
       console.log(error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stockState.stocks, stockState.query, stockState.shouldUpdate]);
 
-  const reloadStock = useCallback(async (stockCode?) => {
+  const reloadStock = useCallback(async (stockCode) => {
     try {
       const { data } = await APIStock.getDetail(stockCode);
       dispatch({
@@ -181,19 +205,38 @@ const StockListContainer = () => {
     }
   }, []);
 
+  const handlePageChange = (event: any, newPage: number): void => {
+    if (
+      (stockState.page + 1) * stockState.query._limit >=
+      stockState.stocks.length - stockState.query._limit
+    ) {
+      dispatch({
+        type: StockListActionKind.CHANGE_SHOULDUPDATE,
+        payload: true,
+      });
+    }
+    dispatch({
+      type: StockListActionKind.CHANGE_PAGE,
+      payload: newPage,
+    });
+  };
+
   useEffect(() => {
     addStock();
   }, [addStock]);
 
   useEffect(() => {
     getStock();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <StockListPresenter
       stockState={stockState}
       dispatch={dispatch}
+      loadStock={loadStock}
       reloadStock={reloadStock}
+      handlePageChange={handlePageChange}
     />
   );
 };

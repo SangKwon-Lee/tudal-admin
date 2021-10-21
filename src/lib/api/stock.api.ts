@@ -24,9 +24,10 @@ export async function getDetail(stockcode: string) {
   return await cmsServer.get(`/stocks/detail/${stockcode}`);
 }
 
-export async function getDetailList(params, list?) {
+export async function getDetailList(params) {
   let query = qs.stringify(removeEmpty(params));
-  return await cmsServer.get(`/stocks/detail?${query}}`);
+  console.log(params);
+  return await cmsServer.get(`/stocks/detail?${query}`);
 }
 
 export async function getStockNews(stockcode, query = {}) {

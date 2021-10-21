@@ -163,7 +163,7 @@ const StockPage = () => {
     try {
       const { data } = await APIStock.getDetailList(
         search,
-        stockList.length,
+        // stockList.length,
       );
       dispatch({ type: StockActionKind.ADD_STOCK, payload: data });
       setShouldUpdate(false);

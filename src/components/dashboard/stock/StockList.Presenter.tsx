@@ -25,7 +25,6 @@ import SearchIcon from 'src/icons/Search';
 import { applyPagination } from 'src/utils/pagination';
 import dayjs from 'dayjs';
 import * as _ from 'lodash';
-import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import ExternalLinkIcon from '../../../icons/ExternalLink';
 import InformationCircleIcon from '../../../icons/InformationCircle';
 import Scrollbar from '../../layout/Scrollbar';
@@ -34,6 +33,7 @@ import {
   StockListActionKind,
   StockListState,
 } from './StockList.Container';
+import StockFormContainer from './StockFormModal.Container';
 
 const useStyles = makeStyles({
   text: {
@@ -52,21 +52,29 @@ interface StockListProps {
   stockState: StockListState;
   dispatch: (params: StockListAction) => void;
   reloadStock: (stock?: any) => void;
+  handlePageChange: (event: any, newPage: number) => void;
+  loadStock: () => Promise<void>;
 }
 
 const StockListPresenter: React.FC<StockListProps> = (props) => {
-  const { stockState, dispatch, reloadStock } = props;
+  const {
+    stockState,
+    dispatch,
+    reloadStock,
+    handlePageChange,
+    loadStock,
+  } = props;
   const {
     isOpenForm,
     loading,
     query,
-    shouldUpdate,
     stocks,
     targetStock,
     page,
     commentPage,
+    newsPage,
   } = stockState;
-  const paginatedList = applyPagination(stocks, page, query._limit);
+
   const classes = useStyles();
   return (
     <Box
@@ -77,6 +85,16 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
       }}
       data-testid="stock-list-table"
     >
+      {isOpenForm && !_.isEmpty(targetStock) && (
+        <StockFormContainer
+          stock={targetStock}
+          isOpen={isOpenForm}
+          reloadStock={reloadStock}
+          setClose={() =>
+            dispatch({ type: StockListActionKind.CLOSE_FORM })
+          }
+        />
+      )}
       <Box
         sx={{
           alignItems: 'center',
@@ -105,7 +123,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
             }}
             name={'_q'}
             placeholder="종목명 검색을 지원합니다."
-            onKeyPress={(e) => e.key === 'Enter' && reloadStock()}
+            onKeyPress={(e) => e.key === 'Enter' && loadStock()}
             onChange={(event) => {
               dispatch({
                 type: StockListActionKind.CHANGE_QUERY,
@@ -115,7 +133,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
             variant="outlined"
           />
         </Box>
-        <Button variant={'contained'} onClick={reloadStock}>
+        <Button variant={'contained'} onClick={loadStock}>
           검색
         </Button>
       </Box>
@@ -126,13 +144,12 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
         </div>
       )}
 
-      {paginatedList.map((stock, i) => {
+      {stockState.stocks.map((stock, i) => {
         const paginatedComments = applyPagination(
           stock.comments,
           commentPage,
           3,
         );
-
         const paginatedNews = applyPagination(
           stock.news,
           newsPage,
@@ -360,7 +377,10 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                     component="div"
                     count={stock.news.length}
                     onPageChange={(event, value): void =>
-                      setNewsPage(value)
+                      dispatch({
+                        type: StockListActionKind.CHANGE_NEWSPAGE,
+                        payload: value,
+                      })
                     }
                     page={newsPage}
                     rowsPerPage={3}
@@ -374,10 +394,10 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
       })}
       <TablePagination
         component="div"
-        count={list.length}
-        onPageChange={setPage}
+        count={stocks.length}
+        onPageChange={handlePageChange}
         page={page}
-        rowsPerPage={limit}
+        rowsPerPage={query._limit}
         rowsPerPageOptions={[10]}
       />
     </Box>

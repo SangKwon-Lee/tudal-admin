@@ -178,6 +178,7 @@ const CouponCreateContainer: FC<ICouponCreateProps> = (props) => {
       code: '',
       issuedBy: user.id,
       expirationDate: couponCreateState.createInput.expirationDate,
+      isUsed: false,
     };
 
     try {

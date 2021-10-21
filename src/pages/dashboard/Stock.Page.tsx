@@ -11,7 +11,7 @@ import { Toaster } from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
 import ChevronRightIcon from 'src/icons/ChevronRight';
 import useSettings from 'src/hooks/useSettings';
-import { StockList } from 'src/components/dashboard/stock';
+import StockListContainer from 'src/components/dashboard/stock/StockList.Container';
 
 const StockPage = () => {
   const { settings } = useSettings();
@@ -63,7 +63,7 @@ const StockPage = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <StockList />
+            <StockListContainer />
           </Box>
         </Container>
       </Box>

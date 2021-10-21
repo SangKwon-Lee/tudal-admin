@@ -59,7 +59,7 @@ const ScheduleList = Loadable(
 );
 
 const StockList = Loadable(
-  lazy(() => import('./pages/dashboard/Stock')),
+  lazy(() => import('./pages/dashboard/Stock.Page')),
 );
 
 const KeywordList = Loadable(
