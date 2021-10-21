@@ -4,3 +4,4 @@ export * as APITag from './tag.api';
 export * as APICategory from './category.api';
 export * as APINews from './news.api';
 export * as APIMaster from './master.api';
+export * as APIOverview from './overview.api';
