@@ -41,6 +41,7 @@ import {
   Switch,
   Dialog,
   Collapse,
+  Pagination,
 } from '@material-ui/core';
 
 import useSettings from 'src/hooks/useSettings';
@@ -109,18 +110,23 @@ const filterOptions = [
   },
 ];
 
-interface IKeywordListComponentProps {
+interface IKeywordListPresenterProps {
   state: IKeywordListState;
   multiTagInputRef: React.RefObject<HTMLTextAreaElement>;
-  keywordAutocomplete: object;
+  tagAddInputRef: React.RefObject<HTMLInputElement>;
+  keywordAutocomplete: { loading: boolean; data: Tag[]; error: any };
 
   dispatch: (params: IKeywordListDispatch) => void;
   postKeyword: () => void;
+  updateKeyword: (id, body) => void;
+  deleteKeyword: (tag: Tag) => void;
+  createAlias: (name: string) => void;
+  deleteAlias: (alias: ITagAlias) => void;
   postMultiKeywords: () => void;
   refetchKeywordAutocomplete: () => void;
 }
 
-const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
+const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
   props,
 ) => {
   const {
@@ -129,7 +135,22 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
     postMultiKeywords,
     postKeyword,
     multiTagInputRef,
+    tagAddInputRef,
+    keywordAutocomplete,
+    refetchKeywordAutocomplete,
+    createAlias,
+    deleteAlias,
+    updateKeyword,
+    deleteKeyword,
   } = props;
+
+  const {
+    loading: keywordAutocompleteLoading,
+    data: keywordAutocompleteList,
+    error,
+  } = keywordAutocomplete;
+
+  const { alias, update, summary, description } = state;
   return (
     <>
       <Box my={3}>
@@ -182,27 +203,28 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
               <>
                 <Autocomplete
                   freeSolo
-                  value={keyword}
+                  value={state.newKeyword}
                   selectOnFocus
                   clearOnBlur
                   handleHomeEndKeys
-                  options={tagList}
+                  options={keywordAutocompleteList}
                   style={{
                     width: 500,
                     marginRight: 10,
                   }}
                   onChange={(event, newValue) => {
-                    if (!newValue) {
-                      setNewKeyword(null);
-                      return;
-                    }
                     if (typeof newValue !== 'string') {
                       if (
                         newValue &&
                         newValue.isNew &&
                         newValue.inputValue
                       ) {
-                        setNewKeyword(newValue);
+                        dispatch({
+                          type: KeywordActionKind.SET_NEW_KEYWORD,
+                          payload: newValue,
+                        });
+                      } else {
+                        toast.error('이미 등록된 키워드입니다');
                       }
                     }
                   }}
@@ -233,21 +255,16 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                     <TextField
                       {...params}
                       fullWidth
-                      inputRef={tagCreateRef}
-                      onChange={handleTagInput}
+                      inputRef={tagAddInputRef}
+                      onChange={refetchKeywordAutocomplete}
                       label="키워드 추가"
-                      onKeyDown={(event) => {
-                        if (event.code === 'ENTER') {
-                          console.log('asdasd');
-                        }
-                      }}
                       name="keyword"
                       variant="outlined"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
                           <React.Fragment>
-                            {tagLoading && (
+                            {keywordAutocompleteLoading && (
                               <CircularProgress
                                 color="inherit"
                                 size={20}
@@ -300,7 +317,10 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
               placeholder="검색"
               variant="outlined"
               onChange={_.debounce((e) => {
-                setSearch(e.target.value);
+                dispatch({
+                  type: KeywordActionKind.CHANGE_SEARCH,
+                  payload: e.target.value,
+                });
               }, 300)}
             />
           </Box>
@@ -310,11 +330,16 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
             select
             SelectProps={{ native: true }}
             variant="outlined"
-            onChange={handleSort}
+            onChange={(e) => {
+              dispatch({
+                type: KeywordActionKind.CHANGE_SORT,
+                payload: e.target.value,
+              });
+            }}
             style={{ marginLeft: '5px', marginRight: '5px' }}
           >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+            {sortOptions.map((option, index) => (
+              <option key={index} value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -322,13 +347,16 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
           {filterOptions.map((filter, index) => {
             return (
               <FormControlLabel
+                key={index}
                 control={
                   <Checkbox
                     checked={filter.value}
                     color="primary"
                     name={filter.label}
                     onChange={() =>
-                      handleFilter(index, !filter.value)
+                      dispatch({
+                        type: KeywordActionKind.SET_SUMMARY_FILTER,
+                      })
                     }
                   />
                 }
@@ -349,7 +377,7 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
             );
           })}
         </Box>
-        {loading && (
+        {state.loading && (
           <div data-testid="keyword-list-loading">
             <LinearProgress />
           </div>
@@ -376,11 +404,11 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedTags.map((tag) => {
+                {state.list.map((tag, index) => {
                   const [depth_1, depth_2, depth_3] =
                     tag.name.split('.');
                   return (
-                    <>
+                    <React.Fragment key={index}>
                       <TableRow
                         key={tag.id}
                         sx={{
@@ -444,8 +472,13 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                           >
                             <Button
                               onClick={() => {
-                                setTarget(tag);
-                                setOpenSummary(true);
+                                dispatch({
+                                  type: KeywordActionKind.HANDLE_SUMMARY_DIALOG,
+                                  payload: {
+                                    isOpen: true,
+                                    target: tag,
+                                  },
+                                });
                               }}
                             >
                               <Typography
@@ -474,8 +507,13 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                           >
                             <Button
                               onClick={() => {
-                                setTarget(tag);
-                                setOpenDescription(true);
+                                dispatch({
+                                  type: KeywordActionKind.HANDLE_DESCRIPTION_DIALOG,
+                                  payload: {
+                                    isOpen: true,
+                                    target: tag,
+                                  },
+                                });
                               }}
                             >
                               <Typography
@@ -505,21 +543,31 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                         </TableCell>
                         <TableCell>
                           <Tooltip
-                            title={tag.alias?.map((alias) => {
-                              return (
-                                <Chip
-                                  color="primary"
-                                  label={alias.aliasName}
-                                  style={{ marginLeft: 3 }}
-                                />
-                              );
-                            })}
+                            title={
+                              !tag.alias.length
+                                ? '존재하지 않습니다'
+                                : tag.alias.map((alias, index) => {
+                                    return (
+                                      <Chip
+                                        key={index}
+                                        color="primary"
+                                        label={alias.aliasName}
+                                        style={{ marginLeft: 3 }}
+                                      />
+                                    );
+                                  })
+                            }
                             placement="bottom"
                           >
                             <IconButton
                               onClick={() => {
-                                setTarget(tag);
-                                setOpenAlias(true);
+                                dispatch({
+                                  type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+                                  payload: {
+                                    isEditing: true,
+                                    target: tag,
+                                  },
+                                });
                               }}
                             >
                               <AliasIcon fontSize="small" />
@@ -529,8 +577,10 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                         <TableCell>
                           <IconButton
                             onClick={() => {
-                              setTarget(tag);
-                              setOpenUpdateTag(true);
+                              dispatch({
+                                type: KeywordActionKind.SHOW_UPDATE_DIALOG,
+                                payload: tag,
+                              });
                             }}
                           >
                             <BuildIcon fontSize="small" />
@@ -539,8 +589,10 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                         <TableCell>
                           <IconButton
                             onClick={() => {
-                              setOpenDeleteTag(true);
-                              setTarget(tag);
+                              dispatch({
+                                type: KeywordActionKind.SHOW_DELETE_DIALOG,
+                                payload: tag,
+                              });
                             }}
                           >
                             {tag.isDeleted ? (
@@ -551,95 +603,125 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
                           </IconButton>
                         </TableCell>
                       </TableRow>
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </TableBody>
             </Table>
           </Box>
         </Scrollbar>
-        <TablePagination
-          component="div"
-          count={tags.length}
-          onPageChange={handlePage}
-          page={page}
-          rowsPerPage={rowsPerPage}
+        <Pagination
+          page={state.page}
+          onChange={(e, page) =>
+            dispatch({
+              type: KeywordActionKind.CHANGE_PAGE,
+              payload: page,
+            })
+          }
+          count={Math.ceil(state.listLength / state.status._limit)}
+          variant="outlined"
+          shape="rounded"
+          style={{ display: 'flex', justifyContent: 'flex-end' }}
         />
       </Card>
 
       {/* Dialogs */}
 
-      {openAlias && targetTag && (
+      {alias.isEditing && (
         <DialogEditMultiSelect
           id={'id'}
           name={'aliasName'}
-          isOpen={openAlias}
-          options={targetTag.alias}
-          handleOpen={setOpenAlias}
-          handleCreate={handleCreateAlias}
-          handleDelete={handleDeleteAlias}
+          isOpen={alias.isEditing}
+          options={alias.target.alias}
+          handleOpen={(isOpen) => {
+            dispatch({
+              type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+              payload: { isEditing: isOpen },
+            });
+          }}
+          handleCreate={createAlias}
+          handleDelete={deleteAlias}
         />
       )}
-      {openUpdateTag && targetTag && (
+      {update.isUpdating && (
         <KeywordEditDialog
-          open={openUpdateTag}
+          open={update.isUpdating}
           setClose={() => {
-            setOpenUpdateTag(false);
-            setTarget(null);
+            dispatch({ type: KeywordActionKind.CLOSE_UPDATE_DIALOG });
           }}
-          tag={targetTag}
-          updateTag={updateTag}
-          reload={getList}
+          tag={update.target}
+          updateTag={updateKeyword}
         />
       )}
 
-      {openSummary && targetTag && (
+      {summary.isEditing && (
         <EditTextDialog
-          open={openSummary}
-          setOpen={setOpenSummary}
+          open={summary.isEditing}
+          setOpen={(isOpen) => {
+            dispatch({
+              type: KeywordActionKind.HANDLE_SUMMARY_DIALOG,
+              payload: { isOpen },
+            });
+          }}
           onSubmit={(_text) =>
-            updateTag(targetTag.id, { summary: _text })
+            updateKeyword(summary.target.id, { summary: _text })
           }
           title={'요약문 변경'}
           description={'요약문을 변경합니다.'}
-          defaultText={targetTag.summary}
+          defaultText={summary.target.summary}
           isMultiLine={true}
         />
       )}
-      {openDescription && targetTag && (
+      {description.isEditing && (
         <EditTextDialog
-          open={openDescription}
-          setOpen={setOpenDescription}
+          open={description.isEditing}
+          setOpen={(isOpen) => {
+            dispatch({
+              type: KeywordActionKind.HANDLE_DESCRIPTION_DIALOG,
+              payload: { isOpen },
+            });
+          }}
           onSubmit={(_text) =>
-            updateTag(targetTag.id, { description: _text })
+            updateKeyword(description.target.id, {
+              description: _text,
+            })
           }
           title={'요약문 변경'}
           description={'요약문을 변경합니다.'}
-          defaultText={targetTag.description}
+          defaultText={description.target.description}
           isMultiLine={true}
         />
       )}
-      {targetTag && (
+      {state.delete.isDeleting && (
         <Dialog
           aria-labelledby="ConfirmModal"
-          open={openDeleteTag}
-          onClose={() => setOpenDeleteTag(false)}
+          open={state.delete.isDeleting}
+          onClose={() =>
+            dispatch({
+              type: KeywordActionKind.CLOSE_DELETE_DIALOG,
+            })
+          }
         >
           <ConfirmModal
             title={
-              targetTag.isDeleted ? '키워드 복구' : '키워드 삭제'
+              state.delete.target.isDeleted
+                ? '키워드 복구'
+                : '키워드 삭제'
             }
             content={
-              targetTag.isDeleted
+              state.delete.target.isDeleted
                 ? '해당 키워드를 복구하시겠습니까'
                 : '해당 키워드를 삭제하시겠습니까'
             }
-            confirmTitle={targetTag.isDeleted ? '복구' : '삭제'}
-            type={targetTag.isDeleted ? 'CONFIRM' : 'ERROR'}
-            handleOnClick={() => handleDelete(targetTag)}
+            confirmTitle={
+              state.delete.target.isDeleted ? '복구' : '삭제'
+            }
+            type={state.delete.target.isDeleted ? 'CONFIRM' : 'ERROR'}
+            handleOnClick={deleteKeyword}
             handleOnCancel={() => {
-              setOpenDeleteTag(false);
-              setTarget(null);
+              dispatch({
+                type: KeywordActionKind.CLOSE_DELETE_DIALOG,
+              });
             }}
           />
         </Dialog>
@@ -648,4 +730,4 @@ const KeywordListComponent: React.FC<IKeywordListComponentProps> = (
   );
 };
 
-export default KeywordListComponent;
+export default KeywordListPresenter;

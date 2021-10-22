@@ -1,5 +1,5 @@
 import React from 'react';
-import KeywordListContainer from 'src/components/dashboard/schedule/KeywordList.Container';
+import KeywordListContainer from 'src/components/dashboard/keyword/KeywordList.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
 
 const SchedulePage: React.FC = () => {

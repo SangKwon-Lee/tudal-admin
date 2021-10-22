@@ -11,11 +11,18 @@ export async function find(name) {
 
 export async function getList(params: IKeywordListStatus) {
   const query = qs.stringify(removeEmpty(params));
-  return await axios.get<Tag[]>(`/tag-excluded?${query}`);
+  return await axios.get<Tag[]>(`/tags-excluded?${query}`);
 }
 
-export async function getListCount() {
-  return await axios.get<Number>(`/tags/count`);
+export async function getListCount(params: IKeywordListStatus) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Number>(`/tags/count?${query}`);
+}
+
+export async function search(params: { _q: string }) {
+  const query = qs.stringify(removeEmpty(params));
+
+  return await axios.get<Number>(`/tags-excluded?${query}`);
 }
 
 export async function getItem(id: number) {
