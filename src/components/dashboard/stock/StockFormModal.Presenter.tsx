@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   IStockComment,
   IStockDetailsWithTagCommentNews,
@@ -38,19 +38,14 @@ import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { tokenize, extractKeywords } from 'src/utils/extractKeywords';
-
 import * as _ from 'lodash';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import dayjs from 'dayjs';
 
-import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
-import { APINews, APIStock, APITag } from 'src/lib/api';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import { IRoleType } from 'src/types/user';
 import useAuth from 'src/hooks/useAuth';
-import { applyPagination } from 'src/utils/pagination';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import {
@@ -58,8 +53,6 @@ import {
   StockFormState,
   StockFormActionKind,
 } from './StockFormModal.Container';
-import { createAndSelectByHand } from 'src/lib/api/news.api';
-import { deleteComment, updateComment } from 'src/lib/api/stock.api';
 import { INews } from 'src/types/news';
 
 const tagFilter = createFilterOptions<any>();
@@ -115,10 +108,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
     tagLoading,
     handleTagChange,
     createOrUpdateTag,
-    createOrUpdateTagList,
     createOrSelectByUrl,
     createAndSelectByHand,
-    handleExtract,
     deleteStockTag,
     postStockComment,
     updateComment,
@@ -138,7 +129,6 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
     commentDate,
     comment,
     isUpdating,
-    targetComment,
   } = stockFormState;
   const tagInput = useRef(null);
   const classes = useStyles();

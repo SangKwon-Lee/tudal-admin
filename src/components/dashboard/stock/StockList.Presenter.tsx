@@ -124,12 +124,12 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
             name={'_q'}
             placeholder="종목명 검색을 지원합니다."
             onKeyPress={(e) => e.key === 'Enter' && loadStock()}
-            onChange={(event) => {
+            onChange={_.debounce((event) => {
               dispatch({
                 type: StockListActionKind.CHANGE_QUERY,
                 payload: event.target.value,
               });
-            }}
+            }, 80)}
             variant="outlined"
           />
         </Box>
@@ -248,11 +248,13 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                         </TableHead>
                         <TableBody>
                           {_.isEmpty(paginatedComments) ? (
-                            <Box ml={3} mt={3}>
-                              <Typography variant={'body1'}>
-                                {'작성된 코멘트가 없습니다.'}
-                              </Typography>
-                            </Box>
+                            <TableRow>
+                              <TableCell>
+                                <Typography variant={'body1'}>
+                                  {'작성된 코멘트가 없습니다.'}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
                           ) : (
                             paginatedComments.map((item, i) => (
                               <TableRow key={i}>
@@ -308,11 +310,13 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                     </TableHead>
                     <TableBody>
                       {_.isEmpty(paginatedNews) ? (
-                        <Box ml={3} mt={3}>
-                          <Typography variant={'body1'}>
-                            {'연관된 뉴스가 없습니다.'}
-                          </Typography>
-                        </Box>
+                        <TableRow>
+                          <TableCell>
+                            <Typography variant={'body1'}>
+                              {'연관된 뉴스가 없습니다.'}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
                       ) : (
                         paginatedNews.map((item, i) => (
                           <TableRow

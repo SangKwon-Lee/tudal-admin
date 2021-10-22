@@ -229,7 +229,6 @@ const StockListContainer = () => {
     getStock();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <StockListPresenter
       stockState={stockState}

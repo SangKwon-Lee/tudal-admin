@@ -26,7 +26,6 @@ export async function getDetail(stockcode: string) {
 
 export async function getDetailList(params) {
   let query = qs.stringify(removeEmpty(params));
-  console.log(params);
   return await cmsServer.get(`/stocks/detail?${query}`);
 }
 

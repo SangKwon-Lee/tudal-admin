@@ -20,7 +20,6 @@ interface StockFormProps {
 
 export enum StockFormActionKind {
   LOADING = 'LOADING',
-  LOADING_FALSE = 'LOADING_FALSE',
   CHANGE_COMMENT = 'CHANGE_COMMENT',
   CHANGE_TARGET_COMMENT = 'CHANGE_TARGET_COMMENT',
   CHANGE_IS_UPDATING = 'CHANGE_IS_UPDATING',
@@ -94,12 +93,7 @@ const StockFormReducer = (
     case StockFormActionKind.LOADING:
       return {
         ...state,
-        loading: true,
-      };
-    case StockFormActionKind.LOADING_FALSE:
-      return {
-        ...state,
-        loading: false,
+        loading: payload,
       };
     case StockFormActionKind.CHANGE_COMMENT:
       return {
@@ -277,14 +271,13 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
 
   const createOrSelectByUrl = async () => {
     try {
-      dispatch({ type: StockFormActionKind.LOADING });
+      dispatch({ type: StockFormActionKind.LOADING, payload: true });
       const { data, status } = await APINews.createAndSelectByURL(
         stockFormState.newsUrl,
         stockFormState.newsPubDate.toISOString(),
         stock.code,
         user.id,
       );
-
       if (status === 200) {
         if (data.isExisted) {
           toast.success('기존에 저장되어있던 뉴스를 가져옵니다.');
@@ -300,13 +293,13 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      dispatch({ type: StockFormActionKind.LOADING_FALSE });
+      dispatch({ type: StockFormActionKind.LOADING, payload: false });
     }
   };
 
   const createAndSelectByHand = async () => {
     try {
-      dispatch({ type: StockFormActionKind.LOADING });
+      dispatch({ type: StockFormActionKind.LOADING, payload: true });
       const _date = dayjs(stockFormState.newsManualForm.publishDate);
       const _newsManualForm = {
         ...stockFormState.newsManualForm,
@@ -336,12 +329,12 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      dispatch({ type: StockFormActionKind.LOADING_FALSE });
+      dispatch({ type: StockFormActionKind.LOADING, payload: false });
     }
   };
 
   const handleExtract = async (sentence) => {
-    dispatch({ type: StockFormActionKind.LOADING });
+    dispatch({ type: StockFormActionKind.LOADING, payload: true });
     try {
       const tokens = tokenize(sentence);
       if (!tokens) return;
@@ -351,12 +344,12 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      dispatch({ type: StockFormActionKind.LOADING_FALSE });
+      dispatch({ type: StockFormActionKind.LOADING, payload: false });
     }
   };
 
   const deleteStockTag = async (stock, tag) => {
-    dispatch({ type: StockFormActionKind.LOADING });
+    dispatch({ type: StockFormActionKind.LOADING, payload: true });
     try {
       const { status } = await APIStock.deleteTag(
         stock.code,
@@ -369,12 +362,12 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      dispatch({ type: StockFormActionKind.LOADING_FALSE });
+      dispatch({ type: StockFormActionKind.LOADING, payload: false });
     }
   };
 
   const postStockComment = async (message, stock, dateTime) => {
-    dispatch({ type: StockFormActionKind.LOADING });
+    dispatch({ type: StockFormActionKind.LOADING, payload: true });
     try {
       await handleExtract(stockFormState.comment);
       const { status } = await APIStock.postComment(
@@ -394,7 +387,7 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      dispatch({ type: StockFormActionKind.LOADING_FALSE });
+      dispatch({ type: StockFormActionKind.LOADING, payload: false });
     }
   };
 
