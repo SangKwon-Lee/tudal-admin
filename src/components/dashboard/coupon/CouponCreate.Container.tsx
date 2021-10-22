@@ -20,13 +20,7 @@ export enum CouponCreateActionKind {
   LOADING = 'LOADING',
   CREATE_COUPON = 'CREATE_COUPON',
   //changes
-  CHANGE_NAME = 'CHANGE_NAME',
-  CHANGE_QUANTITY = 'CHANGE_QUANTITY',
-  CHANGE_CODE = 'CHANGE_CODE',
-  CHANGE_AGENCY = 'CHANGE_AGENCY',
-  CHANGE_DISPLAYNAME = 'CHANGE_DISPLAYNAME',
-  CHANGE_TYPE = 'CHANGE_TYPE',
-  CHANGE_APPLYDAYS = 'CHANGE_APPLYDAYS',
+  CHANGE_INPUT = 'CHANGE_INPUT',
   CHANGE_EXPIRATIONDATE = 'CHANGE_EXPIRATIONDATE',
   RESET_STATE = 'RESET_STATE',
 }
@@ -49,9 +43,8 @@ export interface CouponCreateState {
     quantity: number;
   };
 }
-
-const newDate = new Date();
-newDate.setDate(newDate.getDate() + 7);
+let newDate = dayjs();
+newDate = newDate.add(7, 'day');
 
 const initialState: CouponCreateState = {
   loading: false,
@@ -63,7 +56,7 @@ const initialState: CouponCreateState = {
     type: 'premium',
     applyDays: 7,
     issuedDate: dayjs().format(),
-    expirationDate: dayjs().format(),
+    expirationDate: newDate.format(),
     quantity: 1,
   },
 };
@@ -79,36 +72,12 @@ const CouponCreateReducer = (
         ...state,
         loading: true,
       };
-    case CouponCreateActionKind.CHANGE_NAME:
+    case CouponCreateActionKind.CHANGE_INPUT:
       return {
         ...state,
         createInput: {
           ...state.createInput,
-          name: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_DISPLAYNAME:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          displayName: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_CODE:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          code: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_AGENCY:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          agency: payload,
+          [payload.target.name]: payload.target.value,
         },
       };
     case CouponCreateActionKind.CHANGE_EXPIRATIONDATE:
@@ -117,30 +86,6 @@ const CouponCreateReducer = (
         createInput: {
           ...state.createInput,
           expirationDate: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_TYPE:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          type: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_APPLYDAYS:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          applyDays: payload,
-        },
-      };
-    case CouponCreateActionKind.CHANGE_QUANTITY:
-      return {
-        ...state,
-        createInput: {
-          ...state.createInput,
-          quantity: Number(payload),
         },
       };
     case CouponCreateActionKind.RESET_STATE:
@@ -178,6 +123,7 @@ const CouponCreateContainer: FC<ICouponCreateProps> = (props) => {
       code: '',
       issuedBy: user.id,
       expirationDate: couponCreateState.createInput.expirationDate,
+      isUsed: false,
     };
 
     try {

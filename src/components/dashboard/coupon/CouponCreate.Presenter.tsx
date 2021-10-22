@@ -113,8 +113,8 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
             name="displayName"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_DISPLAYNAME,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
             value={createInput?.displayName || ''}
@@ -126,8 +126,8 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
             name="name"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_NAME,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
             value={createInput?.name || ''}
@@ -136,11 +136,11 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
           <TextField
             sx={{ m: 2 }}
             label="기관 이름"
-            name="angency"
+            name="agency"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_AGENCY,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
             value={createInput?.agency || ''}
@@ -157,8 +157,8 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
             variant="outlined"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_APPLYDAYS,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
           >
@@ -192,8 +192,8 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
             variant="outlined"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_TYPE,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
           >
@@ -212,8 +212,8 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
             variant="outlined"
             onChange={(event) => {
               dispatch({
-                type: CouponCreateActionKind.CHANGE_QUANTITY,
-                payload: event.target.value,
+                type: CouponCreateActionKind.CHANGE_INPUT,
+                payload: event,
               });
             }}
           >

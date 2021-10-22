@@ -17,6 +17,7 @@ export interface MasterSubscribeAction {
   type: MasterSubscribeActionKind;
   payload?: any;
 }
+
 export interface MasterSubscribeState {
   loading: boolean;
   subscription: any;
@@ -188,7 +189,6 @@ const MasterSubscribeContainer = () => {
       console.log(error);
     }
   };
-  console.log(masterSubscribeState);
 
   return (
     <MasterSubscribePresenter
