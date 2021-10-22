@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import axios, { apiServer } from 'src/lib/axios';
 import qs from 'qs';
 import {
@@ -14,15 +13,17 @@ export async function getLegderList(params: IGoldListQuery) {
     (params.searchWord = '"' + params.searchWord + '"');
 
   const query = qs.stringify(removeEmpty(params));
-  return await apiServer.get<IGoldLedger[]>(
-    `/golds/history?${query}`,
-  );
+  return await apiServer.get<{
+    count: number;
+    histories: IGoldLedger[];
+  }>(`/golds/history?${query}`);
 }
 
 export async function getUserLedger(userId: number) {
-  return await apiServer.get<IGoldLedger[]>(
-    `/golds/history/${userId}?limit=100000`,
-  );
+  return await apiServer.get<{
+    count: number;
+    histories: IGoldLedger[];
+  }>(`/golds/history?searchWord=${userId}`);
 }
 
 export async function getUserWallet(userId: number) {
@@ -36,8 +37,4 @@ export async function postAddGold(param: IGoldPostForm) {
     }`,
     param,
   );
-}
-
-export async function getCount() {
-  return await axios.get<number>(`/golds/count`);
 }

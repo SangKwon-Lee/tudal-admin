@@ -75,7 +75,7 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
 
       <TablePagination
         component="div"
-        count={100}
+        count={Math.ceil(ledger.length / 5)}
         onPageChange={(e, page): void => {
           setPage(page);
         }}

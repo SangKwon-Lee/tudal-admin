@@ -195,14 +195,14 @@ const GoldListPresenter: React.FC<IGoldListPresenterProps> = ({
         </Box>
       </Scrollbar>
       <Pagination
-        page={state.query.page}
+        page={state.query.page + 1}
         onChange={(e, page) =>
           dispatch({
             type: GoldListActionKind.CHANGE_PAGE,
             payload: page,
           })
         }
-        count={100}
+        count={Math.ceil(state.listLength / state.query.limit)}
         variant="outlined"
         shape="rounded"
         style={{ display: 'flex', justifyContent: 'flex-end' }}

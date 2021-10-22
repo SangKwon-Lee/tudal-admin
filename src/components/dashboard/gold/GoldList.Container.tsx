@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useReducer,
-} from 'react';
-import * as _ from 'lodash';
+import React, { useEffect, useCallback, useReducer } from 'react';
 import { IGoldLedger } from 'src/types/gold';
 import { APIGold } from 'src/lib/api';
 import GoldListPresenter from './GoldList.Presenter';
@@ -126,7 +120,8 @@ const goldListReducer = (
       return {
         ...state,
         loading: false,
-        list: payload,
+        list: payload.histories,
+        listLength: payload.count,
       };
     case GoldListActionKind.LOAD_COUNT:
       return {
@@ -188,29 +183,12 @@ const GoldListContainer: React.FC<IGoldListContainerProps> = (
     } catch (error) {
       console.log(error);
     }
-  }, [goldListState.query]);
-
-  const getCount = useCallback(async () => {
-    try {
-      const { data, status } = await APIGold.getCount();
-      if (status === 200) {
-        dispatch({
-          type: GoldListActionKind.LOAD_COUNT,
-          payload: data,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  }, [goldListState.query, pageTopRef]);
 
   useEffect(() => {
     getList();
   }, [getList]);
 
-  useEffect(() => {
-    getCount();
-  }, [getCount]);
   return (
     <GoldListPresenter
       state={goldListState}

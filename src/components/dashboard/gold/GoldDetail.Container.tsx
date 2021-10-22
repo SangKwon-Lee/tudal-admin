@@ -188,7 +188,7 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
       if (status === 200) {
         dispatch({
           type: GoldDetailActionKind.LOAD_LEDGER,
-          payload: data.filter((el) => !el.isExpired),
+          payload: data.histories.filter((el) => !el.isExpired),
         });
       }
     } catch (error) {
