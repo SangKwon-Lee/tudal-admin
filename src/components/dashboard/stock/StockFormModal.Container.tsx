@@ -24,18 +24,14 @@ export enum StockFormActionKind {
   CHANGE_TARGET_COMMENT = 'CHANGE_TARGET_COMMENT',
   CHANGE_IS_UPDATING = 'CHANGE_IS_UPDATING',
   CHANGE_COMMENT_DATE = 'CHANGE_COMMENT_DATE',
-  CHANGE_NEWS_URL = 'CHANGE_NEWS_URL',
   CHANGE_NEWS_FORM_TYPE = 'CHANGE_NEWS_FORM_TYPE',
   CHANGE_COMMENT_PAGE = 'CHANGE_COMMENT_PAGE',
   CHANGE_NEWS_PAGE = 'CHANGE_NEWS_PAGE',
-  CHANGE_NEWS_PUB_DATE = 'CHANGE_NEWS_PUB_DATE',
   CHANGE_OPEN_CONFIRM = 'CHANGE_OPEN_CONFIRM',
+  CHANGE_NEWS_URL = 'CHANGE_NEWS_URL',
+  CHANGE_NEWS_PUB_DATE = 'CHANGE_NEWS_PUB_DATE',
   CHANGE_NEWS_MANUALFORM = 'CHANGE_NEWS_MANUALFORM',
-  CHANGE_NEWS_MANUALFORM_TITLE = 'CHANGE_NEWS_MANUALFORM_TITLE',
-  CHANGE_NEWS_MANUALFORM_URL = 'CHANGE_NEWS_MANUALFORM_URL',
-  CHANGE_NEWS_MANUALFORM_MEDIANAME = 'CHANGE_NEWS_MANUALFORM_MEDIANAME',
-  CHANGE_NEWS_MANUALFORM_PUBLISH_DATE = 'CHANGE_NEWS_MANUALFORM_PUBLISH_DATE',
-  CHANGE_NEWS_MANUALFORM_SUMMARIZED = 'CHANGE_NEWS_MANUALFORM_SUMMARIZED',
+  CHANGE_NEWS_MANUALFORM_INPUT = 'CHANGE_NEWS_MANUALFORM_INPUT',
 }
 export interface StockFormAction {
   type: StockFormActionKind;
@@ -157,44 +153,12 @@ const StockFormReducer = (
           url: payload.title,
         },
       };
-    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_TITLE:
+    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT:
       return {
         ...state,
         newsManualForm: {
           ...state.newsManualForm,
-          title: payload,
-        },
-      };
-    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_URL:
-      return {
-        ...state,
-        newsManualForm: {
-          ...state.newsManualForm,
-          url: payload,
-        },
-      };
-    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_MEDIANAME:
-      return {
-        ...state,
-        newsManualForm: {
-          ...state.newsManualForm,
-          mediaName: payload,
-        },
-      };
-    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_PUBLISH_DATE:
-      return {
-        ...state,
-        newsManualForm: {
-          ...state.newsManualForm,
-          publishDate: payload,
-        },
-      };
-    case StockFormActionKind.CHANGE_NEWS_MANUALFORM_SUMMARIZED:
-      return {
-        ...state,
-        newsManualForm: {
-          ...state.newsManualForm,
-          summarized: payload,
+          [payload.target.name]: payload.target.value,
         },
       };
   }

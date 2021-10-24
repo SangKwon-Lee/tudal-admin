@@ -644,8 +644,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                             required
                             onChange={(event) => {
                               dispatch({
-                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_TITLE,
-                                payload: event.target.value,
+                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT,
+                                payload: event,
                               });
                             }}
                             variant="outlined"
@@ -660,8 +660,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                             required
                             onChange={(event) => {
                               dispatch({
-                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_URL,
-                                payload: event.target.value,
+                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT,
+                                payload: event,
                               });
                             }}
                             variant="outlined"
@@ -676,8 +676,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                             required
                             onChange={(event) => {
                               dispatch({
-                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_MEDIANAME,
-                                payload: event.target.value,
+                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT,
+                                payload: event,
                               });
                             }}
                             variant="outlined"
@@ -695,8 +695,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                             required
                             onChange={(event) => {
                               dispatch({
-                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_PUBLISH_DATE,
-                                payload: event.target.value,
+                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT,
+                                payload: event,
                               });
                             }}
                             variant="outlined"
@@ -712,8 +712,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                             variant="outlined"
                             onChange={(event) => {
                               dispatch({
-                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_SUMMARIZED,
-                                payload: event.target.value,
+                                type: StockFormActionKind.CHANGE_NEWS_MANUALFORM_INPUT,
+                                payload: event,
                               });
                             }}
                             value={newsManualForm.summarized}
