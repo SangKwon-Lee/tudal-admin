@@ -75,6 +75,7 @@ import {
   IKeywordListState,
   KeywordActionKind,
 } from './KeywordList.Container';
+import KeywordMergeDialog from './KeywordMergeDialog';
 
 const customFilter = createFilterOptions<any>();
 interface ISortOption {
@@ -84,29 +85,16 @@ interface ISortOption {
 
 const sortOptions: ISortOption[] = [
   {
-    label: '기본',
+    label: '정렬을 선택해주세요',
     value: 'id:asc',
   },
   {
-    label: '이름순',
+    label: '이름',
     value: 'name:desc',
   },
   {
     label: '수정일 최신순',
     value: 'updated_at:desc',
-  },
-];
-
-const filterOptions = [
-  {
-    label: '요약문',
-    name: 'summary_null',
-    value: false,
-  },
-  {
-    label: '설명문',
-    name: 'description_null',
-    value: false,
   },
 ];
 
@@ -118,6 +106,7 @@ interface IKeywordListPresenterProps {
 
   dispatch: (params: IKeywordListDispatch) => void;
   postKeyword: () => void;
+  reload: () => void;
   updateKeyword: (id, body) => void;
   deleteKeyword: (tag: Tag) => void;
   createAlias: (name: string) => void;
@@ -132,6 +121,7 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
   const {
     state,
     dispatch,
+    reload,
     postMultiKeywords,
     postKeyword,
     multiTagInputRef,
@@ -280,6 +270,26 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
                 <Button variant="contained" onClick={postKeyword}>
                   추가
                 </Button>
+                <Box
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    m: -1,
+                    p: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() =>
+                      dispatch({
+                        type: KeywordActionKind.SHOW_MERGE_DIALOG,
+                      })
+                    }
+                  >
+                    키워드 통합
+                  </Button>
+                </Box>
               </>
             )}
           </Box>
@@ -344,38 +354,6 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
               </option>
             ))}
           </TextField>
-          {filterOptions.map((filter, index) => {
-            return (
-              <FormControlLabel
-                key={index}
-                control={
-                  <Checkbox
-                    checked={filter.value}
-                    color="primary"
-                    name={filter.label}
-                    onChange={() =>
-                      dispatch({
-                        type: KeywordActionKind.SET_SUMMARY_FILTER,
-                      })
-                    }
-                  />
-                }
-                label={
-                  <>
-                    <Typography color="textPrimary" variant="body1">
-                      {filter.label}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="caption"
-                    >
-                      (작성되지 않은)
-                    </Typography>
-                  </>
-                }
-              />
-            );
-          })}
         </Box>
         {state.loading && (
           <div data-testid="keyword-list-loading">
@@ -626,6 +604,16 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
       </Card>
 
       {/* Dialogs */}
+
+      {state.merge.isMerging && (
+        <KeywordMergeDialog
+          isOpen={state.merge.isMerging}
+          setClose={() => {
+            dispatch({ type: KeywordActionKind.CLOSE_MERGE_DIALOG });
+          }}
+          reload={reload}
+        />
+      )}
 
       {alias.isEditing && (
         <DialogEditMultiSelect

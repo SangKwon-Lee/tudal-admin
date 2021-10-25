@@ -90,6 +90,9 @@ export interface IKeywordListState {
     isDeleting: boolean;
     target: Tag;
   };
+  merge: {
+    isMerging: boolean;
+  };
 
   //api params
   status: IKeywordListStatus;
@@ -128,6 +131,10 @@ const initialState: IKeywordListState = {
     target: null,
   },
 
+  merge: {
+    isMerging: false,
+  },
+
   // api params
   status: {
     _q: '',
@@ -154,7 +161,6 @@ export enum KeywordActionKind {
 
   // alias dialog
   HANDLE_ALIAS_DIALOG = 'HANDLE_ALIAS_DIALOG',
-  CLOSE_ALIAS_DIALOG = 'CLOSE_ALIAS_DIALOG',
 
   // delte dialog
   SHOW_DELETE_DIALOG = 'SHOW_DELETE_DIALOG',
@@ -163,6 +169,10 @@ export enum KeywordActionKind {
   // update dialog
   SHOW_UPDATE_DIALOG = 'SHOW_UPDATE_DIALOG',
   CLOSE_UPDATE_DIALOG = 'CLOSE_UPDATE_DIALOG',
+
+  // merge dialog
+  SHOW_MERGE_DIALOG = 'SHOW_MERGE_DIALOG',
+  CLOSE_MERGE_DIALOG = 'CLOSE_MERGE_DIALOG',
 
   // page / sort
   CHANGE_PAGE = 'CHANGE_PAGE',
@@ -281,6 +291,22 @@ const keywordListReducer = (
         delete: {
           isDeleting: false,
           target: null,
+        },
+      };
+    }
+    case KeywordActionKind.SHOW_MERGE_DIALOG: {
+      return {
+        ...state,
+        merge: {
+          isMerging: true,
+        },
+      };
+    }
+    case KeywordActionKind.CLOSE_MERGE_DIALOG: {
+      return {
+        ...state,
+        merge: {
+          isMerging: false,
         },
       };
     }
@@ -453,6 +479,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
         const { status, data } = await APITag.update(id, body);
         if (status === 200) {
           dispatch({ type: KeywordActionKind.CLOSE_UPDATE_DIALOG });
+          getList();
         } else {
           toast.error('업데이트에 실패하였습니다');
         }
@@ -474,6 +501,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
             toast.success(
               data.isDeleted ? '삭제되었습니다.' : '복구되었습니다.',
             );
+            getList();
           } else {
             toast.error('요청이 실패하였습니다');
           }
@@ -494,8 +522,11 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
         );
         if (status === 200) {
           toast.success('alias 추가에 성공했습니다.');
-
           getList();
+          dispatch({
+            type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+            payload: { isEditing: false },
+          });
         }
       } catch (error) {
         toast.error(error.message);
@@ -526,7 +557,10 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
 
     const [keywordAutocomplete, refetchKeywordAutocomplete] =
       useAsync<Tag[]>(
-        () => APITag.search({ _q: tagAddInputRef.current?.value }),
+        _.debounce(
+          () => APITag.search({ _q: tagAddInputRef.current?.value }),
+          300,
+        ),
         [],
         [],
       );
@@ -534,6 +568,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
     return (
       <KeywordListPresenter
         dispatch={dispatch}
+        reload={getList}
         state={tagListState}
         postKeyword={postKeyword}
         postMultiKeywords={postMultiKeywords}
