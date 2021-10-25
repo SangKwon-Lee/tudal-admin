@@ -83,6 +83,14 @@ const numbers = [
     title: '100개',
     value: 100,
   },
+  {
+    title: '300개',
+    value: 300,
+  },
+  {
+    title: '500개',
+    value: 500,
+  },
 ];
 
 const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
@@ -135,7 +143,7 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
           />
           <TextField
             sx={{ m: 2 }}
-            label="기관 이름"
+            label="기관 이름 (선택)"
             name="agency"
             onChange={(event) => {
               dispatch({
