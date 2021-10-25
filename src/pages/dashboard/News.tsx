@@ -68,7 +68,6 @@ const newsReducer = (
   action: NewsAction,
 ): newsState => {
   const { type, payload } = action;
-
   switch (type) {
     case NewsActionKind.LOADING:
       return {
@@ -106,7 +105,6 @@ const newsReducer = (
         ...state,
         isOpenConfirm: false,
       };
-
     case NewsActionKind.ERROR:
       return {
         ...state,

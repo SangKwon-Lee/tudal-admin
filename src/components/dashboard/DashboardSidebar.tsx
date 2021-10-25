@@ -43,25 +43,29 @@ const sections = [
         path: '/dashboard/hiddenboxes',
         icon: <StarIcon fontSize="small" />,
       },
-      // {
-      //   title: '달인',
-      //   path: '/dashboard/experts',
-      //   icon: <PencilIcon fontSize="small" />,
-      //   children: [
-      //     {
-      //       title: '리스트',
-      //       path: '/dashboard/experts',
-      //     },
-      //     {
-      //       title: '메뉴관리',
-      //       path: '/dashboard/experts',
-      //     },
-      //     {
-      //       title: '구독현황',
-      //       path: '/dashboard/experts',
-      //     },
-      //   ],
-      // },
+      {
+        title: '달인',
+        path: '/dashboard/master',
+        icon: <PencilIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/master',
+          },
+          {
+            title: '생성',
+            path: '/dashboard/master/new',
+          },
+          {
+            title: '방 관리',
+            path: '/dashboard/master/room',
+          },
+          {
+            title: '구독현황',
+            path: '/dashboard/master/subscribe',
+          },
+        ],
+      },
     ],
   },
   {
@@ -114,6 +118,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   const lgUp = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up('lg'),
   );
+
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -123,12 +128,21 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   }, [location.pathname]);
 
   const handleFilterSection = () => {
-    if (user.role.name === 'Authenticated') {
+    if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.role.name === 'CP') {
+    if (user.type === 'cp') {
+      const section = sections.filter((data) => {
+        return data.title === 'Contents' || data.title === 'General';
+      });
+      setFilterSection(section);
+    }
+    if (user.type === 'cms') {
       const section = sections.filter(
-        (data) => data.title !== 'Management',
+        (data) =>
+          data.title === 'Management' ||
+          data.title === 'General' ||
+          data.title === 'Generator',
       );
       setFilterSection(section);
     }

@@ -10,13 +10,14 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { ExpertContentForm } from '../../components/dashboard/expert';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
+import MasterSubscribeContainer from 'src/components/dashboard/master/MasterSubscribe.Container';
 
-const HiddenboxCreate: FC = () => {
+const MasterSubscribePage: FC = () => {
   const { settings } = useSettings();
+
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
@@ -24,7 +25,7 @@ const HiddenboxCreate: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Expert Create | TUDAL Admin</title>
+        <title>Dashboard: Master Subscribe | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -42,7 +43,7 @@ const HiddenboxCreate: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 생성
+                달인 구독 현황
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -52,19 +53,19 @@ const HiddenboxCreate: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/experts"
+                  to="/dashboard/masters"
                   variant="subtitle2"
                 >
                   달인
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  달인 생성
+                  구독 현황
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <ExpertContentForm />
+            <MasterSubscribeContainer />
           </Box>
         </Container>
       </Box>
@@ -72,4 +73,4 @@ const HiddenboxCreate: FC = () => {
   );
 };
 
-export default HiddenboxCreate;
+export default MasterSubscribePage;
