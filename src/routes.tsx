@@ -66,7 +66,7 @@ const KeywordList = Loadable(
   lazy(() => import('./pages/dashboard/Keyword')),
 );
 const CategoryList = Loadable(
-  lazy(() => import('./pages/dashboard/Category')),
+  lazy(() => import('./pages/dashboard/Category.Page')),
 );
 
 const MastersListPage = Loadable(
