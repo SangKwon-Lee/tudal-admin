@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, useRef, useState } from 'react';
+import * as _ from 'lodash';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
@@ -13,103 +13,35 @@ import {
   InputAdornment,
   TableCell,
   TableHead,
-  TablePagination,
+  Pagination,
   TableRow,
   TextField,
   LinearProgress,
   Button,
   Divider,
   Typography,
+  Dialog,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import SearchIcon from '../../../icons/Search';
 import { INews } from 'src/types/news';
+import {
+  INewsListAction,
+  INewsListState,
+  NewsListActionKind,
+  sortOptions,
+} from './NewsList.Container';
 dayjs.extend(customParseFormat);
 
-type Sort =
-  | 'publishDate|desc'
-  | 'publishDate|asc'
-  | 'isSelected|desc';
-
-interface SortOption {
-  value: Sort;
-  label: string;
+interface NewsListPresenterProps {
+  newsListState: INewsListState;
+  formTarget: INews;
+  updateSelect: () => void;
+  setFormTarget: (news: INews) => void;
+  setIsOpenForm: (isOpen: boolean) => void;
+  dispatch: (params: INewsListAction) => void;
 }
-const sortOptions: SortOption[] = [
-  {
-    label: '최신 등록순',
-    value: 'publishDate|desc',
-  },
-  {
-    label: '오래된 등록순',
-    value: 'publishDate|asc',
-  },
-  {
-    label: '선택한 뉴스순',
-    value: 'isSelected|desc',
-  },
-];
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  } else if (b[orderBy] > a[orderBy]) {
-    return 1;
-  } else if (b['id'] > a['id']) {
-    return -1;
-  } else if (b['id'] < a['id']) {
-    return 1;
-  }
-  return 0;
-}
-
-const getComparator = (order: 'asc' | 'desc', orderBy: string) => {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-};
-
-const applySort = (news: INews[], sort: Sort): INews[] => {
-  const [orderBy, order] = sort.split('|') as [
-    string,
-    'asc' | 'desc',
-  ];
-  const comparator = getComparator(order, orderBy);
-  const stabilizedThis = news.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    // @ts-ignore
-    return a[1] - b[1];
-  });
-  // @ts-ignore
-  return stabilizedThis.map((el) => el[0]);
-};
-
-interface NewsListTableProps {
-  newsList: INews[];
-  search: React.Ref<HTMLInputElement>;
-  page: number;
-  limit: number;
-  isLoading: boolean;
-  isOpenForm: boolean;
-  minutesRefresh: number;
-  setOpenForm: () => void;
-  setPage: (event: any, newPage: number) => void;
-  setLimit: (limit: number) => void;
-  setTargetNews: (INews) => void;
-  setOpenConfirm: () => void;
-  setMinutesRefresh: (minutes: number) => void;
-  postDelete?: (id: number) => void;
-  reload?: () => void;
-}
-
-const applyPagination = (
-  news: INews[],
-  page: number,
-  limit: number,
-): INews[] => news.slice(page * limit, page * limit + limit);
 
 const useStyles = makeStyles({
   title: {
@@ -121,47 +53,29 @@ const useStyles = makeStyles({
   },
 });
 
-const NewsListTable: React.FC<NewsListTableProps> = (props) => {
-  const classes = useStyles();
+const NewsListPresenter: React.FC<NewsListPresenterProps> = (
+  props,
+) => {
   const {
-    newsList,
-    search,
-    page,
-    limit,
-    isLoading,
-    minutesRefresh,
-    reload,
-    setLimit,
-    setPage,
-    setOpenConfirm,
-    setTargetNews,
-    setOpenForm,
-    setMinutesRefresh,
+    newsListState,
+    dispatch,
+    setFormTarget,
+    updateSelect,
+    setIsOpenForm,
   } = props;
-  const [sort, setSort] = useState<Sort>(sortOptions[0].value);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const classes = useStyles();
 
-  const handleLimitChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setLimit(parseInt(event.target.value, 10));
+  const { targetSelect } = newsListState;
+  const handleSearch = () => {
+    dispatch({
+      type: NewsListActionKind.CHANGE_QUERY,
+      payload: { name: '_q', value: searchInput.current.value },
+    });
   };
 
-  const handleSort = (event): void => {
-    setSort(event.target.value);
-  };
-  const sortedNewsList = applySort(newsList, sort);
-  const paginatedNewsList = applyPagination(
-    sortedNewsList,
-    page,
-    limit,
-  );
   return (
-    <Box
-      sx={{
-        backgroundColor: 'background.default',
-      }}
-      data-testid="news-list-table"
-    >
+    <Box sx={{ mt: 3 }} data-testid="news-list-table">
       <Box
         sx={{
           alignItems: 'center',
@@ -188,27 +102,20 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 </InputAdornment>
               ),
             }}
-            inputRef={search}
             name={'_q'}
             placeholder="제목 또는 요약본 검색 기능을 지원합니다."
             variant="outlined"
+            inputRef={searchInput}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                reload();
-                setPage('', 0);
+                handleSearch();
               }
             }}
           />
         </Box>
         <Box>
           {' '}
-          <Button
-            variant={'contained'}
-            onClick={() => {
-              reload();
-              setPage('', 0);
-            }}
-          >
+          <Button variant={'contained'} onClick={handleSearch}>
             검색
           </Button>
         </Box>
@@ -225,7 +132,15 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             label="정렬"
             id="sort"
             select
-            onChange={(event) => handleSort(event)}
+            onChange={(e) => {
+              dispatch({
+                type: NewsListActionKind.CHANGE_QUERY,
+                payload: {
+                  name: e.target.name,
+                  value: e.target.value,
+                },
+              });
+            }}
             SelectProps={{
               native: true,
             }}
@@ -255,9 +170,12 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             fullWidth
             label="새로고침 시간"
             select
-            value={minutesRefresh}
+            value={newsListState.minutesRefresh}
             onChange={(event) =>
-              setMinutesRefresh(parseInt(event.target.value, 10))
+              dispatch({
+                type: NewsListActionKind.CHANGE_REFRESH_MINUTES,
+                payload: parseInt(event.target.value, 10),
+              })
             }
             SelectProps={{
               native: true,
@@ -272,7 +190,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
         </Box>
       </Box>
       <Card>
-        {isLoading && (
+        {newsListState.loading && (
           <div data-testid="news-list-loading">
             <LinearProgress />
           </div>
@@ -289,7 +207,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="news-table-list">
-            {paginatedNewsList.map((news, index) => (
+            {newsListState.list.map((news, index) => (
               <TableRow
                 hover
                 key={index}
@@ -302,7 +220,7 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                 <TableCell padding="checkbox">
                   <Tooltip
                     title={
-                      news.isSelectedBy
+                      news.isSelectedBy && news.isSelected
                         ? `by ${news.isSelectedBy.nickname}`
                         : 'pick'
                     }
@@ -312,8 +230,10 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                       color="primary"
                       checked={news.isSelected || false}
                       onClick={() => {
-                        setTargetNews(news);
-                        setOpenConfirm();
+                        dispatch({
+                          type: NewsListActionKind.SELECT_TARGET,
+                          payload: news,
+                        });
                       }}
                     />
                   </Tooltip>
@@ -420,8 +340,8 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
                     size="small"
                     variant="outlined"
                     onClick={() => {
-                      setOpenForm();
-                      setTargetNews(news);
+                      setFormTarget(news);
+                      setIsOpenForm(true);
                     }}
                   >
                     수정
@@ -432,21 +352,53 @@ const NewsListTable: React.FC<NewsListTableProps> = (props) => {
           </TableBody>
         </Table>
       </Card>
-      <TablePagination
-        component="div"
-        count={newsList.length}
-        onPageChange={setPage}
-        onRowsPerPageChange={handleLimitChange}
-        page={page}
-        rowsPerPage={limit}
-        rowsPerPageOptions={[50]}
+      <Pagination
+        page={newsListState.page}
+        onChange={(e, page) =>
+          dispatch({
+            type: NewsListActionKind.CHANGE_PAGE,
+            payload: page,
+          })
+        }
+        count={Math.ceil(
+          newsListState.listLength / newsListState.query._limit,
+        )}
+        variant="outlined"
+        shape="rounded"
+        style={{ display: 'flex', justifyContent: 'flex-end' }}
       />
+      <Dialog
+        aria-labelledby="ConfirmModal"
+        open={Boolean(newsListState.targetSelect)}
+        onClose={() =>
+          dispatch({
+            type: NewsListActionKind.CLOSE_SELECT_CONFIRM,
+          })
+        }
+      >
+        {Boolean(newsListState.targetSelect) && (
+          <ConfirmModal
+            title={
+              targetSelect.isSelected ? '뉴스 선택 취소' : '뉴스 선택'
+            }
+            content={
+              targetSelect.isSelected
+                ? '뉴스 선택을 취소하시겠습니까?'
+                : '뉴스를 선택하시겠습니까?'
+            }
+            confirmTitle={targetSelect.isSelected ? '취소' : '추가'}
+            type={targetSelect.isSelected ? 'ERROR' : 'CONFIRM'}
+            handleOnClick={updateSelect}
+            handleOnCancel={() =>
+              dispatch({
+                type: NewsListActionKind.CLOSE_SELECT_CONFIRM,
+              })
+            }
+          />
+        )}
+      </Dialog>
     </Box>
   );
 };
 
-export default NewsListTable;
-
-NewsListTable.propTypes = {
-  newsList: PropTypes.array.isRequired,
-};
+export default NewsListPresenter;

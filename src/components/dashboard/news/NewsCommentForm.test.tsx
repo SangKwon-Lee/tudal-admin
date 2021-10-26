@@ -13,7 +13,7 @@ import {
 import { debug } from 'node:console';
 import { FixtureNews } from 'src/fixtures';
 import { INews } from 'src/types/news';
-import NewsCommentForm from './NewsCommentForm';
+import NewsCommentForm from './NewsCommentForm.Presenter';
 
 const mockFunc = jest.fn();
 
