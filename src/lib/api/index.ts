@@ -5,3 +5,4 @@ export * as APICategory from './category.api';
 export * as APINews from './news.api';
 export * as APIMaster from './master.api';
 export * as APICoupon from './coupon.api';
+export * as APIPopUp from './popup.api';

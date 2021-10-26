@@ -18,6 +18,7 @@ import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import FolderOpenIcon from 'src/icons/FolderOpen';
 import useAuth from 'src/hooks/useAuth';
+import SunIcon from '../../icons/Sun';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -80,6 +81,21 @@ const sections = [
         title: '쿠폰',
         path: '/dashboard/coupons',
         icon: <PencilIcon fontSize="small" />,
+      },
+      {
+        title: '팝업',
+        path: '/dashboard/popup',
+        icon: <SunIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/popup',
+          },
+          {
+            title: '생성',
+            path: '/dashboard/popup/new',
+          },
+        ],
       },
     ],
   },
