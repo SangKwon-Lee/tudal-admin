@@ -104,7 +104,7 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
           onClick={handleEdit}
           variant="contained"
         >
-          {isEditOrder ? '저장' : '방 순서 변경'}
+          {isEditOrder ? '저장' : '팝업 노출 순서 변경'}
         </Button>
       </Box>
 
