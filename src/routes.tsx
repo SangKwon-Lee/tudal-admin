@@ -98,6 +98,9 @@ const PopUpCreatePage = Loadable(
 const PopUpEditPage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpEdit.Page')),
 );
+const PopUpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpList.Page')),
+);
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -300,6 +303,10 @@ const routes: PartialRouteObject[] = [
       {
         path: 'popup',
         children: [
+          {
+            path: '/',
+            element: <PopUpListPage />,
+          },
           {
             path: '/new',
             element: <PopUpCreatePage />,

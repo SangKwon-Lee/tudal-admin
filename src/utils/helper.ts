@@ -8,3 +8,9 @@ export function removeEmpty(obj) {
   });
   return _obj;
 }
+
+export function swapItems(array, a, b) {
+  let newArray = [...array];
+  newArray[a] = newArray.splice(b, 1, newArray[a])[0];
+  return newArray;
+}
