@@ -15,5 +15,9 @@ declare namespace NodeJS {
     // development
     REACT_APP_DEV_CMS_URL: string;
     REACT_APP_DEV_API_URL: string;
+
+    // S3, AWS
+    ACCESS_KET: string;
+    SECRET_KEY: string;
   }
 }

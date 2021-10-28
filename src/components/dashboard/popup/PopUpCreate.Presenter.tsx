@@ -4,6 +4,7 @@ import {
   Card,
   TextField,
   Typography,
+  LinearProgress,
 } from '@material-ui/core';
 import { Formik } from 'formik';
 import { Link as RouterLink } from 'react-router-dom';
@@ -32,7 +33,7 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
     mode,
   } = props;
 
-  const { createInput } = PopUpCreateState;
+  const { createInput, loading } = PopUpCreateState;
   return (
     <>
       <Formik
@@ -175,10 +176,23 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
                 >
                   이미지 삭제
                 </Button>
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                  sx={{ mt: 1 }}
+                >
+                  파일 이름이 너무 길 경우 오류가 생길 수 있습니다.
+                  (15자 내외)
+                </Typography>
                 <Box>
                   <Typography sx={{ my: 2 }}>
                     이미지 미리보기
                   </Typography>
+                  {loading && (
+                    <div data-testid="news-list-loading">
+                      <LinearProgress />
+                    </div>
+                  )}
                   <img
                     style={{ width: '100%' }}
                     alt={''}

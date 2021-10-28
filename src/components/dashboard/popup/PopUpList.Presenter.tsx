@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import type { FC } from 'react';
 import numeral from 'numeral';
 import { subDays, subHours } from 'date-fns';
@@ -271,7 +272,16 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
                       </Box>
                     </TableCell>
 
-                    <TableCell>{popup.title}</TableCell>
+                    <TableCell>
+                      <Link
+                        color="inherit"
+                        component={RouterLink}
+                        to={`/dashboard/popup/${popup.id}`}
+                        variant="subtitle2"
+                      >
+                        {popup.title}
+                      </Link>
+                    </TableCell>
                     <TableCell>{popup.description}</TableCell>
                     <TableCell>
                       {getOpenTypeLabel(popup.isOpen)}
@@ -289,10 +299,16 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
                       )}`}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton>
+                      <IconButton
+                        component={RouterLink}
+                        to={`/dashboard/popup/${popup.id}/edit`}
+                      >
                         <PencilAltIcon fontSize="small" />
                       </IconButton>
-                      <IconButton>
+                      <IconButton
+                        component={RouterLink}
+                        to={`/dashboard/popup/${popup.id}`}
+                      >
                         <ArrowRightIcon fontSize="small" />
                       </IconButton>
                     </TableCell>

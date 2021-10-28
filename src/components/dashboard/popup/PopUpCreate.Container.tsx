@@ -4,21 +4,18 @@ import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { APIPopUp } from 'src/lib/api';
 import PopUpCreatePresenter from './PopUpCreate.Presenter';
-
 const AWS = require('aws-sdk');
 const region = 'ap-northeast-2';
-const access_key = 'AKIAY53UECMD2OMWX4UR';
-const secret_key = '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';
 
 const S3 = new AWS.S3({
   region,
   credentials: {
-    accessKeyId: access_key,
-    secretAccessKey: secret_key,
+    accessKeyId: process.env.ACCESS_KET,
+    secretAccessKey: process.env.SECRET_KEY,
   },
 });
 
-const bucket_name = 'hiddenbox-photo';
+const bucket_name = 'tudal-popup-photo';
 
 export enum PopUpCreateActionKind {
   LOADING = 'LOADING',
@@ -173,6 +170,7 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
   //* 이미지 등록
   const onChangeImgae = async (event) => {
     var file = event.target.files;
+    dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
     try {
       // Koscom Cloud에 업로드하기!
       await S3.putObject({
@@ -186,6 +184,10 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
       dispatch({
         type: PopUpCreateActionKind.CHANGE_IMAGE,
         payload: imageUrl,
+      });
+      dispatch({
+        type: PopUpCreateActionKind.LOADING,
+        payload: false,
       });
     } catch (error) {
       console.log(error);
