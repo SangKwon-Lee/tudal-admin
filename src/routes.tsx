@@ -47,7 +47,7 @@ const HiddenboxEdit = Loadable(
   lazy(() => import('./pages/dashboard/HiddenboxEdit')),
 );
 const Overview = Loadable(
-  lazy(() => import('./pages/dashboard/Overview')),
+  lazy(() => import('./pages/dashboard/Overview.Page')),
 );
 const ReportMaker = Loadable(
   lazy(() => import('./pages/dashboard/ReportMaker')),
