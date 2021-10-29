@@ -9,7 +9,7 @@ export async function find(name) {
   return await axios.get<Tag[]>(`/tags?name=${name}`);
 }
 
-export async function getList(params: IKeywordListStatus) {
+export async function getList(params) {
   const query = qs.stringify(removeEmpty(params));
   return await axios.get<Tag[]>(`/tags-excluded?${query}`);
 }

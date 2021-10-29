@@ -75,8 +75,18 @@ const sections = [
     items: [
       {
         title: '골드',
-        path: '/dashboard/coupons',
-        icon: <StarIcon fontSize="small" />,
+        path: '/dashboard/gold',
+        icon: <CashIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/gold',
+          },
+          {
+            title: '상세보기',
+            path: '/dashboard/gold/detail',
+          },
+        ],
       },
       {
         title: '쿠폰',
@@ -127,21 +137,6 @@ const sections = [
         title: '카테고리',
         path: '/dashboard/categories',
         icon: <BriefcaseIcon fontSize="small" />,
-      },
-      {
-        title: '골드',
-        path: '/dashboard/gold',
-        icon: <CashIcon fontSize="small" />,
-        children: [
-          {
-            title: '리스트',
-            path: '/dashboard/gold',
-          },
-          {
-            title: '상세보기',
-            path: '/dashboard/gold/detail',
-          },
-        ],
       },
     ],
   },
