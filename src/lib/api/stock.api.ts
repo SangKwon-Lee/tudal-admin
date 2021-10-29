@@ -1,6 +1,7 @@
 import qs from 'qs';
 import { cmsServer, apiServer } from 'src/lib/axios';
 import { Stock } from 'src/types/schedule';
+import { removeEmpty } from 'src/utils/helper';
 
 export async function getList() {
   const { data, status } = await apiServer.get<Stock[]>(
@@ -23,18 +24,9 @@ export async function getDetail(stockcode: string) {
   return await cmsServer.get(`/stocks/detail/${stockcode}`);
 }
 
-export async function getDetailList(
-  search: string,
-  start: number = 0,
-) {
-  let _query: any = { _start: start };
-  if (search) {
-    _query._q = search;
-  }
-
-  return await cmsServer.get(
-    `/stocks/detail?_limit=30&${qs.stringify(_query)}`,
-  );
+export async function getDetailList(params) {
+  let query = qs.stringify(removeEmpty(params));
+  return await cmsServer.get(`/stocks/detail?${query}`);
 }
 
 export async function getStockNews(stockcode, query = {}) {
