@@ -51,7 +51,7 @@ import { APICategory } from 'src/lib/api';
 import { Category } from 'src/types/schedule';
 import useAuth from 'src/hooks/useAuth';
 
-import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog';
+import CategoryEditDialog from 'src/components/dashboard/category/CategoryEditDialog.Container';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import Label from 'src/components/widgets/Label';
 import { errorMessage } from 'src/common/error';
@@ -112,7 +112,7 @@ const CategoryPage: React.FC = () => {
       const start = (page + 1) * rowsPerPage; //rows per page
       const { data, status } = await APICategory.getList(
         search,
-        start,
+        // start,
       );
       if (status === 200) {
         setCategories((prev) => [...prev, ...data]);

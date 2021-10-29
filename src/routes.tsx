@@ -66,7 +66,7 @@ const KeywordList = Loadable(
   lazy(() => import('./pages/dashboard/Keyword')),
 );
 const CategoryList = Loadable(
-  lazy(() => import('./pages/dashboard/Category')),
+  lazy(() => import('./pages/dashboard/Category.Page')),
 );
 
 const MastersListPage = Loadable(
@@ -91,8 +91,21 @@ const MasterSubscribePage = Loadable(
 const CouponListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponList.Page')),
 );
+
 const CouponIssuedListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
+);
+const PopUpCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
+);
+const PopUpEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpEdit.Page')),
+);
+const PopUpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpList.Page')),
+);
+const PopUpDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
 );
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -287,12 +300,33 @@ const routes: PartialRouteObject[] = [
         path: 'coupons',
         children: [
           {
-            path: '/',
+            path: '/new',
             element: <CouponListPage />,
           },
           {
             path: '/:couponId',
             element: <CouponIssuedListPage />,
+          },
+        ],
+      },
+      {
+        path: 'popup',
+        children: [
+          {
+            path: '/',
+            element: <PopUpListPage />,
+          },
+          {
+            path: '/new',
+            element: <PopUpCreatePage />,
+          },
+          {
+            path: ':popupId/edit',
+            element: <PopUpEditPage />,
+          },
+          {
+            path: ':popupId',
+            element: <PopUpDetailPage />,
           },
         ],
       },
