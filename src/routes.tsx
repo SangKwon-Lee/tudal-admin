@@ -6,7 +6,6 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
-import News from './pages/dashboard/News';
 
 const Loadable = (Component) => (props) =>
   (
@@ -113,6 +112,10 @@ const HiddenboxViewer = Loadable(
 );
 const TodayKeywordViewer = Loadable(
   lazy(() => import('./pages/viewer/TodayKeywordViewer')),
+);
+
+const NewsPage = Loadable(
+  lazy(() => import('./pages/dashboard/News.Page')),
 );
 
 // Error pages
@@ -227,7 +230,7 @@ const routes: PartialRouteObject[] = [
         children: [
           {
             path: '/',
-            element: <News />,
+            element: <NewsPage />,
           },
         ],
       },
