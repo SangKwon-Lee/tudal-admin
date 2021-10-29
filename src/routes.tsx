@@ -91,6 +91,9 @@ const MasterSubscribePage = Loadable(
 const CouponListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponList.Page')),
 );
+const CouponIssuedListPage = Loadable(
+  lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -286,6 +289,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <CouponListPage />,
+          },
+          {
+            path: '/:couponId',
+            element: <CouponIssuedListPage />,
           },
         ],
       },

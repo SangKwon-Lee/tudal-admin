@@ -1,17 +1,25 @@
 import { User } from './user';
 
-export interface Coupon {
+export interface CouponType {
   id: number;
-  code: string;
   name: string;
   displayName: string;
-  usedDate: string;
-  issuedDate: string;
-  expirationDate: string;
   agency: string;
-  userId: number;
-  isUsed: boolean;
   type: string;
   applyDays: number;
   issuedBy: User;
+  created_at: string;
+}
+
+export interface IssuedCoupon {
+  id: number;
+  code: string;
+  usedDate: string;
+  issuedDate: string;
+  expirationDate: string;
+  userId: number;
+  isUsed: boolean;
+  type: string;
+  issuedBy: User;
+  coupon: number;
 }

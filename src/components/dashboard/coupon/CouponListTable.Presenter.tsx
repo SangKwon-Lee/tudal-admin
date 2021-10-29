@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import {
   Box,
   Button,
+  Link,
   Card,
   Checkbox,
   Divider,
@@ -44,8 +46,8 @@ const isUsedOption = [
   { title: '미사용', value: 0 },
 ];
 const sortOption = [
-  { title: '발급날짜 (최신)', value: 'issuedDate:DESC' },
-  { title: '발급날짜 (오래된 순)', value: 'issuedDate:ASC' },
+  { title: '발급날짜 (최신)', value: 'created_at:DESC' },
+  { title: '발급날짜 (오래된 순)', value: 'created_at:ASC' },
   { title: '사용날짜 (최신)', value: 'usedDate:DESC' },
   { title: '사용날짜 (오래된 순)', value: 'usedDate:ASC' },
   { title: '만료날짜 (최신)', value: 'expirationDate:DESC' },
@@ -213,14 +215,11 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                       onChange={handleSelectAll}
                     />
                   </TableCell>
-                  <TableCell>쿠폰</TableCell>
-                  <TableCell>코드</TableCell>
+                  <TableCell>쿠폰 이름</TableCell>
+                  <TableCell>쿠폰 영어 이름</TableCell>
                   <TableCell>기관</TableCell>
+                  <TableCell>무료 기간</TableCell>
                   <TableCell>발급 날짜</TableCell>
-                  <TableCell>사용 날짜</TableCell>
-                  <TableCell>사용한 유저</TableCell>
-                  <TableCell>사용 여부</TableCell>
-                  <TableCell>만료 날짜</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -244,12 +243,19 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                           />
                         </TableCell>
                         <TableCell>
-                          {list.displayName
-                            ? list.displayName
-                            : '제목이 없습니다.'}
+                          <Link
+                            color="inherit"
+                            component={RouterLink}
+                            to={`/dashboard/coupons/${list.id}`}
+                            variant="subtitle2"
+                          >
+                            {list.displayName
+                              ? list.displayName
+                              : '제목이 없습니다.'}
+                          </Link>
                         </TableCell>
                         <TableCell>
-                          {list.code ? list.code : '코드가 없습니다.'}
+                          {list.name ? list.name : '이름이 없습니다.'}
                         </TableCell>
                         <TableCell>
                           {list.agency
@@ -257,25 +263,12 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                             : '기관이 없습니다.'}
                         </TableCell>
                         <TableCell>
-                          {moment(list.issuedDate)
-                            .utc()
-                            .format('YYYY년 M월 D일 HH:mm')}
+                          {list.applyDays
+                            ? `${list.applyDays}일`
+                            : '없습니다.'}
                         </TableCell>
                         <TableCell>
-                          {list.usedDate
-                            ? moment(list.usedDate)
-                                .utc()
-                                .format('YYYY년 M월 D일 HH:mm')
-                            : '미사용'}
-                        </TableCell>
-                        <TableCell>
-                          {list.userId ? list.userId : '미사용'}
-                        </TableCell>
-                        <TableCell>
-                          {list.isUsed ? '사용' : '미사용'}
-                        </TableCell>
-                        <TableCell>
-                          {moment(list?.expirationDate)
+                          {moment(list.created_at)
                             .utc()
                             .format('YYYY년 M월 D일 HH:mm')}
                         </TableCell>

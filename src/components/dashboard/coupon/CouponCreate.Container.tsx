@@ -11,9 +11,9 @@ import { expirationDate } from 'src/utils/expirationDate';
 import dayjs from 'dayjs';
 interface ICouponCreateProps {
   openModal: boolean;
-  listDispatch: (params: CouponListTableAction) => void;
-  getCouponList: () => void;
-  getCouponListLength: () => void;
+  listDispatch?: (params: CouponListTableAction) => void;
+  getCouponList?: () => void;
+  getCouponListLength?: () => void;
 }
 
 export enum CouponCreateActionKind {
@@ -118,16 +118,27 @@ const CouponCreateContainer: FC<ICouponCreateProps> = (props) => {
   //* 쿠폰 생성
   const createCoupon = async () => {
     dispatch({ type: CouponCreateActionKind.LOADING });
-    const newCoupon = {
-      ...couponCreateState.createInput,
-      code: '',
+    const newCouponType = {
+      type: couponCreateState.createInput.type,
+      agency: couponCreateState.createInput.agency,
+      displayName: couponCreateState.createInput.displayName,
+      name: couponCreateState.createInput.name,
       issuedBy: user.id,
-      expirationDate: couponCreateState.createInput.expirationDate,
-      isUsed: false,
+      applyDays: couponCreateState.createInput.applyDays,
     };
-
     try {
-      const { status } = await APICoupon.createCoupon(newCoupon);
+      const { status, data } = await APICoupon.createCoupon(
+        newCouponType,
+      );
+      const CouponInput = {
+        quantity: couponCreateState.createInput.quantity,
+        issuedDate: dayjs().format(),
+        expirationDate: couponCreateState.createInput.expirationDate,
+        coupon: data.id,
+        isUsed: false,
+        code: '',
+        issuedBy: user.id,
+      };
       if (status === 200) {
         toast.success('쿠폰이 생성됐습니다.');
         listDispatch({
@@ -136,6 +147,7 @@ const CouponCreateContainer: FC<ICouponCreateProps> = (props) => {
         dispatch({
           type: CouponCreateActionKind.RESET_STATE,
         });
+        await APICoupon.createIssuedCoupon(CouponInput);
         props.getCouponList();
         props.getCouponListLength();
       }

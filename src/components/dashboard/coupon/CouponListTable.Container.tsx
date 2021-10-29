@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { APICoupon } from 'src/lib/api';
-import { Coupon } from 'src/types/coupon';
+import { CouponType } from 'src/types/coupon';
 import CouponListTablePresenter from './CouponListTable.Presenter';
 import toast from 'react-hot-toast';
 export enum CouponListTableActionKind {
@@ -17,6 +17,7 @@ export enum CouponListTableActionKind {
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
+
   // delete & update
   SELECT_COUPON = 'SELECT_COUPON',
   OPEN_DELETE_DIALOG = 'OPEN_DELETE_DIALOG',
@@ -35,14 +36,11 @@ export interface CouponListTableState {
   page: number;
   listLength: number;
   selected: number[];
-  list: Coupon[];
+  list: CouponType[];
   query: {
     _start: number;
     _limit: number;
     _q: string;
-    _where: {
-      isUsed: any;
-    };
   };
   delete: {
     isDeleting: boolean;
@@ -62,15 +60,12 @@ const initialState: CouponListTableState = {
     _q: '',
     _start: 0,
     _limit: 50,
-    _where: {
-      isUsed: [0, 1],
-    },
   },
   delete: {
     isDeleting: false,
     target: null,
   },
-  sort: 'issuedDate:DESC',
+  sort: 'created_at:DESC',
   openModal: false,
 };
 
@@ -124,10 +119,6 @@ const CouponListTableReducer = (
         ...state,
         query: {
           ...state.query,
-          _where: {
-            ...state.query._where,
-            isUsed: payload,
-          },
         },
       };
     case CouponListTableActionKind.CHANGE_SORT:
