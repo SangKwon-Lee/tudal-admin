@@ -344,7 +344,7 @@ const routes: PartialRouteObject[] = [
         path: 'coupons',
         children: [
           {
-            path: '/new',
+            path: '/',
             element: <CouponListPage />,
           },
           {

@@ -19,7 +19,6 @@ const OverviewNewsTable: FC<{ newsList: INews[] }> = ({
   newsList,
 }) => (
   <Card>
-    {newsList.length === 0 && <LinearProgress />}
     <CardHeader title="뉴스픽" />
     <List disablePadding>
       {newsList.map((news, index) => (

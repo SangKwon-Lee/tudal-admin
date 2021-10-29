@@ -219,14 +219,6 @@ const NewsListContainer: React.FC<INewsListContainerProps> = (
     getList();
   }, [getList]);
 
-  useEffect(() => {
-    toast.promise(getList(false), {
-      loading: '뉴스 업데이트 중입니다.',
-      success: '완료했습니다 :)',
-      error: '처리하는 도중 에러가 발생했습니다. :(',
-    });
-  }, [tick, getList]);
-
   const updateSelect = async () => {
     await updateIsSelected(
       targetSelect.id,

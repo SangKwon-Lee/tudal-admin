@@ -93,21 +93,21 @@ const sections = [
         path: '/dashboard/coupons',
         icon: <PencilIcon fontSize="small" />,
       },
-      {
-        title: '팝업',
-        path: '/dashboard/popup',
-        icon: <SunIcon fontSize="small" />,
-        children: [
-          {
-            title: '리스트',
-            path: '/dashboard/popup',
-          },
-          {
-            title: '생성',
-            path: '/dashboard/popup/new',
-          },
-        ],
-      },
+      // {
+      //   title: '팝업',
+      //   path: '/dashboard/popup',
+      //   icon: <SunIcon fontSize="small" />,
+      //   children: [
+      //     {
+      //       title: '리스트',
+      //       path: '/dashboard/popup',
+      //     },
+      //     {
+      //       title: '생성',
+      //       path: '/dashboard/popup/new',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

@@ -14,7 +14,7 @@ export async function getList(params) {
   return await axios.get<Tag[]>(`/tags-excluded?${query}`);
 }
 
-export async function getListCount(params: IKeywordListStatus) {
+export async function getListCount(params) {
   const query = qs.stringify(removeEmpty(params));
   return await axios.get<Number>(`/tags/count?${query}`);
 }

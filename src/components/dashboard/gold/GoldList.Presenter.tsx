@@ -156,6 +156,7 @@ const GoldListPresenter: React.FC<IGoldListPresenterProps> = ({
                       component={RouterLink}
                       to={`/dashboard/gold/detail/${ledger.userId}`}
                       variant="subtitle2"
+                      style={{ textDecoration: 'underline' }}
                     >
                       {ledger.userId}
                     </Link>
