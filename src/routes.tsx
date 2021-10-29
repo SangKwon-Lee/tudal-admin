@@ -61,8 +61,8 @@ const StockList = Loadable(
   lazy(() => import('./pages/dashboard/Stock')),
 );
 
-const KeywordList = Loadable(
-  lazy(() => import('./pages/dashboard/Keyword')),
+const Keyword = Loadable(
+  lazy(() => import('./pages/dashboard/Keyword.Page')),
 );
 const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category.Page')),
@@ -248,7 +248,7 @@ const routes: PartialRouteObject[] = [
         children: [
           {
             path: '/',
-            element: <KeywordList />,
+            element: <Keyword />,
           },
         ],
       },

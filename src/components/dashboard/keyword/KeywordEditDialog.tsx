@@ -23,7 +23,6 @@ interface KeywordEditDialogProps {
   open: boolean;
   setClose: () => void;
   updateTag: (id: number, name: object) => void;
-  reload: () => void;
 }
 const customFilter = createFilterOptions<any>();
 
@@ -32,7 +31,6 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
   open,
   setClose,
   updateTag,
-  reload,
 }) => {
   const [keyword, setKeyword] = useState<string>(tag.name);
   const tagInput = useRef(null);
