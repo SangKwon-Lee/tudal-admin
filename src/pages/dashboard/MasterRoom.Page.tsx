@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -12,15 +11,10 @@ import {
 } from '@material-ui/core';
 import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
-import gtm from '../../lib/gtm';
 import MasterRoomContainer from 'src/components/dashboard/master/MasterRoom.Container';
 
 const MasterRoomPage: FC = () => {
   const { settings } = useSettings();
-
-  useEffect(() => {
-    gtm.push({ event: 'page_view' });
-  }, []);
 
   return (
     <>

@@ -1,8 +1,7 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import useSettings from '../../hooks/useSettings';
-import gtm from '../../lib/gtm';
 import {
   Box,
   Breadcrumbs,
@@ -20,9 +19,6 @@ import MasterListTableContainer from '../../components/dashboard/master/MasterLi
 const MastersListPage: FC = () => {
   const { settings } = useSettings();
   // const { user } = useAuth();
-  useEffect(() => {
-    gtm.push({ event: 'page_view' });
-  }, []);
 
   return (
     <>

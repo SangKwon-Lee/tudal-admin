@@ -69,6 +69,21 @@ const sections = [
     ],
   },
   {
+    title: 'Accounting',
+    items: [
+      {
+        title: '골드',
+        path: '/dashboard/coupons',
+        icon: <StarIcon fontSize="small" />,
+      },
+      {
+        title: '쿠폰',
+        path: '/dashboard/coupons',
+        icon: <PencilIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
     title: 'Management',
     items: [
       {

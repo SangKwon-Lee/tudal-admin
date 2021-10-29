@@ -1,26 +1,33 @@
-import type { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import useSettings from '../../hooks/useSettings';
+import gtm from '../../lib/gtm';
 import {
   Box,
   Breadcrumbs,
   Container,
-  Grid,
   Link,
+  Grid,
   Typography,
 } from '@material-ui/core';
-import useSettings from '../../hooks/useSettings';
 import ChevronRightIcon from '../../icons/ChevronRight';
-import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
+import CouponListTableContainer from 'src/components/dashboard/coupon/CouponListTable.Container';
+// import useAuth from 'src/hooks/useAuth';
 
-const MasterCreatePage: FC = () => {
+const CouponListPage: FC = () => {
   const { settings } = useSettings();
+  // const { user } = useAuth();
+  useEffect(() => {
+    gtm.push({ event: 'page_view' });
+  }, []);
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: Master Create | TUDAL Admin</title>
+        <title>Dashboard: Coupon List | TUDAL Admin</title>
       </Helmet>
+      {/* {user.role.master ? ( */}
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -29,15 +36,10 @@ const MasterCreatePage: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid
-            alignItems="center"
-            container
-            justifyContent="space-between"
-            spacing={3}
-          >
+          <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 피드 생성
+                쿠폰 리스트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -47,19 +49,22 @@ const MasterCreatePage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/masters"
+                  to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
-                  달인
+                  회계
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  피드 생성
+                  쿠폰
                 </Typography>
               </Breadcrumbs>
             </Grid>
+            <Grid item>
+              <Box sx={{ m: -1 }}></Box>
+            </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <MasterCreateWizardContainer />
+            <CouponListTableContainer />
           </Box>
         </Container>
       </Box>
@@ -67,4 +72,4 @@ const MasterCreatePage: FC = () => {
   );
 };
 
-export default MasterCreatePage;
+export default CouponListPage;

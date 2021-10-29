@@ -12,6 +12,7 @@ import {
 import { useReducer, useRef } from 'react';
 import { cmsServer } from 'src/lib/axios';
 import toast from 'react-hot-toast';
+import useAuth from 'src/hooks/useAuth';
 
 const style = {
   cursor: 'move',
@@ -41,6 +42,7 @@ export interface CardProps {
   getChannel: () => void;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   orderEdit: boolean;
+  selectChannel: any;
 }
 
 enum MasterRoomDnDActionKind {
@@ -113,12 +115,13 @@ const DraggableCard: React.FC<CardProps> = ({
   moveCard,
   openType,
   getChannel,
+  selectChannel,
 }) => {
   const [newState, dispatch] = useReducer(
     MasterRoomDnDReducer,
     initialState,
   );
-
+  const { user } = useAuth();
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop({
     accept: 'card',
@@ -194,6 +197,23 @@ const DraggableCard: React.FC<CardProps> = ({
 
   //* 방 내용 수정 저장
   const handleSaveRoom = async () => {
+    try {
+      const { status, data } = await cmsServer.get(
+        `/master-rooms?master.id=${user.id}&master_channel=${selectChannel}`,
+      );
+
+      if (status === 200) {
+        if (
+          data.filter((data) => data.title !== newState.title)
+            .length !== data.length
+        ) {
+          toast.error('중복된 이름으로 수정할 수 없습니다.');
+          return;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
     try {
       const { status } = await cmsServer.put(`/master-rooms/${id}`, {
         title: newState.title,

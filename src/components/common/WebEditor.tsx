@@ -6,6 +6,9 @@ const AWS = require('aws-sdk');
 const region = 'ap-northeast-2';
 const access_key = 'AKIAY53UECMD2OMWX4UR';
 const secret_key = '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';
+var useDarkMode = window.matchMedia(
+  '(prefers-color-scheme: dark)',
+).matches;
 
 const S3 = new AWS.S3({
   region,
@@ -21,15 +24,22 @@ const WebEditor = (props) => {
   const { editorRef, contents } = props;
   return (
     <Editor
+      apiKey="4n6bz3uji80ya54n4873jyx6jyy75yn0mtu5d2y2nuclr6o7"
       ref={editorRef}
       initialValue={contents}
       onInit={(evt, editor) => (editorRef.current = editor)}
       init={{
         //@ts-ignore
-        selector: 'textarea',
+        selector: 'textarea#full-featured',
         language: 'ko_KR',
-        height: 500,
+        height: 700,
+        autosave_ask_before_unload: true,
+        autosave_interval: '30s',
+        autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
         menubar: false,
+        image_caption: true,
         paste_as_text: true,
         automatic_uploads: true,
         paste_data_images: true,
@@ -86,46 +96,38 @@ const WebEditor = (props) => {
           };
           input.click();
         },
+        importcss_append: true,
+        mobile: {
+          plugins:
+            'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker textpattern noneditable help formatpainter pageembed charmap mentions quickbars linkchecker emoticons advtable',
+        },
+        menu: {
+          tc: {
+            title: 'Comments',
+            items: 'addcomment showcomments deleteallconversations',
+          },
+        },
+        toolbar_mode: 'sliding',
+        spellchecker_ignore_list: ['Ephox', 'Moxiecode'],
+        template_cdate_format:
+          '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+        template_mdate_format:
+          '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+        content_style: '.mymention{ color: gray; }',
         browser_spellcheck: true,
         block_unsupported_drop: true,
         image_title: true,
-        plugins: [
-          'advlist',
-          'autolink',
-          'lists',
-          'link',
-          'image,paste',
-          'image',
-          'charmap',
-          'print',
-          'preview',
-          'anchor',
-          'searchreplace',
-          'visualblocks',
-          'code',
-          'table',
-          'fullscreen',
-          'insertdatetime',
-          'media',
-          'paste',
-          'code',
-          'help',
-          'wordcount',
-          'paste',
-          'save',
-        ],
+        mentions_selector: '.mymention',
+        mentions_item_type: 'profile',
+        contextmenu:
+          'link image imagetools table configurepermanentpen',
+        a11y_advanced_options: true,
+        skin: useDarkMode ? 'oxide-dark' : 'oxide',
+        content_css: useDarkMode ? 'dark' : 'default',
+        plugins:
+          'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker textpattern noneditable help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export',
         toolbar:
-          'formatselect fontselect fontsizeselect |' +
-          ' forecolor backcolor |' +
-          ' bold italic underline strikethrough |' +
-          ' alignjustify alignleft aligncenter alignright |' +
-          ' bullist numlist |' +
-          ' table tabledelete |' +
-          ' link image |' +
-          ' paste |' +
-          ' image,paste |',
-        content_style:
-          'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
       }}
     />
   );

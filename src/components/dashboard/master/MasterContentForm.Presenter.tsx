@@ -94,8 +94,8 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                     name="title"
                     onChange={(event) => {
                       dispatch({
-                        type: MasterContentFormActionKind.CHANGE_TITLE,
-                        payload: event.target.value,
+                        type: MasterContentFormActionKind.CHANGE_INPUT,
+                        payload: event,
                       });
                     }}
                     value={newMaster?.title || ''}
@@ -108,7 +108,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                       select
                       fullWidth
                       label={'채널 선택'}
-                      name="room"
+                      name="channel"
                       SelectProps={{ native: true }}
                       variant="outlined"
                       onChange={handleChangeChannel}
@@ -132,8 +132,8 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                       variant="outlined"
                       onChange={(event) => {
                         dispatch({
-                          type: MasterContentFormActionKind.CHANGE_ROOM,
-                          payload: event.target.value,
+                          type: MasterContentFormActionKind.CHANGE_INPUT,
+                          payload: event,
                         });
                       }}
                     >
@@ -304,7 +304,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                     }
                     error={submitError ? true : false}
                     label="링크"
-                    name="link"
+                    name="external_link"
                     onBlur={handleSubmitError}
                     onChange={handleSubmitError}
                     value={newMaster?.external_link || ''}

@@ -255,6 +255,7 @@ const MasterRoomContainer = () => {
     });
     toast.success('취소했습니다.');
   };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <MasterRoomPresenter
