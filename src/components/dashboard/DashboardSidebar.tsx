@@ -17,6 +17,7 @@ import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import FolderOpenIcon from 'src/icons/FolderOpen';
+import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
 import SunIcon from '../../icons/Sun';
 
@@ -126,6 +127,21 @@ const sections = [
         title: '카테고리',
         path: '/dashboard/categories',
         icon: <BriefcaseIcon fontSize="small" />,
+      },
+      {
+        title: '골드',
+        path: '/dashboard/gold',
+        icon: <CashIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/gold',
+          },
+          {
+            title: '상세보기',
+            path: '/dashboard/gold/detail',
+          },
+        ],
       },
     ],
   },
