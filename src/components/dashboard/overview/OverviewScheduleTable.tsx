@@ -19,7 +19,6 @@ const OverviewScheduleTable: FC<{ scheduleList: Schedule[] }> = ({
   scheduleList,
 }) => (
   <Card>
-    {scheduleList.length === 0 && <LinearProgress />}
     <CardHeader title="주요 일정" />
     <Table>
       <TableBody>

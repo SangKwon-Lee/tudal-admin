@@ -20,6 +20,7 @@ import {
   TablePagination,
   Select,
   MenuItem,
+  Pagination,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { toast } from 'react-hot-toast';
@@ -37,12 +38,12 @@ import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
 const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
   const { ledger } = props;
-  const [page, setPage] = useState<number>(0);
-  const paginatedLedger = applyPagination(ledger, page, 5);
+  const [page, setPage] = useState<number>(1);
+  const paginatedLedger = applyPagination(ledger, page - 1, 5);
 
   return (
     <Card>
-      <CardHeader title="포인트 충전(소모) 내역" />
+      <CardHeader title="골드 충전(소모) 내역" />
       <Divider />
       <Scrollbar>
         <Box>
@@ -51,7 +52,9 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell>이름</TableCell>
-                <TableCell>골드(+보너스)</TableCell>
+                <TableCell>골드</TableCell>
+                <TableCell>보너스 골드</TableCell>
+                <TableCell>합계</TableCell>
                 <TableCell>날짜</TableCell>
               </TableRow>
             </TableHead>
@@ -60,6 +63,8 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
                 <TableRow key={item.id}>
                   <TableCell>{getStatusLabel(item.type)}</TableCell>
                   <TableCell>{item.category}</TableCell>
+                  <TableCell>{item.amount}</TableCell>
+                  <TableCell>{item.bonusAmount}</TableCell>
                   <TableCell>
                     {item.amount + item.bonusAmount}
                   </TableCell>
@@ -72,17 +77,15 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
           </Table>
         </Box>
       </Scrollbar>
-
-      <TablePagination
-        component="div"
+      <Pagination
         count={Math.ceil(ledger.length / 5)}
-        onPageChange={(e, page): void => {
+        onChange={(e, page): void => {
           setPage(page);
         }}
-        onRowsPerPageChange={(): void => {}}
         page={page}
-        rowsPerPage={5}
-        rowsPerPageOptions={[5, 10, 25]}
+        variant="outlined"
+        shape="rounded"
+        style={{ display: 'flex', justifyContent: 'flex-end' }}
       />
     </Card>
   );
@@ -107,7 +110,7 @@ const WalletTable: FC<{
   };
   return (
     <>
-      <CardHeader title="유저 포인트 현황" />
+      <CardHeader title="유저 골드 현황" />
       <Divider />
       <Table>
         <TableBody>
@@ -301,7 +304,6 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
           </Box>
         </Box>
       )}
-      {console.log(isConfirmed)}
       {isConfirmed && (
         <Dialog
           aria-labelledby="ConfirmModal"

@@ -381,9 +381,8 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
 
     const getListCount = useCallback(async () => {
       try {
-        const { data, status } = await APITag.getListCount(
-          tagListState.status,
-        );
+        const { _alias, ...query } = tagListState.status;
+        const { data, status } = await APITag.getListCount(query);
         if (status === 200) {
           dispatch({
             type: KeywordActionKind.LOAD_COUNT,
@@ -540,10 +539,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
 
     const [keywordAutocomplete, refetchKeywordAutocomplete] =
       useAsync<Tag[]>(
-        _.debounce(
-          () => APITag.search({ _q: tagAddInputRef.current?.value }),
-          300,
-        ),
+        () => APITag.search({ _q: tagAddInputRef.current?.value }),
         [],
         [],
       );
