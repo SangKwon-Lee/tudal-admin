@@ -36,18 +36,20 @@ const CategoryEditDialogContainer: React.FC<CategoryEditDialogProps> =
     };
 
     return (
-      <CategoryEditDialogPresenter
-        tagList={tagList}
-        tagLoading={tagLoading}
-        handleTagChange={handleTagChange}
-        onSubmit={onSubmit}
-        input={input}
-        setInput={setInput}
-        categoryRef={categoryRef}
-        category={category}
-        open={open}
-        setClose={setClose}
-      />
+      category && (
+        <CategoryEditDialogPresenter
+          tagList={tagList}
+          tagLoading={tagLoading}
+          handleTagChange={handleTagChange}
+          onSubmit={onSubmit}
+          input={input}
+          setInput={setInput}
+          categoryRef={categoryRef}
+          category={category}
+          open={open}
+          setClose={setClose}
+        />
+      )
     );
   };
 

@@ -298,16 +298,17 @@ const CategoryListPresenter: React.FC<CategoryListProps> = (
               payload: page,
             });
           }}
+          style={{ display: 'flex', justifyContent: 'flex-end' }}
         />
       </Card>
       {/* Dialogs */}
-      {openUpdate && (
+      {openUpdate && targetCategory && (
         <CategoryEditDialogContainer
           open={openUpdate}
           setClose={() => {
             dispatch({
               type: CategoryListActionKind.CHANGE_OPEN_UPDATE,
-              payload: true,
+              payload: false,
             });
             dispatch({
               type: CategoryListActionKind.CHANGE_TARGET_CATEGORY,
@@ -320,16 +321,20 @@ const CategoryListPresenter: React.FC<CategoryListProps> = (
         />
       )}
 
-      {targetCategory && (
+      {targetCategory && openDeleteTag && (
         <Dialog
           aria-labelledby="ConfirmModal"
           open={openDeleteTag}
-          onClose={() =>
+          onClose={() => {
             dispatch({
-              type: CategoryListActionKind.CHANGE_OPEN_DELETE,
+              type: CategoryListActionKind.CHANGE_OPEN_UPDATE,
               payload: false,
-            })
-          }
+            });
+            dispatch({
+              type: CategoryListActionKind.CHANGE_TARGET_CATEGORY,
+              payload: null,
+            });
+          }}
         >
           <ConfirmModal
             title={

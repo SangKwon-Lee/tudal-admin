@@ -11,6 +11,7 @@ import {
 export enum MasterListTableActionKind {
   // loading
   LOADING = 'LOADING',
+  DONE = 'DONE',
   CHANNEL_LOADING = 'CHANNEL_LOADING',
   ROOM_LOADING = 'ROOM_LOADING',
 
@@ -97,6 +98,11 @@ const MasterListTableReducer = (
       return {
         ...state,
         loading: true,
+      };
+    case MasterListTableActionKind.DONE:
+      return {
+        ...state,
+        loading: false,
       };
     case MasterListTableActionKind.CHANGE_QUERY:
       return {
@@ -256,6 +262,7 @@ const MasterListTableContainer = () => {
         user.id,
       );
 
+      console.log(status);
       if (status === 200) {
         if (
           masterListState.query['master_room.id'] &&
@@ -265,10 +272,19 @@ const MasterListTableContainer = () => {
             type: MasterListTableActionKind.GET_FEED,
             payload: data,
           });
+        } else {
+          dispatch({
+            type: MasterListTableActionKind.GET_FEED,
+            payload: [],
+          });
         }
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      dispatch({
+        type: MasterListTableActionKind.DONE,
+      });
     }
   }, [masterListState.query, user]);
 

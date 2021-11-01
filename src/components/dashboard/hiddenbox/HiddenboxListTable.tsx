@@ -151,7 +151,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const [salesDataLoaded, setSalesDataLoaded] = useState(false);
   const { user } = useAuth();
 
-  console.log();
   useEffect(() => {
     if (hiddenboxes.length > 0) {
       fetchSalesCount();
