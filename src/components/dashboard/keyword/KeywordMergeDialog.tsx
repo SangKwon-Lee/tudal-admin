@@ -67,7 +67,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
   const tagInput = useRef(null);
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
-    return APITag.getList(value);
+    return APITag.getList({ _q: value });
   }, [tagInput]);
 
   const handleCandidates = (candidate) => {

@@ -386,7 +386,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 태그 관련
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
-    return APITag.getList(value);
+    return APITag.getList({ _q: value });
   }, [tagInput]);
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);

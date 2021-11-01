@@ -352,17 +352,20 @@ const keywordListReducer = (
 interface IKeywordListContainerProps {
   pageTopRef: React.RefObject<HTMLDivElement>;
 }
-const KeywordListContainer: React.FC<IKeywordListContainerProps> =
-  () => {
-    const { user } = useAuth();
-    const tagAddInputRef = useRef<HTMLInputElement>(null);
-    const multiTagInputRef = useRef<HTMLTextAreaElement>(null);
-    const [tagListState, dispatch] = useReducer(
-      keywordListReducer,
-      initialState,
-    );
+const KeywordListContainer: React.FC<IKeywordListContainerProps> = (
+  props,
+) => {
+  const { user } = useAuth();
+  const { pageTopRef } = props;
+  const tagAddInputRef = useRef<HTMLInputElement>(null);
+  const multiTagInputRef = useRef<HTMLTextAreaElement>(null);
+  const [tagListState, dispatch] = useReducer(
+    keywordListReducer,
+    initialState,
+  );
 
-    const getList = useCallback(async () => {
+  const getList = useCallback(
+    async (scrollToTop = true) => {
       dispatch({ type: KeywordActionKind.LOADING });
       try {
         const { data, status } = await APITag.getList(
@@ -373,198 +376,205 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
             type: KeywordActionKind.LOAD_KEYWORDS,
             payload: data,
           });
+          scrollToTop &&
+            pageTopRef?.current.scrollIntoView({
+              behavior: 'smooth',
+            });
         }
       } catch (error) {
         console.log(error);
       }
-    }, [tagListState.status]);
+    },
+    [tagListState.status, pageTopRef],
+  );
 
-    const getListCount = useCallback(async () => {
-      try {
-        const { _alias, ...query } = tagListState.status;
-        const { data, status } = await APITag.getListCount(query);
-        if (status === 200) {
-          dispatch({
-            type: KeywordActionKind.LOAD_COUNT,
-            payload: data,
-          });
-        }
-      } catch (error) {
-        console.log(error);
+  const getListCount = useCallback(async () => {
+    try {
+      const { _alias, ...query } = tagListState.status;
+      const { data, status } = await APITag.getListCount(query);
+      if (status === 200) {
+        dispatch({
+          type: KeywordActionKind.LOAD_COUNT,
+          payload: data,
+        });
       }
-    }, [tagListState.status]);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [tagListState.status]);
 
-    const postKeyword = async () => {
-      dispatch({ type: KeywordActionKind.LOADING });
-      try {
-        if (!tagListState.newKeyword) {
-          toast.error('입력해주세요.');
+  const postKeyword = async () => {
+    dispatch({ type: KeywordActionKind.LOADING });
+    try {
+      if (!tagListState.newKeyword) {
+        toast.error('입력해주세요.');
+        return;
+      }
+
+      const value = tagListState.newKeyword.inputValue;
+      const { status } = await APITag.postItem(value);
+      if (status === 200) {
+        toast.success('추가되었습니다.');
+        dispatch({
+          type: KeywordActionKind.CHANGE_SEARCH,
+          payload: '',
+        });
+        dispatch({
+          type: KeywordActionKind.SET_NEW_KEYWORD,
+          payload: null,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const postMultiKeywords = async () => {
+    dispatch({ type: KeywordActionKind.LOADING });
+
+    try {
+      if (!multiTagInputRef.current.value) {
+        toast.error('키워드를 확인해 주세요');
+        return;
+      }
+      const values = multiTagInputRef.current.value.split('\n');
+
+      const success = [];
+      const errors = [];
+      for (let i = 0; i < values.length; i++) {
+        const { data, status } = await APITag.postItem(values[i]);
+        if (status === 200 && Boolean(data)) {
+          success.push(data.name);
+        } else {
+          errors.push(values[i]);
+        }
+      }
+      success.forEach((success) => toast.success(success));
+      errors.forEach((error) => toast.error(error));
+      multiTagInputRef.current.value = '';
+    } catch (error) {
+      toast.error('키워드를 다시 확인해주세요');
+    }
+  };
+
+  const updateKeyword = async (id, body) => {
+    try {
+      if (body && body.name) {
+        const { status, data } = await APITag.find(body.name);
+        if (status !== 200) {
+          toast.error(errorMessage.TEMP_SERVER_ERROR);
           return;
         }
-
-        const value = tagListState.newKeyword.inputValue;
-        const { status } = await APITag.postItem(value);
-        if (status === 200) {
-          toast.success('추가되었습니다.');
-          dispatch({
-            type: KeywordActionKind.CHANGE_SEARCH,
-            payload: '',
-          });
-          dispatch({
-            type: KeywordActionKind.SET_NEW_KEYWORD,
-            payload: null,
-          });
-        }
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
-
-    const postMultiKeywords = async () => {
-      dispatch({ type: KeywordActionKind.LOADING });
-
-      try {
-        if (!multiTagInputRef.current.value) {
-          toast.error('키워드를 확인해 주세요');
+        if (!_.isEmpty(data)) {
+          toast.error('중복된 키워드가 있습니다');
           return;
         }
-        const values = multiTagInputRef.current.value.split('\n');
-
-        const success = [];
-        const errors = [];
-        for (let i = 0; i < values.length; i++) {
-          const { data, status } = await APITag.postItem(values[i]);
-          if (status === 200 && Boolean(data)) {
-            success.push(data.name);
-          } else {
-            errors.push(values[i]);
-          }
-        }
-        success.forEach((success) => toast.success(success));
-        errors.forEach((error) => toast.error(error));
-        multiTagInputRef.current.value = '';
-      } catch (error) {
-        toast.error('키워드를 다시 확인해주세요');
       }
-    };
-
-    const updateKeyword = async (id, body) => {
-      try {
-        if (body && body.name) {
-          const { status, data } = await APITag.find(body.name);
-          if (status !== 200) {
-            toast.error(errorMessage.TEMP_SERVER_ERROR);
-            return;
-          }
-          if (!_.isEmpty(data)) {
-            toast.error('중복된 키워드가 있습니다');
-            return;
-          }
-        }
-        const { status } = await APITag.update(id, body);
-        if (status === 200) {
-          dispatch({ type: KeywordActionKind.CLOSE_UPDATE_DIALOG });
-          getList();
-        } else {
-          toast.error('업데이트에 실패하였습니다');
-        }
-      } catch (error) {
-        console.log(error);
+      const { status } = await APITag.update(id, body);
+      if (status === 200) {
+        dispatch({ type: KeywordActionKind.CLOSE_UPDATE_DIALOG });
+        getList(false);
+      } else {
+        toast.error('업데이트에 실패하였습니다');
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const deleteKeyword = async () => {
-      try {
-        if (user.role.type !== IRoleType.AUTHENTICATED) {
-          toast.error('삭제는 관리자 권한이 필요합니다.');
-        } else {
-          const { target } = tagListState.delete;
-          const { status, data } = await APITag.update(target.id, {
-            isDeleted: !target.isDeleted,
-          });
-          if (status === 200) {
-            toast.success(
-              data.isDeleted ? '삭제되었습니다.' : '복구되었습니다.',
-            );
-            getList();
-          } else {
-            toast.error('요청이 실패하였습니다');
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        dispatch({ type: KeywordActionKind.CLOSE_DELETE_DIALOG });
-      }
-    };
-
-    const createAlias = async (name: string) => {
-      try {
-        const { target } = tagListState.alias;
-        const { status } = await APITag.postAlias(target.id, name);
-        if (status === 200) {
-          toast.success('alias 추가에 성공했습니다.');
-          dispatch({
-            type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
-            payload: { isEditing: false },
-          });
-          getList();
-        }
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
-
-    const deleteAlias = async (alias: ITagAlias) => {
-      try {
-        const { status } = await APITag.removeAlias(alias.id);
+  const deleteKeyword = async () => {
+    try {
+      if (user.role.type !== IRoleType.AUTHENTICATED) {
+        toast.error('삭제는 관리자 권한이 필요합니다.');
+      } else {
+        const { target } = tagListState.delete;
+        const { status, data } = await APITag.update(target.id, {
+          isDeleted: !target.isDeleted,
+        });
         if (status === 200) {
           toast.success(
-            `${alias.aliasName}이(가) 성공적으로 삭제되었습니다.`,
+            data.isDeleted ? '삭제되었습니다.' : '복구되었습니다.',
           );
-          dispatch({
-            type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
-            payload: { isEditing: false },
-          });
-          getList();
+          getList(false);
+        } else {
+          toast.error('요청이 실패하였습니다');
         }
-      } catch (error) {
-        toast.error(error.message);
       }
-    };
-
-    useEffect(() => {
-      getList();
-    }, [getList]);
-
-    useEffect(() => {
-      getListCount();
-    }, [getListCount]);
-
-    const [keywordAutocomplete, refetchKeywordAutocomplete] =
-      useAsync<Tag[]>(
-        () => APITag.search({ _q: tagAddInputRef.current?.value }),
-        [],
-        [],
-      );
-
-    return (
-      <KeywordListPresenter
-        dispatch={dispatch}
-        reload={getList}
-        state={tagListState}
-        postKeyword={postKeyword}
-        postMultiKeywords={postMultiKeywords}
-        tagAddInputRef={tagAddInputRef}
-        multiTagInputRef={multiTagInputRef}
-        keywordAutocomplete={keywordAutocomplete}
-        refetchKeywordAutocomplete={refetchKeywordAutocomplete}
-        createAlias={createAlias}
-        deleteAlias={deleteAlias}
-        updateKeyword={updateKeyword}
-        deleteKeyword={deleteKeyword}
-      />
-    );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch({ type: KeywordActionKind.CLOSE_DELETE_DIALOG });
+    }
   };
+
+  const createAlias = async (name: string) => {
+    try {
+      const { target } = tagListState.alias;
+      const { status } = await APITag.postAlias(target.id, name);
+      if (status === 200) {
+        toast.success('alias 추가에 성공했습니다.');
+        dispatch({
+          type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+          payload: { isEditing: false },
+        });
+        getList(false);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const deleteAlias = async (alias: ITagAlias) => {
+    try {
+      const { status } = await APITag.removeAlias(alias.id);
+      if (status === 200) {
+        toast.success(
+          `${alias.aliasName}이(가) 성공적으로 삭제되었습니다.`,
+        );
+        dispatch({
+          type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+          payload: { isEditing: false },
+        });
+        getList(false);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  }, [getList]);
+
+  useEffect(() => {
+    getListCount();
+  }, [getListCount]);
+
+  const [keywordAutocomplete, refetchKeywordAutocomplete] = useAsync<
+    Tag[]
+  >(
+    () => APITag.search({ _q: tagAddInputRef.current?.value }),
+    [],
+    [],
+  );
+
+  return (
+    <KeywordListPresenter
+      dispatch={dispatch}
+      reload={getList}
+      state={tagListState}
+      postKeyword={postKeyword}
+      postMultiKeywords={postMultiKeywords}
+      tagAddInputRef={tagAddInputRef}
+      multiTagInputRef={multiTagInputRef}
+      keywordAutocomplete={keywordAutocomplete}
+      refetchKeywordAutocomplete={refetchKeywordAutocomplete}
+      createAlias={createAlias}
+      deleteAlias={deleteAlias}
+      updateKeyword={updateKeyword}
+      deleteKeyword={deleteKeyword}
+    />
+  );
+};
 
 export default KeywordListContainer;

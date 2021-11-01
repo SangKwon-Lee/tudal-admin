@@ -36,7 +36,7 @@ const KeywordEditDialog: React.FC<KeywordEditDialogProps> = ({
   const tagInput = useRef(null);
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
-    return APITag.getList(value);
+    return APITag.getList({ _q: value });
   }, [tagInput]);
 
   const [{ data: tagList, loading: tagLoading }, refetchTag] =

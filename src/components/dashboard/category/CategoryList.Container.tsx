@@ -173,7 +173,9 @@ const CategoryListContainer = () => {
   const getListLength = useCallback(async () => {
     dispatch({ type: CategoryListActionKind.LOADING });
     try {
-      const { data, status } = await APICategory.getListLength();
+      const { data, status } = await APICategory.getListLength(
+        categoryListState.query,
+      );
       if (status === 200) {
         dispatch({
           type: CategoryListActionKind.GET_CATEGORY_LENGTH,
@@ -183,7 +185,7 @@ const CategoryListContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [categoryListState.query]);
 
   const handleCreate = async () => {
     try {

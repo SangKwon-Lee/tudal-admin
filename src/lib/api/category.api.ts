@@ -13,8 +13,9 @@ export async function getList(params) {
   return await axios.get<Category[]>(`/categories?${query}`);
 }
 
-export async function getListLength() {
-  return await axios.get(`/categories/count`);
+export async function getListLength(params) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get(`/categories/count?${query}`);
 }
 
 export async function postItem(
