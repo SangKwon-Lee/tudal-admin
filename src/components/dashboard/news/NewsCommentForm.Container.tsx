@@ -25,7 +25,6 @@ interface NewsCommentFormProps {
 const NewsCommentForm: React.FC<NewsCommentFormProps> = (props) => {
   const { user } = useAuth();
   const { isOpen, setOpen, news, setShouldUpdate } = props;
-  console.log('herlelsadk', props.news);
   const [comment, setComment] = useState<string>('');
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);

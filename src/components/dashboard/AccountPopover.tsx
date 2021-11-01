@@ -1,21 +1,16 @@
 import { useRef, useState } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   Avatar,
   Box,
   Button,
   ButtonBase,
-  Divider,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
   Popover,
   Typography,
 } from '@material-ui/core';
 import useAuth from '../../hooks/useAuth';
-import CogIcon from '../../icons/Cog';
 import UserIcon from '../../icons/User';
 import { CMSURL } from '../../lib/axios';
 

@@ -109,6 +109,7 @@ const CategoryPage: React.FC = () => {
   const loadMoreList = useCallback(async () => {
     setLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const start = (page + 1) * rowsPerPage; //rows per page
       const { data, status } = await APICategory.getList(
         search,
@@ -148,7 +149,7 @@ const CategoryPage: React.FC = () => {
         return;
       }
       const value = newCategory.inputValue;
-      const { status, data } = await APICategory.postItem(value);
+      const { status } = await APICategory.postItem(value);
       if (status === 200) {
         toast.success('추가되었습니다.');
         setSearch('');
@@ -219,6 +220,7 @@ const CategoryPage: React.FC = () => {
 
   useEffect(() => {
     loadMore && loadMoreList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadMore]);
 
   useEffect(() => {
@@ -303,7 +305,6 @@ const CategoryPage: React.FC = () => {
                   marginRight: 10,
                 }}
                 onChange={(event, newValue) => {
-                  console.log(newValue);
                   if (typeof newValue !== 'string') {
                     setNewCategory(newValue);
                   }

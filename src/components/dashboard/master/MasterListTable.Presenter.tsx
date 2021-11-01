@@ -20,14 +20,11 @@ import {
   Dialog,
   LinearProgress,
   Pagination,
-  CircularProgress,
-  Skeleton,
 } from '@material-ui/core';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import PencilAltIcon from 'src/icons/PencilAlt';
 import SearchIcon from 'src/icons/Search';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
-import useAuth from 'src/hooks/useAuth';
 import {
   IMasterListState,
   MasterListTableAction,
@@ -44,8 +41,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
   props,
 ) => {
   const { newState, dispatch, handleDelete } = props;
-
-  const { user } = useAuth();
 
   return (
     <>
@@ -103,7 +98,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               label={'채널 선택'}
               name="sort"
               onChange={(event) => {
-                console.log(event.target.value);
                 dispatch({
                   type: MasterListTableActionKind.CHANGE_CHANNEL,
                   payload: event.target.value,

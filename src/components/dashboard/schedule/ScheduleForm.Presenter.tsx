@@ -3,7 +3,6 @@ import DateRangePicker from 'src/components/widgets/inputs/DateRangePicker';
 import PlusIcon from 'src/icons/Plus';
 import Cancel from '@material-ui/icons/Cancel';
 import SaveAlt from '@material-ui/icons/SaveAlt';
-import * as _ from 'lodash';
 import {
   Box,
   Button,

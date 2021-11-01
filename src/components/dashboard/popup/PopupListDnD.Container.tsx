@@ -1,38 +1,17 @@
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
-import ConfirmModal from '../../widgets/modals/ConfirmModal';
 import { XYCoord } from 'dnd-core';
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  TextField,
-  Typography,
-} from '@material-ui/core';
 import { useReducer, useRef } from 'react';
-import { cmsServer } from 'src/lib/axios';
-import toast from 'react-hot-toast';
-import useAuth from 'src/hooks/useAuth';
 
-const style = {
-  cursor: 'move',
-  display: 'flex',
-};
+// const style = {
+//   cursor: 'move',
+//   display: 'flex',
+// };
+
 interface DragItem {
   index: number;
   id: string;
   type: string;
 }
-const roomType = [
-  {
-    label: '무료',
-    value: 'free',
-  },
-  {
-    label: '프리미엄',
-    value: 'premium',
-  },
-];
 
 export interface CardProps {
   id: any;
@@ -107,11 +86,11 @@ const DraggableCard: React.FC<CardProps> = ({
   moveCard,
   image,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [newState, dispatch] = useReducer(
     MasterRoomDnDReducer,
     initialState,
   );
-  const { user } = useAuth();
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop({
     accept: 'card',

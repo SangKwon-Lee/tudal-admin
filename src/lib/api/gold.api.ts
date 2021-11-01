@@ -1,4 +1,4 @@
-import axios, { apiServer } from 'src/lib/axios';
+import { apiServer } from 'src/lib/axios';
 import qs from 'qs';
 import {
   IGoldLedger,

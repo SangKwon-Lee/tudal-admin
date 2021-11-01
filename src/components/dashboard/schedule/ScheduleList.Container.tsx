@@ -6,8 +6,6 @@ import { AxiosError } from 'axios';
 import { Schedule } from '../../../types/schedule';
 import { ScheduleListPresenter } from '.';
 
-import * as _ from 'lodash';
-
 export enum ScheduleActionKind {
   LOADING = 'LOADING',
   ADD_SCHEDULE = 'ADD_SCHEDULE',
@@ -228,7 +226,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
     initialState,
   );
 
-  const { list, status } = scheduleListState;
+  const { status } = scheduleListState;
 
   const getSchedule = useCallback(
     async (scrollTop = true) => {
@@ -247,7 +245,7 @@ const ScheduleListTable: React.FC<ScheduleListTableProps> = (
         console.error(error);
       }
     },
-    [status],
+    [pageTopRef, status],
   );
 
   const getListCount = useCallback(async () => {

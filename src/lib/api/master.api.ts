@@ -111,15 +111,21 @@ export async function getYearSubscribe(year, masterId) {
 
 export async function getThisMonth(masterId) {
   const year = new Date().getFullYear();
-  const thisMonth = new Date().getMonth() + 1;
-  const lastMonth = new Date().getMonth();
+  let thisMonth: any = new Date().getMonth() + 1;
+  let lastMonth: any = new Date().getMonth();
+  if (thisMonth.toString().length === 1) {
+    thisMonth = `0${thisMonth}`;
+  }
+  if (lastMonth.toString().length === 1) {
+    lastMonth = `0${lastMonth}`;
+  }
   const thisDate = new Date(year, thisMonth, 0).getDate();
   const lastDate = new Date(year, lastMonth, 0).getDate();
   const This = await axios.get(
     `/master-subscriptions/?startDate_gte=${year}-${thisMonth}-01&startDate_lte=${year}-${thisMonth}-${thisDate}&master.id=${masterId}`,
   );
   const Last = await axios.get(
-    `/master-subscriptions/?startDate_gte=${year}-0${lastMonth}-01&startDate_lte=${year}-0${lastMonth}-${lastDate}&master.id=${masterId}`,
+    `/master-subscriptions/?startDate_gte=${year}-${lastMonth}-01&startDate_lte=${year}-${lastMonth}-${lastDate}&master.id=${masterId}`,
   );
 
   return [This, Last];

@@ -1,12 +1,6 @@
-import {
-  sign,
-  decode,
-  JWT_SECRET,
-  JWT_EXPIRES_IN,
-} from '../../utils/jwt';
 import wait from '../../utils/wait';
 import { User } from '../../types/user';
-import { apiServer, cmsServer } from '../axios';
+import { cmsServer } from '../axios';
 
 class AuthApi {
   async login({ email, password }): Promise<any> {

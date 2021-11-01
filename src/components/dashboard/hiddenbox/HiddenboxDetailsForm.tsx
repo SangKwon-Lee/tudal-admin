@@ -18,8 +18,6 @@ import { APIStock, APITag } from 'src/lib/api';
 import useAsync from 'src/hooks/useAsync';
 import { Tag } from 'src/types/schedule';
 import * as _ from 'lodash';
-import useAuth from 'src/hooks/useAuth';
-import productStatusFunc from 'src/utils/productStatus';
 
 interface HiddenboxDetailsProps {
   onBack?: () => void;
@@ -36,7 +34,7 @@ type Stock = {
 
 const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   const { onBack, onNext, setValues, values, mode, ...other } = props;
-  const { user } = useAuth();
+
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
@@ -93,7 +91,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
   // const isStock = (object: any): object is Stock => {
   //   return object && object.stockcode !== undefined;
   // };
-  const productStatus = productStatusFunc(values, mode);
 
   return (
     <Formik

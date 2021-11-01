@@ -1,5 +1,4 @@
 import { FC, useCallback, useEffect, useReducer } from 'react';
-import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { APIPopUp } from 'src/lib/api';
@@ -100,7 +99,6 @@ const PopUpListReducer = (
       };
 
     case PopUpListActionKind.LOAD_OPEN_LIST:
-      console.log('REDUCER', payload);
       return {
         ...state,
         openList: payload,

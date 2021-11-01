@@ -2,7 +2,6 @@ import type { FC } from 'react';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import {
-  Alert,
   Box,
   Button,
   FormHelperText,

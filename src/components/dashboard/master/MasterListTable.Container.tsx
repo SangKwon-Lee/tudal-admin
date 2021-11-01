@@ -244,6 +244,7 @@ const MasterListTableContainer = () => {
     } catch (error) {
       console.log(error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, masterListState.query['master_room.master_channel.id']]);
 
   const getFeeds = useCallback(async () => {
@@ -288,6 +289,7 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.error(err);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, masterListState.query['master_room.id']]);
 
   const handleDelete = async () => {

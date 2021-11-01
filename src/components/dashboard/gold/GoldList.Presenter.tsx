@@ -46,7 +46,7 @@ export const getStatusLabel = (status) => {
     },
   };
 
-  const { text, color, label }: any = map[status];
+  const { color, label }: any = map[status];
 
   return <Label color={color}>{label}</Label>;
 };

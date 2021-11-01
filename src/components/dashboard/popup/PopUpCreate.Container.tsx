@@ -221,7 +221,6 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(PopUpCreateState.createInput);
   return (
     <PopUpCreatePresenter
       dispatch={dispatch}

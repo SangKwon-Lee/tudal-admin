@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { useReducer, useEffect, useCallback } from 'react';
+import { useReducer, useEffect } from 'react';
 
 interface ReturnedData<TResponse> {
   data: TResponse;
@@ -62,6 +62,7 @@ export function useAsync<T>(
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return [state, fetchData];

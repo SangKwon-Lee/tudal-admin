@@ -201,10 +201,10 @@ const NewsListContainer: React.FC<INewsListContainerProps> = (
           pageTopRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [newsListState.query, shouldUpdate],
   );
 
-  console.log(newsListState.minutesRefresh);
   useEffect(() => {
     function refreshTimer() {
       return setTimeout(() => {

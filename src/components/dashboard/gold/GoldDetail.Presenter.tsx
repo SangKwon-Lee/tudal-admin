@@ -210,7 +210,7 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   state,
   dispatch,
 }) => {
-  const { ledger, wallet, loading, totalByHand } = state;
+  const { ledger, wallet, totalByHand } = state;
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const userIdRef = useRef<HTMLInputElement>(null);
   const _handleUser = () => {

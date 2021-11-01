@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import toast from 'react-hot-toast';
 import { IRoleType } from 'src/types/user';
-import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import * as _ from 'lodash';
 import useAsync from 'src/hooks/useAsync';
 import { APITag } from 'src/lib/api';
@@ -33,19 +32,6 @@ const sortOptions: ISortOption[] = [
   {
     label: '수정일 최신순',
     value: 'updated_at:desc',
-  },
-];
-
-const filterOptions = [
-  {
-    label: '요약문',
-    name: 'summary_null',
-    value: false,
-  },
-  {
-    label: '설명문',
-    name: 'description_null',
-    value: false,
   },
 ];
 
@@ -418,7 +404,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
         }
 
         const value = tagListState.newKeyword.inputValue;
-        const { status, data } = await APITag.postItem(value);
+        const { status } = await APITag.postItem(value);
         if (status === 200) {
           toast.success('추가되었습니다.');
           dispatch({
@@ -476,7 +462,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
             return;
           }
         }
-        const { status, data } = await APITag.update(id, body);
+        const { status } = await APITag.update(id, body);
         if (status === 200) {
           dispatch({ type: KeywordActionKind.CLOSE_UPDATE_DIALOG });
           getList();
@@ -516,10 +502,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
     const createAlias = async (name: string) => {
       try {
         const { target } = tagListState.alias;
-        const { data, status } = await APITag.postAlias(
-          target.id,
-          name,
-        );
+        const { status } = await APITag.postAlias(target.id, name);
         if (status === 200) {
           toast.success('alias 추가에 성공했습니다.');
           getList();
@@ -535,7 +518,7 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
 
     const deleteAlias = async (alias: ITagAlias) => {
       try {
-        const { data, status } = await APITag.removeAlias(alias.id);
+        const { status } = await APITag.removeAlias(alias.id);
         if (status === 200) {
           toast.success(
             `${alias.aliasName}이(가) 성공적으로 삭제되었습니다.`,

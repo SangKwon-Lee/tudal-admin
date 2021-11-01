@@ -1,13 +1,9 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import type { FC } from 'react';
-import numeral from 'numeral';
-import { subDays, subHours } from 'date-fns';
 import {
   Box,
   Card,
   Button,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   Link,
@@ -79,7 +75,7 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
   moveCard,
   postChangeOrder,
 }) => {
-  const { list, openList, query, page, isEditOrder } = state;
+  const { list, openList, page, isEditOrder } = state;
 
   const handleEdit = async () => {
     if (isEditOrder) {

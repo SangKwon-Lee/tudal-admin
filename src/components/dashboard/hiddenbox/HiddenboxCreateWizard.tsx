@@ -14,7 +14,6 @@ import HiddenboxContentForm from './HiddenboxContentForm';
 import HiddenboxDetailsForm from './HiddenboxDetailsForm';
 import type { Hiddenbox } from '../../../types/hiddenbox';
 import moment from 'moment';
-import productStatusFunc from 'src/utils/productStatus';
 import useAuth from '../../../hooks/useAuth';
 import axios from '../../../lib/axios';
 
@@ -117,10 +116,8 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
       ...prev,
       ...values,
     }));
-    console.log('values are changed', values, newHiddenbox);
+    // console.log('values are changed', values, newHiddenbox);
   };
-
-  const productStatus = productStatusFunc(newHiddenbox, mode);
 
   return (
     <div {...props}>

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import OverviewPresenter from './Overview.Presenter';
-import useAuth from 'src/hooks/useAuth';
 import dayjs from 'dayjs';
 import { APIOverview } from 'src/lib/api';
 import { INews } from 'src/types/news';

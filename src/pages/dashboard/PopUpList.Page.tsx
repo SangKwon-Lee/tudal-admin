@@ -1,11 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
   Breadcrumbs,
-  Button,
   Container,
   Grid,
   Link,
@@ -13,7 +11,6 @@ import {
 } from '@material-ui/core';
 
 import ChevronRightIcon from '../../icons/ChevronRight';
-import PlusIcon from '../../icons/Plus';
 import useSettings from '../../hooks/useSettings';
 import PopupListContainer from 'src/components/dashboard/popup/PopUpList.Container';
 

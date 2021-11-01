@@ -1,36 +1,20 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  ChangeEvent,
-} from 'react';
-import { applyPagination } from 'src/utils/pagination';
-import { Link as RouterLink } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import React from 'react';
 
 import dayjs from 'dayjs';
 
 import {
-  FormLabel,
-  Checkbox,
   Tooltip,
   Box,
-  Container,
-  Breadcrumbs,
-  Grid,
   Card,
   Divider,
   IconButton,
   InputAdornment,
   LinearProgress,
-  Link,
   Chip,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   Autocomplete,
   TextField,
@@ -40,35 +24,25 @@ import {
   FormControlLabel,
   Switch,
   Dialog,
-  Collapse,
   Pagination,
 } from '@material-ui/core';
 
-import useSettings from 'src/hooks/useSettings';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import Scrollbar from 'src/components/layout/Scrollbar';
-import ChevronRightIcon from 'src/icons/ChevronRight';
-import { IRoleType } from 'src/types/user';
 import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import * as _ from 'lodash';
-import ArrowRightIcon from 'src/icons/ArrowRight';
-import useAsync from 'src/hooks/useAsync';
-import PencilAltIcon from 'src/icons/PencilAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import AliasIcon from '@material-ui/icons/Repeat';
 import SearchIcon from 'src/icons/Search';
-import { APITag } from 'src/lib/api';
 import { ITagAlias, Tag } from 'src/types/schedule';
-import useAuth from 'src/hooks/useAuth';
 
 import KeywordEditDialog from 'src/components/dashboard/keyword/KeywordEditDialog';
 import EditTextDialog from 'src/components/dialogs/Dialog.EditText';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import DialogEditMultiSelect from 'src/components/dialogs/Dialog.EditMultiSelect';
 import Label from 'src/components/widgets/Label';
-import { errorMessage } from 'src/common/error';
 import { isStringEmpty } from 'src/utils/funcs';
 import {
   IKeywordListDispatch,
@@ -137,7 +111,6 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
   const {
     loading: keywordAutocompleteLoading,
     data: keywordAutocompleteList,
-    error,
   } = keywordAutocomplete;
 
   const { alias, update, summary, description } = state;

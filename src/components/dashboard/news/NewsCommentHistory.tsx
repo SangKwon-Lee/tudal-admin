@@ -1,15 +1,10 @@
 import type { FC } from 'react';
-import {
-  formatDistanceToNowStrict,
-  subHours,
-  subMinutes,
-} from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 import * as _ from 'lodash';
 import {
   Avatar,
   Badge,
   Box,
-  Button,
   Card,
   Chip,
   CardHeader,
@@ -21,8 +16,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import { INewsComment } from 'src/types/news';
-import dayjs from 'dayjs';
-import { fontSize } from '@material-ui/system';
 
 interface NewsCommentHistoryProps {
   newsComments: INewsComment[];

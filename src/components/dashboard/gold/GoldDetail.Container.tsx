@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { APIGold } from 'src/lib/api';
-import { getUserLedger, getUserWallet } from 'src/lib/api/gold.api';
 import {
   IGoldLedger,
   IGoldPostForm,
@@ -216,7 +215,7 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
     } catch (error) {
       console.log(error);
     }
-  }, [userId]);
+  }, [handleUser, userId]);
 
   const postGold = useCallback(async () => {
     try {
@@ -230,6 +229,7 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
     } catch (error) {
       console.log(error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postForm]);
 
   const reload = () => {
@@ -247,6 +247,7 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
         return;
       }
 
+      // eslint-disable-next-line array-callback-return
       return ledger.reduce((acc, cur) => {
         if (cur.type === 'add') {
           return cur.bonusAmount + cur.amount + acc;

@@ -30,6 +30,7 @@ interface ReportMakerWizardProps {}
 const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
   const { ...other } = props;
   const [tag, setTag] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [values, setValues] = useState<any>({
     tags: [],
     startDate: moment().subtract(60, 'days').format('YYYY-MM-DD'),
@@ -43,7 +44,6 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
   });
 
   useEffect(() => {
-    console.log('TagList is changed', tagList);
     if (tagList.length > 0) {
       setShowReport(true);
     } else {
@@ -107,7 +107,6 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
               setTagList([]);
               if (values.tags && values.tags.length > 0) {
                 await fetchTags(values.tags);
-                console.log('TagList', tagList);
               }
             } catch (error) {
               console.log('fetch failed', error);

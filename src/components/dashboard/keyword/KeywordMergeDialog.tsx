@@ -3,7 +3,6 @@ import React, {
   useRef,
   useEffect,
   useCallback,
-  ChangeEvent,
 } from 'react';
 import * as _ from 'lodash';
 
@@ -113,6 +112,7 @@ const KeywordMergeDialog: React.FC<KeywordMergeDialogProps> = ({
       );
       setClose();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidates, handleCheck]);
 
   const handleSubmit = async () => {

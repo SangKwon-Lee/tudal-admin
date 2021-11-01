@@ -95,7 +95,6 @@ const CategoryListPresenter: React.FC<CategoryListProps> = (
               marginRight: 10,
             }}
             onChange={(event, newValue) => {
-              console.log(newValue);
               if (typeof newValue !== 'string') {
                 dispatch({
                   type: CategoryListActionKind.CHANGE_NEW_CATEGORY,
