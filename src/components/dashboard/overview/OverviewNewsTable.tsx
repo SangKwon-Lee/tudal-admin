@@ -7,7 +7,6 @@ import {
   Card,
   CardActions,
   CardHeader,
-  LinearProgress,
   List,
   ListItem,
   ListItemText,

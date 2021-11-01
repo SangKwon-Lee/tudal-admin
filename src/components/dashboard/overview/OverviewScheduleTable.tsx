@@ -10,7 +10,6 @@ import {
   Typography,
   CardActions,
   Button,
-  LinearProgress,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { Schedule } from 'src/types/schedule';

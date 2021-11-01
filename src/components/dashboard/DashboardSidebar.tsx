@@ -18,7 +18,6 @@ import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
-import SunIcon from '../../icons/Sun';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;

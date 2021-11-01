@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 import qs from 'qs';
-import { IKeywordListStatus } from 'src/components/dashboard/keyword/KeywordList.Container';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
 import { removeEmpty } from 'src/utils/helper';

@@ -4,7 +4,6 @@ import React, {
   useCallback,
   useReducer,
 } from 'react';
-import toast from 'react-hot-toast';
 import { INews } from 'src/types/news';
 import * as _ from 'lodash';
 import NewsListPresenter from './NewsList.Presenter';

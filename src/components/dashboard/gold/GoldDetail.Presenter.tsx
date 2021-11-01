@@ -17,7 +17,6 @@ import {
   DialogTitle,
   TextField,
   TableHead,
-  TablePagination,
   Select,
   MenuItem,
   Pagination,
