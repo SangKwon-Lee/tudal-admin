@@ -504,11 +504,11 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
         const { status } = await APITag.postAlias(target.id, name);
         if (status === 200) {
           toast.success('alias 추가에 성공했습니다.');
-          getList();
           dispatch({
             type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
             payload: { isEditing: false },
           });
+          getList();
         }
       } catch (error) {
         toast.error(error.message);
@@ -522,6 +522,10 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> =
           toast.success(
             `${alias.aliasName}이(가) 성공적으로 삭제되었습니다.`,
           );
+          dispatch({
+            type: KeywordActionKind.HANDLE_ALIAS_DIALOG,
+            payload: { isEditing: false },
+          });
           getList();
         }
       } catch (error) {

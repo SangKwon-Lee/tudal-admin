@@ -23,7 +23,7 @@ const CategoryEditDialogContainer: React.FC<CategoryEditDialogProps> =
       const value = categoryRef.current
         ? categoryRef.current.value
         : '';
-      return APICategory.getList(value);
+      return APICategory.getList({ _q: value });
     }, [categoryRef]);
 
     const [{ data: tagList, loading: tagLoading }, refetchTag] =

@@ -143,7 +143,7 @@ const CategoryListContainer = () => {
     const value = categoryCreateRef.current
       ? categoryCreateRef.current.value
       : '';
-    return APICategory.getList(value);
+    return APICategory.getList({ _q: value });
   }, []);
 
   const [
