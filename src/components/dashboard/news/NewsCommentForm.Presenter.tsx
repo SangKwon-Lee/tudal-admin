@@ -293,7 +293,10 @@ const NewsCommentFormPresenter: React.FC<NewsCommentFormPresenterProps> =
               content={'뉴스 코멘트를 추가하시겠습니까?'}
               confirmTitle={'추가'}
               type={'CONFIRM'}
-              handleOnClick={() => submit()}
+              handleOnClick={() => {
+                submit();
+                extractStockAndKeyword(comment);
+              }}
               handleOnCancel={() => setShowConfirm(false)}
             />
           </Dialog>
@@ -309,9 +312,7 @@ const NewsCommentFormPresenter: React.FC<NewsCommentFormPresenterProps> =
               onChange={(e) => setComment(e.target.value)}
               variant="outlined"
               helperText="줄 바꾸기 enter"
-              onBlur={(e) => {
-                extractStockAndKeyword(e.target.value);
-              }}
+              onBlur={(e) => {}}
             />
           </Grid>
 
