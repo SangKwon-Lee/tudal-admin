@@ -131,6 +131,7 @@ const NewsListPresenter: React.FC<NewsListPresenterProps> = (
             label="정렬"
             id="sort"
             select
+            name="_sort"
             onChange={(e) => {
               dispatch({
                 type: NewsListActionKind.CHANGE_QUERY,

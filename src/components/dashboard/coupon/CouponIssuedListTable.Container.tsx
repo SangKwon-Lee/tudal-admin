@@ -302,7 +302,6 @@ const CouponIssuedListTableContainer = () => {
       const { data, status } = await APICoupon.getIssuedCouponLength(
         couponId,
       );
-      console.log(data);
       if (status === 200) {
         dispatch({
           type: CouponIssuedListTableActionKind.GET_ISSUED_COUPON_LENGTH,

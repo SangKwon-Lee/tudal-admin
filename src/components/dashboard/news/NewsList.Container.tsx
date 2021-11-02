@@ -203,7 +203,7 @@ const NewsListContainer: React.FC<INewsListContainerProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [newsListState.query, shouldUpdate],
   );
-
+  console.log(newsListState.query);
   useEffect(() => {
     function refreshTimer() {
       return setTimeout(() => {

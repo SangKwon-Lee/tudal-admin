@@ -21,6 +21,7 @@ const BasicDateRangePicker: React.FC<BasicDateRangePickerProps> = (
         startText="시작 날짜"
         endText="끝 날짜"
         value={[startDate, endDate]}
+        //* 이대표님 요청사항. 경고 메시지가 console에 나와도 그대로 진행
         inputFormat={'yyyy-MM-dd'}
         onChange={(newValue) => {
           const [startDate, endDate] = newValue;
