@@ -2,33 +2,26 @@ import { AxiosResponse } from 'axios';
 import qs from 'qs';
 import axios from 'src/lib/axios';
 import { Tag } from 'src/types/schedule';
-
-export async function getList(
-  search: string,
-  sort: string = '',
-  filters = [],
-  _alias: boolean = false,
-  _start: number = 0,
-  _limit: number = 100,
-) {
-  const q: any = { _alias, _start, _limit };
-  if (search) {
-    q._q = search;
-  }
-  if (sort) {
-    q._sort = sort;
-  }
-  filters.forEach((filter) => {
-    if (filter.value) {
-      q[filter.name] = filter.value;
-    }
-  });
-
-  return await axios.get<Tag[]>('/tags-excluded?' + qs.stringify(q));
-}
+import { removeEmpty } from 'src/utils/helper';
 
 export async function find(name) {
   return await axios.get<Tag[]>(`/tags?name=${name}`);
+}
+
+export async function getList(params) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Tag[]>(`/tags-excluded?${query}`);
+}
+
+export async function getListCount(params) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Number>(`/tags/count?${query}`);
+}
+
+export async function search(params: { _q: string }) {
+  const query = qs.stringify(removeEmpty(params));
+
+  return await axios.get<Number>(`/tags-excluded?${query}`);
 }
 
 export async function getItem(id: number) {

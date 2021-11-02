@@ -7,7 +7,7 @@ const warn = (...args) => {
     return;
   }
 
-  console.warn(...args);
+  // console.warn(...args);
 };
 
 class GTM {

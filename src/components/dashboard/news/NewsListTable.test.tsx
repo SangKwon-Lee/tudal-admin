@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import dayjs from 'dayjs';
-import NewsListTable from './NewsListTable';
+import NewsListTable from './NewsList.Presenter';
 import { FixtureNews } from 'src/fixtures';
 import userEvent from '@testing-library/user-event';
 

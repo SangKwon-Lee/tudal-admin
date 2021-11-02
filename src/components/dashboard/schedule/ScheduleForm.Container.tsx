@@ -198,7 +198,8 @@ const ScheduleForm: React.FC<scheduleFormProps> = ({
     [],
     [],
   );
-  const getTagList = () => APITag.getList(tagInput.current.value);
+  const getTagList = () =>
+    APITag.getList({ _q: tagInput.current.value });
 
   const [tagListState, _refetchTag] = useAsync<Tag[]>(
     getTagList,

@@ -16,7 +16,7 @@ import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
-import FolderOpenIcon from 'src/icons/FolderOpen';
+import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
 
 interface DashboardSidebarProps {
@@ -66,6 +66,46 @@ const sections = [
           },
         ],
       },
+    ],
+  },
+  {
+    title: 'Accounting',
+    items: [
+      {
+        title: '골드',
+        path: '/dashboard/gold',
+        icon: <CashIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/gold',
+          },
+          {
+            title: '상세보기',
+            path: '/dashboard/gold/detail',
+          },
+        ],
+      },
+      {
+        title: '쿠폰',
+        path: '/dashboard/coupons',
+        icon: <PencilIcon fontSize="small" />,
+      },
+      // {
+      //   title: '팝업',
+      //   path: '/dashboard/popup',
+      //   icon: <SunIcon fontSize="small" />,
+      //   children: [
+      //     {
+      //       title: '리스트',
+      //       path: '/dashboard/popup',
+      //     },
+      //     {
+      //       title: '생성',
+      //       path: '/dashboard/popup/new',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

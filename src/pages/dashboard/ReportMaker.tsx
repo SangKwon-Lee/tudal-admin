@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
@@ -16,12 +16,14 @@ import ChevronRightIcon from '../../icons/ChevronRight';
 import gtm from '../../lib/gtm';
 // import type { Hiddenbox } from '../../types/hiddenbox';
 import useSettings from '../../hooks/useSettings';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import SocketManager, {
   SocketContext,
 } from '../../contexts/SocketContext';
 
 const ReportMaker: FC = () => {
   const { settings } = useSettings();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { queryManager, connected, reconnect } =
     useContext(SocketContext);
 

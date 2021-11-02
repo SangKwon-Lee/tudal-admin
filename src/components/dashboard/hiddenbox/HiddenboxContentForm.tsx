@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import productStatusFunc from 'src/utils/productStatus';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import WebEditor from 'src/components/common/WebEditor';
 import moment from 'moment';
@@ -40,42 +39,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
     }
   };
 
-  const productStatus = productStatusFunc(values, mode);
-
-  // const editor = useRef(null);
-  // const handleUploadImage = async (blob) => {
-  //   /*
-  //     blob: {
-  //       lastModified: 1565934119000,
-  //       lastModifiedDate: Fri Aug 16 2019 14:41:59 GMT+0900 (대한민국 표준시) {},
-  //       name: "스크린샷 2019-08-16 오후 2.41.53.png",
-  //       size: 124076,
-  //       type: "image/png",
-  //       webkitRelativePath: ""
-  //     }
-  //   */
-  //   const regexp = /(?:\.([^.]+))?$/;
-  //   const ext = regexp.exec(blob);
-  //   const imageName = `hb-${moment().format(
-  //     'YYYYMMDDHHmmss',
-  //   )}.${ext}`;
-
-  //   try {
-  //     // Koscom Cloud에 업로드하기!
-  //     await S3.putObject({
-  //       Bucket: bucket_name,
-  //       Key: imageName,
-  //       ACL: 'public-read',
-  //       // ACL을 지우면 전체공개가 되지 않습니다.
-  //       Body: blob,
-  //     }).promise();
-  //     const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
-  //     // callback(imageUrl, imageName);
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
-
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> => {
@@ -89,11 +52,11 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           ...values,
           contents: contents,
         });
-        console.log('여기', values.stocks);
-        console.log(
-          '여기',
-          values.stocks.map((el) => el.id),
-        );
+        // console.log('여기', values.stocks);
+        // console.log(
+        //   '여기',
+        //   values.stocks.map((el) => el.id),
+        // );
 
         const newHiddenbox = {
           ...values,

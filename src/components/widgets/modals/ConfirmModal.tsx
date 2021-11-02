@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Container,
-  Paper,
   Typography,
 } from '@material-ui/core';
 import { alpha } from '@material-ui/core/styles';

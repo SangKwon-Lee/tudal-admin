@@ -17,7 +17,6 @@ import {
 import MasterDetailsContainer from '../../components/dashboard/master/MasterDetails.Container';
 import ChevronRightIcon from '../../icons/ChevronRight';
 import PencilAltIcon from '../../icons/PencilAlt';
-import gtm from '../../lib/gtm';
 import useSettings from '../../hooks/useSettings';
 
 const tabs = [{ label: '피드내용', value: 'details' }];
@@ -28,7 +27,6 @@ const MasterDetailsPage: FC = () => {
   const { masterId } = useParams();
 
   useEffect(() => {
-    gtm.push({ event: 'page_view' });
     setCurrentTab('details');
   }, []);
 

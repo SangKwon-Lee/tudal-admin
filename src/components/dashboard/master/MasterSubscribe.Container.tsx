@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { APIMaster } from 'src/lib/api';
+import { getMonthSubscription } from 'src/utils/getMonthSubscription';
 import MasterSubscribePresenter from './MasterSubscribe.Presenter';
 
 export enum MasterSubscribeActionKind {
@@ -17,6 +18,7 @@ export interface MasterSubscribeAction {
   type: MasterSubscribeActionKind;
   payload?: any;
 }
+
 export interface MasterSubscribeState {
   loading: boolean;
   subscription: any;
@@ -102,21 +104,20 @@ const MasterSubscribeContainer = () => {
   const getSubscribeCount = async (masterId) => {
     dispatch({ type: MasterSubscribeActionKind.LOADING });
     try {
-      const { data, status } = await APIMaster.getAllSubscribe(
-        user.id,
-      );
+      const { status } = await APIMaster.getAllSubscribe(user.id);
       const response = await APIMaster.getYearSubscribe(
         masterSubscribeState.selectYear,
         masterId,
       );
       let endDate = response.map((data) => data.data);
-      endDate = endDate.map((data) =>
-        data.filter((data) => data.endDate === null),
+      endDate = getMonthSubscription(
+        endDate,
+        masterSubscribeState.selectYear,
       );
       if (status === 200) {
         dispatch({
           type: MasterSubscribeActionKind.GET_ALL_SUBSCRIPTION_COUNT,
-          payload: data.length,
+          payload: endDate[endDate.length - 1].length,
         });
         dispatch({
           type: MasterSubscribeActionKind.GET_SUBSCRIPTION,
@@ -160,9 +161,7 @@ const MasterSubscribeContainer = () => {
         masterId,
       );
       let endDate = data.map((data) => data.data);
-      endDate = endDate.map((data) =>
-        data.filter((data) => data.endDate === null),
-      );
+      endDate = getMonthSubscription(endDate, event.target.value);
       dispatch({
         type: MasterSubscribeActionKind.GET_SUBSCRIPTION,
         payload: endDate.map((data) => data.length),
@@ -171,7 +170,6 @@ const MasterSubscribeContainer = () => {
       console.log(error);
     }
   };
-
   //* 이번 달, 지난 달 구독자 수
   const getThisMonth = async () => {
     try {
@@ -188,7 +186,6 @@ const MasterSubscribeContainer = () => {
       console.log(error);
     }
   };
-  console.log(masterSubscribeState);
 
   return (
     <MasterSubscribePresenter

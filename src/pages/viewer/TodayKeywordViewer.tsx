@@ -1,13 +1,11 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container, Typography } from '@material-ui/core';
 import TodayKeywordChart from '../../components/viewer/TodayKeywordChart';
 import gtm from '../../lib/gtm';
-import useSettings from '../../hooks/useSettings';
 import { SocketContext } from '../../contexts/SocketContext';
-import { apiServer, cmsServer, CMS_TOKEN } from 'src/lib/axios';
+import { apiServer } from 'src/lib/axios';
 import type { Stock, Tag, TagData } from '../../types/todaykeyword';
 
 const colorsets = [
@@ -24,9 +22,7 @@ const colorsets = [
 ];
 
 const TodayKeywordViewer: FC = () => {
-  const { queryManager, connected, reconnect } =
-    useContext(SocketContext);
-  const { settings } = useSettings();
+  const { queryManager } = useContext(SocketContext);
   const [showKeyword, setShowKeyword] = useState(false);
   const [list, setList] = useState<Stock[]>([]);
   const tagData = useRef({});
@@ -68,7 +64,7 @@ const TodayKeywordViewer: FC = () => {
               return;
             }
 
-            let result1 = queryData.getBlockData('OutBlock1');
+            // let result1 = queryData.getBlockData('OutBlock1');
             let result2 = queryData.getBlockData('OutBlock2');
             if (result2 && result2.length >= 20) {
               setList([...result2]);
@@ -85,12 +81,14 @@ const TodayKeywordViewer: FC = () => {
     if (screenSize.width !== 0 && screenSize.height !== 0) {
       getTodayRanking();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenSize]);
 
   useEffect(() => {
     if (list.length === 20) {
       fetchTagsByList();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
   const getWindowDimensions = () => {
@@ -125,6 +123,7 @@ const TodayKeywordViewer: FC = () => {
       // 우선 ceiling 을 한다.
       let value: number = ratio <= 0 ? 0 : Math.ceil(ratio / 10);
 
+      // eslint-disable-next-line array-callback-return
       data.map((tag) => {
         if (tagData.current[tag.name]) {
           tagData.current[tag.name] += value * tag.value;
@@ -135,6 +134,7 @@ const TodayKeywordViewer: FC = () => {
 
       if (index === 19) {
         let tempArray = [];
+        // eslint-disable-next-line array-callback-return
         Object.keys(tagData.current).map((key) => {
           tempArray.push({
             label: key,
@@ -159,7 +159,6 @@ const TodayKeywordViewer: FC = () => {
     }
   }, [tagArray]);
 
-  console.log('Screen', screenSize);
   const chartWidth =
     screenSize.width > 400 ? 400 - 40 : screenSize.width - 40;
   const chartHeight = (chartWidth * 3) / 4;

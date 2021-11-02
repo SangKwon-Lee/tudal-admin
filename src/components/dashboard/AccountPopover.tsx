@@ -1,21 +1,16 @@
 import { useRef, useState } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   Avatar,
   Box,
   Button,
   ButtonBase,
-  Divider,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
   Popover,
   Typography,
 } from '@material-ui/core';
 import useAuth from '../../hooks/useAuth';
-import CogIcon from '../../icons/Cog';
 import UserIcon from '../../icons/User';
 import { CMSURL } from '../../lib/axios';
 
@@ -82,42 +77,10 @@ const AccountPopover: FC = () => {
       >
         <Box sx={{ p: 2 }}>
           <Typography color="textPrimary" variant="subtitle2">
-            {user.name}
-          </Typography>
-          <Typography color="textSecondary" variant="subtitle2">
-            Devias
+            {`${user.username}(${user.nickname})`}
           </Typography>
         </Box>
-        <Divider />
-        <Box sx={{ mt: 2 }}>
-          <MenuItem
-            component={RouterLink}
-            to="/dashboard/social/profile"
-          >
-            <ListItemIcon>
-              <UserIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Profile
-                </Typography>
-              }
-            />
-          </MenuItem>
-          <MenuItem component={RouterLink} to="/dashboard/account">
-            <ListItemIcon>
-              <CogIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Settings
-                </Typography>
-              }
-            />
-          </MenuItem>
-        </Box>
+
         <Box sx={{ p: 2 }}>
           <Button
             color="primary"

@@ -138,7 +138,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           window.localStorage.getItem('accessToken');
         const userId = window.localStorage.getItem('userId');
 
-        console.log('INIT', accessToken, userId);
         if (accessToken) {
           setSession(accessToken, userId);
           const user = await authApi.me(userId);

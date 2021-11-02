@@ -8,17 +8,15 @@ import {
   CardContent,
   Container,
   Divider,
-  Link,
   Typography,
 } from '@material-ui/core';
 import { LoginJWT } from '../../components/authentication/login';
-import Logo from '../../components/common/Logo';
 import useAuth from '../../hooks/useAuth';
 import gtm from '../../lib/gtm';
 
-const platformIcons = {
-  JWT: '/static/icons/jwt.svg',
-};
+// const platformIcons = {
+//   JWT: '/static/icons/jwt.svg',
+// };
 
 const logoImage = '/static/logo.png';
 
@@ -60,7 +58,7 @@ const Login: FC = () => {
                   },
                 }}
               >
-                <img src={logoImage} />
+                <img src={logoImage} alt="logo" />
               </Box>
             </RouterLink>
           </Box>

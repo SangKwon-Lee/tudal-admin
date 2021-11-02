@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container } from '@material-ui/core';
 import HiddenboxProductViewer from '../../components/viewer/HiddenboxProductViewer';

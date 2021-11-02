@@ -25,7 +25,7 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
     if (openMobile && onMobileClose) {
       onMobileClose();
     }
-  }, [location.pathname]);
+  }, [location.pathname, onMobileClose, openMobile]);
 
   return (
     <Box display={{ lg: 'up' }}>

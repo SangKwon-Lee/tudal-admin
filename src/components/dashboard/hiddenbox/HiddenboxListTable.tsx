@@ -147,10 +147,10 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [targetHiddenbox, setTargetHiddenbox] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [salesDataLoaded, setSalesDataLoaded] = useState(false);
   const { user } = useAuth();
 
-  console.log();
   useEffect(() => {
     if (hiddenboxes.length > 0) {
       fetchSalesCount();
@@ -182,7 +182,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   };
 
   const fetchComments = async (hiddenboxId: number) => {
-    console.log(hiddenboxId);
     try {
       const response = await axios.get(
         `/hiddenbox-comments?hiddenboxId=${hiddenboxId}`,
@@ -211,7 +210,6 @@ const HiddenboxListTable: FC<HiddenboxListTableProps> = (props) => {
   const handleDelete = async () => {
     try {
       const hiddenboxId = selectedHiddenboxes[0];
-      console.log('ASD');
       const response = await axios.put(
         `/hiddenboxes/${hiddenboxId.toString()}`,
         {

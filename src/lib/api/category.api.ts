@@ -2,23 +2,20 @@ import { AxiosResponse } from 'axios';
 import axios from 'src/lib/axios';
 import qs from 'qs';
 import { Category } from 'src/types/schedule';
+import { removeEmpty } from 'src/utils/helper';
 
 export async function get(name: string) {
   return await axios.get<Category[]>(`/categories?name=${name}`);
 }
 
-export async function getList(
-  search: string,
-  _start: number = 0,
-  _limit: number = 100,
-) {
-  const q: any = { _start, _limit };
-  if (search) {
-    q._q = search;
-  }
-  return await axios.get<Category[]>(
-    `/categories?` + qs.stringify(q),
-  );
+export async function getList(params) {
+  let query = qs.stringify(removeEmpty(params));
+  return await axios.get<Category[]>(`/categories?${query}`);
+}
+
+export async function getListLength(params) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get(`/categories/count?${query}`);
 }
 
 export async function postItem(

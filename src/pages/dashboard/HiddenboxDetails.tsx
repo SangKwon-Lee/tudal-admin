@@ -22,7 +22,6 @@ import type { Hiddenbox } from '../../types/hiddenbox';
 import axios from '../../lib/axios';
 import useSettings from '../../hooks/useSettings';
 import useMounted from 'src/hooks/useMounted';
-import productStatusFunc from 'src/utils/productStatus';
 
 const tabs = [{ label: '상품내용', value: 'details' }];
 
@@ -50,7 +49,6 @@ const HiddenboxDetails: FC = () => {
         setOrders(salesCount.data);
       }
 
-      console.log('[HiddenboxDetail', response.data);
       if (mounted) {
         setHiddenbox(response.data);
       }
@@ -73,7 +71,6 @@ const HiddenboxDetails: FC = () => {
   if (!hiddenbox) {
     return null;
   }
-  const productStatus = productStatusFunc(hiddenbox);
 
   return (
     <>

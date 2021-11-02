@@ -86,8 +86,6 @@ const ReportStockItem: FC<ReportStockItemProps> = (props) => {
           moment(startDate),
           'days',
         );
-
-        console.log('Block', block);
       },
       function (queryData) {
         if (queryData == null) {
@@ -95,6 +93,7 @@ const ReportStockItem: FC<ReportStockItemProps> = (props) => {
         }
 
         let prices = [];
+        // eslint-disable-next-line array-callback-return
         queryData.getBlockData('OutBlock2').map((data) => {
           let newPrice = {
             date: data.date,
@@ -141,6 +140,7 @@ const ReportStockItem: FC<ReportStockItemProps> = (props) => {
   let tagString = '';
   let tagData = [];
   info.tags &&
+    // eslint-disable-next-line array-callback-return
     info.tags.map((tag) => {
       const value = (
         Math.pow(0.98, moment().diff(tag.updated_at, 'days')) * 100

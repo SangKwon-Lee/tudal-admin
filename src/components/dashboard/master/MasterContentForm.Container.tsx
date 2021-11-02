@@ -27,7 +27,6 @@ interface MasterFormProps {
 
 export enum MasterContentFormActionKind {
   LOADING = 'LOADING',
-  ERROR = 'ERROR',
 
   // Load APIS
   GET_EXPERT = 'GET_EXPERT',
@@ -35,14 +34,11 @@ export enum MasterContentFormActionKind {
   GET_ROOM = 'GET_ROOM',
   // Changes
   NO_ROOM = 'NO_ROOM',
-  CHANGE_TITLE = 'CHANGE_TITLE',
-  CHANGE_ROOM = 'CHANGE_ROOM',
-  CHANGE_LINK = 'CHANGE_LINK',
   CHANGE_TAGS = 'CHANGE_TAGS',
   CHANGE_STOCKS = 'CHANGE_STOCKS',
-  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
   REGEX_LINK = 'REGEX_LINK',
   IS_HAS_ROOM = 'IS_HAS_ROOM',
+  CHANGE_INPUT = 'CHANGE_INPUT',
 }
 export interface MasterContentFormAction {
   type: MasterContentFormActionKind;
@@ -71,11 +67,6 @@ const MasterContentFormReducer = (
         ...state,
         loading: true,
       };
-    case MasterContentFormActionKind.ERROR:
-      return {
-        ...state,
-        error: payload,
-      };
     case MasterContentFormActionKind.GET_EXPERT:
       return {
         ...state,
@@ -89,30 +80,6 @@ const MasterContentFormReducer = (
         newMaster: {
           ...state.newMaster,
           master_room: payload[0].id,
-        },
-      };
-    case MasterContentFormActionKind.CHANGE_TITLE:
-      return {
-        ...state,
-        newMaster: {
-          ...state.newMaster,
-          title: payload,
-        },
-      };
-    case MasterContentFormActionKind.CHANGE_ROOM:
-      return {
-        ...state,
-        newMaster: {
-          ...state.newMaster,
-          master_room: payload,
-        },
-      };
-    case MasterContentFormActionKind.CHANGE_LINK:
-      return {
-        ...state,
-        newMaster: {
-          ...state.newMaster,
-          external_link: payload,
         },
       };
     case MasterContentFormActionKind.CHANGE_TAGS:
@@ -136,11 +103,6 @@ const MasterContentFormReducer = (
         ...state,
         master_channels: payload,
       };
-    case MasterContentFormActionKind.CHANGE_CHANNEL:
-      return {
-        ...state,
-        master_room: payload,
-      };
     case MasterContentFormActionKind.REGEX_LINK:
       return {
         ...state,
@@ -155,6 +117,14 @@ const MasterContentFormReducer = (
       return {
         ...state,
         isHasRoom: payload,
+      };
+    case MasterContentFormActionKind.CHANGE_INPUT:
+      return {
+        ...state,
+        newMaster: {
+          ...state.newMaster,
+          [payload.target.name]: payload.target.value,
+        },
       };
   }
 };
@@ -390,8 +360,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 링크 입력시 정규식 표현
   const handleSubmitError = (event) => {
     dispatch({
-      type: MasterContentFormActionKind.CHANGE_LINK,
-      payload: event.target.value,
+      type: MasterContentFormActionKind.CHANGE_INPUT,
+      payload: event,
     });
     const regex = /^http|https/;
     if (regex.test(event.target.value)) {
@@ -416,7 +386,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 태그 관련
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
-    return APITag.getList(value);
+    return APITag.getList({ _q: value });
   }, [tagInput]);
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);

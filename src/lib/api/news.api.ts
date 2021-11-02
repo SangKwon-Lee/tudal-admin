@@ -1,7 +1,7 @@
 import qs from 'qs';
 import axios from 'src/lib/axios';
 import { INews, INewsComment } from 'src/types/news';
-import { Category, Tag } from 'src/types/schedule';
+import { removeEmpty } from 'src/utils/helper';
 
 export async function getNews(newsId) {
   return await axios.get<INews>(
@@ -9,26 +9,15 @@ export async function getNews(newsId) {
   );
 }
 
-export async function getList(
-  search: string,
-  start?: number,
-  limit?: number,
-) {
-  let q: any = {};
-  if (search) {
-    q._q = search;
-  }
-  if (start) {
-    q._start = start;
-  }
-  if (limit) {
-    q._limit = limit;
-  }
+export async function getList(param) {
+  const query = qs.stringify(removeEmpty(param));
   return await axios.get<INews[]>(
-    `/general-news-with-stocks?_sort=publishDate:DESC&${qs.stringify(
-      q,
-    )}`,
+    `/general-news-with-stocks?${query}`,
   );
+}
+export async function getListCount(param) {
+  const query = qs.stringify(removeEmpty(param));
+  return await axios.get<INews[]>(`/general-news/count?${query}`);
 }
 
 export async function getComments(newsId: number) {

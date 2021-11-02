@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Schedule } from 'src/types/schedule';
 
 import { ScheduleListContainer } from './index';
-import * as _ from 'lodash';
 import ScheduleFormContainer from './ScheduleForm.Container';
 
 interface IScheduleContainerProps {

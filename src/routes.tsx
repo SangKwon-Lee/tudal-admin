@@ -6,7 +6,6 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
-import News from './pages/dashboard/News';
 
 const Loadable = (Component) => (props) =>
   (
@@ -48,25 +47,23 @@ const HiddenboxEdit = Loadable(
   lazy(() => import('./pages/dashboard/HiddenboxEdit')),
 );
 const Overview = Loadable(
-  lazy(() => import('./pages/dashboard/Overview')),
+  lazy(() => import('./pages/dashboard/Overview.Page')),
 );
 const ReportMaker = Loadable(
   lazy(() => import('./pages/dashboard/ReportMaker')),
 );
-
 const ScheduleList = Loadable(
   lazy(() => import('./pages/dashboard/Schedule.Page')),
 );
-
 const StockList = Loadable(
-  lazy(() => import('./pages/dashboard/Stock')),
+  lazy(() => import('./pages/dashboard/Stock.Page')),
 );
 
-const KeywordList = Loadable(
-  lazy(() => import('./pages/dashboard/Keyword')),
+const Keyword = Loadable(
+  lazy(() => import('./pages/dashboard/Keyword.Page')),
 );
 const CategoryList = Loadable(
-  lazy(() => import('./pages/dashboard/Category')),
+  lazy(() => import('./pages/dashboard/Category.Page')),
 );
 
 const MastersListPage = Loadable(
@@ -87,12 +84,49 @@ const MasterRoomPage = Loadable(
 const MasterSubscribePage = Loadable(
   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
 );
+const GoldList = Loadable(
+  lazy(() => import('./pages/dashboard/GoldList.Page')),
+);
+const GoldDetail = Loadable(
+  lazy(() => import('./pages/dashboard/GoldDetail.Page')),
+);
+
+// const ExpertsList = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertsList')),
+// );
+// const ExpertCreate = Loadable(
+//   lazy(() => import('./pages/dashboard/ExpertCreate')),
+// );
+
+const CouponListPage = Loadable(
+  lazy(() => import('./pages/dashboard/CouponList.Page')),
+);
+
+const CouponIssuedListPage = Loadable(
+  lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
+);
+const PopUpCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
+);
+const PopUpEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpEdit.Page')),
+);
+const PopUpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpList.Page')),
+);
+const PopUpDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
+);
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
 );
 const TodayKeywordViewer = Loadable(
   lazy(() => import('./pages/viewer/TodayKeywordViewer')),
+);
+
+const NewsPage = Loadable(
+  lazy(() => import('./pages/dashboard/News.Page')),
 );
 
 // Error pages
@@ -207,7 +241,7 @@ const routes: PartialRouteObject[] = [
         children: [
           {
             path: '/',
-            element: <News />,
+            element: <NewsPage />,
           },
         ],
       },
@@ -225,7 +259,7 @@ const routes: PartialRouteObject[] = [
         children: [
           {
             path: '/',
-            element: <KeywordList />,
+            element: <Keyword />,
           },
         ],
       },
@@ -247,6 +281,36 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
+      {
+        path: 'gold',
+        children: [
+          {
+            path: '/',
+            element: <GoldList />,
+          },
+          {
+            path: '/detail/:userId',
+            element: <GoldDetail />,
+          },
+          {
+            path: '/detail',
+            element: <GoldDetail />,
+          },
+        ],
+      },
+      // {
+      //   path: 'experts',
+      //   children: [
+      //     {
+      //       path: '/',
+      //       element: <ExpertsList />,
+      //     },
+      //     {
+      //       path: '/new',
+      //       element: <ExpertCreate />,
+      //     },
+      //   ],
+      // },
       {
         path: 'master',
         children: [
@@ -273,6 +337,40 @@ const routes: PartialRouteObject[] = [
           {
             path: 'subscribe',
             element: <MasterSubscribePage />,
+          },
+        ],
+      },
+      {
+        path: 'coupons',
+        children: [
+          {
+            path: '/',
+            element: <CouponListPage />,
+          },
+          {
+            path: '/:couponId',
+            element: <CouponIssuedListPage />,
+          },
+        ],
+      },
+      {
+        path: 'popup',
+        children: [
+          {
+            path: '/',
+            element: <PopUpListPage />,
+          },
+          {
+            path: '/new',
+            element: <PopUpCreatePage />,
+          },
+          {
+            path: ':popupId/edit',
+            element: <PopUpEditPage />,
+          },
+          {
+            path: ':popupId',
+            element: <PopUpDetailPage />,
           },
         ],
       },

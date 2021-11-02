@@ -30,6 +30,7 @@ const TodayKeywordChart: FC<Props> = (props) => {
     let min = data[0].svalue;
     let max = data[0].svalue;
 
+    // eslint-disable-next-line array-callback-return
     data.map((item) => {
       if (min > item.svalue) {
         min = item.svalue;
@@ -80,7 +81,7 @@ const TodayKeywordChart: FC<Props> = (props) => {
         ],
       },
     });
-  }, [data]);
+  }, [data, width]);
 
   return (
     <Box sx={{ py: 1, px: 0, backgroundColor: 'white' }}>
