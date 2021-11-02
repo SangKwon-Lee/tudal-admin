@@ -40,18 +40,9 @@ interface ICouponListTableProps {
   handleSelectAll: (event: any) => void;
 }
 
-const isUsedOption = [
-  { title: '전체', value: [0, 1] },
-  { title: '사용', value: 1 },
-  { title: '미사용', value: 0 },
-];
 const sortOption = [
   { title: '발급날짜 (최신)', value: 'created_at:DESC' },
   { title: '발급날짜 (오래된 순)', value: 'created_at:ASC' },
-  { title: '사용날짜 (최신)', value: 'usedDate:DESC' },
-  { title: '사용날짜 (오래된 순)', value: 'usedDate:ASC' },
-  { title: '만료날짜 (최신)', value: 'expirationDate:DESC' },
-  { title: '만료날짜 (오래된 순)', value: 'expirationDate:ASC' },
 ];
 
 const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
@@ -63,7 +54,6 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
     handleDelete,
     getCouponList,
     getCouponListLength,
-    handleIsused,
     handleSelect,
     handleSelectAll,
   } = props;
@@ -132,21 +122,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
               variant="outlined"
             />
           </Box>
-          <TextField
-            select
-            sx={{ mx: 2 }}
-            label={'사용 여부'}
-            name="isUsed"
-            SelectProps={{ native: true }}
-            variant="outlined"
-            onChange={handleIsused}
-          >
-            {isUsedOption.map((date: any, i) => (
-              <option key={i} value={date.value}>
-                {date.title}
-              </option>
-            ))}
-          </TextField>
+
           <TextField
             select
             sx={{ mx: 2 }}
