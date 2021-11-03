@@ -55,8 +55,8 @@ const initialState: CouponCreateState = {
     displayName: '',
     type: 'premium',
     applyDays: 7,
-    issuedDate: dayjs().format(),
-    expirationDate: newDate.format(),
+    issuedDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    expirationDate: newDate.format('YYYY-MM-DD HH:mm:ss'),
     quantity: 1,
   },
 };
@@ -99,7 +99,7 @@ const CouponCreateReducer = (
           displayName: '',
           type: 'premium',
           applyDays: 7,
-          issuedDate: dayjs().format(),
+          issuedDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
           expirationDate: newDate,
           quantity: 1,
         },
@@ -132,7 +132,7 @@ const CouponCreateContainer: FC<ICouponCreateProps> = (props) => {
       );
       const CouponInput = {
         quantity: couponCreateState.createInput.quantity,
-        issuedDate: dayjs().format(),
+        issuedDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         expirationDate: couponCreateState.createInput.expirationDate,
         coupon: data.id,
         isUsed: false,

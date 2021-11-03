@@ -15,5 +15,5 @@ export const expirationDate = (value) => {
   } else if (value === '1년') {
     newDate = newDate.add(12, 'month');
   }
-  return newDate.format();
+  return newDate.format('YYYY-MM-DD HH:mm:ss');
 };
