@@ -95,8 +95,8 @@ const initialState: CouponIssuedListTableState = {
   isUsedLength: 0,
   createInput: {
     code: '',
-    issuedDate: dayjs().format(),
-    expirationDate: newDate.format(),
+    issuedDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    expirationDate: newDate.format('YYYY-MM-DD HH:mm:ss'),
     quantity: 1,
   },
 };
@@ -247,7 +247,7 @@ const CouponIssuedListTableContainer = () => {
     try {
       const CouponInput = {
         quantity: CouponIssuedListTableState.createInput.quantity,
-        issuedDate: dayjs().format(),
+        issuedDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         expirationDate:
           CouponIssuedListTableState.createInput.expirationDate,
         coupon: couponId,
