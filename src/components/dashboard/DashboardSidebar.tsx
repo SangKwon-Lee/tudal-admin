@@ -18,6 +18,7 @@ import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
+import CommentIcon from 'src/icons/DocumentText';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -65,6 +66,11 @@ const sections = [
             path: '/dashboard/master/subscribe',
           },
         ],
+      },
+      {
+        title: '그룹 코멘트',
+        path: '/dashboard/groupComment',
+        icon: <CommentIcon fontSize="small" />,
       },
     ],
   },
