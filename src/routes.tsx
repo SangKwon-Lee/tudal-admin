@@ -129,6 +129,10 @@ const NewsPage = Loadable(
   lazy(() => import('./pages/dashboard/News.Page')),
 );
 
+const GroupListPage = Loadable(
+  lazy(() => import('./pages/dashboard/GroupList.Page')),
+);
+
 // Error pages
 
 const AuthorizationRequired = Loadable(
@@ -298,19 +302,6 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
-      // {
-      //   path: 'experts',
-      //   children: [
-      //     {
-      //       path: '/',
-      //       element: <ExpertsList />,
-      //     },
-      //     {
-      //       path: '/new',
-      //       element: <ExpertCreate />,
-      //     },
-      //   ],
-      // },
       {
         path: 'master',
         children: [
@@ -371,6 +362,15 @@ const routes: PartialRouteObject[] = [
           {
             path: ':popupId',
             element: <PopUpDetailPage />,
+          },
+        ],
+      },
+      {
+        path: 'groups',
+        children: [
+          {
+            path: '/',
+            element: <GroupListPage />,
           },
         ],
       },

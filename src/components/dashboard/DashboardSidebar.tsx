@@ -136,6 +136,11 @@ const sections = [
         path: '/dashboard/categories',
         icon: <BriefcaseIcon fontSize="small" />,
       },
+      {
+        title: '그룹',
+        path: '/dashboard/groups',
+        icon: <BriefcaseIcon fontSize="small" />,
+      },
     ],
   },
   {

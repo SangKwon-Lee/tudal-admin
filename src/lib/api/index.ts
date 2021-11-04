@@ -8,3 +8,4 @@ export * as APIOverview from './overview.api';
 export * as APICoupon from './coupon.api';
 export * as APIPopUp from './popup.api';
 export * as APIGold from './gold.api';
+export * as APIGroup from './group.api';
