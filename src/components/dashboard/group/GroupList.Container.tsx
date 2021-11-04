@@ -51,7 +51,7 @@ export interface GroupListTableState {
 }
 
 const initialState: GroupListTableState = {
-  loading: false,
+  loading: true,
   list: [],
   listLength: 0,
   selected: [],
@@ -133,6 +133,7 @@ const CouponListTableContainer = () => {
   //* 쿠폰 리스트 불러오기
   const getGroupList = useCallback(async () => {
     dispatch({ type: GroupListTableActionKind.LOADING });
+
     const { data, status } = await APIGroup.getGroups(query);
     try {
       const response = await APIGroup.getGroupLength(query);

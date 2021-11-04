@@ -53,7 +53,7 @@ const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
       <Box sx={{ mb: 3 }}></Box>
       <Card>
         {loading && (
-          <div data-testid="news-list-loading">
+          <div data-testid="group-list-loading">
             <LinearProgress />
           </div>
         )}
@@ -76,7 +76,10 @@ const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
           >
             <TextField
               fullWidth
+              id="search"
               InputProps={{
+                //@ts-ignore
+                'data-testid': 'search-1231231',
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon fontSize="small" />
