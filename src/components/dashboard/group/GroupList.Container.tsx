@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import { APICoupon, APIGroup } from 'src/lib/api';
-import { CouponType } from 'src/types/coupon';
-import CouponListTablePresenter from './GroupList.Presenter';
-import toast from 'react-hot-toast';
+import { APIGroup } from 'src/lib/api';
+import GroupListPresenter from './GroupList.Presenter';
 import { IGroup } from 'src/types/group';
 export enum GroupListTableActionKind {
   //loading
@@ -18,13 +16,6 @@ export enum GroupListTableActionKind {
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
-
-  // delete & update
-  SELECT_COUPON = 'SELECT_COUPON',
-  OPEN_DELETE_DIALOG = 'OPEN_DELETE_DIALOG',
-  CLOSE_DELETE_DIALOG = 'CLOSE_DELETE_DIALOG',
-  OPEN_CREATE_DIALOG = 'OPEN_CREATE_DIALOG',
-  CLOSE_CREATE_DIALOG = 'CLOSE_CREATE_DIALOG',
 }
 
 export interface GroupListTableAction {
@@ -153,7 +144,7 @@ const CouponListTableContainer = () => {
   }, [getGroupList]);
 
   return (
-    <CouponListTablePresenter
+    <GroupListPresenter
       groupListTableState={groupListTableState}
       dispatch={dispatch}
       getGroupList={getGroupList}

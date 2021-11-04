@@ -2,7 +2,6 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
-  Button,
   Link,
   Card,
   Divider,
@@ -13,7 +12,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Dialog,
   LinearProgress,
   Pagination,
   IconButton,
@@ -22,7 +20,6 @@ import dayjs from 'dayjs';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 
 import SearchIcon from 'src/icons/Search';
-import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import Scrollbar from 'src/components/layout/Scrollbar';
 import {
   GroupListTableAction,
@@ -44,7 +41,7 @@ const sortOption = [
 const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
   props,
 ) => {
-  const { groupListTableState, dispatch, getGroupList } = props;
+  const { groupListTableState, dispatch } = props;
   const { loading, query, selected, list, listLength } =
     groupListTableState;
 
@@ -119,31 +116,6 @@ const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
             ))}
           </TextField>
         </Box>
-        {selected.length > 0 && (
-          <Box>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                px: '4px',
-                width: '100%',
-                zIndex: 2,
-              }}
-            >
-              <Button
-                color="primary"
-                sx={{ ml: 2 }}
-                variant="outlined"
-                onClick={() => {
-                  dispatch({
-                    type: GroupListTableActionKind.OPEN_DELETE_DIALOG,
-                  });
-                }}
-              >
-                삭제
-              </Button>
-            </Box>
-          </Box>
-        )}
         <Scrollbar>
           <Box sx={{ minWidth: 700 }}>
             <Table>
@@ -221,27 +193,6 @@ const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
           }}
         />
       </Card>
-      <Dialog
-        aria-labelledby="ConfirmModal"
-        open={groupListTableState.delete.isDeleting}
-        onClose={() => {
-          dispatch({
-            type: GroupListTableActionKind.CLOSE_DELETE_DIALOG,
-          });
-        }}
-      >
-        <ConfirmModal
-          title={'정말 삭제하시겠습니까?'}
-          content={'삭제시 큰 주의가 필요합니다.'}
-          confirmTitle={'삭제'}
-          handleOnClick={() => console.log('he')}
-          handleOnCancel={() => {
-            dispatch({
-              type: GroupListTableActionKind.CLOSE_DELETE_DIALOG,
-            });
-          }}
-        />
-      </Dialog>
     </>
   );
 };
