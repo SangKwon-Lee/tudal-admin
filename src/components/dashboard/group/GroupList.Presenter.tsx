@@ -37,11 +37,11 @@ interface IGroupListTableProps {
 }
 
 const sortOption = [
-  { title: '발급날짜 (최신)', value: 'created_at:DESC' },
-  { title: '발급날짜 (오래된 순)', value: 'created_at:ASC' },
+  { title: '생성일 (최신)', value: 'created_at:DESC' },
+  { title: '생성일 (오래된 순)', value: 'created_at:ASC' },
 ];
 
-const CouponListTablePresenter: React.FC<IGroupListTableProps> = (
+const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
   props,
 ) => {
   const { groupListTableState, dispatch, getGroupList } = props;
@@ -89,7 +89,7 @@ const CouponListTablePresenter: React.FC<IGroupListTableProps> = (
                   payload: event.target.value,
                 });
               }}
-              placeholder="쿠폰 코드 기관 검색"
+              placeholder="그룹 이름 검색"
               value={query._q}
               variant="outlined"
             />
@@ -169,7 +169,7 @@ const CouponListTablePresenter: React.FC<IGroupListTableProps> = (
                           <Link
                             color="inherit"
                             component={RouterLink}
-                            to={`/dashboard/coupons/${list.id}`}
+                            to={`/dashboard/groups/comments/${list.id}`}
                             variant="subtitle2"
                           >
                             {list.name
@@ -195,7 +195,7 @@ const CouponListTablePresenter: React.FC<IGroupListTableProps> = (
                         <TableCell>
                           <IconButton
                             component={RouterLink}
-                            to={`/dashboard/group/${list.id}`}
+                            to={`/dashboard/groups/comments/${list.id}`}
                           >
                             <ArrowRightIcon fontSize="small" />
                           </IconButton>{' '}
@@ -243,4 +243,4 @@ const CouponListTablePresenter: React.FC<IGroupListTableProps> = (
   );
 };
 
-export default CouponListTablePresenter;
+export default GroupListTablePresenter;

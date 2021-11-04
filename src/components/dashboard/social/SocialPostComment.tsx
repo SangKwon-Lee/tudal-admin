@@ -151,7 +151,10 @@ const SocialPostComment: FC<SocialPostCommentProps> = (props) => {
                 },
               }}
               variant="contained"
-              onClick={() => handleDeleteComment(commentId)}
+              onClick={() => {
+                handleDeleteComment(commentId);
+                setOpen(false);
+              }}
             >
               삭제
             </Button>

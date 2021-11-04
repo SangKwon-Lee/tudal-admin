@@ -42,12 +42,12 @@ export interface GroupListTableState {
     _start: number;
     _limit: number;
     _q: string;
+    _sort: string;
   };
   delete: {
     isDeleting: boolean;
     target: number;
   };
-  sort: string;
 }
 
 const initialState: GroupListTableState = {
@@ -60,12 +60,12 @@ const initialState: GroupListTableState = {
     _q: '',
     _start: 0,
     _limit: 20,
+    _sort: 'created_at:DESC',
   },
   delete: {
     isDeleting: false,
     target: null,
   },
-  sort: 'created_at:DESC',
 };
 
 const CouponListTableReducer = (
@@ -117,7 +117,7 @@ const CouponListTableReducer = (
     case GroupListTableActionKind.CHANGE_SORT:
       return {
         ...state,
-        sort: payload,
+        query: { ...state.query, _sort: payload },
       };
   }
 };
@@ -133,8 +133,8 @@ const CouponListTableContainer = () => {
   //* 쿠폰 리스트 불러오기
   const getGroupList = useCallback(async () => {
     dispatch({ type: GroupListTableActionKind.LOADING });
+    const { data, status } = await APIGroup.getGroups(query);
     try {
-      const { data, status } = await APIGroup.getGroups(query);
       const response = await APIGroup.getGroupLength(query);
       if (status === 200) {
         dispatch({

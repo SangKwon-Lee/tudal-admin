@@ -91,13 +91,6 @@ const GoldDetail = Loadable(
   lazy(() => import('./pages/dashboard/GoldDetail.Page')),
 );
 
-// const ExpertsList = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertsList')),
-// );
-// const ExpertCreate = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertCreate')),
-// );
-
 const CouponListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponList.Page')),
 );
@@ -117,6 +110,11 @@ const PopUpListPage = Loadable(
 const PopUpDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
 );
+
+const GroupCommentCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/GroupCommentCreate.page')),
+);
+
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -371,6 +369,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <GroupListPage />,
+          },
+          {
+            path: '/comments/:groupCommentId',
+            element: <GroupCommentCreatePage />,
           },
         ],
       },
