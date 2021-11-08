@@ -66,6 +66,7 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category.Page')),
 );
 
+//* 달인
 const MastersListPage = Loadable(
   lazy(() => import('./pages/dashboard/MastersList.Page')),
 );
@@ -84,6 +85,8 @@ const MasterRoomPage = Loadable(
 const MasterSubscribePage = Loadable(
   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
 );
+
+//* 골드
 const GoldList = Loadable(
   lazy(() => import('./pages/dashboard/GoldList.Page')),
 );
@@ -91,13 +94,15 @@ const GoldDetail = Loadable(
   lazy(() => import('./pages/dashboard/GoldDetail.Page')),
 );
 
+//* 쿠폰
 const CouponListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponList.Page')),
 );
-
 const CouponIssuedListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
 );
+
+//* 팝업
 const PopUpCreatePage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
 );
@@ -111,8 +116,27 @@ const PopUpDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
 );
 
+//* 투달 그룹
 const GroupCommentCreatePage = Loadable(
   lazy(() => import('./pages/dashboard/GroupCommentCreate.page')),
+);
+const GroupListPage = Loadable(
+  lazy(() => import('./pages/dashboard/GroupList.Page')),
+);
+
+//* CP 관리
+
+const CpMasterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/CpMasterCreate.Page')),
+);
+const CpReporterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/CpReporterCreate.Page')),
+);
+const CpMasterEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/CpMasterEdit.Page')),
+);
+const CpReporterEditPage = Loadable(
+  lazy(() => import('./pages/dashboard/CpReporterEdit.Page')),
 );
 
 // Viewer pages
@@ -125,10 +149,6 @@ const TodayKeywordViewer = Loadable(
 
 const NewsPage = Loadable(
   lazy(() => import('./pages/dashboard/News.Page')),
-);
-
-const GroupListPage = Loadable(
-  lazy(() => import('./pages/dashboard/GroupList.Page')),
 );
 
 // Error pages
@@ -373,6 +393,31 @@ const routes: PartialRouteObject[] = [
           {
             path: '/comments/:groupCommentId',
             element: <GroupCommentCreatePage />,
+          },
+        ],
+      },
+      {
+        path: 'cp',
+        children: [
+          // {
+          //   path: '/',
+          //   element: <CpCreatePage />,
+          // },
+          {
+            path: '/createMaster',
+            element: <CpMasterCreatePage />,
+          },
+          {
+            path: '/createReporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: ':masterId/edit',
+            element: <CpMasterEditPage />,
+          },
+          {
+            path: ':reporterId/edit',
+            element: <CpReporterEditPage />,
           },
         ],
       },

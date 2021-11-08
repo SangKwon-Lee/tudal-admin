@@ -19,7 +19,12 @@ import PencilIcon from '../../icons/PencilAlt';
 import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
 import CommentIcon from 'src/icons/DocumentText';
-
+import UsersIcon from 'src/icons/Users';
+import UserAddIcon from 'src/icons/UserAdd';
+import ClipboardListList from 'src/icons/ClipboardList';
+import LockIcon from 'src/icons/Lock';
+import PlusIcon from 'src/icons/Plus';
+import SortDescendingIcon from 'src/icons/SortDescending';
 interface DashboardSidebarProps {
   onMobileClose: () => void;
   openMobile: boolean;
@@ -33,6 +38,28 @@ const sections = [
         title: 'Overview',
         path: '/dashboard',
         icon: <ChartSquareBarIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
+    title: 'Admin',
+    items: [
+      {
+        title: 'CP 관리',
+        path: '/dashboard',
+        icon: <UsersIcon fontSize="small" />,
+        children: [
+          {
+            title: '달인 생성',
+            path: '/dashboard/cp/createMaster',
+            icon: <UserAddIcon fontSize="small" />,
+          },
+          {
+            title: '히든 리포터 생성',
+            path: '/dashboard/cp/createReporter',
+            icon: <UserAddIcon fontSize="small" />,
+          },
+        ],
       },
     ],
   },
@@ -52,18 +79,22 @@ const sections = [
           {
             title: '리스트',
             path: '/dashboard/master',
+            icon: <ClipboardListList fontSize="small" />,
           },
           {
             title: '생성',
             path: '/dashboard/master/new',
+            icon: <PlusIcon fontSize="small" />,
           },
           {
             title: '방 관리',
             path: '/dashboard/master/room',
+            icon: <LockIcon fontSize="small" />,
           },
           {
             title: '구독현황',
             path: '/dashboard/master/subscribe',
+            icon: <SortDescendingIcon fontSize="small" />,
           },
         ],
       },
