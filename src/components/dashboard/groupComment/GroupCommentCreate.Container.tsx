@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
 import useAuth from 'src/hooks/useAuth';
 import { APIGroupComment } from 'src/lib/api';
@@ -25,7 +25,7 @@ export interface GroupCommentCreateState {
 }
 
 const initialState: GroupCommentCreateState = {
-  loading: false,
+  loading: true,
   group: {
     id: 0,
     user_id: 0,
@@ -82,7 +82,7 @@ const GroupCommentCreateCotainer = () => {
   const { user } = useAuth();
 
   //* 그룹 상세 보기 내용
-  const getGroupDetail = async () => {
+  const getGroupDetail = useCallback(async () => {
     dispatch({
       type: GroupCommentCreateActionKind.LOADING,
       payload: true,
@@ -100,10 +100,9 @@ const GroupCommentCreateCotainer = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-
+  }, [groupCommentId]);
   //* 그룹 코멘트
-  const getGroupComment = async () => {
+  const getGroupComment = useCallback(async () => {
     dispatch({
       type: GroupCommentCreateActionKind.LOADING,
       payload: true,
@@ -121,7 +120,7 @@ const GroupCommentCreateCotainer = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [groupCommentId]);
 
   const handleWriteGroupComment = async (comment: string) => {
     dispatch({
@@ -197,10 +196,11 @@ const GroupCommentCreateCotainer = () => {
   };
 
   useEffect(() => {
-    getGroupDetail();
-    getGroupComment();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupCommentId]);
+    if (groupCommentId) {
+      getGroupDetail();
+      getGroupComment();
+    }
+  }, [groupCommentId, getGroupDetail, getGroupComment]);
 
   return (
     <GroupCommentCreatePresenter

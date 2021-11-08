@@ -36,7 +36,7 @@ const SocialPostCommentAdd: FC<SocialPostCommentAddProps> = (
       }}
       {...others}
     >
-      {user.avatar && user.avatar.url ? (
+      {user?.avatar && user?.avatar.url ? (
         <Avatar src={`${CMSURL}${user.avatar.url}`} sx={{ mr: 1 }} />
       ) : null}
       <TextField

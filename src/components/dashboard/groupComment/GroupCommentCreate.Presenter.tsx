@@ -44,7 +44,11 @@ const GroupCommentCreatePresente: React.FC<IGroupCommentCreateProps> =
     return (
       <>
         <Card {...other}>
-          {loading && <LinearProgress />}
+          {loading && (
+            <div data-testid="group-comment-loading">
+              <LinearProgress />
+            </div>
+          )}
           <CardHeader title="그룹 상세내용" />
           <Divider />
           <Table>
