@@ -47,6 +47,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               name="user"
               SelectProps={{ native: true }}
               variant="outlined"
+              value={cpCreateState.newCpMaster.user.id}
               onChange={(e) => {
                 dispatch({
                   type: CpMasterCreateActionKind.CHANGE_INPUT,

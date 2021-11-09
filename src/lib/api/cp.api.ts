@@ -19,7 +19,7 @@ export const getMaster = (masterId) => {
 };
 
 export const getReporter = (reporterId) => {
-  return axios.post(`/hidden-reporters`, reporterId);
+  return axios.get(`/hidden-reporters/${reporterId}`);
 };
 
 export const putReporter = (reporterId, input) => {

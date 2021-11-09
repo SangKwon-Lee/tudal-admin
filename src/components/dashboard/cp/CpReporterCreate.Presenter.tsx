@@ -62,6 +62,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               name="user"
               SelectProps={{ native: true }}
               variant="outlined"
+              value={cpCreateState.newCpReporter.user.id}
               onChange={(e) => {
                 dispatch({
                   type: CpReporterCreateActionKind.CHANGE_INPUT,
@@ -97,6 +98,23 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
           <TextField
             fullWidth
             multiline
+            name="catchPhrase"
+            label="Catchphrase"
+            value={newCpReporter.catchPhrase}
+            onChange={(e) => {
+              dispatch({
+                type: CpReporterCreateActionKind.CHANGE_INPUT,
+                payload: e,
+              });
+            }}
+            variant="outlined"
+            helperText="줄 바꾸기 enter"
+          />
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <TextField
+            fullWidth
+            multiline
             name="intro"
             label="리포터 소개 글"
             value={newCpReporter.intro}
@@ -110,7 +128,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             helperText="줄 바꾸기 enter"
           />
         </Box>
-        <Box sx={{ mt: 2 }}>
+        {/* <Box sx={{ mt: 2 }}>
           <TextField
             fullWidth
             name="keyword"
@@ -125,7 +143,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             variant="outlined"
             helperText="쉼표(,)로 구분해주세요."
           />
-        </Box>
+        </Box> */}
         <Box sx={{ mt: 2 }}>
           <TextField
             fullWidth
@@ -189,7 +207,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <img
               style={{ width: '100%' }}
               alt={''}
-              src={newCpReporter.profile_image_url}
+              src={newCpReporter.profileImageUrl}
             />
           </Box>
           <Box
