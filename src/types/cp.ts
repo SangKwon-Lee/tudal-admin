@@ -1,10 +1,20 @@
-export interface CP {
-  id?: number;
+export interface CP_Master {
+  id?: number | string;
   nickname: string;
   profile_image_url: string;
   intro: string;
   keyword: string;
-  user: number;
+  user: any;
   created_at?: string;
-  tudalRecommendScore?: string;
+}
+
+export interface CP_Hidden_Reporter {
+  id?: number | string;
+  nickname: string;
+  intro: string;
+  profileImageUrl: string;
+  tudalRecommendScore?: number;
+  catchPhrase: string;
+  user: any;
+  created_at?: string;
 }

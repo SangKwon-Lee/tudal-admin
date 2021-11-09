@@ -5,11 +5,8 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   Divider,
-  IconButton,
   InputAdornment,
-  Link,
   Table,
   TableBody,
   TableCell,
@@ -17,14 +14,10 @@ import {
   TableRow,
   TextField,
   Typography,
-  Dialog,
   LinearProgress,
   Pagination,
 } from '@material-ui/core';
-import ArrowRightIcon from 'src/icons/ArrowRight';
-import PencilAltIcon from 'src/icons/PencilAlt';
 import SearchIcon from 'src/icons/Search';
-import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import Scrollbar from 'src/components/layout/Scrollbar';
 import {
   CpListActionKind,
@@ -36,16 +29,20 @@ interface CpListProps {
   dispatch: (params: CpListAction) => void;
   cpListState: CpListState;
 }
+const sortOption = [
+  { title: '전체', value: '' },
+  { title: '달인', value: 'master_null=false' },
+  { title: '히든 리포터', value: 'hidden_reporter_null=false' },
+];
+
 const CpListPresenter: React.FC<CpListProps> = (props) => {
   const { cpListState, dispatch } = props;
-  const { loading, user } = cpListState;
+  const { loading, cpList } = cpListState;
   return (
     <>
-      <Card>
+      <Card sx={{ my: 2 }}>
         {loading && <LinearProgress />}
-
         <Divider />
-
         <Box
           sx={{
             alignItems: 'center',
@@ -71,9 +68,14 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                   </InputAdornment>
                 ),
               }}
-              onChange={() => {}}
-              placeholder=""
-              // value={newState.query._q}
+              onChange={(e) => {
+                dispatch({
+                  type: CpListActionKind.CHANGE_QUERY,
+                  payload: e.target.value,
+                });
+              }}
+              placeholder="검색"
+              value={cpListState.query._q}
               variant="outlined"
             />
           </Box>
@@ -81,78 +83,58 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
             sx={{
               mx: 1,
             }}
-          ></Box>
-        </Box>
-        {/* {newState.selected && (
-          <Box sx={{ position: 'relative' }}>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                px: '4px',
-                width: '100%',
-                zIndex: 2,
+          >
+            <TextField
+              select
+              sx={{ mx: 2 }}
+              defaultValue="전체"
+              SelectProps={{ native: true }}
+              variant="outlined"
+              onChange={(event) => {
+                dispatch({
+                  type: CpListActionKind.CHANGE_FILTER,
+                  payload: event.target.value,
+                });
               }}
             >
-              <Button
-                color="primary"
-                sx={{ ml: 2 }}
-                variant="outlined"
-                onClick={() => {
-                  dispatch({
-                    type: CpListTableActionKind.OPEN_DELETE_DIALOG,
-                  });
-                }}
-              >
-                삭제
-              </Button>
-              <Button
-                color="primary"
-                sx={{ ml: 2 }}
-                variant="outlined"
-                component={RouterLink}
-                to={`/dashboard/master/${newState.selected}/edit`}
-              >
-                수정
-              </Button>
-            </Box>
+              {sortOption.map((date: any, i) => (
+                <option key={i} value={date.value}>
+                  {date.title}
+                </option>
+              ))}
+            </TextField>
           </Box>
-        )} */}
+        </Box>
         <Scrollbar>
           <Box sx={{ minWidth: 700 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox"></TableCell>
-                  <TableCell>제목</TableCell>
-                  <TableCell>등록일</TableCell>
-                  <TableCell>수정일</TableCell>
-                  <TableCell>방 이름</TableCell>
-                  <TableCell>좋아요</TableCell>
-                  <TableCell>조회수</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" sx={{ pl: 1 }}>
+                      이름
+                    </Typography>
+                  </TableCell>
+                  <TableCell>번호</TableCell>
+                  <TableCell>이메일</TableCell>
+                  <TableCell>등록 날짜</TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" sx={{ pl: 2.3 }}>
+                      달인
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" sx={{ pl: 1 }}>
+                      히든 리포터
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {!newState.loading &&
-                  newState.list.feed.map((feed) => {
-                    const isCpSelected =
-                      newState.selected === feed.id;
-
+                {!loading &&
+                  cpList.map((cp) => {
                     return (
-                      <TableRow hover key={feed.id}>
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            value={isCpSelected}
-                            checked={isCpSelected}
-                            color="primary"
-                            onChange={(event) => {
-                              dispatch({
-                                type: CpListTableActionKind.SELECT_FEED,
-                                payload: feed.id,
-                              });
-                            }}
-                          />
-                        </TableCell>
+                      <TableRow hover key={cp.id}>
                         <TableCell>
                           <Box
                             sx={{
@@ -161,23 +143,15 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                             }}
                           >
                             <Box sx={{ ml: 1, maxWidth: '150px' }}>
-                              <Link
-                                color="inherit"
-                                component={RouterLink}
-                                to={`/dashboard/master/${feed.id}`}
-                                variant="subtitle2"
-                              >
-                                {feed.title
-                                  ? feed.title
-                                  : '제목이 없습니다.'}
-                              </Link>
+                              {cp.username
+                                ? cp.username
+                                : '이름이 없습니다.'}
                               <Typography
                                 color="textSecondary"
                                 variant="body2"
                               >
                                 {`${
-                                  feed.master?.nickname ||
-                                  '유저를 찾을 수 없습니다.'
+                                  cp.nickname || '닉네임이 없습니다.'
                                 }`}
                               </Typography>
                             </Box>
@@ -189,70 +163,76 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                             minWidth: '180px',
                           }}
                         >
-                          {`${moment(feed.created_at).format(
+                          {cp.phone_number
+                            ? cp.phone_number
+                            : '전화번호가 없습니다.'}
+                        </TableCell>
+                        <TableCell>
+                          {cp.contact_email
+                            ? cp.contact_email
+                            : '이메일이 없습니다.'}
+                        </TableCell>
+                        <TableCell>
+                          {`${moment(cp.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
                         <TableCell>
-                          {moment(feed.updated_at).format(
-                            'YYYY년 M월 D일 HH:mm',
+                          {cp.master ? (
+                            <Button
+                              variant="outlined"
+                              component={RouterLink}
+                              to={`/dashboard/cp/${cp.master.id}/master`}
+                            >
+                              달인
+                            </Button>
+                          ) : (
+                            <Typography
+                              color="textSecondary"
+                              variant="body2"
+                              sx={{ pl: 2.4 }}
+                            >
+                              없음
+                            </Typography>
                           )}
                         </TableCell>
                         <TableCell>
-                          {feed.master_room?.title}
-                        </TableCell>
-                        <TableCell>
-                          {feed.master_feed_likes.length}
-                        </TableCell>
-                        <TableCell>{feed.viewCount}</TableCell>
-                        <TableCell align="right">
-                          <IconButton
-                            component={RouterLink}
-                            to={`/dashboard/master/${feed.id}/edit`}
-                          >
-                            <PencilAltIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            component={RouterLink}
-                            to={`/dashboard/master/${feed.id}`}
-                          >
-                            <ArrowRightIcon fontSize="small" />
-                          </IconButton>
+                          {cp.hidden_reporter ? (
+                            <Button
+                              variant="outlined"
+                              component={RouterLink}
+                              to={`/dashboard/cp/${cp.hidden_reporter.id}/reporter`}
+                            >
+                              히든 리포터
+                            </Button>
+                          ) : (
+                            <Typography
+                              color="textSecondary"
+                              variant="body2"
+                            >
+                              없음
+                            </Typography>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
-                  })} */}
+                  })}
               </TableBody>
             </Table>
           </Box>
         </Scrollbar>
         <Pagination
-          count={20}
+          count={Math.ceil(cpListState.cpListLength / 50)}
           variant="outlined"
-          onChange={(event, page) => {}}
-        />
-      </Card>
-      {/* <Dialog
-        aria-labelledby="ConfirmModal"
-        open={newState.delete.isDeleting}
-        onClose={() =>
-          dispatch({
-            type: CpListTableActionKind.CLOSE_DELETE_DIALOG,
-          })
-        }
-      >
-        <ConfirmModal
-          title={'정말 삭제하시겠습니까?'}
-          content={'삭제시 큰 주의가 필요합니다.'}
-          confirmTitle={'삭제'}
-          handleOnClick={handleDelete}
-          handleOnCancel={() => {
+          page={cpListState.page}
+          onChange={(event, page) => {
             dispatch({
-              type: CpListTableActionKind.CLOSE_DELETE_DIALOG,
+              type: CpListActionKind.CHANGE_PAGE,
+              payload: page,
             });
           }}
         />
-      </Dialog> */}
+      </Card>
     </>
   );
 };

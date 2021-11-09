@@ -1,3 +1,4 @@
+import { CP_Master, CP_Hidden_Reporter } from './cp';
 import { Hiddenbox } from './hiddenbox';
 import { Schedule } from './schedule';
 
@@ -35,4 +36,8 @@ export interface User {
   isHiddenboxAvailable?: boolean;
   isMasterAvailable?: boolean;
   [key: string]: any;
+  master: CP_Master;
+  Hidden_Reporter: CP_Hidden_Reporter;
+  phone_number: string;
+  contact_email: string;
 }

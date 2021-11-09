@@ -1,23 +1,15 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { APICp } from 'src/lib/api';
 import { User } from 'src/types/user';
 import CpListPresenter from './CpList.Presenter';
 
 export enum CpListActionKind {
-  // loading
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
+  GET_LIST_LENGTH = 'GET_LIST_LENGTH',
   CHANGE_QUERY = 'CHANGE_QUERY',
-  CHANGE_SORT = 'CHANGE_SORT',
+  CHANGE_FILTER = 'CHANGE_FILTER',
   CHANGE_PAGE = 'CHANGE_PAGE',
-  CHANGE_LIMIT = 'CHANGE_LIMIT',
-  CHANGE_ROOM = 'CHANGE_ROOM',
-  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
-
-  // delete & update
-  SELECT_FEED = 'SELECT_FEED',
-  OPEN_DELETE_DIALOG = 'OPEN_DELETE_DIALOG',
-  CLOSE_DELETE_DIALOG = 'CLOSE_DELETE_DIALOG',
 }
 
 export interface CpListAction {
@@ -27,12 +19,30 @@ export interface CpListAction {
 
 export interface CpListState {
   loading: boolean;
-  user: User[];
+  cpListLength: 0;
+  cpList: User[];
+  page: number;
+  query: {
+    _start: number;
+    _limit: number;
+    _q: string;
+    _sort: string;
+  };
+  cpFilter: string;
 }
 
 const initialState: CpListState = {
   loading: true,
-  user: [],
+  cpList: [],
+  cpListLength: 0,
+  page: 1,
+  query: {
+    _q: '',
+    _start: 0,
+    _limit: 50,
+    _sort: 'created_at:DESC',
+  },
+  cpFilter: '',
 };
 
 const CpListReducer = (
@@ -49,8 +59,36 @@ const CpListReducer = (
     case CpListActionKind.GET_USERS:
       return {
         ...state,
-        user: payload,
+        cpList: payload,
         loading: false,
+      };
+    case CpListActionKind.GET_LIST_LENGTH:
+      return {
+        ...state,
+        cpListLength: payload,
+      };
+    case CpListActionKind.CHANGE_QUERY:
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          _q: payload,
+        },
+        page: 1,
+      };
+    case CpListActionKind.CHANGE_PAGE:
+      return {
+        ...state,
+        page: payload,
+        query: {
+          ...state.query,
+          _start: (payload - 1) * 50,
+        },
+      };
+    case CpListActionKind.CHANGE_FILTER:
+      return {
+        ...state,
+        cpFilter: payload,
       };
   }
 };
@@ -61,27 +99,37 @@ const CpListContainer = () => {
     initialState,
   );
 
-  const getUsers = async () => {
+  const getUsers = useCallback(async () => {
     dispatch({ type: CpListActionKind.LOADING, payload: true });
     try {
-      const { status, data } = await APICp.getUsers();
+      const { status, data } = await APICp.getCpUsers(
+        cpListState.query,
+        cpListState.cpFilter,
+      );
+      const { data: dataLength } = await APICp.getCpUsersLegnth(
+        cpListState.query,
+        cpListState.cpFilter,
+      );
       if (status === 200) {
         dispatch({
           type: CpListActionKind.GET_USERS,
           payload: data.filter(
-            (data) => data.isMasterAvailable === true,
+            (data) => data.master || data.hidden_reporter,
           ),
+        });
+        dispatch({
+          type: CpListActionKind.GET_LIST_LENGTH,
+          payload: dataLength,
         });
       }
     } catch (error) {
       console.log(error);
     }
-  };
-  console.log(cpListState);
+  }, [cpListState.cpFilter, cpListState.query]);
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [getUsers, cpListState.query]);
 
   return (
     <CpListPresenter cpListState={cpListState} dispatch={dispatch} />

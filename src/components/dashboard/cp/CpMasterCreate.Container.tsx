@@ -2,26 +2,11 @@ import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
-import { CP } from 'src/types/cp';
+import { CP_Master } from 'src/types/cp';
 import { User } from 'src/types/user';
 import CpMasterCreatePresenter from './CpMasterCreate.Presenter';
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-const access_key = 'AKIAY53UECMD2OMWX4UR';
-const secret_key = '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';
-
-//* 환경변수에 관한 오류 노션 확인
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: access_key,
-    secretAccessKey: secret_key,
-  },
-});
-
-//* cpProfile-photo 등의 이름으로 버킷 생성 필요
-const bucket_name = 'hiddenbox-photo';
-
+import { bucket_hiddenbox } from '../../common/conf/aws';
+import { registerImage } from 'src/utils/registerImage';
 export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
@@ -37,7 +22,7 @@ export interface CpMasterCreateAction {
 
 export interface CpMasterCreateState {
   loading: boolean;
-  newCpMaster: CP;
+  newCpMaster: CP_Master;
   users: User[];
 }
 
@@ -84,6 +69,7 @@ const CpMasterCreateReducer = (
           ...state.newCpMaster,
           profile_image_url: payload,
         },
+        loading: false,
       };
     case CpMasterCreateActionKind.GET_MASTER:
       return {
@@ -187,23 +173,10 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       payload: true,
     });
     try {
-      // Koscom Cloud에 업로드하기!
-      await S3.putObject({
-        Bucket: bucket_name,
-        Key: file[0].name,
-        ACL: 'public-read',
-        // ACL을 지우면 전체공개가 되지 않습니다.
-        Body: file[0],
-      }).promise();
-      //* 버킷이름으로 파일이 만들어지기 때문에 추후 버킷 폴더 만들고 난 뒤 변경 필요
-      const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
+      const imageUrl = await registerImage(file, bucket_hiddenbox);
       dispatch({
         type: CpMasterCreateActionKind.CHANGE_IMAGE,
         payload: imageUrl,
-      });
-      dispatch({
-        type: CpMasterCreateActionKind.LOADING,
-        payload: false,
       });
     } catch (error) {
       console.log(error);
@@ -217,6 +190,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       getCpMaster();
     }
   }, [getCpMaster, getUsers, masterId]);
+
   return (
     <CpMasterCreatePresenter
       dispatch={dispatch}
