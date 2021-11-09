@@ -91,10 +91,12 @@ const MasterSubscribeContainer = () => {
     MasterSubscribeReducer,
     initialState,
   );
-  const { user } = useAuth();
-  const masterId = user.id;
+  const {
+    user: { master },
+  } = useAuth();
+  const masterId = master.id;
   useEffect(() => {
-    getSubscribeCount(user.id);
+    getSubscribeCount(master.id);
     getYear();
     getThisMonth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,7 +106,7 @@ const MasterSubscribeContainer = () => {
   const getSubscribeCount = async (masterId) => {
     dispatch({ type: MasterSubscribeActionKind.LOADING });
     try {
-      const { status } = await APIMaster.getAllSubscribe(user.id);
+      const { status } = await APIMaster.getAllSubscribe(master.id);
       const response = await APIMaster.getYearSubscribe(
         masterSubscribeState.selectYear,
         masterId,
@@ -134,7 +136,7 @@ const MasterSubscribeContainer = () => {
     dispatch({ type: MasterSubscribeActionKind.LOADING });
     try {
       const { data, status } = await APIMaster.getAllSubscribe(
-        user.id,
+        master.id,
       );
       if (status === 200) {
         const FullYear = data.map((data) =>
@@ -173,7 +175,7 @@ const MasterSubscribeContainer = () => {
   //* 이번 달, 지난 달 구독자 수
   const getThisMonth = async () => {
     try {
-      const data = await APIMaster.getThisMonth(user.id);
+      const data = await APIMaster.getThisMonth(master.id);
       let endDate = data.map((data) => data.data);
       endDate = endDate.map((data) =>
         data.filter((data) => data.endDate === null),

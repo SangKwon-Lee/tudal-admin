@@ -1,5 +1,5 @@
 import { Category, Stock, Tag } from './schedule';
-import { User } from './user';
+import { IUser } from './user';
 
 export interface INews {
   id: number;
@@ -16,7 +16,7 @@ export interface INews {
   officeId: string;
   tags: Tag[];
   isSelected: boolean;
-  isSelectedBy?: User;
+  isSelectedBy?: IUser;
   stocks?: Stock[];
   categories: Category[];
 }
