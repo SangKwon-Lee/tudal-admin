@@ -10,6 +10,7 @@ const region = 'ap-northeast-2';
 const access_key = 'AKIAY53UECMD2OMWX4UR';
 const secret_key = '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';
 
+//* 환경변수에 관한 오류 노션 확인
 const S3 = new AWS.S3({
   region,
   credentials: {
@@ -18,6 +19,7 @@ const S3 = new AWS.S3({
   },
 });
 
+//* cpProfile-photo 등의 이름으로 버킷 생성 필요
 const bucket_name = 'hiddenbox-photo';
 
 export enum CpMasterCreateActionKind {
@@ -193,6 +195,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
         // ACL을 지우면 전체공개가 되지 않습니다.
         Body: file[0],
       }).promise();
+      //* 버킷이름으로 파일이 만들어지기 때문에 추후 버킷 폴더 만들고 난 뒤 변경 필요
       const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
       dispatch({
         type: CpMasterCreateActionKind.CHANGE_IMAGE,
