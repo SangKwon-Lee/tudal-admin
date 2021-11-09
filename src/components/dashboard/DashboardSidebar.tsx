@@ -50,6 +50,11 @@ const sections = [
         icon: <UsersIcon fontSize="small" />,
         children: [
           {
+            title: 'CP 리스트',
+            path: '/dashboard/cp',
+            icon: <UsersIcon fontSize="small" />,
+          },
+          {
             title: '달인 생성',
             path: '/dashboard/cp/createMaster',
             icon: <UserAddIcon fontSize="small" />,

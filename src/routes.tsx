@@ -138,6 +138,9 @@ const CpMasterEditPage = Loadable(
 const CpReporterEditPage = Loadable(
   lazy(() => import('./pages/dashboard/CpReporterEdit.Page')),
 );
+const CpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/CpList.Page')),
+);
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -418,6 +421,10 @@ const routes: PartialRouteObject[] = [
           {
             path: ':reporterId/edit',
             element: <CpReporterEditPage />,
+          },
+          {
+            path: '/',
+            element: <CpListPage />,
           },
         ],
       },
