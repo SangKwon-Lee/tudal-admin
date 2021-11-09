@@ -49,7 +49,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
   const { newCpReporter, loading, users } = cpCreateState;
   return (
     <>
-      <Card sx={{ p: 3 }}>
+      <Card sx={{ p: 3, my: 2 }}>
         <Typography color="textPrimary" variant="h6">
           히든 리포터의 내용을 입력해주세요.
         </Typography>

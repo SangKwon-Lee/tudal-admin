@@ -32,10 +32,9 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     onChangeImgae,
   } = props;
   const { newCpMaster, loading, users } = cpCreateState;
-  console.log(mode);
   return (
     <>
-      <Card sx={{ p: 3 }}>
+      <Card sx={{ p: 3, my: 2 }}>
         <Typography color="textPrimary" variant="h6">
           달인의 내용을 입력해주세요.
         </Typography>
