@@ -1,5 +1,5 @@
 import React from 'react';
-import HiddenReportImageListContainer from 'src/components/dashboard/hiddenreport/HiddenreportImageList.Conatiner';
+import HiddenReportImageListContainer from '../../../components/dashboard/hiddenreport/HiddenreportImageList.Conatiner';
 import PageLayout from 'src/components/layout/ListPageLayout';
 
 const HiddenReportImageListPage: React.FC = () => {
