@@ -34,6 +34,11 @@ const sections = [
         path: '/dashboard',
         icon: <ChartSquareBarIcon fontSize="small" />,
       },
+      {
+        title: '히든리포트 이미지',
+        path: '/dashboard/hiddenreports/images',
+        icon: <ChartSquareBarIcon fontSize="small" />,
+      },
     ],
   },
   {
@@ -97,21 +102,21 @@ const sections = [
         path: '/dashboard/coupons',
         icon: <PencilIcon fontSize="small" />,
       },
-      // {
-      //   title: '팝업',
-      //   path: '/dashboard/popup',
-      //   icon: <SunIcon fontSize="small" />,
-      //   children: [
-      //     {
-      //       title: '리스트',
-      //       path: '/dashboard/popup',
-      //     },
-      //     {
-      //       title: '생성',
-      //       path: '/dashboard/popup/new',
-      //     },
-      //   ],
-      // },
+      {
+        title: '팝업',
+        path: '/dashboard/popup',
+        icon: <PencilIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/popup',
+          },
+          {
+            title: '생성',
+            path: '/dashboard/popup/new',
+          },
+        ],
+      },
     ],
   },
   {

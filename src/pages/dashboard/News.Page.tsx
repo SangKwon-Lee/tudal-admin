@@ -9,6 +9,7 @@ const NewsPage: React.FC = () => {
       mainTopic={'뉴스'}
       pageTitle={'뉴스 리스트'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <NewsContainer pageTopRef={pageTopRef} />
     </PageLayout>

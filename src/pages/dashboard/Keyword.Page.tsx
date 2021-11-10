@@ -9,6 +9,7 @@ const SchedulePage: React.FC = () => {
       mainTopic={'키워드'}
       pageTitle={'키워드 리스트'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <KeywordListContainer pageTopRef={pageTopRef} />
     </PageLayout>

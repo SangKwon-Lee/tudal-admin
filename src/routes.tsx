@@ -131,6 +131,23 @@ const GroupListPage = Loadable(
   lazy(() => import('./pages/dashboard/GroupList.Page')),
 );
 
+const HiddenReportImageList = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportImageList.Page'
+      ),
+  ),
+);
+const HiddenReportImageCreate = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportImageCreate.Page'
+      ),
+  ),
+);
+
 // Error pages
 
 const AuthorizationRequired = Loadable(
@@ -207,6 +224,35 @@ const routes: PartialRouteObject[] = [
       {
         path: '/',
         element: <Overview />,
+      },
+      {
+        path: 'hiddenreports',
+        children: [
+          {
+            path: 'images',
+            element: <HiddenReportImageList />,
+          },
+          {
+            path: 'images/new',
+            element: <HiddenReportImageCreate />,
+          },
+          {
+            path: 'images/:id/edit',
+            element: <HiddenReportImageCreate mode={'edit'} />,
+          },
+          {
+            path: ':hiddenboxId',
+            element: <HiddenboxDetails />,
+          },
+          {
+            path: ':hiddenboxId/edit',
+            element: <HiddenboxEdit />,
+          },
+          {
+            path: 'new',
+            element: <HiddenboxCreate />,
+          },
+        ],
       },
       {
         path: 'hiddenboxes',

@@ -9,6 +9,7 @@ const GoldList: React.FC = () => {
       mainTopic={'골드'}
       pageTitle={'골드 리스트'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <GoldListContainer pageTopRef={pageTopRef} />
     </PageLayout>
