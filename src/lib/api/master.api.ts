@@ -16,10 +16,10 @@ import {
 //   return expertFeeds;
 // }
 
-export async function getFeeds(params, userId) {
+export async function getFeeds(params, masterId) {
   let query = qs.stringify(removeEmpty(params));
   return await axios.get<IMasterFeed[]>(
-    `/master-feeds?master.id=${userId}&${query}`,
+    `/master-feeds?master.id=${masterId}&${query}`,
   );
 }
 
@@ -29,15 +29,20 @@ export async function getFeedLength(masterId, roomId) {
   );
 }
 
-export async function getRooms(userId, channelId) {
+export async function getRoomsByChannel(channelId) {
   return await axios.get<IMasterRoom[]>(
-    `/master-rooms?master.id=${userId}&master_channel.id=${channelId}`,
+    `/master-rooms?master_channel.id=${channelId}&isDeleted=0`,
+  );
+}
+export async function getRoomsByMaster(masterId) {
+  return await axios.get<IMasterRoom[]>(
+    `/master-rooms?master.id=${masterId}&isDeleted=0`,
   );
 }
 
-export async function getChannels(userId) {
+export async function getChannels(masterId) {
   return await axios.get<IMasterChannel[]>(
-    `/master-channels?master.id=${userId}`,
+    `/master-channels?master.id=${masterId}`,
   );
 }
 
@@ -52,16 +57,6 @@ export async function getDetailFeed(feedId) {
 export async function getDetailFeedLike(feedId) {
   return await axios.get(
     `/master-feed-likes?master_feed.id=${feedId}`,
-  );
-}
-
-export async function getMasterChannel(userId) {
-  return await axios.get(`/master-channels?master.id=${userId}`);
-}
-
-export async function getMasterRoom(channelId) {
-  return await axios.get(
-    `/master-rooms?master_channel=${channelId}&isDeleted=0`,
   );
 }
 

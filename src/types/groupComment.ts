@@ -1,4 +1,4 @@
-import { User } from './user';
+import { IUser } from './user';
 
 export interface GroupDetail {
   id: number;
@@ -15,7 +15,7 @@ export interface GroupDetail {
 
 export interface GroupComment {
   id: number;
-  user: User;
+  user: IUser;
   tudal_group: GroupDetail;
   comment: string;
   published_at: string;
