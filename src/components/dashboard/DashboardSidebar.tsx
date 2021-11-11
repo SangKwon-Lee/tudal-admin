@@ -39,6 +39,11 @@ const sections = [
         path: '/dashboard/hiddenreports/images',
         icon: <ChartSquareBarIcon fontSize="small" />,
       },
+      {
+        title: '히든리포트',
+        path: '/dashboard/hiddenreports',
+        icon: <ChartSquareBarIcon fontSize="small" />,
+      },
     ],
   },
   {

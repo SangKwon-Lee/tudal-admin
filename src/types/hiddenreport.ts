@@ -1,3 +1,5 @@
+import { Stock, Tag } from './schedule';
+
 export interface IHR {
   id: number;
   title: string;
@@ -5,7 +7,7 @@ export interface IHR {
   price: number;
   category: string;
   intro: string;
-  catchPhrase: string;
+  catchphrase: string;
   summary: string;
   reason: string;
   contents: string;
@@ -16,8 +18,8 @@ export interface IHR {
   pdfUrl: string;
   hidden_report_image: IHRImage;
   hidden_report_views: [];
-  tags: [];
-  stocks: [];
+  tags: Tag[];
+  stocks: Stock[];
   hidden_report_orders: [];
   hidden_report_likes: [];
   hidden_report_comments: [];

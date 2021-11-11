@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { FC, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
-import { APIHR, APIPopUp } from 'src/lib/api';
+import { APIHR } from 'src/lib/api';
 import HiddenreportImageCreatePresenter from './HiddenreportImageCreate.Presenter';
 const AWS = require('aws-sdk');
 const region = 'ap-northeast-2';
