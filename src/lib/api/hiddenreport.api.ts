@@ -29,7 +29,9 @@ export async function getImage(id) {
   return await axios.get<IHRImage>(`/hidden-report-images/${id}`);
 }
 export async function getImageList(param) {
+  console.log('param', param);
   const query = qs.stringify(removeEmpty(param));
+
   return await axios.get<number>(`/hidden-report-images?${query}`);
 }
 

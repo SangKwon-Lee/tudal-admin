@@ -9,21 +9,35 @@ import type { FC } from 'react';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { cmsServer } from '../../../lib/axios';
-import HiddenReportCreatePresenter from './HiddenreportCreate.Presenter';
+import HiddenReportContentForm from './HiddenreportCreateContentForm.Presenter';
 import { AxiosError, AxiosResponse } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 
 import useAsync from 'src/hooks/useAsync';
 import { Stock, Tag } from 'src/types/schedule';
 import { APIHR, APIMaster, APIStock, APITag } from 'src/lib/api';
-import _ from 'lodash';
+import _, { initial } from 'lodash';
 import toast from 'react-hot-toast';
 import { IHRImage } from 'src/types/hiddenreport';
 import dayjs, { Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router';
+import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter';
+const AWS = require('aws-sdk');
+const region = 'ap-northeast-2';
+const bucket_name = 'tudal-popup-photo';
+
+const S3 = new AWS.S3({
+  region,
+  credentials: {
+    accessKeyId: process.env.ACCESS_KET,
+    secretAccessKey: process.env.SECRET_KEY,
+  },
+});
 
 interface HiddenReportCreateContainerProps {
   mode: string;
   reportId?: number;
+  pageTopRef: React.RefObject<HTMLDivElement>;
 }
 
 export enum HiddenReportCreateActionKind {
@@ -36,13 +50,20 @@ export enum HiddenReportCreateActionKind {
   CHANGE_TAGS = 'CHANGE_TAGS',
   CHANGE_STOCKS = 'CHANGE_STOCKS',
   CHANGE_INPUT = 'CHANGE_INPUT',
+
+  // images
+  LOAD_IMAGES = 'LOAD_IMAGES',
+  LOAD_MORE_IMAGES = 'LOAD_MORE_IMAGES',
+  CHANGE_IMAGE = 'CHANGE_IMAGE',
+  LOAD_MORE_IMAGE = 'LOAD_MORE_IMAGE',
+  CHANGE_SEARCH = 'CHANGE_SEARCH',
 }
 export interface HiddenReportCreateAction {
   type: HiddenReportCreateActionKind;
   payload?: any;
 }
 
-interface IHiddenReportForm {
+export interface IHiddenReportForm {
   id?: number; // 수정하는 경우 ID 필요
   title: string;
   hidden_report_image: IHRImage; // IHRImage ID
@@ -63,12 +84,22 @@ interface IHiddenReportForm {
 export interface HiddenReportCreateState {
   loading: boolean;
   newReport: IHiddenReportForm;
+  image: {
+    list: IHRImage[];
+    isLoadMoreAvailable: boolean;
+    isAddingImageList: boolean;
+    query: {
+      _q: string;
+      _limit: number;
+      _start: number;
+    };
+  };
 }
 const monthLater = new Date();
 monthLater.setMonth(monthLater.getMonth() + 1);
 
-const initialState: HiddenReportCreateState = {
-  loading: true,
+export const initialState: HiddenReportCreateState = {
+  loading: false,
   newReport: {
     title: '',
     thumnail_text: '',
@@ -84,6 +115,16 @@ const initialState: HiddenReportCreateState = {
     tags: [],
     expirationDate: monthLater,
     hidden_report_image: null, // IHRImage ID
+  },
+  image: {
+    list: [],
+    isAddingImageList: false,
+    isLoadMoreAvailable: true,
+    query: {
+      _q: '',
+      _limit: 15,
+      _start: 0,
+    },
   },
 };
 
@@ -104,12 +145,13 @@ const HiddenReportCreateReducer = (
         newReport: payload,
         loading: false,
       };
-    case HiddenReportCreateActionKind.CHANGE_INPUT:
+
+    case HiddenReportCreateActionKind.CHANGE_IMAGE:
       return {
         ...state,
         newReport: {
           ...state.newReport,
-          [payload.target.name]: payload.target.value,
+          hidden_report_image: payload,
         },
       };
     case HiddenReportCreateActionKind.CHANGE_STOCKS:
@@ -128,19 +170,70 @@ const HiddenReportCreateReducer = (
           tags: payload,
         },
       };
+    case HiddenReportCreateActionKind.LOAD_MORE_IMAGE:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          isAddingImageList: true,
+          query: {
+            ...state.image.query,
+            _start:
+              state.image.list.length + state.image.query._limit,
+          },
+        },
+      };
+
+    case HiddenReportCreateActionKind.CHANGE_SEARCH:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          isAddingImageList: false,
+          query: {
+            ...state.image.query,
+            _start: 0,
+            [payload.name]: payload.value,
+          },
+        },
+      };
+    case HiddenReportCreateActionKind.LOAD_IMAGES:
+      return {
+        ...state,
+        loading: false,
+        image: {
+          ...state.image,
+          list: payload,
+          isLoadMoreAvailable: true,
+        },
+      };
+    case HiddenReportCreateActionKind.LOAD_MORE_IMAGES:
+      return {
+        ...state,
+        loading: false,
+        image: {
+          ...state.image,
+          list: [...state.image.list, ...payload],
+          isLoadMoreAvailable: Boolean(payload.length),
+        },
+      };
   }
 };
 
 const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
-    const { mode, reportId } = props;
-    const { user } = useAuth();
+    const { mode, reportId, pageTopRef } = props;
+    const [step, setStep] = useState<number>(2);
     const [reportCreateState, dispatch] = useReducer(
       HiddenReportCreateReducer,
       initialState,
     );
     const tagInput = useRef(null);
     const stockInput = useRef(null);
+    const navigate = useNavigate();
+
+    const { newReport, image, loading } = reportCreateState;
+    const { stocks, tags } = newReport;
 
     //* 수정 시 기존 데이터 불러오기
     const getReport = async () => {
@@ -149,41 +242,24 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         if (reportId.toString() === '0') return;
         const { status, data } = await APIHR.get(reportId.toString());
         if (status === 200) {
-          const {
-            id,
-            title,
-            thumnail_text,
-            price,
-            category,
-            catchphrase,
-            intro,
-            summary,
-            reason,
-            contents,
-            pdfUrl,
-            stocks,
-            tags,
-            hidden_report_image,
-            expirationDate,
-          } = data;
-
           const newReportData: IHiddenReportForm = {
-            id,
-            title,
-            thumnail_text,
-            price,
-            category,
-            catchphrase,
-            intro,
-            summary,
-            reason,
-            contents,
-            pdfUrl,
-            stocks,
-            tags,
-            hidden_report_image,
-            expirationDate,
+            id: data.id,
+            title: data.title,
+            thumnail_text: data.thumnail_text,
+            price: data.price,
+            category: data.category,
+            catchphrase: data.catchphrase,
+            intro: data.intro,
+            summary: data.summary,
+            reason: data.reason,
+            contents: data.contents,
+            pdfUrl: data.pdfUrl,
+            stocks: data.stocks,
+            tags: data.tags,
+            hidden_report_image: data.hidden_report_image,
+            expirationDate: data.expirationDate,
           };
+
           dispatch({
             type: HiddenReportCreateActionKind.GET_REPORT,
             payload: newReportData,
@@ -195,12 +271,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     };
 
     //* 수정 모드일 때 데이터 불러오기
-    useEffect(() => {
-      if (mode === 'edit') {
-        getReport();
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     //* 웹 에디터에 전달되는 Props
     const editorRef = useRef(null);
@@ -211,35 +281,150 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     };
 
     //* Submit
-    const handleSubmit = async (event: any): Promise<void> => {
-      event.preventDefault();
-
+    const onSubmitContentForm = async (data, e) => {
       try {
+        // PDF 등록
+
         const contents = log();
-        const newReport = {
-          ...reportCreateState.newReport,
-          tags:
-            reportCreateState.newReport.tags.map((data) => data.id) ||
-            [],
-          stocks:
-            reportCreateState.newReport.stocks.map(
-              (data) => data.id,
-            ) || [],
+        const newReport: IHiddenReportForm = {
+          ...data,
+          tags: tags.map((data) => data.id) || [],
+          stocks: stocks.map((data) => data.id) || [],
           contents,
         };
 
-        let response: AxiosResponse;
-        if (mode === 'create') {
-          response = await APIHR.create(newReport);
-        } else {
-          response = await APIHR.update(newReport);
-        }
+        dispatch({
+          type: HiddenReportCreateActionKind.GET_REPORT,
+          payload: newReport,
+        });
+        pageTopRef.current?.scrollIntoView();
 
-        if (response.status === 200) {
-          alert('등록되었습니다.');
-        }
+        setStep((prev) => prev + 1);
       } catch (err) {
         console.log(err);
+      }
+    };
+
+    const onSubmit = async () => {
+      let response: AxiosResponse;
+      if (mode === 'create') {
+        response = await APIHR.create(newReport);
+      } else {
+        response = await APIHR.update(newReport);
+      }
+
+      if (response.status === 200) {
+        toast.success('등록되었습니다.');
+        navigate('/dashboard/hiddenreports');
+      }
+    };
+
+    const onTagChange = (event, keywords: Tag[], reason, item) => {
+      switch (reason) {
+        case 'selectOption':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_TAGS,
+            payload: [...newReport.tags, item.option],
+          });
+          break;
+        case 'removeOption':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_TAGS,
+            payload: tags.filter((tag) => tag.id !== item.option.id),
+          });
+          break;
+        case 'clear':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_TAGS,
+            payload: [],
+          });
+          break;
+      }
+    };
+
+    const onStockChange = (event, stock: Stock[], reason, item) => {
+      switch (reason) {
+        case 'selectOption':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_STOCKS,
+            payload: [...newReport.stocks, item.option],
+          });
+          break;
+        case 'removeOption':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_STOCKS,
+            payload: newReport.stocks.filter(
+              (stocks) => stocks.id !== item.option.id,
+            ),
+          });
+          break;
+        case 'clear':
+          dispatch({
+            type: HiddenReportCreateActionKind.CHANGE_STOCKS,
+            payload: [],
+          });
+          break;
+      }
+    };
+
+    //* 이미지 조회
+    const getImages = useCallback(async () => {
+      dispatch({
+        type: HiddenReportCreateActionKind.LOADING,
+      });
+
+      try {
+        const { data, status } = await APIHR.getImageList(
+          image.query,
+        );
+
+        if (status === 200) {
+          dispatch({
+            type: HiddenReportCreateActionKind.LOAD_IMAGES,
+            payload: data,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, [image.query]);
+
+    const getMoreImages = useCallback(async () => {
+      try {
+        dispatch({
+          type: HiddenReportCreateActionKind.LOADING,
+        });
+        console.log('!!more !!!');
+        const { data, status } = await APIHR.getImageList(
+          image.query,
+        );
+
+        if (status === 200) {
+          dispatch({
+            type: HiddenReportCreateActionKind.LOAD_MORE_IMAGES,
+            payload: data,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, [image.query]);
+
+    //* PDF 등록
+    const onPDFChange = async (event) => {
+      var file = event.target.files;
+      try {
+        // Koscom Cloud에 업로드하기!
+        await S3.putObject({
+          Bucket: bucket_name,
+          Key: file[0].name,
+          ACL: 'public-read',
+          // ACL을 지우면 전체공개가 되지 않습니다.
+          Body: file[0],
+        }).promise();
+        return `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
+      } catch (error) {
+        toast.error('파일 등록에 실패했습니다.');
       }
     };
 
@@ -261,22 +446,55 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       useAsync<any>(getStockList, [], []);
     const handleStockChange = _.debounce(refetchStock, 300);
 
-    return (
-      <HiddenReportCreatePresenter
-        reportCreateState={reportCreateState}
-        dispatch={dispatch}
-        editorRef={editorRef}
-        handleSubmit={handleSubmit}
-        tagList={tagList}
-        tagInput={tagInput}
-        tagLoading={tagLoading}
-        handleTagChange={handleTagChange}
-        stockList={stockList}
-        stockLoading={stockLoading}
-        stockInput={stockInput}
-        handleStockChange={handleStockChange}
-      />
-    );
+    useEffect(() => {
+      if (mode === 'edit') {
+        getReport();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+      if (image.isAddingImageList) {
+        getMoreImages();
+      }
+    }, [getMoreImages, image.isAddingImageList]);
+
+    useEffect(() => {
+      if (!image.isAddingImageList) {
+        getImages();
+      }
+    }, [getImages, image.isAddingImageList]);
+
+    switch (step) {
+      case 1:
+        return (
+          <HiddenReportContentForm
+            reportCreateState={reportCreateState}
+            dispatch={dispatch}
+            editorRef={editorRef}
+            onSubmitContentForm={onSubmitContentForm}
+            tagList={tagList}
+            tagInput={tagInput}
+            tagLoading={tagLoading}
+            handleTagChange={handleTagChange}
+            stockList={stockList}
+            stockLoading={stockLoading}
+            stockInput={stockInput}
+            handleStockChange={handleStockChange}
+            onTagChange={onTagChange}
+            onStockChange={onStockChange}
+            onPDFChange={onPDFChange}
+          />
+        );
+      case 2:
+        return (
+          <HiddenReportCreateImageForm
+            reportCreateState={reportCreateState}
+            dispatch={dispatch}
+            getImages={getImages}
+          />
+        );
+    }
   };
 
 export default HiddenReportCreateContainer;

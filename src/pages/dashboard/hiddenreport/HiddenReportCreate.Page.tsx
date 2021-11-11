@@ -17,6 +17,7 @@ const HiddenReportListPage: React.FC = () => {
     >
       <HiddenreportCreateContainer
         mode={mode}
+        pageTopRef={pageTopRef}
         reportId={parseInt(reportId, 10)}
       />
     </PageLayout>
