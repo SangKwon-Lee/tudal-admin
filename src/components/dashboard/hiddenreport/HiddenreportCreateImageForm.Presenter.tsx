@@ -73,7 +73,7 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
         const target = entries[0];
 
         if (loading) return;
-        if (!image.list.length) return;
+
         if (!isLoadMoreAvailable) {
           console.log('showAlert', showAlert);
           showAlert.current &&
@@ -87,7 +87,7 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
           });
         }
       },
-      [isLoadMoreAvailable, dispatch, loading, image.list],
+      [isLoadMoreAvailable, dispatch, loading],
     );
 
     useEffect(() => {
@@ -283,7 +283,7 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
               })}
             </Grid>
           </Box>
-          {!loading && <div ref={loader} />}
+          {!loading && image.list.length && <div ref={loader} />}
         </>
       </>
     );
