@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import type { IMasterFeedLikes, Master } from '../../../types/master';
+import type { IMasterFeedLikes, IMasterFeed } from 'src/types/master';
 import { useParams } from 'react-router-dom';
 import useMounted from 'src/hooks/useMounted';
 import MasterDetailsPresenter from './MasterDetails.Presenter';
@@ -9,7 +9,7 @@ export enum MasterDetailsActionKind {
   LOADING = 'LOADING',
 
   // Load APIS
-  GET_EXPERT = 'GET_EXPERT',
+  GET_MASTER = 'GET_MASTER',
   GET_LIKES = 'GET_LIKES',
 }
 export interface MasterDetailsAction {
@@ -18,7 +18,7 @@ export interface MasterDetailsAction {
 }
 
 export interface MasterDetailsState {
-  master: Master;
+  master: IMasterFeed;
   loading: boolean;
   likes: IMasterFeedLikes[];
 }
@@ -33,7 +33,7 @@ const MasterDetailsReducer = (
         ...state,
         loading: true,
       };
-    case MasterDetailsActionKind.GET_EXPERT:
+    case MasterDetailsActionKind.GET_MASTER:
       return {
         ...state,
         master: payload,
@@ -49,7 +49,7 @@ const MasterDetailsReducer = (
 };
 
 const initialState: MasterDetailsState = {
-  master: {},
+  master: null,
   loading: false,
   likes: [],
 };
@@ -70,9 +70,10 @@ const MasterDetailsContainer = () => {
       );
       const { data: likeData, status: likeStatus } =
         await APIMaster.getDetailFeedLike(masterId);
+
       if (mounted && status === 200 && likeStatus === 200) {
         dispatch({
-          type: MasterDetailsActionKind.GET_EXPERT,
+          type: MasterDetailsActionKind.GET_MASTER,
           payload: data,
         });
         dispatch({
