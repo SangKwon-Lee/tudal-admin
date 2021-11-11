@@ -15,7 +15,7 @@ import {
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
-import { Room } from 'src/types/master';
+import { IMasterRoom } from 'src/types/master';
 import { Stock, Tag } from 'src/types/schedule';
 import { Formik } from 'formik';
 import {
@@ -137,7 +137,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         });
                       }}
                     >
-                      {master_room.map((room: Room, i) => (
+                      {master_room.map((room: IMasterRoom, i) => (
                         <option key={i} value={room.id}>
                           {room.title} ({room.openType})
                         </option>

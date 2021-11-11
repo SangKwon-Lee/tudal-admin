@@ -1,5 +1,5 @@
 import wait from '../../utils/wait';
-import { User } from '../../types/user';
+import { IUser } from '../../types/user';
 import { cmsServer } from '../axios';
 
 class AuthApi {
@@ -24,11 +24,11 @@ class AuthApi {
     });
   }
 
-  me(userId): Promise<User> {
+  me(userId): Promise<IUser> {
     return new Promise(async (resolve, reject) => {
       try {
         // Find the user
-        const response = await cmsServer.get<User>(
+        const response = await cmsServer.get<IUser>(
           `/users/${userId}`,
         );
         const user = response.status === 200 ? response.data : null;

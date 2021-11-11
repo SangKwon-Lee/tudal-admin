@@ -15,7 +15,6 @@ import moment from 'moment';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { FC } from 'react';
-import useAuth from 'src/hooks/useAuth';
 import { MasterDetailsState } from './MasterDetails.Container';
 
 interface IMasterDetailsProps {
@@ -25,7 +24,7 @@ interface IMasterDetailsProps {
 const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
   const { masterDetailState, ...other } = props;
   const { master, loading, likes } = masterDetailState;
-  const { user } = useAuth();
+  console.log(masterDetailState);
 
   return (
     <>
@@ -59,11 +58,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${
-                    typeof master.author === 'string'
-                      ? master.author
-                      : user.nickname
-                  }`}
+                  {`${master?.master.nickname}`}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -76,9 +71,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.master_room?.title
-                    ? master.master_room.title
-                    : master.type}
+                  {master?.master_room && master.master_room.title}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -190,8 +183,9 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
             내용
           </Typography>
           <Box sx={{ py: 3 }}>
+            {console.log('123123', master?.contents)}
             <Container maxWidth="md">
-              {master.contents && (
+              {master?.contents && (
                 <Viewer initialValue={master.contents} />
               )}
             </Container>
