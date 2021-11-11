@@ -22,7 +22,7 @@ interface IRole {
   lms: boolean;
 }
 
-export interface User {
+export interface IUser {
   id: string;
   avatar?: Avatar;
   email: string;
@@ -33,8 +33,6 @@ export interface User {
   confirmed: boolean;
   role: IRole;
   schedules: Schedule[];
-  isHiddenboxAvailable?: boolean;
-  isMasterAvailable?: boolean;
   [key: string]: any;
   master: CP_Master;
   hidden_reporter: CP_Hidden_Reporter;

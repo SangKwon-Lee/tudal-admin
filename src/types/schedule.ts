@@ -22,6 +22,7 @@ export interface ITagAlias {
 }
 
 export interface Stock {
+  id?: number;
   code?: string;
   name?: string;
   stockcode?: string;
