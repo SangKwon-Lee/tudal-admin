@@ -125,21 +125,26 @@ const GroupListPage = Loadable(
 );
 
 //* CP 관리
-
+const CpCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpCreate.Page')),
+);
 const CpMasterCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/CpMasterCreate.Page')),
+  lazy(() => import('./pages/dashboard/cp/CpMasterCreate.Page')),
 );
 const CpReporterCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/CpReporterCreate.Page')),
-);
-const CpMasterEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/CpMasterEdit.Page')),
-);
-const CpReporterEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/CpReporterEdit.Page')),
+  lazy(() => import('./pages/dashboard/cp/CpReporterCreate.Page')),
 );
 const CpListPage = Loadable(
-  lazy(() => import('./pages/dashboard/CpList.Page')),
+  lazy(() => import('./pages/dashboard/cp/CpList.Page')),
+);
+const CpCreateConfirmPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpCreateConfirm.page')),
+);
+const CpMasterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpMasterDetail.Page')),
+);
+const CpReporterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
 );
 
 // Viewer pages
@@ -402,10 +407,10 @@ const routes: PartialRouteObject[] = [
       {
         path: 'cp',
         children: [
-          // {
-          //   path: '/',
-          //   element: <CpCreatePage />,
-          // },
+          {
+            path: '/create',
+            element: <CpCreatePage />,
+          },
           {
             path: '/createMaster',
             element: <CpMasterCreatePage />,
@@ -416,11 +421,23 @@ const routes: PartialRouteObject[] = [
           },
           {
             path: ':masterId/edit/master',
-            element: <CpMasterEditPage />,
+            element: <CpMasterCreatePage />,
           },
           {
             path: ':reporterId/edit/reporter',
-            element: <CpReporterEditPage />,
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: '/confirm',
+            element: <CpCreateConfirmPage />,
+          },
+          {
+            path: ':masterId/master',
+            element: <CpMasterDetailPage />,
+          },
+          {
+            path: ':reporterId/reporter',
+            element: <CpReporterDetailPage />,
           },
           {
             path: '/',

@@ -53,6 +53,7 @@ const CpMasterCreateReducer = (
       return {
         ...state,
         users: payload,
+        loading: false,
       };
     case CpMasterCreateActionKind.CHANGE_INPUT:
       return {
@@ -75,6 +76,7 @@ const CpMasterCreateReducer = (
       return {
         ...state,
         newCpMaster: payload,
+        loading: false,
       };
   }
 };
@@ -99,16 +101,16 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     });
     try {
       const { data, status } = await APICp.getMaster(masterId);
+      let newData = {
+        ...data,
+        user: data.user.id,
+      };
       if (status === 200) {
         dispatch({
           type: CpMasterCreateActionKind.GET_MASTER,
-          payload: data,
+          payload: newData,
         });
       }
-      dispatch({
-        type: CpMasterCreateActionKind.LOADING,
-        payload: false,
-      });
     } catch (error) {
       console.log(error);
     }
@@ -122,19 +124,22 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     try {
       const { data, status } = await APICp.getUsers();
       if (status === 200) {
-        dispatch({
-          type: CpMasterCreateActionKind.GET_USERS,
-          payload: data,
-        });
-        dispatch({
-          type: CpMasterCreateActionKind.LOADING,
-          payload: false,
-        });
+        if (mode === 'edit') {
+          dispatch({
+            type: CpMasterCreateActionKind.GET_USERS,
+            payload: data,
+          });
+        } else {
+          dispatch({
+            type: CpMasterCreateActionKind.GET_USERS,
+            payload: data.filter((data) => !data.master),
+          });
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [mode]);
 
   //* cp 등록
   const createCpMaster = async () => {
@@ -183,7 +188,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       return false;
     }
   };
-
   useEffect(() => {
     getUsers();
     if (masterId) {

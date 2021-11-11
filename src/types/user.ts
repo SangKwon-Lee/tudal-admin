@@ -37,7 +37,18 @@ export interface User {
   isMasterAvailable?: boolean;
   [key: string]: any;
   master: CP_Master;
-  Hidden_Reporter: CP_Hidden_Reporter;
+  hidden_reporter: CP_Hidden_Reporter;
   phone_number: string;
   contact_email: string;
+}
+
+export interface UserInput {
+  username: string;
+  email: string;
+  password: string;
+  role: number;
+  nickname: string;
+  type: string;
+  contact_email: string;
+  phone_number: string;
 }

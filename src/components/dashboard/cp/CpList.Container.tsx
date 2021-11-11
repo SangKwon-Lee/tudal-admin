@@ -113,9 +113,7 @@ const CpListContainer = () => {
       if (status === 200) {
         dispatch({
           type: CpListActionKind.GET_USERS,
-          payload: data.filter(
-            (data) => data.master || data.hidden_reporter,
-          ),
+          payload: data,
         });
         dispatch({
           type: CpListActionKind.GET_LIST_LENGTH,
@@ -129,7 +127,7 @@ const CpListContainer = () => {
 
   useEffect(() => {
     getUsers();
-  }, [getUsers, cpListState.query]);
+  }, [getUsers, cpListState.query, cpListState.cpFilter]);
 
   return (
     <CpListPresenter cpListState={cpListState} dispatch={dispatch} />

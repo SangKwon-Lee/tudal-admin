@@ -2,9 +2,11 @@ import type { FC } from 'react';
 import CpReporterCreateContainer from 'src/components/dashboard/cp/CpReporterCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
 import React from 'react';
+import { useParams } from 'react-router-dom';
 const CpReporterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
-
+  const { masterId } = useParams();
+  const mode = masterId ? 'edit' : 'create';
   return (
     <>
       <PageLayout
@@ -12,7 +14,7 @@ const CpReporterCreatePage: FC = () => {
         pageTitle={'CP 관리'}
         pageTopRef={pageTopRef}
       >
-        <CpReporterCreateContainer />
+        <CpReporterCreateContainer mode={mode} />
       </PageLayout>
     </>
   );

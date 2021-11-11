@@ -36,18 +36,21 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     <>
       <Card sx={{ p: 3, my: 2 }}>
         <Typography color="textPrimary" variant="h6">
-          달인의 내용을 입력해주세요.
+          {mode === 'edit'
+            ? '수정할 내용을 입력해주세요.'
+            : '생성할 내용을 입력해주세요.'}
         </Typography>
         <Box sx={{ my: 2 }}>
           {users.length > 0 && (
             <TextField
               select
+              disabled={mode === 'edit' ? true : false}
               fullWidth
               label={'유저 선택'}
               name="user"
               SelectProps={{ native: true }}
               variant="outlined"
-              value={cpCreateState.newCpMaster.user.id}
+              value={cpCreateState.newCpMaster.user}
               onChange={(e) => {
                 dispatch({
                   type: CpMasterCreateActionKind.CHANGE_INPUT,
@@ -175,7 +178,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               variant="contained"
               onClick={createCpMaster}
               component={RouterLink}
-              to={`/dashboard/cp`}
+              to="/dashboard/cp/confirm"
             >
               {mode === 'edit' ? '수정' : '생성'}
             </Button>

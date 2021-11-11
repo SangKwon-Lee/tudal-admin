@@ -51,18 +51,21 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
     <>
       <Card sx={{ p: 3, my: 2 }}>
         <Typography color="textPrimary" variant="h6">
-          히든 리포터의 내용을 입력해주세요.
+          {mode === 'edit'
+            ? '리포터의 수정할 내용을 입력해주세요.'
+            : '리포터의 생성할 내용을 입력해주세요.'}
         </Typography>
         <Box sx={{ my: 2 }}>
           {users.length > 0 && (
             <TextField
               select
+              disabled={mode === 'edit' ? true : false}
               fullWidth
               label={'유저 선택'}
               name="user"
               SelectProps={{ native: true }}
               variant="outlined"
-              value={cpCreateState.newCpReporter.user.id}
+              value={cpCreateState.newCpReporter.user}
               onChange={(e) => {
                 dispatch({
                   type: CpReporterCreateActionKind.CHANGE_INPUT,
@@ -207,7 +210,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <img
               style={{ width: '100%' }}
               alt={''}
-              src={newCpReporter.profileImageUrl}
+              src={newCpReporter.imageUrl}
             />
           </Box>
           <Box
@@ -231,7 +234,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               variant="contained"
               onClick={createCpReporter}
               component={RouterLink}
-              to={`/dashboard/cp`}
+              to="/dashboard/cp/confirm"
             >
               {mode === 'edit' ? '수정' : '생성'}
             </Button>

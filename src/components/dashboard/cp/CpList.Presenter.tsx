@@ -40,6 +40,21 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
   const { loading, cpList } = cpListState;
   return (
     <>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'end',
+          my: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          component={RouterLink}
+          to={`/dashboard/cp/create`}
+        >
+          CP 계정 생성
+        </Button>
+      </Box>
       <Card sx={{ my: 2 }}>
         {loading && <LinearProgress />}
         <Divider />
@@ -178,7 +193,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                           )}`}
                         </TableCell>
                         <TableCell>
-                          {cp.master ? (
+                          {cp.master?.id ? (
                             <Button
                               variant="outlined"
                               component={RouterLink}
@@ -187,17 +202,18 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               달인
                             </Button>
                           ) : (
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
-                              sx={{ pl: 2.4 }}
+                            <Button
+                              variant="outlined"
+                              color="inherit"
+                              component={RouterLink}
+                              to="/dashboard/cp/createMaster"
                             >
-                              없음
-                            </Typography>
+                              생성
+                            </Button>
                           )}
                         </TableCell>
                         <TableCell>
-                          {cp.hidden_reporter ? (
+                          {cp.hidden_reporter?.id ? (
                             <Button
                               variant="outlined"
                               component={RouterLink}
@@ -206,12 +222,14 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               히든 리포터
                             </Button>
                           ) : (
-                            <Typography
-                              color="textSecondary"
-                              variant="body2"
+                            <Button
+                              color="inherit"
+                              variant="outlined"
+                              component={RouterLink}
+                              to="/dashboard/cp/createReporter"
                             >
-                              없음
-                            </Typography>
+                              생성
+                            </Button>
                           )}
                         </TableCell>
                       </TableRow>

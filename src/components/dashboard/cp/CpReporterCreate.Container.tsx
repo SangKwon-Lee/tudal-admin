@@ -33,7 +33,7 @@ const initialState: CpReporterCreateState = {
     nickname: '',
     intro: '',
     user: 0,
-    profileImageUrl: '',
+    imageUrl: '',
     tudalRecommendScore: 3,
     catchPhrase: '',
   },
@@ -55,6 +55,7 @@ const CpReporterCreateReducer = (
       return {
         ...state,
         users: payload,
+        loading: false,
       };
     case CpReporterCreateActionKind.CHANGE_INPUT:
       return {
@@ -69,7 +70,7 @@ const CpReporterCreateReducer = (
         ...state,
         newCpReporter: {
           ...state.newCpReporter,
-          profileImageUrl: payload,
+          imageUrl: payload,
         },
         loading: false,
       };
@@ -77,6 +78,7 @@ const CpReporterCreateReducer = (
       return {
         ...state,
         newCpReporter: payload,
+        loading: false,
       };
   }
 };
@@ -101,21 +103,21 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     });
     try {
       const { data, status } = await APICp.getReporter(reporterId);
+      let newData = {
+        ...data,
+        user: data.user.id,
+      };
+      console.log(newData);
       if (status === 200) {
         dispatch({
           type: CpReporterCreateActionKind.GET_REPORTER,
-          payload: data,
+          payload: newData,
         });
       }
-      dispatch({
-        type: CpReporterCreateActionKind.LOADING,
-        payload: false,
-      });
     } catch (error) {
       console.log(error);
     }
   }, [reporterId]);
-
   const getUsers = useCallback(async () => {
     dispatch({
       type: CpReporterCreateActionKind.LOADING,
@@ -125,19 +127,22 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     try {
       const { data, status } = await APICp.getUsers();
       if (status === 200) {
-        dispatch({
-          type: CpReporterCreateActionKind.GET_USERS,
-          payload: data,
-        });
-        dispatch({
-          type: CpReporterCreateActionKind.LOADING,
-          payload: false,
-        });
+        if (mode === 'edit') {
+          dispatch({
+            type: CpReporterCreateActionKind.GET_USERS,
+            payload: data,
+          });
+        } else {
+          dispatch({
+            type: CpReporterCreateActionKind.GET_USERS,
+            payload: data.filter((data) => !data.hidden_reporter),
+          });
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [mode]);
 
   //* 리포터 등록
   const createCpReporter = async () => {
@@ -160,6 +165,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       }
     } else {
       try {
+        console.log(newInput, '수정');
         const { status } = await APICp.putReporter(
           reporterId,
           newInput,
@@ -192,7 +198,6 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       return false;
     }
   };
-
   useEffect(() => {
     getUsers();
     if (reporterId) {

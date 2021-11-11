@@ -2,6 +2,7 @@ import axios from 'src/lib/axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
 
+//* 유저 관련
 export const getUsers = () => {
   return axios.get(`/users`);
 };
@@ -16,6 +17,7 @@ export const getCpUsersLegnth = (params, filter) => {
   return axios.get(`/users/count?${query}&${filter}`);
 };
 
+//* 달인
 export const postMaster = (input) => {
   return axios.post(`/masters`, input);
 };
@@ -24,12 +26,13 @@ export const putMaster = (masterId, input) => {
   return axios.put(`/masters/${masterId}`, input);
 };
 
-export const postReporter = (input) => {
-  return axios.post(`/hidden-reporters`, input);
-};
-
 export const getMaster = (masterId) => {
   return axios.get(`masters/${masterId}`);
+};
+
+//* 히든 리포터
+export const postReporter = (input) => {
+  return axios.post(`/hidden-reporters`, input);
 };
 
 export const getReporter = (reporterId) => {
@@ -38,4 +41,10 @@ export const getReporter = (reporterId) => {
 
 export const putReporter = (reporterId, input) => {
   return axios.put(`/hidden-reporters/${reporterId}`, input);
+};
+
+//* cp 계정
+
+export const postCp = (input) => {
+  return axios.post(`/users`, input);
 };

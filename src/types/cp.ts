@@ -12,7 +12,7 @@ export interface CP_Hidden_Reporter {
   id?: number | string;
   nickname: string;
   intro: string;
-  profileImageUrl: string;
+  imageUrl: string;
   tudalRecommendScore?: number;
   catchPhrase: string;
   user: any;
