@@ -5,6 +5,7 @@ import {
   TextField,
   Button,
   LinearProgress,
+  Autocomplete,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -12,6 +13,21 @@ import {
   CpReporterCreateActionKind,
   CpReporterCreateState,
 } from './CpReporterCreate.Container';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useEffect } from 'react';
+import { CP_Hidden_Reporter } from 'src/types/cp';
+
+const schema = yup
+  .object({
+    user: yup.string().required(),
+    nickname: yup.string().required(),
+    catchPhrase: yup.string().required(),
+    intro: yup.string().required(),
+    tudalRecommendScore: yup.number().required(),
+  })
+  .required();
 
 const tudalRecommendScoreOption = [
   {
@@ -32,7 +48,7 @@ interface CpReporterCreateProps {
   dispatch: (params: CpReporterCreateAction) => void;
   cpCreateState: CpReporterCreateState;
   mode: string;
-  createCpReporter: () => Promise<void>;
+  createCpReporter: (data: CP_Hidden_Reporter) => Promise<void>;
   onChangeImgae: (event: any) => Promise<boolean>;
 }
 
@@ -47,200 +63,183 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
     onChangeImgae,
   } = props;
   const { newCpReporter, loading, users } = cpCreateState;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+  } = useForm<CP_Hidden_Reporter>({
+    defaultValues: newCpReporter,
+    resolver: yupResolver(schema),
+  });
+
+  useEffect(() => {
+    reset(newCpReporter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reset, newCpReporter.id]);
+
+  useEffect(() => {
+    register('user', {
+      validate: (value) => {
+        return value;
+      },
+    });
+  }, [register]);
+
   return (
     <>
-      <Card sx={{ p: 3, my: 2 }}>
-        <Typography color="textPrimary" variant="h6">
-          {mode === 'edit'
-            ? '리포터의 수정할 내용을 입력해주세요.'
-            : '리포터의 생성할 내용을 입력해주세요.'}
-        </Typography>
-        <Box sx={{ my: 2 }}>
-          {users.length > 0 && (
-            <TextField
-              select
-              disabled={mode === 'edit' ? true : false}
-              fullWidth
-              label={'유저 선택'}
-              name="user"
-              SelectProps={{ native: true }}
-              variant="outlined"
-              value={cpCreateState.newCpReporter.user}
-              onChange={(e) => {
-                dispatch({
-                  type: CpReporterCreateActionKind.CHANGE_INPUT,
-                  payload: e,
-                });
-              }}
-            >
-              {users.length > 0 &&
-                users.map((data) => (
-                  <option key={data.id} value={data.id}>
-                    {data.username}
-                  </option>
-                ))}
-            </TextField>
-          )}
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="닉네임"
-            name="nickname"
-            onChange={(e) => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_INPUT,
-                payload: e,
-              });
-            }}
-            value={newCpReporter.nickname}
-            variant="outlined"
-          />
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            multiline
-            name="catchPhrase"
-            label="Catchphrase"
-            value={newCpReporter.catchPhrase}
-            onChange={(e) => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_INPUT,
-                payload: e,
-              });
-            }}
-            variant="outlined"
-            helperText="줄 바꾸기 enter"
-          />
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            multiline
-            name="intro"
-            label="리포터 소개 글"
-            value={newCpReporter.intro}
-            onChange={(e) => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_INPUT,
-                payload: e,
-              });
-            }}
-            variant="outlined"
-            helperText="줄 바꾸기 enter"
-          />
-        </Box>
-        {/* <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            name="keyword"
-            label="단기, 삼성전자, 트랜드, ETF"
-            value={newCpReporter.keyword}
-            onChange={(e) => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_INPUT,
-                payload: e,
-              });
-            }}
-            variant="outlined"
-            helperText="쉼표(,)로 구분해주세요."
-          />
-        </Box> */}
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            select
-            name="tudalRecommendScore"
-            label="추천 우선 순위"
-            SelectProps={{ native: true }}
-            value={newCpReporter.tudalRecommendScore}
-            onChange={(e) => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_INPUT,
-                payload: e,
-              });
-            }}
-            variant="outlined"
-            helperText="1단계가 가장 높은 우선순위입니다."
-          >
-            {tudalRecommendScoreOption.map((data) => (
-              <option key={data.value} value={data.value}>
-                {data.title}
-              </option>
-            ))}
-          </TextField>
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <Typography sx={{ my: 2 }}>프로필 이미지 등록</Typography>
-          <input
-            id="image"
-            name="image"
-            accept="image/*"
-            type="file"
-            onChange={onChangeImgae}
-          />
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              dispatch({
-                type: CpReporterCreateActionKind.CHANGE_IMAGE,
-                payload: null,
-              });
-            }}
-          >
-            이미지 삭제
-          </Button>
-          <Typography
-            color="textSecondary"
-            variant="subtitle2"
-            sx={{ mt: 1 }}
-          >
-            파일 이름이 너무 길 경우 오류가 생길 수 있습니다. (15자
-            내외)
+      <form onSubmit={handleSubmit(createCpReporter)}>
+        <Card sx={{ p: 3, my: 2 }}>
+          <Typography color="textPrimary" variant="h6">
+            {mode === 'edit'
+              ? '리포터의 수정할 내용을 입력해주세요.'
+              : '리포터의 생성할 내용을 입력해주세요.'}
           </Typography>
-          <Box>
-            <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
-            {loading && (
-              <div data-testid="news-list-loading">
-                <LinearProgress />
-              </div>
-            )}
-            <img
-              style={{ width: '100%' }}
-              alt={''}
-              src={newCpReporter.imageUrl}
+          <Box sx={{ my: 2 }}>
+            <Typography variant="subtitle1" sx={{ my: 1 }}>
+              유저 선택
+            </Typography>
+            <Autocomplete
+              {...register('user')}
+              fullWidth
+              disabled={newCpReporter.id ? true : false}
+              autoHighlight
+              options={users}
+              onChange={(e, options, reason, item) =>
+                setValue('user', item.option.id)
+              }
+              getOptionLabel={(users) => users.username}
+              renderInput={(params) => (
+                <TextField {...params} fullWidth variant="outlined" />
+              )}
             />
           </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              mt: 6,
-            }}
-          >
-            <Button
-              color="primary"
-              size="large"
-              variant="text"
-              component={RouterLink}
-              to={`/dashboard/cp`}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ my: 1 }}>
+              닉네임
+            </Typography>
+            <TextField
+              {...register('nickname')}
+              fullWidth
+              variant="outlined"
+              error={errors.nickname ? true : false}
+              helperText={'닉네임은 필수입니다.'}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ my: 1 }}>
+              캐치 프레이즈
+            </Typography>
+            <TextField
+              {...register('catchPhrase')}
+              fullWidth
+              multiline
+              variant="outlined"
+              error={errors.catchPhrase ? true : false}
+              helperText={'캐치 프레이즈는 필수입니다.'}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ my: 1 }}>
+              소개글
+            </Typography>
+            <TextField
+              {...register('intro')}
+              fullWidth
+              multiline
+              variant="outlined"
+              error={errors.intro ? true : false}
+              helperText="줄 바꾸기 enter (필수 사항)"
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ my: 1 }}>
+              추천 순위
+            </Typography>
+            <TextField
+              {...register('tudalRecommendScore')}
+              fullWidth
+              select
+              SelectProps={{ native: true }}
+              variant="outlined"
+              error={errors.tudalRecommendScore ? true : false}
+              helperText="1단계가 가장 높은 우선순위입니다."
             >
-              이전
-            </Button>
-            <Box sx={{ flexGrow: 1 }} />
+              {tudalRecommendScoreOption.map((data) => (
+                <option key={data.value} value={data.value}>
+                  {data.title}
+                </option>
+              ))}
+            </TextField>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={{ my: 2 }}>프로필 이미지 등록</Typography>
+            <TextField
+              name="imageUrl"
+              type="file"
+              onChange={onChangeImgae}
+            />
             <Button
               color="primary"
               variant="contained"
-              onClick={createCpReporter}
-              component={RouterLink}
-              to="/dashboard/cp/confirm"
+              onClick={() => {
+                dispatch({
+                  type: CpReporterCreateActionKind.CHANGE_IMAGE,
+                  payload: null,
+                });
+              }}
             >
-              {mode === 'edit' ? '수정' : '생성'}
+              이미지 삭제
             </Button>
+            <Typography
+              color="textSecondary"
+              variant="subtitle2"
+              sx={{ mt: 1 }}
+            >
+              파일 이름이 너무 길 경우 오류가 생길 수 있습니다. (15자
+              내외)
+            </Typography>
+            <Box>
+              <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
+              {loading && (
+                <div data-testid="news-list-loading">
+                  <LinearProgress />
+                </div>
+              )}
+              <img
+                style={{ width: '100%' }}
+                alt={''}
+                src={newCpReporter.imageUrl}
+              />
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                mt: 6,
+              }}
+            >
+              <Button
+                color="primary"
+                size="large"
+                variant="text"
+                component={RouterLink}
+                to={`/dashboard/cp`}
+              >
+                이전
+              </Button>
+              <Box sx={{ flexGrow: 1 }} />
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+              >
+                {mode === 'edit' ? '수정' : '생성'}
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Card>
+        </Card>
+      </form>
     </>
   );
 };

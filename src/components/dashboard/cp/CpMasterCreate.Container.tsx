@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
 import { CP_Master } from 'src/types/cp';
-import { User } from 'src/types/user';
+import { IUser } from 'src/types/user';
 import CpMasterCreatePresenter from './CpMasterCreate.Presenter';
 import { bucket_hiddenbox } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
@@ -11,7 +11,7 @@ export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
   GET_MASTER = 'GET_MASTER',
-  CHANGE_INPUT = 'CHANGE_INPUT',
+  GET_USER_ID = 'GET_USER_ID',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
 }
 
@@ -23,7 +23,8 @@ export interface CpMasterCreateAction {
 export interface CpMasterCreateState {
   loading: boolean;
   newCpMaster: CP_Master;
-  users: User[];
+  users: IUser[];
+  userId: number;
 }
 
 const initialState: CpMasterCreateState = {
@@ -32,10 +33,11 @@ const initialState: CpMasterCreateState = {
     nickname: '',
     intro: '',
     keyword: '',
-    user: 0,
+    user: 1,
     profile_image_url: '',
   },
   users: [],
+  userId: 0,
 };
 
 const CpMasterCreateReducer = (
@@ -55,14 +57,6 @@ const CpMasterCreateReducer = (
         users: payload,
         loading: false,
       };
-    case CpMasterCreateActionKind.CHANGE_INPUT:
-      return {
-        ...state,
-        newCpMaster: {
-          ...state.newCpMaster,
-          [payload.target.name]: payload.target.value,
-        },
-      };
     case CpMasterCreateActionKind.CHANGE_IMAGE:
       return {
         ...state,
@@ -78,6 +72,11 @@ const CpMasterCreateReducer = (
         newCpMaster: payload,
         loading: false,
       };
+    case CpMasterCreateActionKind.GET_USER_ID:
+      return {
+        ...state,
+        userId: payload,
+      };
   }
 };
 
@@ -89,11 +88,13 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 ) => {
   const { masterId } = useParams();
   const mode = props.mode || 'create';
+  const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
     CpMasterCreateReducer,
     initialState,
   );
 
+  //* 기존 데이터 불러오기
   const getCpMaster = useCallback(async () => {
     dispatch({
       type: CpMasterCreateActionKind.LOADING,
@@ -103,12 +104,16 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       const { data, status } = await APICp.getMaster(masterId);
       let newData = {
         ...data,
-        user: data.user.id,
+        user: data.user.username,
       };
       if (status === 200) {
         dispatch({
           type: CpMasterCreateActionKind.GET_MASTER,
           payload: newData,
+        });
+        dispatch({
+          type: CpMasterCreateActionKind.GET_USER_ID,
+          payload: data.user.id,
         });
       }
     } catch (error) {
@@ -116,6 +121,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     }
   }, [masterId]);
 
+  //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
     dispatch({
       type: CpMasterCreateActionKind.LOADING,
@@ -142,25 +148,49 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   }, [mode]);
 
   //* cp 등록
-  const createCpMaster = async () => {
-    const newInput = {
-      ...cpCreateState.newCpMaster,
-      keyword: cpCreateState.newCpMaster.keyword.trim(),
-    };
+  const createCpMaster = async (data: CP_Master) => {
     if (mode === 'create') {
+      const newInput = {
+        ...data,
+        keyword: data.keyword.trim(),
+        profile_image_url:
+          cpCreateState.newCpMaster.profile_image_url,
+      };
       try {
-        const { status } = await APICp.postMaster(newInput);
+        const { status, data } = await APICp.postMaster(newInput);
         if (status === 200) {
-          toast.success('새로운 달인이 만들어졌습니다.');
+          const input = {
+            master: data.id,
+            name: data.nickname,
+          };
+          try {
+            const { status: chnnelSattus } =
+              await APICp.postMasterChannel(input);
+            if (chnnelSattus === 200) {
+              toast.success('새로운 달인이 만들어졌습니다.');
+              navigate('/dashboard/cp');
+            }
+          } catch (error) {
+            toast.error('오류가 발생했습니다.');
+            console.log(error);
+          }
         }
       } catch (error) {
         toast.error('오류가 발생했습니다.');
         console.log(error);
       }
     } else {
+      const newInput = {
+        ...data,
+        keyword: data.keyword.trim(),
+        profile_image_url:
+          cpCreateState.newCpMaster.profile_image_url,
+        user: cpCreateState.userId,
+      };
       try {
         const { status } = await APICp.putMaster(masterId, newInput);
         if (status === 200) {
+          navigate('/dashboard/cp');
           toast.success('달인이 수정됐습니다.');
         }
       } catch (error) {

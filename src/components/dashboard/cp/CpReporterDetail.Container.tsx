@@ -56,6 +56,7 @@ const CpReporterDetailContainer = () => {
     initialState,
   );
 
+  //* 디테일 정보 불러오기
   const getCpReporterDetail = useCallback(async () => {
     dispatch({
       type: CpReporterDetailActionKind.LOADING,

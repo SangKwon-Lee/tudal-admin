@@ -5,8 +5,8 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 const CpReporterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
-  const { masterId } = useParams();
-  const mode = masterId ? 'edit' : 'create';
+  const { reporterId } = useParams();
+  const mode = reporterId ? 'edit' : 'create';
   return (
     <>
       <PageLayout

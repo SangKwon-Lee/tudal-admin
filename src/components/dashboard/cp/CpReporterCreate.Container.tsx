@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
 import { CP_Hidden_Reporter } from 'src/types/cp';
-import { User } from 'src/types/user';
+import { IUser } from 'src/types/user';
 import CpReporterCreatePresenter from './CpReporterCreate.Presenter';
 import { bucket_hiddenbox } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
@@ -12,7 +12,7 @@ export enum CpReporterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
   GET_REPORTER = 'GET_REPORTER',
-  CHANGE_INPUT = 'CHANGE_INPUT',
+  GET_USER_ID = 'GET_USER_ID',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
 }
 
@@ -24,7 +24,8 @@ export interface CpReporterCreateAction {
 export interface CpReporterCreateState {
   loading: boolean;
   newCpReporter: CP_Hidden_Reporter;
-  users: User[];
+  users: IUser[];
+  userId: number;
 }
 
 const initialState: CpReporterCreateState = {
@@ -32,12 +33,13 @@ const initialState: CpReporterCreateState = {
   newCpReporter: {
     nickname: '',
     intro: '',
-    user: 0,
+    user: 1,
     imageUrl: '',
     tudalRecommendScore: 3,
     catchPhrase: '',
   },
   users: [],
+  userId: 0,
 };
 
 const CpReporterCreateReducer = (
@@ -57,14 +59,6 @@ const CpReporterCreateReducer = (
         users: payload,
         loading: false,
       };
-    case CpReporterCreateActionKind.CHANGE_INPUT:
-      return {
-        ...state,
-        newCpReporter: {
-          ...state.newCpReporter,
-          [payload.target.name]: payload.target.value,
-        },
-      };
     case CpReporterCreateActionKind.CHANGE_IMAGE:
       return {
         ...state,
@@ -80,6 +74,11 @@ const CpReporterCreateReducer = (
         newCpReporter: payload,
         loading: false,
       };
+    case CpReporterCreateActionKind.GET_USER_ID:
+      return {
+        ...state,
+        userId: payload,
+      };
   }
 };
 
@@ -91,11 +90,13 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
 ) => {
   const { reporterId } = useParams();
   const mode = props.mode || 'create';
+  const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
     CpReporterCreateReducer,
     initialState,
   );
 
+  //* 기존 리포터 데이터 불러오기
   const getCpReporter = useCallback(async () => {
     dispatch({
       type: CpReporterCreateActionKind.LOADING,
@@ -105,19 +106,24 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       const { data, status } = await APICp.getReporter(reporterId);
       let newData = {
         ...data,
-        user: data.user.id,
+        user: data.user.username,
       };
-      console.log(newData);
       if (status === 200) {
         dispatch({
           type: CpReporterCreateActionKind.GET_REPORTER,
           payload: newData,
+        });
+        dispatch({
+          type: CpReporterCreateActionKind.GET_USER_ID,
+          payload: data.user.id,
         });
       }
     } catch (error) {
       console.log(error);
     }
   }, [reporterId]);
+
+  //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
     dispatch({
       type: CpReporterCreateActionKind.LOADING,
@@ -145,19 +151,19 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   }, [mode]);
 
   //* 리포터 등록
-  const createCpReporter = async () => {
-    const newInput = {
-      ...cpCreateState.newCpReporter,
-      // keyword: cpCreateState.newCpReporter.keyword.trim(),
-      tudalRecommendScore: Number(
-        cpCreateState.newCpReporter.tudalRecommendScore,
-      ),
-    };
+  const createCpReporter = async (data: CP_Hidden_Reporter) => {
     if (mode === 'create') {
+      const newInput = {
+        ...data,
+        // keyword: cpCreateState.newCpReporter.keyword.trim(),
+        tudalRecommendScore: Number(data.tudalRecommendScore),
+        imageUrl: cpCreateState.newCpReporter.imageUrl,
+      };
       try {
         const { status } = await APICp.postReporter(newInput);
         if (status === 200) {
           toast.success('새로운 히든 리포터가 만들어졌습니다.');
+          navigate('/dashboard/cp');
         }
       } catch (error) {
         toast.error('오류가 발생했습니다.');
@@ -165,13 +171,20 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       }
     } else {
       try {
-        console.log(newInput, '수정');
+        const newInput = {
+          ...data,
+          // keyword: cpCreateState.newCpReporter.keyword.trim(),
+          tudalRecommendScore: Number(data.tudalRecommendScore),
+          imageUrl: cpCreateState.newCpReporter.imageUrl,
+          user: cpCreateState.userId,
+        };
         const { status } = await APICp.putReporter(
           reporterId,
           newInput,
         );
         if (status === 200) {
           toast.success('히든 리포터가 수정됐습니다.');
+          navigate('/dashboard/cp');
         }
       } catch (error) {
         toast.error('오류가 발생했습니다.');
@@ -198,6 +211,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       return false;
     }
   };
+
   useEffect(() => {
     getUsers();
     if (reporterId) {

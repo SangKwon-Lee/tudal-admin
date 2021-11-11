@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { APICp } from 'src/lib/api';
-import { User } from 'src/types/user';
+import { IUser } from 'src/types/user';
 import CpListPresenter from './CpList.Presenter';
 
 export enum CpListActionKind {
@@ -20,7 +20,7 @@ export interface CpListAction {
 export interface CpListState {
   loading: boolean;
   cpListLength: 0;
-  cpList: User[];
+  cpList: IUser[];
   page: number;
   query: {
     _start: number;
@@ -99,6 +99,7 @@ const CpListContainer = () => {
     initialState,
   );
 
+  //*유저 목록 불러오기
   const getUsers = useCallback(async () => {
     dispatch({ type: CpListActionKind.LOADING, payload: true });
     try {

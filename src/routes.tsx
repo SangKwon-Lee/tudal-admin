@@ -137,9 +137,6 @@ const CpReporterCreatePage = Loadable(
 const CpListPage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpList.Page')),
 );
-const CpCreateConfirmPage = Loadable(
-  lazy(() => import('./pages/dashboard/cp/CpCreateConfirm.page')),
-);
 const CpMasterDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpMasterDetail.Page')),
 );
@@ -426,10 +423,6 @@ const routes: PartialRouteObject[] = [
           {
             path: ':reporterId/edit/reporter',
             element: <CpReporterCreatePage />,
-          },
-          {
-            path: '/confirm',
-            element: <CpCreateConfirmPage />,
           },
           {
             path: ':masterId/master',

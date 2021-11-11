@@ -55,6 +55,7 @@ const CpMasterDetailContainer = () => {
     initialState,
   );
 
+  //* 디테일 정보 불러오기
   const getCpMasterDetail = useCallback(async () => {
     dispatch({
       type: CpMasterDetailActionKind.LOADING,

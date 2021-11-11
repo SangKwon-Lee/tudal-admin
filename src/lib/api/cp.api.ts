@@ -48,3 +48,8 @@ export const putReporter = (reporterId, input) => {
 export const postCp = (input) => {
   return axios.post(`/users`, input);
 };
+
+//* 달인 채널 생성
+export const postMasterChannel = (input) => {
+  return axios.post(`/master-channels`, input);
+};
