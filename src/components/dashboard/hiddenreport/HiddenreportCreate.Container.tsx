@@ -22,6 +22,7 @@ import { IHRImage } from 'src/types/hiddenreport';
 import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router';
 import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter';
+import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
 const AWS = require('aws-sdk');
 const region = 'ap-northeast-2';
 const bucket_name = 'tudal-popup-photo';
@@ -52,10 +53,10 @@ export enum HiddenReportCreateActionKind {
   CHANGE_INPUT = 'CHANGE_INPUT',
 
   // images
+  NEXT_PAGE = 'NEXT_PAGE',
   LOAD_IMAGES = 'LOAD_IMAGES',
   LOAD_MORE_IMAGES = 'LOAD_MORE_IMAGES',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
-  LOAD_MORE_IMAGE = 'LOAD_MORE_IMAGE',
   CHANGE_SEARCH = 'CHANGE_SEARCH',
 }
 export interface HiddenReportCreateAction {
@@ -151,7 +152,11 @@ const HiddenReportCreateReducer = (
         ...state,
         newReport: {
           ...state.newReport,
-          hidden_report_image: payload,
+          hidden_report_image:
+            Number(state.newReport.hidden_report_image?.id) ===
+            Number(payload.id)
+              ? {}
+              : payload,
         },
       };
     case HiddenReportCreateActionKind.CHANGE_STOCKS:
@@ -163,6 +168,7 @@ const HiddenReportCreateReducer = (
         },
       };
     case HiddenReportCreateActionKind.CHANGE_TAGS:
+      console.log('here', payload);
       return {
         ...state,
         newReport: {
@@ -170,7 +176,7 @@ const HiddenReportCreateReducer = (
           tags: payload,
         },
       };
-    case HiddenReportCreateActionKind.LOAD_MORE_IMAGE:
+    case HiddenReportCreateActionKind.NEXT_PAGE:
       return {
         ...state,
         image: {
@@ -223,7 +229,7 @@ const HiddenReportCreateReducer = (
 const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
     const { mode, reportId, pageTopRef } = props;
-    const [step, setStep] = useState<number>(2);
+    const [step, setStep] = useState<number>(1);
     const [reportCreateState, dispatch] = useReducer(
       HiddenReportCreateReducer,
       initialState,
@@ -270,8 +276,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       }
     };
 
-    //* 수정 모드일 때 데이터 불러오기
-
     //* 웹 에디터에 전달되는 Props
     const editorRef = useRef(null);
     const log = () => {
@@ -281,17 +285,18 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     };
 
     //* Submit
-    const onSubmitContentForm = async (data, e) => {
+    const onSubmitContentForm = (data, e) => {
       try {
         // PDF 등록
-
         const contents = log();
         const newReport: IHiddenReportForm = {
           ...data,
-          tags: tags.map((data) => data.id) || [],
-          stocks: stocks.map((data) => data.id) || [],
           contents,
+          stocks: reportCreateState.newReport.stocks,
+          tags: reportCreateState.newReport.tags,
         };
+
+        console.log('report', newReport);
 
         dispatch({
           type: HiddenReportCreateActionKind.GET_REPORT,
@@ -307,6 +312,13 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
 
     const onSubmit = async () => {
       let response: AxiosResponse;
+
+      const newReport = {
+        ...reportCreateState.newReport,
+        tags: tags.map((data) => data.id) || [],
+        stocks: stocks.map((data) => data.id) || [],
+      };
+
       if (mode === 'create') {
         response = await APIHR.create(newReport);
       } else {
@@ -394,7 +406,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         dispatch({
           type: HiddenReportCreateActionKind.LOADING,
         });
-        console.log('!!more !!!');
+
         const { data, status } = await APIHR.getImageList(
           image.query,
         );
@@ -492,6 +504,15 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
             reportCreateState={reportCreateState}
             dispatch={dispatch}
             getImages={getImages}
+            setStep={setStep}
+          />
+        );
+      case 3:
+        return (
+          <HiddenReportDetailViewPresenter
+            state={reportCreateState}
+            setStep={setStep}
+            onSubmit={onSubmit}
           />
         );
     }

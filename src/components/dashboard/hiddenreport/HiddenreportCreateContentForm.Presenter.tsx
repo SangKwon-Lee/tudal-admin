@@ -38,7 +38,7 @@ interface IHRContentFormProps {
   reportCreateState: HiddenReportCreateState;
   dispatch: (params: HiddenReportCreateAction) => void;
   editorRef: React.MutableRefObject<any>;
-  onSubmitContentForm: (data, e) => Promise<void>;
+  onSubmitContentForm: (data, e) => void;
 
   tagInput: React.MutableRefObject<any>;
   tagList: Tag[];

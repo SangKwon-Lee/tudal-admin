@@ -19,15 +19,19 @@ import {
   TextField,
   InputAdornment,
   Pagination,
+  Fab,
 } from '@material-ui/core';
+
 import blueGrey from '@material-ui/core/colors/blueGrey';
-import ArchiveIcon from '../../../icons/Archive';
-import DocumentTextIcon from '../../../icons/DocumentText';
-import DotsHorizontalIcon from '../../../icons/DotsHorizontal';
-import DownloadIcon from '../../../icons/Download';
-import PencilAltIcon from '../../../icons/PencilAlt';
-import TrashIcon from '../../../icons/Trash';
-import SearchIcon from '../../../icons/Search';
+import ArchiveIcon from 'src/icons/Archive';
+import DocumentTextIcon from 'src/icons/DocumentText';
+import DotsHorizontalIcon from 'src/icons/DotsHorizontal';
+import DownloadIcon from 'src/icons/Download';
+import PencilAltIcon from 'src/icons/PencilAlt';
+import TrashIcon from 'src/icons/Trash';
+import SearchIcon from 'src/icons/Search';
+import ArrowRightIcon from 'src/icons/ArrowRight';
+
 import * as _ from 'lodash';
 import {
   HiddenReportCreateAction,
@@ -41,9 +45,10 @@ interface HiddenReportCreateImageFormPresenterProps {
   reportCreateState: HiddenReportCreateState;
   dispatch: (params: HiddenReportCreateAction) => void;
   getImages: (query) => void;
+  setStep: (prev) => void;
 }
 const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresenterProps> =
-  ({ reportCreateState, dispatch, getImages }) => {
+  ({ reportCreateState, dispatch, setStep }) => {
     const { loading, image, newReport } = reportCreateState;
     const { isLoadMoreAvailable } = image;
 
@@ -75,7 +80,6 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
         if (loading) return;
 
         if (!isLoadMoreAvailable) {
-          console.log('showAlert', showAlert);
           showAlert.current &&
             toast.success('더이상 불러올 수 없습니다.');
           showAlert.current = false;
@@ -83,7 +87,7 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
         }
         if (target.isIntersecting) {
           dispatch({
-            type: HiddenReportCreateActionKind.LOAD_MORE_IMAGE,
+            type: HiddenReportCreateActionKind.NEXT_PAGE,
           });
         }
       },
@@ -103,188 +107,199 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
       if (loader.current) observer.observe(loader.current);
     }, [handleObserver]);
 
+    const handleStep = () => {
+      setStep((prev) => prev + 1);
+    };
+
     return (
       <>
-        <>
+        <Box
+          sx={{
+            display: 'flex',
+            m: -1,
+            p: 2,
+          }}
+        >
           <Box
             sx={{
-              display: 'flex',
-              m: -1,
-              p: 2,
+              m: 1,
+              maxWidth: '100%',
+              width: 500,
             }}
           >
-            <Box
-              sx={{
-                m: 1,
-                maxWidth: '100%',
-                width: 500,
+            <TextField
+              fullWidth
+              InputProps={{
+                id: 'search',
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
               }}
-            >
-              <TextField
-                fullWidth
-                InputProps={{
-                  id: 'search',
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-                name="_q"
-                placeholder="검색"
-                variant="outlined"
-                onChange={onChangeSearch}
-              />
-            </Box>
+              name="_q"
+              placeholder="검색"
+              variant="outlined"
+              onChange={onChangeSearch}
+            />
           </Box>
-          <Box
-            sx={{
-              backgroundColor: 'background.default',
-              display: 'flex',
-              justifyContent: 'center',
-              minHeight: '100%',
-              p: 3,
-            }}
-          >
-            <Grid container spacing={3}>
-              {image.list.map((image) => {
-                const isSelected =
-                  newReport.hidden_report_image?.id === image.id;
-                return (
-                  <Grid item key={image.id} md={4} xs={12}>
-                    <Card
-                      style={{
-                        border: `${
-                          isSelected
-                            ? '3px solid rgb(69,76,199)'
-                            : 'none'
-                        }`,
-                        boxShadow: 'none',
-                      }}
-                      onClick={() => {
-                        dispatch({
-                          type: HiddenReportCreateActionKind.CHANGE_IMAGE,
-                          payload: image,
-                        });
+        </Box>
+        <Box
+          sx={{
+            backgroundColor: 'background.default',
+            display: 'flex',
+            justifyContent: 'center',
+            minHeight: '100%',
+            p: 3,
+          }}
+        >
+          <Grid container spacing={3}>
+            {image.list.map((image) => {
+              const isSelected =
+                newReport.hidden_report_image?.id === image.id;
+              return (
+                <Grid item key={image.id} md={4} xs={12}>
+                  <Card
+                    style={{
+                      border: `${
+                        isSelected
+                          ? '3px solid rgb(69,76,199)'
+                          : 'none'
+                      }`,
+                      boxShadow: 'none',
+                    }}
+                    onClick={() => {
+                      dispatch({
+                        type: HiddenReportCreateActionKind.CHANGE_IMAGE,
+                        payload: image,
+                      });
+                    }}
+                  >
+                    {true ? (
+                      <CardMedia
+                        image={image.thumbnailImageUrl}
+                        component="img"
+                        src={image.thumbnailImageUrl}
+                        sx={{
+                          backgroundColor: 'background.default',
+                          height: 200,
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          alignItems: 'center',
+                          backgroundColor: blueGrey['50'],
+                          color: '#000000',
+                          display: 'flex',
+                          height: 140,
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <DocumentTextIcon fontSize="large" />
+                      </Box>
+                    )}
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      {true ? (
-                        <CardMedia
-                          image={image.thumbnailImageUrl}
-                          component="img"
-                          src={image.thumbnailImageUrl}
-                          sx={{
-                            backgroundColor: 'background.default',
-                            height: 200,
-                          }}
-                        />
-                      ) : (
-                        <Box
-                          sx={{
-                            alignItems: 'center',
-                            backgroundColor: blueGrey['50'],
-                            color: '#000000',
-                            display: 'flex',
-                            height: 140,
-                            justifyContent: 'center',
-                          }}
+                      <div>
+                        <Typography
+                          color="textPrimary"
+                          variant="subtitle2"
                         >
-                          <DocumentTextIcon fontSize="large" />
-                        </Box>
-                      )}
-                      <CardContent
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <div>
-                          <Typography
-                            color="textPrimary"
-                            variant="subtitle2"
-                          >
-                            {image.id}
-                          </Typography>
-                          <Typography
-                            color="textSecondary"
-                            variant="caption"
-                          >
-                            {/* {bytesToSize(image.size)} */}
-                          </Typography>
-                        </div>
-                        <div>
-                          <Tooltip title="More options">
-                            <IconButton
-                              edge="end"
-                              onClick={handleMenuOpen}
-                              ref={moreRef}
-                              size="small"
-                            >
-                              <DotsHorizontalIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </CardContent>
-                      <Divider />
-                      <CardActions>
-                        <Button
-                          color="primary"
-                          fullWidth
-                          startIcon={
-                            <DownloadIcon fontSize="small" />
-                          }
-                          variant="text"
+                          {image.id}
+                        </Typography>
+                        <Typography
+                          color="textSecondary"
+                          variant="caption"
                         >
-                          Download
-                        </Button>
-                      </CardActions>
-                      <Menu
-                        anchorEl={moreRef.current}
-                        anchorOrigin={{
-                          horizontal: 'left',
-                          vertical: 'top',
-                        }}
-                        elevation={1}
-                        onClose={handleMenuClose}
-                        open={openMenu}
-                        PaperProps={{
-                          sx: {
-                            maxWidth: '100%',
-                            width: 250,
-                          },
-                        }}
-                        transformOrigin={{
-                          horizontal: 'left',
-                          vertical: 'top',
-                        }}
+                          {/* {bytesToSize(image.size)} */}
+                        </Typography>
+                      </div>
+                      <div>
+                        <Tooltip title="More options">
+                          <IconButton
+                            edge="end"
+                            onClick={handleMenuOpen}
+                            ref={moreRef}
+                            size="small"
+                          >
+                            <DotsHorizontalIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </CardContent>
+                    <Divider />
+                    <CardActions>
+                      <Button
+                        color="primary"
+                        fullWidth
+                        startIcon={<DownloadIcon fontSize="small" />}
+                        variant="text"
                       >
-                        <MenuItem divider>
-                          <ListItemIcon>
-                            <PencilAltIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText primary="Rename" />
-                        </MenuItem>
-                        <MenuItem divider>
-                          <ListItemIcon>
-                            <TrashIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText primary="Delete" />
-                        </MenuItem>
-                        <MenuItem>
-                          <ListItemIcon>
-                            <ArchiveIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText primary="Archive" />
-                        </MenuItem>
-                      </Menu>
-                    </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
+                        Download
+                      </Button>
+                    </CardActions>
+                    <Menu
+                      anchorEl={moreRef.current}
+                      anchorOrigin={{
+                        horizontal: 'left',
+                        vertical: 'top',
+                      }}
+                      elevation={1}
+                      onClose={handleMenuClose}
+                      open={openMenu}
+                      PaperProps={{
+                        sx: {
+                          maxWidth: '100%',
+                          width: 250,
+                        },
+                      }}
+                      transformOrigin={{
+                        horizontal: 'left',
+                        vertical: 'top',
+                      }}
+                    >
+                      <MenuItem divider>
+                        <ListItemIcon>
+                          <PencilAltIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Rename" />
+                      </MenuItem>
+                      <MenuItem divider>
+                        <ListItemIcon>
+                          <TrashIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Delete" />
+                      </MenuItem>
+                      <MenuItem>
+                        <ListItemIcon>
+                          <ArchiveIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Archive" />
+                      </MenuItem>
+                    </Menu>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
+        {newReport.hidden_report_image?.id && (
+          <Box style={{ position: 'fixed', right: 10, bottom: 10 }}>
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={handleStep}
+            >
+              <ArrowRightIcon />
+            </Fab>
           </Box>
-          {!loading && image.list.length && <div ref={loader} />}
-        </>
+        )}
+        {!loading && image.list.length && <div ref={loader} />}
       </>
     );
   };
