@@ -103,6 +103,8 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
                 <TextField
                   disabled
                   multiline
+                  variant="standard"
+                  InputProps={{ disableUnderline: true }}
                   value={
                     reporter.intro
                       ? reporter.intro

@@ -44,7 +44,6 @@ export const putReporter = (reporterId, input) => {
 };
 
 //* cp 계정
-
 export const postCp = (input) => {
   return axios.post(`/users`, input);
 };

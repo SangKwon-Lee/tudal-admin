@@ -102,6 +102,8 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               <TableCell>
                 <TextField
                   disabled
+                  variant="standard"
+                  InputProps={{ disableUnderline: true }}
                   multiline
                   value={
                     master.intro

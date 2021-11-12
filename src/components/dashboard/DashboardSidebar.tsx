@@ -25,6 +25,7 @@ import ClipboardListList from 'src/icons/ClipboardList';
 import LockIcon from 'src/icons/Lock';
 import PlusIcon from 'src/icons/Plus';
 import SortDescendingIcon from 'src/icons/SortDescending';
+import HomeIcon from 'src/icons/Home';
 interface DashboardSidebarProps {
   onMobileClose: () => void;
   openMobile: boolean;
@@ -81,6 +82,11 @@ const sections = [
         path: '/dashboard/master',
         icon: <PencilIcon fontSize="small" />,
         children: [
+          {
+            title: '프로필',
+            path: '/dashboard/master/profile/:userId',
+            icon: <HomeIcon fontSize="small" />,
+          },
           {
             title: '리스트',
             path: '/dashboard/master',

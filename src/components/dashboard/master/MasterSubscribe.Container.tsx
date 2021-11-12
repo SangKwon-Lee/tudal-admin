@@ -94,13 +94,17 @@ const MasterSubscribeContainer = () => {
   const {
     user: { master },
   } = useAuth();
-  const masterId = master.id;
+
+  const masterId = master?.id && master.id;
+
   useEffect(() => {
-    getSubscribeCount(master.id);
-    getYear();
-    getThisMonth();
+    if (masterId && master.id) {
+      getSubscribeCount(master.id);
+      getYear();
+      getThisMonth();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [masterId]);
 
   //* 총 구독자 수, 이번 년도 구독자 데이터
   const getSubscribeCount = async (masterId) => {

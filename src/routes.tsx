@@ -85,6 +85,9 @@ const MasterRoomPage = Loadable(
 const MasterSubscribePage = Loadable(
   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
 );
+const MasterProfilePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterProfile.Page')),
+);
 
 //* 골드
 const GoldList = Loadable(
@@ -142,6 +145,12 @@ const CpMasterDetailPage = Loadable(
 );
 const CpReporterDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
+);
+
+// 히든 리포터
+
+const HrProfilePage = Loadable(
+  lazy(() => import('./pages/dashboard/HrProfile.Page')),
 );
 
 // Viewer pages
@@ -351,6 +360,14 @@ const routes: PartialRouteObject[] = [
           {
             path: 'subscribe',
             element: <MasterSubscribePage />,
+          },
+          {
+            path: '/profile/:userId',
+            element: <MasterProfilePage />,
+          },
+          {
+            path: '/profile/:userId/Hr',
+            element: <HrProfilePage />,
           },
         ],
       },
