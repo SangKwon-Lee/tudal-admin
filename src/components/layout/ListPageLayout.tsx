@@ -48,7 +48,7 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
   return (
     <>
       <Helmet>
-        <title>{pageTitle}| TUDAL Admin</title>
+        <title>{pageTitle} | TUDAL Admin</title>
       </Helmet>
 
       <Box

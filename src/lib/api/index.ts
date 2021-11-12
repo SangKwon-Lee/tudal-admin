@@ -10,4 +10,5 @@ export * as APIPopUp from './popup.api';
 export * as APIGold from './gold.api';
 export * as APIGroup from './group.api';
 export * as APIGroupComment from './groupComment.api';
+export * as APICp from './cp.api';
 export * as APIHR from './hiddenreport.api';

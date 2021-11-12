@@ -248,10 +248,12 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
 
   //* 채널 불러오는 useEffect
   useEffect(() => {
-    getMasterChannel();
-    getMasterRoom();
+    if (master?.id) {
+      getMasterChannel();
+      getMasterRoom();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [master]);
 
   //* 수정 시 기존 데이터 불러오기
   const getMaster = async () => {

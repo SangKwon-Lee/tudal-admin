@@ -1,3 +1,4 @@
+import { CP_Master, CP_Hidden_Reporter } from './cp';
 import { Hiddenbox } from './hiddenbox';
 import { Schedule } from './schedule';
 
@@ -33,4 +34,19 @@ export interface IUser {
   role: IRole;
   schedules: Schedule[];
   [key: string]: any;
+  master: CP_Master;
+  hidden_reporter: CP_Hidden_Reporter;
+  phone_number: string;
+  contact_email: string;
+}
+
+export interface UserInput {
+  username: string;
+  email: string;
+  password: string;
+  role: number;
+  nickname: string;
+  type: string;
+  contact_email: string;
+  phone_number: string;
 }

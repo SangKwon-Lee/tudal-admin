@@ -66,6 +66,7 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/Category.Page')),
 );
 
+//* 달인
 const MastersListPage = Loadable(
   lazy(() => import('./pages/dashboard/MastersList.Page')),
 );
@@ -84,6 +85,11 @@ const MasterRoomPage = Loadable(
 const MasterSubscribePage = Loadable(
   lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
 );
+const MasterProfilePage = Loadable(
+  lazy(() => import('./pages/dashboard/MasterProfile.Page')),
+);
+
+//* 골드
 const GoldList = Loadable(
   lazy(() => import('./pages/dashboard/GoldList.Page')),
 );
@@ -91,13 +97,15 @@ const GoldDetail = Loadable(
   lazy(() => import('./pages/dashboard/GoldDetail.Page')),
 );
 
+//* 쿠폰
 const CouponListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponList.Page')),
 );
-
 const CouponIssuedListPage = Loadable(
   lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
 );
+
+//* 팝업
 const PopUpCreatePage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
 );
@@ -111,8 +119,38 @@ const PopUpDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
 );
 
+//* 투달 그룹
 const GroupCommentCreatePage = Loadable(
   lazy(() => import('./pages/dashboard/GroupCommentCreate.page')),
+);
+const GroupListPage = Loadable(
+  lazy(() => import('./pages/dashboard/GroupList.Page')),
+);
+
+//* CP 관리
+const CpCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpCreate.Page')),
+);
+const CpMasterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpMasterCreate.Page')),
+);
+const CpReporterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpReporterCreate.Page')),
+);
+const CpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpList.Page')),
+);
+const CpMasterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpMasterDetail.Page')),
+);
+const CpReporterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
+);
+
+// 히든 리포터
+
+const HrProfilePage = Loadable(
+  lazy(() => import('./pages/dashboard/HrProfile.Page')),
 );
 
 // Viewer pages
@@ -391,6 +429,14 @@ const routes: PartialRouteObject[] = [
             path: 'subscribe',
             element: <MasterSubscribePage />,
           },
+          {
+            path: '/profile/:userId',
+            element: <MasterProfilePage />,
+          },
+          {
+            path: '/profile/:userId/Hr',
+            element: <HrProfilePage />,
+          },
         ],
       },
       {
@@ -437,6 +483,43 @@ const routes: PartialRouteObject[] = [
           {
             path: '/comments/:groupCommentId',
             element: <GroupCommentCreatePage />,
+          },
+        ],
+      },
+      {
+        path: 'cp',
+        children: [
+          {
+            path: '/create',
+            element: <CpCreatePage />,
+          },
+          {
+            path: '/createMaster',
+            element: <CpMasterCreatePage />,
+          },
+          {
+            path: '/createReporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: ':masterId/edit/master',
+            element: <CpMasterCreatePage />,
+          },
+          {
+            path: ':reporterId/edit/reporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: ':masterId/master',
+            element: <CpMasterDetailPage />,
+          },
+          {
+            path: ':reporterId/reporter',
+            element: <CpReporterDetailPage />,
+          },
+          {
+            path: '/',
+            element: <CpListPage />,
           },
         ],
       },

@@ -1,24 +1,10 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
-
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-const access_key = 'AKIAY53UECMD2OMWX4UR';
-const secret_key = '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';
+import { S3, bucket_hiddenbox } from '../common/conf/aws';
 var useDarkMode = window.matchMedia(
   '(prefers-color-scheme: dark)',
 ).matches;
-
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: access_key,
-    secretAccessKey: secret_key,
-  },
-});
-
-const bucket_name = 'hiddenbox-photo';
 
 const WebEditor = (props) => {
   const { editorRef, contents } = props;
@@ -52,7 +38,7 @@ const WebEditor = (props) => {
           try {
             // Koscom Cloud에 업로드하기!
             await S3.putObject({
-              Bucket: bucket_name,
+              Bucket: bucket_hiddenbox,
               Key: blobInfo.filename(),
               ACL: 'public-read',
               // ACL을 지우면 전체공개가 되지 않습니다.
@@ -80,7 +66,7 @@ const WebEditor = (props) => {
             try {
               // Koscom Cloud에 업로드하기!
               await S3.putObject({
-                Bucket: bucket_name,
+                Bucket: bucket_hiddenbox,
                 Key: imageName,
                 ACL: 'public-read',
                 // ACL을 지우면 전체공개가 되지 않습니다.
