@@ -9,6 +9,7 @@ const SchedulePage: React.FC = () => {
       mainTopic={'일정'}
       pageTitle={'일정 리스트'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <ScheduleContainer pageTopRef={pageTopRef} />
     </PageLayout>

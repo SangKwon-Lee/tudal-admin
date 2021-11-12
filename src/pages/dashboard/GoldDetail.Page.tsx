@@ -18,6 +18,7 @@ const GoldDetailPage: React.FC = () => {
       mainTopic={'골드'}
       pageTitle={'골드 상세'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <GoldDetailContainer userId={userId} handleUser={handleUser} />
     </PageLayout>

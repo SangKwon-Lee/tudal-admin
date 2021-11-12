@@ -9,6 +9,7 @@ const NewsPage: React.FC = () => {
       mainTopic={'그룹'}
       pageTitle={'그룹 리스트'}
       pageTopRef={pageTopRef}
+      hasCreateButton={false}
     >
       <GroupListContainer />
     </PageLayout>
