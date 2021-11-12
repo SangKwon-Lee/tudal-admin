@@ -319,15 +319,19 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         stocks: stocks.map((data) => data.id) || [],
       };
 
-      if (mode === 'create') {
-        response = await APIHR.create(newReport);
-      } else {
-        response = await APIHR.update(newReport);
-      }
+      try {
+        if (mode === 'create') {
+          response = await APIHR.create(newReport);
+        } else {
+          response = await APIHR.update(newReport);
+        }
 
-      if (response.status === 200) {
-        toast.success('등록되었습니다.');
-        navigate('/dashboard/hiddenreports');
+        if (response.status === 200) {
+          toast.success('등록되었습니다.');
+          navigate('/dashboard/hiddenreports');
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
