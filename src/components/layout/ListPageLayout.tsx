@@ -18,7 +18,7 @@ interface IPageLayoutProps {
   mainTopic: string;
   pageTitle: string;
   pageTopRef?: React.RefObject<HTMLDivElement>;
-  hasCreateButton: boolean;
+  hasCreateButton?: boolean;
   buttonName?: string;
   buttonClickLink?: string;
 }

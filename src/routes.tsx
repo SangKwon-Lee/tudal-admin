@@ -165,10 +165,6 @@ const NewsPage = Loadable(
   lazy(() => import('./pages/dashboard/News.Page')),
 );
 
-const GroupListPage = Loadable(
-  lazy(() => import('./pages/dashboard/GroupList.Page')),
-);
-
 const HiddenReportImageList = Loadable(
   lazy(
     () =>
