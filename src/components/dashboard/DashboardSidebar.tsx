@@ -6,10 +6,8 @@ import { Box, Divider, Drawer } from '@material-ui/core';
 import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChartPieIcon from '../../icons/ChartPie';
-import BriefcaseIcon from '../../icons/Briefcase';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import CalendarIcon from '../../icons/Calendar';
-import ShoppingBag from '../../icons/ShoppingBag';
 import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import Logo from '../common/Logo';
@@ -18,14 +16,13 @@ import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
 import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
-import CommentIcon from 'src/icons/DocumentText';
 import UsersIcon from 'src/icons/Users';
-import UserAddIcon from 'src/icons/UserAdd';
-import ClipboardListList from 'src/icons/ClipboardList';
-import LockIcon from 'src/icons/Lock';
-import PlusIcon from 'src/icons/Plus';
-import SortDescendingIcon from 'src/icons/SortDescending';
+import ChatAltIcon from 'src/icons/ChatAlt';
+import ImageIcon from 'src/icons/Image';
 import HomeIcon from 'src/icons/Home';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import SpellcheckIcon from '@material-ui/icons/Spellcheck';
+import CategoryIcon from '@material-ui/icons/Category';
 interface DashboardSidebarProps {
   onMobileClose: () => void;
   openMobile: boolean;
@@ -33,22 +30,12 @@ interface DashboardSidebarProps {
 
 const sections = [
   {
-    title: 'General',
+    title: 'Home',
     items: [
       {
-        title: 'Overview',
+        title: '홈',
         path: '/dashboard',
-        icon: <ChartSquareBarIcon fontSize="small" />,
-      },
-      {
-        title: '히든리포트 이미지',
-        path: '/dashboard/hiddenreports/images',
-        icon: <ChartSquareBarIcon fontSize="small" />,
-      },
-      {
-        title: '히든리포트',
-        path: '/dashboard/hiddenreports',
-        icon: <ChartSquareBarIcon fontSize="small" />,
+        icon: <HomeIcon fontSize="small" />,
       },
     ],
   },
@@ -63,66 +50,16 @@ const sections = [
           {
             title: 'CP 리스트',
             path: '/dashboard/cp',
-            icon: <UsersIcon fontSize="small" />,
           },
           {
             title: '달인 생성',
             path: '/dashboard/cp/createMaster',
-            icon: <UserAddIcon fontSize="small" />,
           },
           {
             title: '히든 리포터 생성',
             path: '/dashboard/cp/createReporter',
-            icon: <UserAddIcon fontSize="small" />,
           },
         ],
-      },
-    ],
-  },
-  {
-    title: 'Contents',
-    items: [
-      {
-        title: '히든박스',
-        path: '/dashboard/hiddenboxes',
-        icon: <StarIcon fontSize="small" />,
-      },
-      {
-        title: '달인',
-        path: '/dashboard/master',
-        icon: <PencilIcon fontSize="small" />,
-        children: [
-          {
-            title: '프로필',
-            path: '/dashboard/master/profile/:userId',
-            icon: <HomeIcon fontSize="small" />,
-          },
-          {
-            title: '리스트',
-            path: '/dashboard/master',
-            icon: <ClipboardListList fontSize="small" />,
-          },
-          {
-            title: '생성',
-            path: '/dashboard/master/new',
-            icon: <PlusIcon fontSize="small" />,
-          },
-          {
-            title: '방 관리',
-            path: '/dashboard/master/room',
-            icon: <LockIcon fontSize="small" />,
-          },
-          {
-            title: '구독현황',
-            path: '/dashboard/master/subscribe',
-            icon: <SortDescendingIcon fontSize="small" />,
-          },
-        ],
-      },
-      {
-        title: '그룹 코멘트',
-        path: '/dashboard/groups',
-        icon: <CommentIcon fontSize="small" />,
       },
     ],
   },
@@ -132,7 +69,7 @@ const sections = [
       {
         title: '골드',
         path: '/dashboard/gold',
-        icon: <CashIcon fontSize="small" />,
+        icon: <AttachMoneyIcon fontSize="small" />,
         children: [
           {
             title: '리스트',
@@ -147,27 +84,95 @@ const sections = [
       {
         title: '쿠폰',
         path: '/dashboard/coupons',
-        icon: <PencilIcon fontSize="small" />,
+        icon: <CashIcon fontSize="small" />,
+      },
+      // {
+      //   title: '팝업',
+      //   path: '/dashboard/popup',
+      //   icon: <PencilIcon fontSize="small" />,
+      //   children: [
+      //     {
+      //       title: '리스트',
+      //       path: '/dashboard/popup',
+      //     },
+      //     {
+      //       title: '생성',
+      //       path: '/dashboard/popup/new',
+      //     },
+      //   ],
+      // },
+    ],
+  },
+  {
+    title: 'Hiddenbox',
+    items: [
+      {
+        title: '히든박스',
+        path: '/dashboard/hiddenboxes',
+        icon: <StarIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
+    title: 'Hidden-Reporter',
+    items: [
+      {
+        title: '히든리포트',
+        path: '/dashboard/hiddenreports',
+        icon: <StarIcon fontSize="small" />,
+        children: [
+          {
+            title: '프로필',
+            path: '/dashboard/hiddenreports/profile',
+          },
+          {
+            title: '리스트',
+            path: '/dashboard/hiddenreports',
+          },
+        ],
       },
       {
-        title: '팝업',
-        path: '/dashboard/popup',
+        title: '히든리포트 이미지',
+        path: '/dashboard/hiddenreports/images',
+        icon: <ImageIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
+    title: 'Master',
+    items: [
+      {
+        title: '달인',
+        path: '/dashboard/master',
         icon: <PencilIcon fontSize="small" />,
         children: [
           {
+            title: '프로필',
+            path: '/dashboard/master/profile/:userId',
+          },
+          {
             title: '리스트',
-            path: '/dashboard/popup',
+            path: '/dashboard/master',
           },
           {
             title: '생성',
-            path: '/dashboard/popup/new',
+            path: '/dashboard/master/new',
+          },
+          {
+            title: '방 관리',
+            path: '/dashboard/master/room',
+          },
+          {
+            title: '구독현황',
+            path: '/dashboard/master/subscribe',
           },
         ],
       },
     ],
   },
+
   {
-    title: 'Management',
+    title: 'CMS',
     items: [
       {
         title: '일정',
@@ -177,7 +182,7 @@ const sections = [
       {
         title: '종목',
         path: '/dashboard/stocks',
-        icon: <ShoppingBag fontSize="small" />,
+        icon: <ChartSquareBarIcon fontSize="small" />,
       },
       {
         title: '뉴스',
@@ -187,12 +192,17 @@ const sections = [
       {
         title: '키워드',
         path: '/dashboard/keywords',
-        icon: <StarIcon fontSize="small" />,
+        icon: <SpellcheckIcon fontSize="small" />,
       },
       {
         title: '카테고리',
         path: '/dashboard/categories',
-        icon: <BriefcaseIcon fontSize="small" />,
+        icon: <CategoryIcon fontSize="small" />,
+      },
+      {
+        title: '그룹 코멘트',
+        path: '/dashboard/groups',
+        icon: <ChatAltIcon fontSize="small" />,
       },
     ],
   },
@@ -224,23 +234,44 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     handleFilterSection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
-
+  console.log(user);
   const handleFilterSection = () => {
     if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.type === 'cp') {
+    if (user.type === 'cp' && !user.master && !user.hidden_reporter) {
       const section = sections.filter((data) => {
-        return data.title === 'Contents' || data.title === 'General';
+        return data.title === 'Home';
+      });
+      setFilterSection(section);
+    }
+    if (user.type === 'cp' && user.master) {
+      const section = sections.filter((data) => {
+        return data.title === 'Master' || data.title === 'Home';
+      });
+      setFilterSection(section);
+    }
+    if (user.type === 'cp' && user.hidden_reporter) {
+      const section = sections.filter((data) => {
+        return (
+          data.title === 'Hidden-Reporter' || data.title === 'Home'
+        );
+      });
+      setFilterSection(section);
+    }
+    if (user.type === 'cp' && user.hidden_reporter && user.master) {
+      const section = sections.filter((data) => {
+        return (
+          data.title === 'Hidden-Reporter' ||
+          data.title === 'Home' ||
+          data.title === 'Master'
+        );
       });
       setFilterSection(section);
     }
     if (user.type === 'cms') {
       const section = sections.filter(
-        (data) =>
-          data.title === 'Management' ||
-          data.title === 'General' ||
-          data.title === 'Generator',
+        (data) => data.title === 'Home' || data.title === 'CMS',
       );
       setFilterSection(section);
     }
