@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import {
   Autocomplete,
   Box,
@@ -13,6 +13,7 @@ import {
   Typography,
   Select,
   MenuItem,
+  InputAdornment,
 } from '@material-ui/core';
 
 import '../../../lib/codemirror.css';
@@ -83,9 +84,9 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
     onPDFChange,
     onStockChange,
     onTagChange,
+    dispatch,
   } = props;
 
-  const { register, handleSubmit } = useForm<IHiddenReportForm>({
   const {
     register,
     handleSubmit,
