@@ -80,7 +80,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     >
       {({ setFieldValue }): JSX.Element => (
         <form>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 3, my: 3 }}>
             <Typography color="textPrimary" variant="h6">
               피드 내용을 입력해주세요.
             </Typography>

@@ -6,7 +6,8 @@ const HiddenReportListPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <PageLayout
-      mainTopic={'히든리포트'}
+      dashboard="히든 리포트"
+      mainTopic={'히든리포트 리스트'}
       pageTitle={'히든리포트 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={true}

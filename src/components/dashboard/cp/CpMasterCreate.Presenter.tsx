@@ -74,12 +74,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
   return (
     <>
       <form onSubmit={handleSubmit(createCpMaster)}>
-        <Card sx={{ p: 3, my: 2 }}>
-          <Typography color="textPrimary" variant="h6">
-            {mode === 'edit'
-              ? '수정할 내용을 입력해주세요.'
-              : '생성할 내용을 입력해주세요.'}
-          </Typography>
+        <Card sx={{ p: 3, my: 4, mx: '10%' }}>
           <Box sx={{ my: 2 }}>
             <Typography variant="subtitle1" sx={{ my: 1 }}>
               유저 선택
@@ -90,9 +85,12 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               disabled={newCpMaster.id ? true : false}
               autoHighlight
               options={users}
-              onChange={(e, options, reason, item) =>
-                setValue('user', item.option.id)
-              }
+              onChange={(e, options, reason, item) => {
+                if (!item) {
+                  return;
+                }
+                setValue('user', item.option.id);
+              }}
               getOptionLabel={(users) => users.username}
               renderInput={(params) => (
                 <TextField {...params} fullWidth variant="outlined" />
@@ -107,7 +105,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               fullWidth
               {...register('nickname')}
               variant="outlined"
-              error={errors.nickname ? true : false}
+              error={Boolean(errors?.nickname)}
               helperText={'닉네임 (채널 이름) 은 필수입니다.'}
             />
           </Box>
@@ -121,7 +119,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               multiline
               variant="outlined"
               helperText="줄 바꾸기 enter. (필수 항목)"
-              error={errors.intro ? true : false}
+              error={Boolean(errors?.intro)}
             />
           </Box>
           <Box sx={{ mt: 2 }}>
@@ -133,7 +131,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               {...register('keyword')}
               variant="outlined"
               helperText="쉼표(,)로 구분해주세요. (필수 항목)"
-              error={errors.keyword ? true : false}
+              error={Boolean(errors?.keyword)}
             />
           </Box>
           <Box sx={{ mt: 2 }}>
@@ -177,32 +175,29 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
                 src={newCpMaster.profile_image_url}
               />
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                mt: 6,
-              }}
-            >
-              <Button
-                color="primary"
-                size="large"
-                variant="text"
-                component={RouterLink}
-                to={`/dashboard/cp`}
-              >
-                이전
-              </Button>
-              <Box sx={{ flexGrow: 1 }} />
-              <Button
-                type="submit"
-                color="primary"
-                variant="contained"
-              >
-                {mode === 'edit' ? '수정' : '생성'}
-              </Button>
-            </Box>
           </Box>
         </Card>
+        <Box
+          sx={{
+            display: 'flex',
+            mt: 6,
+            mx: '10%',
+          }}
+        >
+          <Button
+            color="secondary"
+            size="large"
+            variant="text"
+            component={RouterLink}
+            to={`/dashboard/cp`}
+          >
+            이전
+          </Button>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button type="submit" color="primary" variant="contained">
+            {mode === 'edit' ? '수정' : '생성'}
+          </Button>
+        </Box>
       </form>
     </>
   );

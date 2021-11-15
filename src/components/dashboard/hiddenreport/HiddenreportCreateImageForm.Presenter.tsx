@@ -18,7 +18,6 @@ import {
   Typography,
   TextField,
   InputAdornment,
-  Pagination,
   Fab,
 } from '@material-ui/core';
 
@@ -38,7 +37,6 @@ import {
   HiddenReportCreateActionKind,
   HiddenReportCreateState,
 } from './HiddenreportCreate.Container';
-import useMounted from 'src/hooks/useMounted';
 import toast from 'react-hot-toast';
 import { IHRImage } from 'src/types/hiddenreport';
 

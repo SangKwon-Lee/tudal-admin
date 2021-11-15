@@ -1,20 +1,12 @@
 import React from 'react';
 import useAuth from 'src/hooks/useAuth';
-import { INews } from 'src/types/news';
-import { Schedule } from 'src/types/schedule';
-import { Grid, Typography } from '@material-ui/core';
-import OverviewNewsTable from '../dashboard/overview/OverviewNewsTable';
-import OverviewScheduleTable from '../dashboard/overview/OverviewScheduleTable';
-
-interface OverviewPresenterProps {
-  newsList: INews[];
-  scheduleList: Schedule[];
+import { Box, Grid, Typography } from '@material-ui/core';
+import dayjs from 'dayjs';
+interface IOverviewProps {
+  time: string;
 }
 
-const OverviewPresenter: React.FC<OverviewPresenterProps> = ({
-  newsList,
-  scheduleList,
-}) => {
+const OverviewPresenter: React.FC<IOverviewProps> = ({ time }) => {
   const { user } = useAuth();
 
   return (
@@ -28,9 +20,6 @@ const OverviewPresenter: React.FC<OverviewPresenterProps> = ({
         xs={12}
       >
         <Grid item>
-          <Typography color="textSecondary" variant="overline">
-            Overview
-          </Typography>
           <Typography color="textPrimary" variant="h5">
             반갑습니다, {user.username} 님
           </Typography>
@@ -39,12 +28,23 @@ const OverviewPresenter: React.FC<OverviewPresenterProps> = ({
           </Typography>
         </Grid>
       </Grid>
-      <Grid item md={7} xs={12}>
-        <OverviewScheduleTable scheduleList={scheduleList} />
-      </Grid>{' '}
-      <Grid item md={5} xs={12}>
-        <OverviewNewsTable newsList={newsList} />
-      </Grid>
+
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography fontSize={150}>
+          {dayjs().format('HH:mm')}
+        </Typography>
+        <Typography fontSize={40} sx={{ mt: -4 }}>
+          Good Day, {user.username}
+        </Typography>
+      </Box>
     </Grid>
   );
 };

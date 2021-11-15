@@ -10,6 +10,7 @@ const HiddenReportListPage: React.FC = () => {
 
   return (
     <PageLayout
+      dashboard="히든 리포트"
       mainTopic={'히든리포트'}
       pageTitle={'히든리포트 리스트'}
       pageTopRef={pageTopRef}

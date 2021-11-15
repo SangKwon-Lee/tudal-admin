@@ -7,8 +7,9 @@ const CpMasterDetailPage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'CP 달인 상세보기'}
-        pageTitle={'CP 달인 상세보기'}
+        dashboard="CP 관리"
+        mainTopic={'달인 상세보기'}
+        pageTitle={'달인 상세보기'}
         pageTopRef={pageTopRef}
       >
         <CpMasterDetailContainer />

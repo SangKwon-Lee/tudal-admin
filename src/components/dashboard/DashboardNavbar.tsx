@@ -6,7 +6,7 @@ import { experimentalStyled } from '@material-ui/core/styles';
 import type { AppBarProps } from '@material-ui/core';
 import MenuIcon from '../../icons/Menu';
 import AccountPopover from './AccountPopover';
-import Logo from '../../icons/logo.png';
+import Logo from '../../icons/blackLogo.png';
 interface DashboardNavbarProps extends AppBarProps {
   onSidebarMobileOpen?: () => void;
 }
@@ -14,8 +14,8 @@ interface DashboardNavbarProps extends AppBarProps {
 const DashboardNavbarRoot = experimentalStyled(AppBar)(
   ({ theme }) => ({
     ...(theme.palette.mode === 'light' && {
-      backgroundColor: theme.palette.primary.main,
-      boxShadow: 'none',
+      backgroundColor: 'white',
+      boxShadow: '0px 0px 3px lightgrey',
       color: theme.palette.primary.contrastText,
     }),
     ...(theme.palette.mode === 'dark' && {
@@ -23,7 +23,7 @@ const DashboardNavbarRoot = experimentalStyled(AppBar)(
       borderBottom: `1px solid ${theme.palette.divider}`,
       boxShadow: 'none',
     }),
-    zIndex: theme.zIndex.drawer + 100,
+    // zIndex: theme.zIndex.drawer + 100,
   }),
 );
 
@@ -33,7 +33,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = (props) => {
   return (
     <DashboardNavbarRoot {...other}>
       <Toolbar sx={{ minHeight: 64 }}>
-        <IconButton color="inherit" onClick={onSidebarMobileOpen}>
+        <IconButton color="default" onClick={onSidebarMobileOpen}>
           <MenuIcon fontSize="small" />
         </IconButton>
 

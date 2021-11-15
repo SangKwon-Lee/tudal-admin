@@ -121,64 +121,13 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
 
     return (
       <>
-        <Card sx={{ p: 3 }}>
-          {loading && (
-            <div data-testid="news-list-loading">
-              <LinearProgress />
-            </div>
-          )}
-          <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
-            쿠폰 추가 발급
-          </Typography>
-          <TextField
-            select
-            sx={{ m: 3 }}
-            label={'쿠폰 발급 개수'}
-            name="quantity"
-            SelectProps={{ native: true }}
-            variant="outlined"
-            onChange={(event) => {
-              dispatch({
-                type: CouponIssuedListTableActionKind.CHANGE_QUANTITY,
-                payload: event.target.value,
-              });
-            }}
-          >
-            {numbers.map((date: any, i) => (
-              <option key={i} value={date.value}>
-                {date.title}
-              </option>
-            ))}
-          </TextField>
-          <TextField
-            select
-            sx={{ m: 3 }}
-            label={'유효기간'}
-            name="expirationDate"
-            SelectProps={{ native: true }}
-            variant="outlined"
-            onChange={handleChangeExpirationDate}
-          >
-            {expirationDateOption.map((date: any, i) => (
-              <option key={i} value={date.value}>
-                {date.title}
-              </option>
-            ))}
-          </TextField>
-          <Button
-            color="primary"
-            sx={{ m: 3 }}
-            variant="contained"
-            onClick={addIssuedCoupon}
-          >
-            쿠폰 추가 발급
-          </Button>
-          <Divider sx={{ my: 1 }} />
-        </Card>
-        <Box sx={{ mb: 3 }}></Box>
-        <Box sx={{ display: 'flex' }}>
-          <Card sx={{ p: 3, width: '35%', my: 4 }}>
-            <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'space-between' }}
+        >
+          <Card sx={{ width: '35%', my: 4 }}>
+            <Typography
+              sx={{ fontSize: 15, fontWeight: 'bold', p: 2 }}
+            >
               쿠폰 내용
             </Typography>
             <Divider sx={{ my: 1 }} />
@@ -239,42 +188,122 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
               </TableBody>
             </Table>
           </Card>
-          <Card sx={{ p: 3, width: '30%', my: 4, mx: 2 }}>
-            <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
-              발급된 쿠폰 개수
-            </Typography>
-            <Divider sx={{ my: 1 }} />
+          <Card sx={{ my: 3, width: '23%' }}>
+            {loading && (
+              <div data-testid="news-list-loading">
+                <LinearProgress />
+              </div>
+            )}
+            <Box sx={{ m: 2 }}>
+              <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
+                쿠폰 추가 발급
+              </Typography>
+              <Box
+                sx={{
+                  mt: 2,
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                }}
+              >
+                <TextField
+                  select
+                  label={'쿠폰 발급 개수'}
+                  name="quantity"
+                  SelectProps={{ native: true }}
+                  variant="outlined"
+                  onChange={(event) => {
+                    dispatch({
+                      type: CouponIssuedListTableActionKind.CHANGE_QUANTITY,
+                      payload: event.target.value,
+                    });
+                  }}
+                >
+                  {numbers.map((date: any, i) => (
+                    <option key={i} value={date.value}>
+                      {date.title}
+                    </option>
+                  ))}
+                </TextField>
+                <TextField
+                  select
+                  label={'유효기간'}
+                  name="expirationDate"
+                  SelectProps={{ native: true }}
+                  variant="outlined"
+                  onChange={handleChangeExpirationDate}
+                >
+                  {expirationDateOption.map((date: any, i) => (
+                    <option key={i} value={date.value}>
+                      {date.title}
+                    </option>
+                  ))}
+                </TextField>
+              </Box>
+            </Box>
+            <Divider />
             <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center',
               }}
             >
-              <Typography
-                sx={{ fontSize: 30, fontWeight: 'bold', mt: 6 }}
+              <Button
+                color="primary"
+                sx={{ m: 5 }}
+                variant="contained"
+                onClick={addIssuedCoupon}
               >
-                {CouponIssuedListTableState.listLength}
-              </Typography>
+                쿠폰 추가 발급
+              </Button>
             </Box>
           </Card>
-          <Card sx={{ p: 3, width: '30%', my: 4, mx: 2 }}>
-            <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
-              사용된 쿠폰 개수
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Typography
-                sx={{ fontSize: 30, fontWeight: 'bold', mt: 6 }}
-              >
-                {CouponIssuedListTableState.isUsedLength}
+          <Card
+            sx={{
+              p: 3,
+              my: 3,
+              mx: 2,
+              width: '25%',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Box>
+              <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
+                발급된 쿠폰
               </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  sx={{ fontSize: 30, fontWeight: 'bold', mt: 6 }}
+                >
+                  {CouponIssuedListTableState.listLength}
+                </Typography>
+              </Box>
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
+                사용된 쿠폰
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  sx={{ fontSize: 30, fontWeight: 'bold', mt: 6 }}
+                >
+                  {CouponIssuedListTableState.isUsedLength}
+                </Typography>
+              </Box>
             </Box>
           </Card>
         </Box>

@@ -95,10 +95,10 @@ const MasterSubscribeContainer = () => {
     user: { master },
   } = useAuth();
 
-  const masterId = master?.id && master.id;
+  const masterId = master?.id;
 
   useEffect(() => {
-    if (masterId && master.id) {
+    if (masterId) {
       getSubscribeCount(master.id);
       getYear();
       getThisMonth();

@@ -11,8 +11,9 @@ const CpCreatePage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'CP 리스트'}
-        pageTitle={'CP 리스트'}
+        dashboard={'CP 관리'}
+        mainTopic={'CP 계정 생성'}
+        pageTitle={'CP 계정 생성'}
         pageTopRef={pageTopRef}
       >
         <CpCreateContainer mode={mode} />

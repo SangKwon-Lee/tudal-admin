@@ -10,8 +10,9 @@ const CpReporterCreatePage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'CP 관리'}
-        pageTitle={'CP 관리'}
+        dashboard="CP 관리"
+        mainTopic={'히든 리포터 생성'}
+        pageTitle={'히든 리포터 생성'}
         pageTopRef={pageTopRef}
       >
         <CpReporterCreateContainer mode={mode} />

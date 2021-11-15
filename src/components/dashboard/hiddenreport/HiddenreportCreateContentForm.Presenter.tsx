@@ -1,5 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC } from 'react';
 import {
   Autocomplete,
   Box,
@@ -11,7 +10,6 @@ import {
   LinearProgress,
   Paper,
   TextField,
-  InputAdornment,
   Typography,
   Select,
   MenuItem,
@@ -79,16 +77,15 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
     tagList,
     tagLoading,
     stockList,
-    stockLoading,
     stockInput,
     handleStockChange,
     handleTagChange,
-    dispatch,
     onPDFChange,
     onStockChange,
     onTagChange,
   } = props;
 
+  const { register, handleSubmit } = useForm<IHiddenReportForm>({
   const {
     register,
     handleSubmit,
@@ -98,7 +95,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
     defaultValues: reportCreateState.newReport,
     resolver: yupResolver(schema),
   });
-  const { newReport, loading } = reportCreateState;
+  const { newReport } = reportCreateState;
 
   useEffect(() => {
     reportCreateState.newReport.contents &&

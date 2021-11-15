@@ -11,7 +11,7 @@ import {
   Box,
   Container,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Viewer } from '@toast-ui/react-editor';
 import {
   GroupCommentCreateAction,
@@ -44,11 +44,7 @@ const GroupCommentCreatePresente: React.FC<IGroupCommentCreateProps> =
     return (
       <>
         <Card {...other}>
-          {loading && (
-            <div data-testid="group-comment-loading">
-              <LinearProgress />
-            </div>
-          )}
+          {loading && <LinearProgress />}
           <CardHeader title="그룹 상세내용" />
           <Divider />
           <Table>
@@ -137,7 +133,7 @@ const GroupCommentCreatePresente: React.FC<IGroupCommentCreateProps> =
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${moment(group?.created_at).format(
+                    {`${dayjs(group?.created_at).format(
                       'YYYY년 M월 D일 HH:mm',
                     )}`}
                   </Typography>

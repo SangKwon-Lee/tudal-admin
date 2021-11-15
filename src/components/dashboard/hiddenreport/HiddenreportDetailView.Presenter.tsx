@@ -14,9 +14,6 @@ import {
   Container,
   Button,
 } from '@material-ui/core';
-import Label from '../../widgets/Label';
-import moment from 'moment';
-import axios, { CMSURL } from '../../../lib/axios';
 import { Viewer } from '@toast-ui/react-editor';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
 import productStatusFunc from 'src/utils/productStatus';

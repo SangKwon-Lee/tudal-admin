@@ -121,7 +121,7 @@ const NavSection: FC<NavSectionProps> = (props) => {
           disableGutters
           disableSticky
           sx={{
-            color: 'text.primary',
+            color: 'GrayText',
             fontSize: '0.75rem',
             lineHeight: 2.5,
             fontWeight: 700,

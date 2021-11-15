@@ -9,6 +9,7 @@ const HiddenReportImageCreatePage: React.FC = () => {
   const mode = id ? 'edit' : 'create';
   return (
     <PageLayout
+      dashboard="히든 리포트"
       mainTopic={'히든리포트 이미지'}
       pageTitle={'히든리포트 이미지 생성'}
       pageTopRef={pageTopRef}
