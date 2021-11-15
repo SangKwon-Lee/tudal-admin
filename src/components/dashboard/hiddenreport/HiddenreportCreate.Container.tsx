@@ -23,18 +23,27 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router';
 import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter';
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-const bucket_name = 'tudal-popup-photo';
+import { registerImage } from 'src/utils/registerImage';
+import { bucket_hiddenbox } from 'src/components/common/conf/aws';
 
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: process.env.ACCESS_KET,
-    secretAccessKey: process.env.SECRET_KEY,
-  },
-});
-
+export const HIDDENREPORT_CATEGORIES = {
+  subject: [
+    '국내주식',
+    '국내상장 ETF',
+    '해외주식',
+    '해외상장 ETF',
+    '암호화폐',
+    '기타',
+  ],
+  type: [
+    '업종/테마',
+    '배당/리츠',
+    '공무주/비상장',
+    '트레이딩',
+    '기타',
+  ],
+  counter: ['단기', '중기', '장기', '초장기(연금형)'],
+};
 interface HiddenReportCreateContainerProps {
   mode: string;
   reportId?: number;
@@ -51,6 +60,8 @@ export enum HiddenReportCreateActionKind {
   CHANGE_TAGS = 'CHANGE_TAGS',
   CHANGE_STOCKS = 'CHANGE_STOCKS',
   CHANGE_INPUT = 'CHANGE_INPUT',
+  CHANGE_PDF = 'CHANGE_PDF',
+  CHANGE_CATEGORY = 'CHANGE_CATEGORY',
 
   // images
   NEXT_PAGE = 'NEXT_PAGE',
@@ -70,13 +81,16 @@ export interface IHiddenReportForm {
   hidden_report_image: IHRImage; // IHRImage ID
   thumnail_text: string;
   price: number;
-  category: string;
   intro: string;
   catchphrase: string;
   summary: string;
   reason: string;
   contents: string;
   pdfUrl: string;
+  subject: string; // 대상 (카테고리)
+  type: string; // 유형 (카테고리)
+  counter: string; // 대응 전략 (카테고리)
+
   expirationDate: Date;
   stocks: Stock[];
   tags: Tag[];
@@ -105,7 +119,9 @@ export const initialState: HiddenReportCreateState = {
     title: '',
     thumnail_text: '',
     price: 5,
-    category: '',
+    subject: HIDDENREPORT_CATEGORIES.subject[0], // 대상 (카테고리)
+    type: HIDDENREPORT_CATEGORIES.type[0], // 유형 (카테고리)
+    counter: HIDDENREPORT_CATEGORIES.counter[0], // 대응 전략 (카테고리)
     intro: '',
     catchphrase: '',
     summary: '',
@@ -159,6 +175,14 @@ const HiddenReportCreateReducer = (
               : payload,
         },
       };
+    case HiddenReportCreateActionKind.CHANGE_PDF:
+      return {
+        ...state,
+        newReport: {
+          ...state.newReport,
+          pdfUrl: payload,
+        },
+      };
     case HiddenReportCreateActionKind.CHANGE_STOCKS:
       return {
         ...state,
@@ -168,7 +192,6 @@ const HiddenReportCreateReducer = (
         },
       };
     case HiddenReportCreateActionKind.CHANGE_TAGS:
-      console.log('here', payload);
       return {
         ...state,
         newReport: {
@@ -201,6 +224,15 @@ const HiddenReportCreateReducer = (
             _start: 0,
             [payload.name]: payload.value,
           },
+        },
+      };
+
+    case HiddenReportCreateActionKind.CHANGE_CATEGORY:
+      return {
+        ...state,
+        newReport: {
+          ...state.newReport,
+          [payload.name]: payload.value,
         },
       };
     case HiddenReportCreateActionKind.LOAD_IMAGES:
@@ -238,7 +270,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const stockInput = useRef(null);
     const navigate = useNavigate();
 
-    const { newReport, image, loading } = reportCreateState;
+    const { newReport, image } = reportCreateState;
     const { stocks, tags } = newReport;
 
     //* 수정 시 기존 데이터 불러오기
@@ -248,12 +280,15 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         if (reportId.toString() === '0') return;
         const { status, data } = await APIHR.get(reportId.toString());
         if (status === 200) {
+          console.log(data);
           const newReportData: IHiddenReportForm = {
             id: data.id,
             title: data.title,
             thumnail_text: data.thumnail_text,
             price: data.price,
-            category: data.category,
+            counter: data.counter,
+            subject: data.subject,
+            type: data.type,
             catchphrase: data.catchphrase,
             intro: data.intro,
             summary: data.summary,
@@ -288,6 +323,8 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const onSubmitContentForm = (data, e) => {
       try {
         // PDF 등록
+        console.log(e);
+        console.log('h21321321');
         const contents = log();
         const newReport: IHiddenReportForm = {
           ...data,
@@ -295,8 +332,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           stocks: reportCreateState.newReport.stocks,
           tags: reportCreateState.newReport.tags,
         };
-
-        console.log('report', newReport);
+        console.log('here');
 
         dispatch({
           type: HiddenReportCreateActionKind.GET_REPORT,
@@ -331,11 +367,19 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           navigate('/dashboard/hiddenreports');
         }
       } catch (error) {
+        toast.success('에러가 발생했습니다.');
         console.log(error);
       }
     };
 
     const onTagChange = (event, keywords: Tag[], reason, item) => {
+      const { tags } = newReport;
+      if (tags.length >= 10) {
+        toast.error(
+          '등록할 수 있는 키워드는 10개로 제한되어 있습니다. 기존 키워드를 삭제하고 등록해주세요',
+        );
+        return;
+      }
       switch (reason) {
         case 'selectOption':
           dispatch({
@@ -359,6 +403,13 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     };
 
     const onStockChange = (event, stock: Stock[], reason, item) => {
+      const { stocks } = newReport;
+      if (stocks.length >= 10) {
+        toast.error(
+          '등록할 수 있는 종목은 10개로 제한되어 있습니다. 기존 종목을 삭제하고 등록해주세요',
+        );
+        return;
+      }
       switch (reason) {
         case 'selectOption':
           dispatch({
@@ -428,17 +479,14 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
 
     //* PDF 등록
     const onPDFChange = async (event) => {
-      var file = event.target.files;
       try {
-        // Koscom Cloud에 업로드하기!
-        await S3.putObject({
-          Bucket: bucket_name,
-          Key: file[0].name,
-          ACL: 'public-read',
-          // ACL을 지우면 전체공개가 되지 않습니다.
-          Body: file[0],
-        }).promise();
-        return `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
+        const file = event.target.files;
+
+        const imageUrl = await registerImage(file, 'hiddenbox-photo');
+        dispatch({
+          type: HiddenReportCreateActionKind.CHANGE_PDF,
+          payload: imageUrl,
+        });
       } catch (error) {
         toast.error('파일 등록에 실패했습니다.');
       }
@@ -509,12 +557,15 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
             dispatch={dispatch}
             getImages={getImages}
             setStep={setStep}
+            mode={mode}
+            reportId={reportId}
           />
         );
       case 3:
         return (
           <HiddenReportDetailViewPresenter
-            state={reportCreateState}
+            state={reportCreateState.newReport}
+            isCreating={true}
             setStep={setStep}
             onSubmit={onSubmit}
           />
