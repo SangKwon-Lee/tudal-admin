@@ -325,6 +325,10 @@ const routes: PartialRouteObject[] = [
             path: 'new',
             element: <HiddenReportCreate />,
           },
+          {
+            path: '/profile',
+            element: <HiddenReportProfilePage />,
+          },
         ],
       },
       {
@@ -449,10 +453,6 @@ const routes: PartialRouteObject[] = [
           {
             path: '/profile',
             element: <MasterProfilePage />,
-          },
-          {
-            path: '/profile/:userId/HiddenReport',
-            element: <HiddenReportProfilePage />,
           },
         ],
       },
