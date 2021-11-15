@@ -1,5 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
-import React, { FC, useRef } from 'react';
+import React, { FC } from 'react';
 import {
   Autocomplete,
   Box,
@@ -11,22 +10,18 @@ import {
   LinearProgress,
   Paper,
   TextField,
-  InputAdornment,
   Typography,
 } from '@material-ui/core';
-import { DatePicker } from '@material-ui/lab';
 
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
 
 import { Stock, Tag } from 'src/types/schedule';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import * as yup from 'yup';
-
-import toast from 'react-hot-toast';
 
 import {
   IHiddenReportForm,
@@ -75,25 +70,19 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
     tagList,
     tagLoading,
     stockList,
-    stockLoading,
     stockInput,
     handleStockChange,
     handleTagChange,
-    dispatch,
     onPDFChange,
     onStockChange,
     onTagChange,
   } = props;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IHiddenReportForm>({
+  const { register, handleSubmit } = useForm<IHiddenReportForm>({
     defaultValues: reportCreateState.newReport,
     resolver: yupResolver(schema),
   });
-  const { newReport, loading } = reportCreateState;
+  const { newReport } = reportCreateState;
 
   return (
     <Box

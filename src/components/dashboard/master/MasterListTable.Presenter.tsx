@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   Box,
   Button,
@@ -253,12 +253,12 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                             minWidth: '180px',
                           }}
                         >
-                          {`${moment(feed.created_at).format(
+                          {`${dayjs(feed.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
                         <TableCell>
-                          {moment(feed.updated_at).format(
+                          {dayjs(feed.updated_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}
                         </TableCell>

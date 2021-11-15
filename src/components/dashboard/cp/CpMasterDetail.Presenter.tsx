@@ -12,7 +12,7 @@ import {
   Button,
   TextField,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { CpMasterDetailState } from './CpMasterDetail.Container';
 import { Link as RouterLink } from 'react-router-dom';
 interface CpMasterDetailProps {
@@ -42,11 +42,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
         <Button variant="outlined">계정 삭제</Button>
       </Box>
       <Card sx={{ mt: 2 }}>
-        {loading && (
-          <div data-testid="group-comment-loading">
-            <LinearProgress />
-          </div>
-        )}
+        {loading && <LinearProgress />}
         <CardHeader title="CP 달인 상세내용" />
         <Divider />
         <Table>
@@ -59,7 +55,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.user.username
+                  {master?.user?.username
                     ? master.user.username
                     : '이름이 없습니다.'}
                 </Typography>
@@ -73,7 +69,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.user.contact_email
+                  {master?.user?.contact_email
                     ? master.user.contact_email
                     : '이메일이 없습니다.'}
                 </Typography>
@@ -87,7 +83,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.user.phone_number
+                  {master?.user?.phone_number
                     ? master.user.phone_number
                     : '전화번호가 없습니다.'}
                 </Typography>
@@ -121,7 +117,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.nickname
+                  {master?.nickname
                     ? master.nickname
                     : '닉네임이 없습니다.'}
                 </Typography>
@@ -135,7 +131,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.keyword
+                  {master?.keyword
                     ? master.keyword
                         .split(',')
                         .map((data) => data + ' / ')
@@ -151,7 +147,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master?.created_at).format(
+                  {`${dayjs(master?.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -167,7 +163,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
           >
             프로필 이미지
           </Typography>
-          {master.profile_image_url ? (
+          {master?.profile_image_url ? (
             <img
               src={master.profile_image_url}
               alt="프로필이미지"

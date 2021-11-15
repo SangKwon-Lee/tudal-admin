@@ -1,12 +1,11 @@
 import {
-  screen,
   fireEvent,
   waitFor,
   render,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Keyword from './Keyword';
+import Keyword from './Keyword.Page';
 import 'src/setupTest';
 
 jest.mock('react-helmet-async', () => ({

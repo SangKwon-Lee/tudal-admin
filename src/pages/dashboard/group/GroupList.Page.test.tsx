@@ -8,7 +8,6 @@ import {
 import { MemoryRouter } from 'react-router-dom';
 import GroupListPage from './GroupList.Page';
 import 'src/setupTest';
-import { debug } from 'console';
 
 jest.mock('react-helmet-async', () => ({
   Helmet: () => <header></header>,
@@ -38,13 +37,8 @@ describe('Group List Page', () => {
 describe('Search Group List', () => {
   it('search rendeirng', async () => {
     // 1. 리스트를 그린다.
-    const {
-      getByTestId,
-      getAllByRole,
-      getByText,
-      debug,
-      findByText,
-    } = renderGroupList();
+    const { getByTestId, getAllByRole, getByText, findByText } =
+      renderGroupList();
 
     await waitForElementToBeRemoved(() =>
       getByTestId('group-list-loading'),

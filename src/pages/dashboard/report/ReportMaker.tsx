@@ -11,15 +11,15 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { ReportMakerWizard } from '../../components/dashboard/report';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import gtm from '../../lib/gtm';
+import { ReportMakerWizard } from '../../../components/dashboard/report';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import gtm from '../../../lib/gtm';
 // import type { Hiddenbox } from '../../types/hiddenbox';
-import useSettings from '../../hooks/useSettings';
+import useSettings from '../../../hooks/useSettings';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import SocketManager, {
   SocketContext,
-} from '../../contexts/SocketContext';
+} from '../../../contexts/SocketContext';
 
 const ReportMaker: FC = () => {
   const { settings } = useSettings();

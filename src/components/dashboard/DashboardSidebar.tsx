@@ -94,7 +94,7 @@ const sections = [
         children: [
           {
             title: '프로필',
-            path: '/dashboard/master/profile/:userId',
+            path: '/dashboard/master/profile',
             icon: <HomeIcon fontSize="small" />,
           },
           {

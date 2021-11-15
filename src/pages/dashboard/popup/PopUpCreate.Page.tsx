@@ -9,8 +9,8 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
 import PopUpCreateContainer from 'src/components/dashboard/popup/PopUpCreate.Container';
 
 const PopUpCreatePage: FC = () => {

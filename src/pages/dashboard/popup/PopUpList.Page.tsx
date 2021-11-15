@@ -9,16 +9,18 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import PopUpCreateContainer from 'src/components/dashboard/popup/PopUpCreate.Container';
 
-const PopUpCreatePage: FC = () => {
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import useSettings from '../../../hooks/useSettings';
+import PopupListContainer from 'src/components/dashboard/popup/PopUpList.Container';
+
+const HiddenboxList: FC = () => {
   const { settings } = useSettings();
+
   return (
     <>
       <Helmet>
-        <title>Dashboard: PopUp Edit | TUDAL Admin</title>
+        <title>팝업 리스트 페이지</title>
       </Helmet>
       <Box
         sx={{
@@ -28,15 +30,10 @@ const PopUpCreatePage: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid
-            alignItems="center"
-            container
-            justifyContent="space-between"
-            spacing={3}
-          >
+          <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                팝업 수정
+                팝업 리스트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -46,19 +43,19 @@ const PopUpCreatePage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/masters"
+                  to="/dashboard"
                   variant="subtitle2"
                 >
-                  팝업
+                  컨텐츠
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  팝업 수정
+                  팝업
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <PopUpCreateContainer mode={'edit'} />
+            <PopupListContainer />
           </Box>
         </Container>
       </Box>
@@ -66,4 +63,4 @@ const PopUpCreatePage: FC = () => {
   );
 };
 
-export default PopUpCreatePage;
+export default HiddenboxList;

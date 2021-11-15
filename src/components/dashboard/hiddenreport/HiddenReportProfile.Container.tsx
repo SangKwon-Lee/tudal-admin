@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
 import { IUser } from 'src/types/user';
-import HrProfilePresenter from './HrProfile.Presenter';
+import HiddenReportProfilePresenter from './HiddenReportProfile.Presenter';
 
 export enum HrProfileActionKind {
   LOADING = 'LOADING',
@@ -37,7 +37,9 @@ interface IHrProfileProps {
   user: IUser;
 }
 
-const HrProfileContainer: React.FC<IHrProfileProps> = (props) => {
+const HiddenReportProfileContainer: React.FC<IHrProfileProps> = (
+  props,
+) => {
   const { user } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hrProfileState, dispatch] = useReducer(
@@ -46,8 +48,11 @@ const HrProfileContainer: React.FC<IHrProfileProps> = (props) => {
   );
 
   return (
-    <HrProfilePresenter user={user} hrProfileState={hrProfileState} />
+    <HiddenReportProfilePresenter
+      user={user}
+      hrProfileState={hrProfileState}
+    />
   );
 };
 
-export default HrProfileContainer;
+export default HiddenReportProfileContainer;

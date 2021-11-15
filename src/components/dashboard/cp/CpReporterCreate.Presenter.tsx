@@ -106,9 +106,12 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               disabled={newCpReporter.id ? true : false}
               autoHighlight
               options={users}
-              onChange={(e, options, reason, item) =>
-                setValue('user', item.option.id)
-              }
+              onChange={(e, options, reason, item) => {
+                if (!item) {
+                  return;
+                }
+                setValue('user', item.option.id);
+              }}
               getOptionLabel={(users) => users.username}
               renderInput={(params) => (
                 <TextField {...params} fullWidth variant="outlined" />
@@ -123,7 +126,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               {...register('nickname')}
               fullWidth
               variant="outlined"
-              error={errors.nickname ? true : false}
+              error={Boolean(errors?.nickname)}
               helperText={'닉네임은 필수입니다.'}
             />
           </Box>
@@ -136,7 +139,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               fullWidth
               multiline
               variant="outlined"
-              error={errors.catchPhrase ? true : false}
+              error={Boolean(errors?.catchPhrase)}
               helperText={'캐치 프레이즈는 필수입니다.'}
             />
           </Box>
@@ -149,7 +152,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               fullWidth
               multiline
               variant="outlined"
-              error={errors.intro ? true : false}
+              error={Boolean(errors?.intro)}
               helperText="줄 바꾸기 enter (필수 사항)"
             />
           </Box>
@@ -163,7 +166,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               select
               SelectProps={{ native: true }}
               variant="outlined"
-              error={errors.tudalRecommendScore ? true : false}
+              error={Boolean(errors?.tudalRecommendScore)}
               helperText="1단계가 가장 높은 우선순위입니다."
             >
               {tudalRecommendScoreOption.map((data) => (

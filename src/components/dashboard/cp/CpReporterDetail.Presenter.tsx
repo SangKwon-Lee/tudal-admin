@@ -12,7 +12,7 @@ import {
   Button,
   TextField,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { CpReporterDetailState } from './CpReporterDetail.Container';
 import { Link as RouterLink } from 'react-router-dom';
 interface CpReporterDetailProps {
@@ -42,11 +42,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
         <Button variant="outlined">계정 삭제</Button>
       </Box>
       <Card sx={{ mt: 2 }}>
-        {loading && (
-          <div data-testid="group-comment-loading">
-            <LinearProgress />
-          </div>
-        )}
+        {loading && <LinearProgress />}
         <CardHeader title="CP 달인 상세내용" />
         <Divider />
         <Table>
@@ -59,7 +55,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {reporter.user.username
+                  {reporter?.user?.username
                     ? reporter.user.username
                     : '이름이 없습니다.'}
                 </Typography>
@@ -73,7 +69,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {reporter.user.contact_email
+                  {reporter?.user?.contact_email
                     ? reporter.user.contact_email
                     : '이메일이 없습니다.'}
                 </Typography>
@@ -87,7 +83,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {reporter.user.phone_number
+                  {reporter?.user?.phone_number
                     ? reporter.user.phone_number
                     : '전화번호가 없습니다.'}
                 </Typography>
@@ -106,7 +102,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
                   variant="standard"
                   InputProps={{ disableUnderline: true }}
                   value={
-                    reporter.intro
+                    reporter?.intro
                       ? reporter.intro
                       : '소개 글이 없습니다.'
                   }
@@ -121,7 +117,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="subtitle2">
-                  {reporter.catchPhrase
+                  {reporter?.catchPhrase
                     ? reporter.catchPhrase
                     : '캐치프레이즈가 없습니다.'}
                 </Typography>
@@ -135,7 +131,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {reporter.nickname
+                  {reporter?.nickname
                     ? reporter.nickname
                     : '닉네임이 없습니다.'}
                 </Typography>
@@ -149,7 +145,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {reporter.tudalRecommendScore
+                  {reporter?.tudalRecommendScore
                     ? `${reporter.tudalRecommendScore} 단계`
                     : '추천 우선 순위가 없습니다.'}
                 </Typography>
@@ -163,7 +159,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(reporter?.created_at).format(
+                  {`${dayjs(reporter?.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -179,7 +175,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
           >
             프로필 이미지
           </Typography>
-          {reporter.imageUrl ? (
+          {reporter?.imageUrl ? (
             <img
               src={reporter.imageUrl}
               alt="프로필이미지"

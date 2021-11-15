@@ -14,10 +14,10 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import MasterDetailsContainer from '../../components/dashboard/master/MasterDetails.Container';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import PencilAltIcon from '../../icons/PencilAlt';
-import useSettings from '../../hooks/useSettings';
+import MasterDetailsContainer from '../../../components/dashboard/master/MasterDetails.Container';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import PencilAltIcon from '../../../icons/PencilAlt';
+import useSettings from '../../../hooks/useSettings';
 
 const tabs = [{ label: '피드내용', value: 'details' }];
 

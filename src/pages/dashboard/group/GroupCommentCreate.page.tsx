@@ -1,25 +1,25 @@
-import type { FC } from 'react';
+import { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import useSettings from '../../../hooks/useSettings';
 import {
   Box,
   Breadcrumbs,
   Container,
-  Grid,
   Link,
+  Grid,
   Typography,
 } from '@material-ui/core';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import GroupCommentCreateCotainer from 'src/components/dashboard/groupComment/GroupCommentCreate.Container';
 
-const MasterEditPage: FC = () => {
+const GroupCommentCreatePage: FC = () => {
   const { settings } = useSettings();
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: Master Create | TUDAL Admin</title>
+        <title>Dashboard: Group Comment Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -29,15 +29,10 @@ const MasterEditPage: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid
-            alignItems="center"
-            container
-            justifyContent="space-between"
-            spacing={3}
-          >
+          <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                피드 수정
+                그룹 코멘트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -47,19 +42,22 @@ const MasterEditPage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard"
+                  to="/dashboard/groupComment"
                   variant="subtitle2"
                 >
-                  대시보드
+                  그룹 코멘트
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  피드
+                  그룹 코멘트 관리
                 </Typography>
               </Breadcrumbs>
             </Grid>
+            <Grid item>
+              <Box sx={{ m: -1 }}></Box>
+            </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <MasterCreateWizardContainer mode={'edit'} />
+            <GroupCommentCreateCotainer />
           </Box>
         </Container>
       </Box>
@@ -67,4 +65,4 @@ const MasterEditPage: FC = () => {
   );
 };
 
-export default MasterEditPage;
+export default GroupCommentCreatePage;

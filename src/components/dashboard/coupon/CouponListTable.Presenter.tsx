@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   Box,
   Button,
@@ -244,9 +244,9 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                             : '없습니다.'}
                         </TableCell>
                         <TableCell>
-                          {moment(list.created_at)
-                            .utc()
-                            .format('YYYY년 M월 D일 HH:mm')}
+                          {dayjs(list.created_at).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}
                         </TableCell>
                       </TableRow>
                     );

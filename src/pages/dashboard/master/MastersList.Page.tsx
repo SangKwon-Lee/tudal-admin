@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import useSettings from '../../hooks/useSettings';
+import useSettings from '../../../hooks/useSettings';
 import {
   Box,
   Breadcrumbs,
@@ -11,9 +11,9 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import PlusIcon from '../../icons/Plus';
-import MasterListTableContainer from '../../components/dashboard/master/MasterListTable.Container';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import PlusIcon from '../../../icons/Plus';
+import MasterListTableContainer from '../../../components/dashboard/master/MasterListTable.Container';
 // import useAuth from 'src/hooks/useAuth';
 
 const MastersListPage: FC = () => {

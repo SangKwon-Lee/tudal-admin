@@ -75,7 +75,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             fullWidth
             label="이름"
             variant="outlined"
-            error={errors.username ? true : false}
+            error={Boolean(errors?.username)}
             helperText={'이름은 필수입니다.'}
           />
         </Box>
@@ -85,7 +85,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             fullWidth
             label="이메일"
             variant="outlined"
-            error={errors.email ? true : false}
+            error={Boolean(errors?.email)}
             helperText="올바른 이메일 형식을 지켜주세요"
           />
         </Box>
@@ -96,7 +96,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             type="password"
             label="비밀번호"
             variant="outlined"
-            error={errors.password ? true : false}
+            error={Boolean(errors?.password)}
             helperText="비밀번호는 필수입니다."
           />
         </Box>
@@ -105,13 +105,13 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             {...register('nickname')}
             fullWidth
             label="닉네임"
-            error={errors.nickname ? true : false}
+            error={Boolean(errors?.nickname)}
             helperText="닉네임은 필수입니다."
             variant="outlined"
           />
         </Box>
         <Box sx={{ my: 2 }}>
-          {typeOption.length > 0 && (
+          {typeOption && (
             <TextField
               {...register('type')}
               select
@@ -119,10 +119,10 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
               label="타입"
               SelectProps={{ native: true }}
               variant="outlined"
-              error={errors.type ? true : false}
+              error={Boolean(errors?.type)}
               helperText="타입은 필수입니다."
             >
-              {typeOption.length > 0 &&
+              {typeOption &&
                 typeOption.map((data) => (
                   <option key={data.title} value={data.title}>
                     {data.title}
@@ -132,7 +132,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
           )}
         </Box>
         <Box sx={{ my: 2 }}>
-          {roleOption.length > 0 && (
+          {roleOption && (
             <TextField
               select
               {...register('role')}
@@ -140,10 +140,10 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
               label="역할"
               SelectProps={{ native: true }}
               variant="outlined"
-              error={errors.role ? true : false}
+              error={Boolean(errors?.role)}
               helperText="역할은 필수입니다."
             >
-              {roleOption.length > 0 &&
+              {roleOption &&
                 roleOption.map((data) => (
                   <option key={data.value} value={data.value}>
                     {data.title}
@@ -158,7 +158,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             fullWidth
             name="phone_number"
             label="전화 번호"
-            error={errors.phone_number ? true : false}
+            error={Boolean(errors?.phone_number)}
             helperText="-없이 입력해주세요."
             variant="outlined"
           />
@@ -169,7 +169,7 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             fullWidth
             label="연락할 이메일"
             variant="outlined"
-            error={errors.contact_email ? true : false}
+            error={Boolean(errors?.contact_email)}
             helperText="올바른 이메일 형식을 지켜주세요"
           />
         </Box>

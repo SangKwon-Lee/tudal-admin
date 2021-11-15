@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
@@ -10,22 +9,16 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import gtm from '../../lib/gtm';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import PopUpCreateContainer from 'src/components/dashboard/popup/PopUpCreate.Container';
 
-const HiddenboxEdit: FC = () => {
+const PopUpCreatePage: FC = () => {
   const { settings } = useSettings();
-  const { hiddenboxId } = useParams();
-  useEffect(() => {
-    gtm.push({ event: 'page_view' });
-  }, []);
-
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
+        <title>Dashboard: PopUp Edit | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -43,7 +36,7 @@ const HiddenboxEdit: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                히든박스 수정
+                팝업 수정
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -53,22 +46,19 @@ const HiddenboxEdit: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard"
+                  to="/dashboard/masters"
                   variant="subtitle2"
                 >
-                  대시보드
+                  팝업
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  히든박스
+                  팝업 수정
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxCreateWizard
-              mode={'edit'}
-              boxid={parseInt(hiddenboxId)}
-            />
+            <PopUpCreateContainer mode={'edit'} />
           </Box>
         </Container>
       </Box>
@@ -76,4 +66,4 @@ const HiddenboxEdit: FC = () => {
   );
 };
 
-export default HiddenboxEdit;
+export default PopUpCreatePage;

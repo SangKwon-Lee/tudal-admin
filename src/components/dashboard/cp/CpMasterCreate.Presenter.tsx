@@ -90,9 +90,12 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               disabled={newCpMaster.id ? true : false}
               autoHighlight
               options={users}
-              onChange={(e, options, reason, item) =>
-                setValue('user', item.option.id)
-              }
+              onChange={(e, options, reason, item) => {
+                if (!item) {
+                  return;
+                }
+                setValue('user', item.option.id);
+              }}
               getOptionLabel={(users) => users.username}
               renderInput={(params) => (
                 <TextField {...params} fullWidth variant="outlined" />
@@ -107,7 +110,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               fullWidth
               {...register('nickname')}
               variant="outlined"
-              error={errors.nickname ? true : false}
+              error={Boolean(errors?.nickname)}
               helperText={'닉네임 (채널 이름) 은 필수입니다.'}
             />
           </Box>
@@ -121,7 +124,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               multiline
               variant="outlined"
               helperText="줄 바꾸기 enter. (필수 항목)"
-              error={errors.intro ? true : false}
+              error={Boolean(errors?.intro)}
             />
           </Box>
           <Box sx={{ mt: 2 }}>
@@ -133,7 +136,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               {...register('keyword')}
               variant="outlined"
               helperText="쉼표(,)로 구분해주세요. (필수 항목)"
-              error={errors.keyword ? true : false}
+              error={Boolean(errors?.keyword)}
             />
           </Box>
           <Box sx={{ mt: 2 }}>

@@ -129,24 +129,26 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       type: CpReporterCreateActionKind.LOADING,
       payload: true,
     });
-
-    try {
-      const { data, status } = await APICp.getUsers();
-      if (status === 200) {
-        if (mode === 'edit') {
-          dispatch({
-            type: CpReporterCreateActionKind.GET_USERS,
-            payload: data,
-          });
-        } else {
-          dispatch({
-            type: CpReporterCreateActionKind.GET_USERS,
-            payload: data.filter((data) => !data.hidden_reporter),
-          });
-        }
+    if (mode === 'edit') {
+      try {
+        const { data } = await APICp.getUsers();
+        dispatch({
+          type: CpReporterCreateActionKind.GET_USERS,
+          payload: data,
+        });
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        const { data } = await APICp.getUsersNoReporter();
+        dispatch({
+          type: CpReporterCreateActionKind.GET_USERS,
+          payload: data,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   }, [mode]);
 

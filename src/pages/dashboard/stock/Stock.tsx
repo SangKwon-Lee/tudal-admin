@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useReducer,
-  useCallback,
-} from 'react';
+import { useEffect, useState, useReducer, useCallback } from 'react';
 import {
   Box,
   Breadcrumbs,
@@ -11,14 +6,12 @@ import {
   Grid,
   Link,
   Typography,
-  Dialog,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
 import ChevronRightIcon from 'src/icons/ChevronRight';
 import useSettings from 'src/hooks/useSettings';
-import useAuth from 'src/hooks/useAuth';
 import * as _ from 'lodash';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import { APIStock } from 'src/lib/api';
@@ -170,6 +163,7 @@ const StockPage = () => {
     } catch (error) {
       dispatch({ type: StockActionKind.ERROR, payload: error });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stockList, search, shouldUpdate]);
 
   const reloadStock = useCallback(async (stockCode) => {
@@ -190,6 +184,7 @@ const StockPage = () => {
 
   useEffect(() => {
     loadStock();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

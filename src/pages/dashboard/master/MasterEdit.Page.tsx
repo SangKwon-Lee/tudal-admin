@@ -9,18 +9,17 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
 
-import ChevronRightIcon from '../../icons/ChevronRight';
-import useSettings from '../../hooks/useSettings';
-import PopupListContainer from 'src/components/dashboard/popup/PopUpList.Container';
-
-const HiddenboxList: FC = () => {
+const MasterEditPage: FC = () => {
   const { settings } = useSettings();
 
   return (
     <>
       <Helmet>
-        <title>팝업 리스트 페이지</title>
+        <title>Dashboard: Master Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -30,10 +29,15 @@ const HiddenboxList: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid container justifyContent="space-between" spacing={3}>
+          <Grid
+            alignItems="center"
+            container
+            justifyContent="space-between"
+            spacing={3}
+          >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                팝업 리스트
+                피드 수정
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -46,16 +50,16 @@ const HiddenboxList: FC = () => {
                   to="/dashboard"
                   variant="subtitle2"
                 >
-                  컨텐츠
+                  대시보드
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  팝업
+                  피드
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <PopupListContainer />
+            <MasterCreateWizardContainer mode={'edit'} />
           </Box>
         </Container>
       </Box>
@@ -63,4 +67,4 @@ const HiddenboxList: FC = () => {
   );
 };
 
-export default HiddenboxList;
+export default MasterEditPage;
