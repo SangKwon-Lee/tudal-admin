@@ -11,13 +11,13 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { HiddenboxListTable } from '../../components/dashboard/hiddenbox';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import PlusIcon from '../../icons/Plus';
-import useSettings from '../../hooks/useSettings';
-import gtm from '../../lib/gtm';
-import type { Hiddenbox } from '../../types/hiddenbox';
-import axios from '../../lib/axios';
+import { HiddenboxListTable } from '../../../components/dashboard/hiddenbox';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import PlusIcon from '../../../icons/Plus';
+import useSettings from '../../../hooks/useSettings';
+import gtm from '../../../lib/gtm';
+import type { Hiddenbox } from '../../../types/hiddenbox';
+import axios from '../../../lib/axios';
 import useMounted from 'src/hooks/useMounted';
 import useAuth from 'src/hooks/useAuth';
 

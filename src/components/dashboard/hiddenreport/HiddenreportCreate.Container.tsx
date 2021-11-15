@@ -8,18 +8,15 @@ import {
 import type { FC } from 'react';
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import { cmsServer } from '../../../lib/axios';
 import HiddenReportContentForm from './HiddenreportCreateContentForm.Presenter';
-import { AxiosError, AxiosResponse } from 'axios';
-import useAuth from 'src/hooks/useAuth';
+import { AxiosResponse } from 'axios';
 
 import useAsync from 'src/hooks/useAsync';
 import { Stock, Tag } from 'src/types/schedule';
-import { APIHR, APIMaster, APIStock, APITag } from 'src/lib/api';
-import _, { initial } from 'lodash';
+import { APIHR, APIStock, APITag } from 'src/lib/api';
+import _ from 'lodash';
 import toast from 'react-hot-toast';
 import { IHRImage } from 'src/types/hiddenreport';
-import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router';
 import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter';
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
@@ -238,7 +235,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const stockInput = useRef(null);
     const navigate = useNavigate();
 
-    const { newReport, image, loading } = reportCreateState;
+    const { newReport, image } = reportCreateState;
     const { stocks, tags } = newReport;
 
     //* 수정 시 기존 데이터 불러오기

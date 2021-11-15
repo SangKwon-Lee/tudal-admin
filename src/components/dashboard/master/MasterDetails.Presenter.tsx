@@ -11,7 +11,7 @@ import {
   Container,
   LinearProgress,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { FC } from 'react';
@@ -83,7 +83,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master?.created_at).format(
+                  {`${dayjs(master?.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -97,7 +97,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master?.updated_at).format(
+                  {`${dayjs(master?.updated_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -183,7 +183,6 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
             내용
           </Typography>
           <Box sx={{ py: 3 }}>
-            {console.log('123123', master?.contents)}
             <Container maxWidth="md">
               {master?.contents && (
                 <Viewer initialValue={master.contents} />

@@ -10,16 +10,18 @@ import {
   Box,
   TextField,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { IUser } from 'src/types/user';
-import { HrProfileState } from './HrProfile.Container';
+import { HrProfileState } from './HiddenReportProfile.Container';
 
 interface IHrProfileProps {
   user: IUser;
   hrProfileState: HrProfileState;
 }
 
-const HrProfilePresenter: React.FC<IHrProfileProps> = ({ user }) => {
+const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
+  user,
+}) => {
   return (
     <>
       <Typography sx={{ my: 2 }} variant="h5">
@@ -87,7 +89,7 @@ const HrProfilePresenter: React.FC<IHrProfileProps> = ({ user }) => {
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${moment(user?.created_at).format(
+                    {`${dayjs(user?.created_at).format(
                       'YYYY년 M월 D일 HH:mm',
                     )}`}
                   </Typography>
@@ -149,7 +151,7 @@ const HrProfilePresenter: React.FC<IHrProfileProps> = ({ user }) => {
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${moment(
+                    {`${dayjs(
                       user?.hidden_reporter?.created_at,
                     ).format('YYYY년 M월 D일 HH:mm')}`}
                   </Typography>
@@ -177,4 +179,4 @@ const HrProfilePresenter: React.FC<IHrProfileProps> = ({ user }) => {
   );
 };
 
-export default HrProfilePresenter;
+export default HiddenReportProfilePresenter;

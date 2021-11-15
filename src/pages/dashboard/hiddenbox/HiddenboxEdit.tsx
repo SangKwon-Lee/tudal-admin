@@ -1,25 +1,31 @@
-import { FC } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useEffect } from 'react';
+import type { FC } from 'react';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import useSettings from '../../hooks/useSettings';
 import {
   Box,
   Breadcrumbs,
   Container,
-  Link,
   Grid,
+  Link,
   Typography,
 } from '@material-ui/core';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import GroupCommentCreateCotainer from 'src/components/dashboard/groupComment/GroupCommentCreate.Container';
+import { HiddenboxCreateWizard } from '../../../components/dashboard/hiddenbox';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import gtm from '../../../lib/gtm';
 
-const GroupCommentCreatePage: FC = () => {
+const HiddenboxEdit: FC = () => {
   const { settings } = useSettings();
+  const { hiddenboxId } = useParams();
+  useEffect(() => {
+    gtm.push({ event: 'page_view' });
+  }, []);
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: Group Comment Create | TUDAL Admin</title>
+        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -29,10 +35,15 @@ const GroupCommentCreatePage: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid container justifyContent="space-between" spacing={3}>
+          <Grid
+            alignItems="center"
+            container
+            justifyContent="space-between"
+            spacing={3}
+          >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                그룹 코멘트
+                히든박스 수정
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -42,22 +53,22 @@ const GroupCommentCreatePage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/groupComment"
+                  to="/dashboard"
                   variant="subtitle2"
                 >
-                  그룹 코멘트
+                  대시보드
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  그룹 코멘트 관리
+                  히든박스
                 </Typography>
               </Breadcrumbs>
             </Grid>
-            <Grid item>
-              <Box sx={{ m: -1 }}></Box>
-            </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <GroupCommentCreateCotainer />
+            <HiddenboxCreateWizard
+              mode={'edit'}
+              boxid={parseInt(hiddenboxId)}
+            />
           </Box>
         </Container>
       </Box>
@@ -65,4 +76,4 @@ const GroupCommentCreatePage: FC = () => {
   );
 };
 
-export default GroupCommentCreatePage;
+export default HiddenboxEdit;

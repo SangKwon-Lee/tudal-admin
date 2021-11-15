@@ -11,7 +11,7 @@ import {
   Box,
   TextField,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { IUser } from 'src/types/user';
 import { MasterProfileState } from './MasterProfile.Container';
 import { Link as RouterLink } from 'react-router-dom';
@@ -92,7 +92,7 @@ const MasterProfilePresenter: React.FC<IMasterProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${moment(user?.created_at).format(
+                    {`${dayjs(user?.created_at).format(
                       'YYYY년 M월 D일 HH:mm',
                     )}`}
                   </Typography>
@@ -156,7 +156,7 @@ const MasterProfilePresenter: React.FC<IMasterProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${moment(user?.master.created_at).format(
+                    {`${dayjs(user?.master.created_at).format(
                       'YYYY년 M월 D일 HH:mm',
                     )}`}
                   </Typography>
@@ -187,28 +187,26 @@ const MasterProfilePresenter: React.FC<IMasterProfileProps> = ({
           <TableBody>
             {masterProfileState.feeds.length > 0 &&
               masterProfileState.feeds.map((data) => (
-                <>
-                  <TableRow>
-                    <TableCell>
-                      <Typography
-                        color="textPrimary"
-                        variant="subtitle2"
-                      >
-                        제목
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        color="inherit"
-                        component={RouterLink}
-                        to={`/dashboard/master/${data.id}`}
-                        variant="subtitle2"
-                      >
-                        {data?.title}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                </>
+                <TableRow key={data.id}>
+                  <TableCell>
+                    <Typography
+                      color="textPrimary"
+                      variant="subtitle2"
+                    >
+                      제목
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      to={`/dashboard/master/${data.id}`}
+                      variant="subtitle2"
+                    >
+                      {data?.title}
+                    </Link>
+                  </TableCell>
+                </TableRow>
               ))}
           </TableBody>
         </Table>

@@ -33,98 +33,114 @@ const VerifyCode = Loadable(
 );
 
 // Dashboard pages
+
+//* Hiddenbox
 const HiddenboxList = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxList')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxList')),
 );
 const HiddenboxDetails = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxDetails')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxDetails')),
 );
-
 const HiddenboxCreate = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxCreate')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxCreate')),
 );
 const HiddenboxEdit = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxEdit')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxEdit')),
 );
+
+//* Overview
 const Overview = Loadable(
-  lazy(() => import('./pages/dashboard/Overview.Page')),
+  lazy(() => import('./pages/dashboard/overview/Overview.Page')),
 );
+
+//* 리포트
 const ReportMaker = Loadable(
-  lazy(() => import('./pages/dashboard/ReportMaker')),
+  lazy(() => import('./pages/dashboard/report/ReportMaker')),
 );
+
+//* Schedule
 const ScheduleList = Loadable(
-  lazy(() => import('./pages/dashboard/Schedule.Page')),
+  lazy(() => import('./pages/dashboard/schedule/Schedule.Page')),
 );
+
+//* Stock
 const StockList = Loadable(
-  lazy(() => import('./pages/dashboard/Stock.Page')),
+  lazy(() => import('./pages/dashboard/stock/Stock.Page')),
 );
 
+//* Keyword
 const Keyword = Loadable(
-  lazy(() => import('./pages/dashboard/Keyword.Page')),
-);
-const CategoryList = Loadable(
-  lazy(() => import('./pages/dashboard/Category.Page')),
+  lazy(() => import('./pages/dashboard/keyword/Keyword.Page')),
 );
 
-//* 달인
+//* category
+const CategoryList = Loadable(
+  lazy(() => import('./pages/dashboard/category/Category.Page')),
+);
+
+//* master
 const MastersListPage = Loadable(
-  lazy(() => import('./pages/dashboard/MastersList.Page')),
+  lazy(() => import('./pages/dashboard/master/MastersList.Page')),
 );
 const MasterCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterCreate.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterCreate.Page')),
 );
 const MasterDetailsPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterDetails.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterDetails.Page')),
 );
 const MasterEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterEdit.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterEdit.Page')),
 );
 const MasterRoomPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterRoom.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterRoom.Page')),
 );
 const MasterSubscribePage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterSubscribe.Page')),
 );
 const MasterProfilePage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterProfile.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterProfile.Page')),
 );
 
-//* 골드
+//* gold
 const GoldList = Loadable(
-  lazy(() => import('./pages/dashboard/GoldList.Page')),
+  lazy(() => import('./pages/dashboard/gold/GoldList.Page')),
 );
 const GoldDetail = Loadable(
-  lazy(() => import('./pages/dashboard/GoldDetail.Page')),
+  lazy(() => import('./pages/dashboard/gold/GoldDetail.Page')),
 );
 
-//* 쿠폰
+//* coupon
 const CouponListPage = Loadable(
-  lazy(() => import('./pages/dashboard/CouponList.Page')),
+  lazy(() => import('./pages/dashboard/coupon/CouponList.Page')),
 );
 const CouponIssuedListPage = Loadable(
-  lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
+  lazy(
+    () => import('./pages/dashboard/coupon/CouponIssuedList.Page'),
+  ),
 );
 
-//* 팝업
+//* popup
 const PopUpCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpCreate.Page')),
 );
 const PopUpEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpEdit.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpEdit.Page')),
 );
 const PopUpListPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpList.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpList.Page')),
 );
 const PopUpDetailPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpDetail.Page')),
 );
 
 //* 투달 그룹
 const GroupCommentCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/GroupCommentCreate.page')),
+  lazy(
+    () => import('./pages/dashboard/group/GroupCommentCreate.page'),
+  ),
 );
 const GroupListPage = Loadable(
-  lazy(() => import('./pages/dashboard/GroupList.Page')),
+  lazy(() => import('./pages/dashboard/group/GroupList.Page')),
 );
 
 //* CP 관리
@@ -147,12 +163,6 @@ const CpReporterDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
 );
 
-// 히든 리포터
-
-const HrProfilePage = Loadable(
-  lazy(() => import('./pages/dashboard/HrProfile.Page')),
-);
-
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -162,7 +172,18 @@ const TodayKeywordViewer = Loadable(
 );
 
 const NewsPage = Loadable(
-  lazy(() => import('./pages/dashboard/News.Page')),
+  lazy(() => import('./pages/dashboard/news/News.Page')),
+);
+
+//* 히든 리포터
+
+const HiddenReportProfilePage = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportProfile.Page'
+      ),
+  ),
 );
 
 const HiddenReportImageList = Loadable(
@@ -426,12 +447,12 @@ const routes: PartialRouteObject[] = [
             element: <MasterSubscribePage />,
           },
           {
-            path: '/profile/:userId',
+            path: '/profile',
             element: <MasterProfilePage />,
           },
           {
-            path: '/profile/:userId/Hr',
-            element: <HrProfilePage />,
+            path: '/profile/:userId/HiddenReport',
+            element: <HiddenReportProfilePage />,
           },
         ],
       },

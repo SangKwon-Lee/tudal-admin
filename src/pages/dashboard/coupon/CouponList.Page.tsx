@@ -1,8 +1,8 @@
 import { FC, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import useSettings from '../../hooks/useSettings';
-import gtm from '../../lib/gtm';
+import useSettings from '../../../hooks/useSettings';
+import gtm from '../../../lib/gtm';
 import {
   Box,
   Breadcrumbs,
@@ -11,11 +11,11 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import CouponIssuedListTableContainer from 'src/components/dashboard/coupon/CouponIssuedListTable.Container';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import CouponListTableContainer from 'src/components/dashboard/coupon/CouponListTable.Container';
 // import useAuth from 'src/hooks/useAuth';
 
-const CouponIssuedListPage: FC = () => {
+const CouponListPage: FC = () => {
   const { settings } = useSettings();
   // const { user } = useAuth();
   useEffect(() => {
@@ -25,7 +25,7 @@ const CouponIssuedListPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Coupon Issued List | TUDAL Admin</title>
+        <title>Dashboard: Coupon List | TUDAL Admin</title>
       </Helmet>
       {/* {user.role.master ? ( */}
       <Box
@@ -39,7 +39,7 @@ const CouponIssuedListPage: FC = () => {
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                발급된 쿠폰 리스트
+                쿠폰 리스트
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -49,13 +49,13 @@ const CouponIssuedListPage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/coupons"
+                  to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
                   회계
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  발급된 쿠폰 리스트
+                  쿠폰
                 </Typography>
               </Breadcrumbs>
             </Grid>
@@ -64,7 +64,7 @@ const CouponIssuedListPage: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <CouponIssuedListTableContainer />
+            <CouponListTableContainer />
           </Box>
         </Container>
       </Box>
@@ -72,4 +72,4 @@ const CouponIssuedListPage: FC = () => {
   );
 };
 
-export default CouponIssuedListPage;
+export default CouponListPage;

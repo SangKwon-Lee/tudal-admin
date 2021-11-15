@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -10,21 +9,17 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import { HiddenboxCreateWizard } from '../../components/dashboard/hiddenbox';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import gtm from '../../lib/gtm';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import MasterCreateWizardContainer from 'src/components/dashboard/master/MasterCreateWizard.Container';
 
-const HiddenboxCreate: FC = () => {
+const MasterCreatePage: FC = () => {
   const { settings } = useSettings();
-  useEffect(() => {
-    gtm.push({ event: 'page_view' });
-  }, []);
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
+        <title>Dashboard: Master Create | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -42,7 +37,7 @@ const HiddenboxCreate: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                히든박스 생성
+                달인 피드 생성
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -52,19 +47,19 @@ const HiddenboxCreate: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/hiddenboxes"
+                  to="/dashboard/masters"
                   variant="subtitle2"
                 >
-                  히든박스
+                  달인
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  히든박스 생성
+                  피드 생성
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <HiddenboxCreateWizard />
+            <MasterCreateWizardContainer />
           </Box>
         </Container>
       </Box>
@@ -72,4 +67,4 @@ const HiddenboxCreate: FC = () => {
   );
 };
 
-export default HiddenboxCreate;
+export default MasterCreatePage;

@@ -1,45 +1,7 @@
-import { useCallback, useState, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { APIHR } from 'src/lib/api';
 
-import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
-import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Divider,
-  IconButton,
-  LinearProgress,
-  InputAdornment,
-  Link,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tabs,
-  TextField,
-  Typography,
-  Dialog,
-} from '@material-ui/core';
-import ArrowRightIcon from '../../../icons/ArrowRight';
-import PencilAltIcon from '../../../icons/PencilAlt';
-import SearchIcon from '../../../icons/Search';
-import ChatIcon from '../../../icons/ChatAlt';
-import type { Hiddenbox } from '../../../types/hiddenbox';
-import Scrollbar from '../../layout/Scrollbar';
-import axios from '../../../lib/axios';
-import {
-  applyFilters,
-  applyPagination,
-  applySort,
-} from '../../../utils/sort';
-import useAuth from 'src/hooks/useAuth';
-import { IHR, IHRImage } from 'src/types/hiddenreport';
+import { IHR } from 'src/types/hiddenreport';
 import HiddenreportListPresenter from './HiddenreportList.Presenter';
 
 export enum HRListActionKind {

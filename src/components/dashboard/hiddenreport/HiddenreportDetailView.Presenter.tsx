@@ -1,4 +1,3 @@
-import { FC, useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -12,12 +11,7 @@ import {
   Container,
   Button,
 } from '@material-ui/core';
-import Label from '../../widgets/Label';
-import moment from 'moment';
-import axios, { CMSURL } from '../../../lib/axios';
 import { Viewer } from '@toast-ui/react-editor';
-import { SocialPostComment, SocialPostCommentAdd } from '../social';
-import productStatusFunc from 'src/utils/productStatus';
 import { HiddenReportCreateState } from './HiddenreportCreate.Container';
 import dayjs from 'dayjs';
 

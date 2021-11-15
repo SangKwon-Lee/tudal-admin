@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
 import {
   Box,
   Button,
@@ -24,6 +23,7 @@ import {
   CpListAction,
   CpListState,
 } from './CpList.Container';
+import dayjs from 'dayjs';
 
 interface CpListProps {
   dispatch: (params: CpListAction) => void;
@@ -188,7 +188,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                             : '이메일이 없습니다.'}
                         </TableCell>
                         <TableCell>
-                          {`${moment(cp.created_at).format(
+                          {`${dayjs(cp.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>

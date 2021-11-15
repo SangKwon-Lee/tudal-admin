@@ -1,32 +1,23 @@
 import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import numeral from 'numeral';
-import { subDays, subHours } from 'date-fns';
 import {
   Box,
   Card,
-  Checkbox,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   Link,
   Pagination,
-  Switch,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
 } from '@material-ui/core';
-import Label from 'src/components/widgets/Label';
 import Scrollbar from '../../layout/Scrollbar';
-import ArrowRightIcon from '../../../icons/ArrowRight';
-import ImageIcon from '../../../icons/Image';
 import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
-import { IHR, IHRImage } from 'src/types/hiddenreport';
+import { IHR } from 'src/types/hiddenreport';
 import {
   HRListActionKind,
   IHRListAction,
@@ -34,10 +25,6 @@ import {
   sortOptions,
 } from './HiddenreportList.Container';
 import dayjs from 'dayjs';
-
-const getLabel = (text) => {
-  return <Label color={'success'}>{text}</Label>;
-};
 
 interface HRListPresenterProps {
   state: IHRListState;

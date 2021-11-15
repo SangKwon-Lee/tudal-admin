@@ -1,23 +1,22 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
+import type { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import useSettings from '../../hooks/useSettings';
-import gtm from '../../lib/gtm';
 import {
   Box,
   Breadcrumbs,
   Container,
-  Link,
   Grid,
+  Link,
   Typography,
 } from '@material-ui/core';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import CouponListTableContainer from 'src/components/dashboard/coupon/CouponListTable.Container';
-// import useAuth from 'src/hooks/useAuth';
+import { HiddenboxCreateWizard } from '../../../components/dashboard/hiddenbox';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import gtm from '../../../lib/gtm';
 
-const CouponListPage: FC = () => {
+const HiddenboxCreate: FC = () => {
   const { settings } = useSettings();
-  // const { user } = useAuth();
   useEffect(() => {
     gtm.push({ event: 'page_view' });
   }, []);
@@ -25,9 +24,8 @@ const CouponListPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Coupon List | TUDAL Admin</title>
+        <title>Dashboard: Hiddenbox Create | TUDAL Admin</title>
       </Helmet>
-      {/* {user.role.master ? ( */}
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -36,10 +34,15 @@ const CouponListPage: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid container justifyContent="space-between" spacing={3}>
+          <Grid
+            alignItems="center"
+            container
+            justifyContent="space-between"
+            spacing={3}
+          >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                쿠폰 리스트
+                히든박스 생성
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -52,19 +55,16 @@ const CouponListPage: FC = () => {
                   to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
-                  회계
+                  히든박스
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  쿠폰
+                  히든박스 생성
                 </Typography>
               </Breadcrumbs>
             </Grid>
-            <Grid item>
-              <Box sx={{ m: -1 }}></Box>
-            </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <CouponListTableContainer />
+            <HiddenboxCreateWizard />
           </Box>
         </Container>
       </Box>
@@ -72,4 +72,4 @@ const CouponListPage: FC = () => {
   );
 };
 
-export default CouponListPage;
+export default HiddenboxCreate;

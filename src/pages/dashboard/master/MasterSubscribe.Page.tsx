@@ -9,17 +9,17 @@ import {
   Link,
   Typography,
 } from '@material-ui/core';
-import useSettings from '../../hooks/useSettings';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import MasterRoomContainer from 'src/components/dashboard/master/MasterRoom.Container';
+import useSettings from '../../../hooks/useSettings';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import MasterSubscribeContainer from 'src/components/dashboard/master/MasterSubscribe.Container';
 
-const MasterRoomPage: FC = () => {
+const MasterSubscribePage: FC = () => {
   const { settings } = useSettings();
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: Master Room | TUDAL Admin</title>
+        <title>Dashboard: Master Subscribe | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -37,7 +37,7 @@ const MasterRoomPage: FC = () => {
           >
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                달인 방 관리
+                달인 구독 현황
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -53,13 +53,13 @@ const MasterRoomPage: FC = () => {
                   달인
                 </Link>
                 <Typography color="textSecondary" variant="subtitle2">
-                  방 관리
+                  구독 현황
                 </Typography>
               </Breadcrumbs>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <MasterRoomContainer />
+            <MasterSubscribeContainer />
           </Box>
         </Container>
       </Box>
@@ -67,4 +67,4 @@ const MasterRoomPage: FC = () => {
   );
 };
 
-export default MasterRoomPage;
+export default MasterSubscribePage;

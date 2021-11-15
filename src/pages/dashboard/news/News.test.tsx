@@ -4,8 +4,8 @@ import {
   waitForElementToBeRemoved,
   screen,
 } from '@testing-library/react';
-import { Route, MemoryRouter } from 'react-router-dom';
-import NewsComment from './News';
+import { MemoryRouter } from 'react-router-dom';
+import NewsComment from './News.Page';
 
 jest.mock('react-helmet-async', () => ({
   Helmet: () => <header></header>,

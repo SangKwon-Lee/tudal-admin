@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core';
 import { Formik } from 'formik';
 import { Link as RouterLink } from 'react-router-dom';
-import { DateTimePicker } from '@material-ui/lab';
 import {
   HRImageCreateAction,
   HRImageCreateActionKind,

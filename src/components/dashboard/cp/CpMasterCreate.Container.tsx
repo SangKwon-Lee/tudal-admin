@@ -127,23 +127,26 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       type: CpMasterCreateActionKind.LOADING,
       payload: true,
     });
-    try {
-      const { data, status } = await APICp.getUsers();
-      if (status === 200) {
-        if (mode === 'edit') {
-          dispatch({
-            type: CpMasterCreateActionKind.GET_USERS,
-            payload: data,
-          });
-        } else {
-          dispatch({
-            type: CpMasterCreateActionKind.GET_USERS,
-            payload: data.filter((data) => !data.master),
-          });
-        }
+    if (mode === 'edit') {
+      try {
+        const { data } = await APICp.getUsers();
+        dispatch({
+          type: CpMasterCreateActionKind.GET_USERS,
+          payload: data,
+        });
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        const { data } = await APICp.getUsersNoMaster();
+        dispatch({
+          type: CpMasterCreateActionKind.GET_USERS,
+          payload: data,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   }, [mode]);
 
@@ -224,7 +227,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       getCpMaster();
     }
   }, [getCpMaster, getUsers, masterId]);
-
   return (
     <CpMasterCreatePresenter
       dispatch={dispatch}

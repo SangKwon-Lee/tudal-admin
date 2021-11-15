@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { FC } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import type { FC, ChangeEvent } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -14,26 +14,68 @@ import {
   Tabs,
   Typography,
 } from '@material-ui/core';
-import ChevronRightIcon from '../../icons/ChevronRight';
-import PencilAltIcon from '../../icons/PencilAlt';
-import useSettings from '../../hooks/useSettings';
-import PopUpDetailContainer from 'src/components/dashboard/popup/PopUpDetail.Container';
+import { HiddenboxProductDetails } from '../../../components/dashboard/hiddenbox';
+import ChevronRightIcon from '../../../icons/ChevronRight';
+import PencilAltIcon from '../../../icons/PencilAlt';
+import gtm from '../../../lib/gtm';
+import type { Hiddenbox } from '../../../types/hiddenbox';
+import axios from '../../../lib/axios';
+import useSettings from '../../../hooks/useSettings';
+import useMounted from 'src/hooks/useMounted';
 
-const tabs = [{ label: '팝업내용', value: 'details' }];
+const tabs = [{ label: '상품내용', value: 'details' }];
 
-const PopUpDetailsPage: FC = () => {
+const HiddenboxDetails: FC = () => {
+  const mounted = useMounted();
   const { settings } = useSettings();
+  const [hiddenbox, setHiddenbox] = useState<Hiddenbox | null>(null);
   const [currentTab, setCurrentTab] = useState<string>('details');
-  const { popupId } = useParams();
+  const { hiddenboxId } = useParams();
+  const [orders, setOrders] = useState(0);
 
   useEffect(() => {
-    setCurrentTab('details');
+    gtm.push({ event: 'page_view' });
   }, []);
+
+  const getHiddenbox = useCallback(async () => {
+    try {
+      const response = await axios.get<Hiddenbox>(
+        `/hiddenboxes/${hiddenboxId}`,
+      );
+      const salesCount = await axios.get(
+        `/my-hiddenboxes/count?hiddenbox=${hiddenboxId}`,
+      );
+      if (salesCount.status === 200) {
+        setOrders(salesCount.data);
+      }
+
+      if (mounted) {
+        setHiddenbox(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [mounted, hiddenboxId]);
+
+  useEffect(() => {
+    getHiddenbox();
+  }, [getHiddenbox]);
+
+  const handleTabsChange = (
+    event: ChangeEvent<{}>,
+    value: string,
+  ): void => {
+    setCurrentTab(value);
+  };
+
+  if (!hiddenbox) {
+    return null;
+  }
 
   return (
     <>
       <Helmet>
-        <title>Dashboard: PopUp Feed Details | TUDAL Admin</title>
+        <title>Dashboard: Hiddenbox Details | TUDAL Admin</title>
       </Helmet>
       <Box
         sx={{
@@ -46,7 +88,7 @@ const PopUpDetailsPage: FC = () => {
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
               <Typography color="textPrimary" variant="h5">
-                팝업 상세보기
+                {hiddenbox.title}
               </Typography>
               <Breadcrumbs
                 aria-label="breadcrumb"
@@ -56,35 +98,48 @@ const PopUpDetailsPage: FC = () => {
                 <Link
                   color="textPrimary"
                   component={RouterLink}
-                  to="/dashboard/popup"
+                  to="/dashboard/hiddenboxes"
                   variant="subtitle2"
                 >
-                  팝업
+                  히든박스
                 </Link>
-
+                {/* <Link
+                  color="textPrimary"
+                  component={RouterLink}
+                  to="/dashboard"
+                  variant="subtitle2"
+                >
+                  상세보기
+                </Link> */}
                 <Typography color="textSecondary" variant="subtitle2">
-                  팝업 상세보기
+                  상세보기
                 </Typography>
               </Breadcrumbs>
             </Grid>
             <Grid item>
               <Box sx={{ m: -1 }}>
+                {/* {productStatus[0] === 'beforeSale' ||
+                productStatus[0] === 'onSale' ? ( */}
                 <Button
                   color="primary"
                   component={RouterLink}
                   startIcon={<PencilAltIcon fontSize="small" />}
                   sx={{ m: 1 }}
-                  to={`/dashboard/popup/${popupId}/edit`}
+                  to={`/dashboard/hiddenboxes/${hiddenboxId}/edit`}
                   variant="contained"
                 >
                   편집
                 </Button>
+                {/* ) : (
+                  ''
+                )} */}
               </Box>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
             <Tabs
               indicatorColor="primary"
+              onChange={handleTabsChange}
               scrollButtons="auto"
               textColor="primary"
               value={currentTab}
@@ -111,10 +166,15 @@ const PopUpDetailsPage: FC = () => {
                   xl={settings.compact ? 12 : 8}
                   xs={12}
                 >
-                  <PopUpDetailContainer />
+                  <HiddenboxProductDetails
+                    hiddenbox={hiddenbox}
+                    orders={orders}
+                  />
                 </Grid>
               </Grid>
             )}
+            {/* {currentTab === 'invoices' && <HiddenboxInvoices />}
+            {currentTab === 'logs' && <HiddenboxLogs />} */}
           </Box>
         </Container>
       </Box>
@@ -122,4 +182,4 @@ const PopUpDetailsPage: FC = () => {
   );
 };
 
-export default PopUpDetailsPage;
+export default HiddenboxDetails;

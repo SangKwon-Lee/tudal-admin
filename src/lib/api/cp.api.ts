@@ -7,6 +7,14 @@ export const getUsers = () => {
   return axios.get(`/users`);
 };
 
+export const getUsersNoMaster = () => {
+  return axios.get(`/users?master_null=true`);
+};
+
+export const getUsersNoReporter = () => {
+  return axios.get(`/users?hidden_reporter_null=true`);
+};
+
 export const getCpUsers = (params, filter) => {
   let query = qs.stringify(removeEmpty(params));
   return axios.get(`/users?${query}&${filter}`);
