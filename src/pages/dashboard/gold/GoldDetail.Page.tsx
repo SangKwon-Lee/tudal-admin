@@ -15,8 +15,9 @@ const GoldDetailPage: React.FC = () => {
   };
   return (
     <PageLayout
-      mainTopic={'골드'}
-      pageTitle={'골드 상세'}
+      dashboard="골드"
+      mainTopic={'골드 내역'}
+      pageTitle={'골드 내역'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}
     >

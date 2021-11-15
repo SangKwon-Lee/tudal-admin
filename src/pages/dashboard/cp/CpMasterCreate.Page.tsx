@@ -10,8 +10,9 @@ const CpMasterCreatePage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'CP 관리'}
-        pageTitle={'CP 관리'}
+        dashboard="CP 관리"
+        mainTopic={'달인 생성'}
+        pageTitle={'달인 생성'}
         pageTopRef={pageTopRef}
       >
         <CpMasterCreateContainer mode={mode} />

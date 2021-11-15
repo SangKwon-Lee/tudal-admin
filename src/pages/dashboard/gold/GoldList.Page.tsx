@@ -6,7 +6,8 @@ const GoldList: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <PageLayout
-      mainTopic={'골드'}
+      dashboard="골드"
+      mainTopic={'골드 리스트'}
       pageTitle={'골드 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}

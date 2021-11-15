@@ -6,7 +6,8 @@ const SchedulePage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <PageLayout
-      mainTopic={'일정'}
+      dashboard="일정"
+      mainTopic={'일정 리스트'}
       pageTitle={'일정 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { FC } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Box, Divider, Drawer } from '@material-ui/core';
+import { Box, Drawer } from '@material-ui/core';
 import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChartPieIcon from '../../icons/ChartPie';
@@ -10,7 +11,6 @@ import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import CalendarIcon from '../../icons/Calendar';
 import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
-import Logo from '../common/Logo';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
 import PencilIcon from '../../icons/PencilAlt';
@@ -71,11 +71,6 @@ const sections = [
         path: '/dashboard/gold',
         icon: <AttachMoneyIcon fontSize="small" />,
         children: [
-          {
-            title: '프로필',
-            path: '/dashboard/master/profile',
-            icon: <HomeIcon fontSize="small" />,
-          },
           {
             title: '리스트',
             path: '/dashboard/gold',
@@ -153,7 +148,7 @@ const sections = [
         children: [
           {
             title: '프로필',
-            path: '/dashboard/master/profile/:userId',
+            path: '/dashboard/master/profile',
           },
           {
             title: '리스트',
@@ -291,7 +286,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
       }}
     >
       <Scrollbar options={{ suppressScrollX: true }}>
-        <Box
+        {/* <Box
           sx={{
             display: {
               lg: 'none',
@@ -309,9 +304,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
               }}
             />
           </RouterLink>
-        </Box>
-        <Divider />
-        <Box sx={{ p: 2 }}>
+        </Box> */}
+        <Box sx={{ p: 2, backgroundColor: '#101827' }}>
           {filterSection &&
             filterSection.map((section) => (
               <NavSection
@@ -338,8 +332,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
         PaperProps={{
           sx: {
             backgroundColor: 'background.paper',
-            height: 'calc(100% - 64px) !important',
-            top: '64px !Important',
+            // height: 'calc(100% - 64px) !important',
+            // top: '64px !Important',
             width: 280,
           },
         }}

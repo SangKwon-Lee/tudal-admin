@@ -44,7 +44,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
 
   return (
     <>
-      <Card>
+      <Card sx={{ my: 3 }}>
         {newState.loading && (
           <div data-testid="news-list-loading">
             <LinearProgress />

@@ -10,8 +10,9 @@ const HiddenReportProfilePage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'히든 리포터 프로필'}
-        pageTitle={'히든 리포터 프로필'}
+        dashboard="히든 리포트"
+        mainTopic={'프로필'}
+        pageTitle={'프로필'}
         pageTopRef={pageTopRef}
       >
         <HiddenReportProfileContainer user={user} />

@@ -90,12 +90,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
   return (
     <>
       <form onSubmit={handleSubmit(createCpReporter)}>
-        <Card sx={{ p: 3, my: 2 }}>
-          <Typography color="textPrimary" variant="h6">
-            {mode === 'edit'
-              ? '리포터의 수정할 내용을 입력해주세요.'
-              : '리포터의 생성할 내용을 입력해주세요.'}
-          </Typography>
+        <Card sx={{ p: 3, my: 4, mx: '10%' }}>
           <Box sx={{ my: 2 }}>
             <Typography variant="subtitle1" sx={{ my: 1 }}>
               유저 선택
@@ -184,6 +179,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               onChange={onChangeImgae}
             />
             <Button
+              sx={{ ml: 2 }}
               color="primary"
               variant="contained"
               onClick={() => {
@@ -216,32 +212,29 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
                 src={newCpReporter.imageUrl}
               />
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                mt: 6,
-              }}
-            >
-              <Button
-                color="primary"
-                size="large"
-                variant="text"
-                component={RouterLink}
-                to={`/dashboard/cp`}
-              >
-                이전
-              </Button>
-              <Box sx={{ flexGrow: 1 }} />
-              <Button
-                type="submit"
-                color="primary"
-                variant="contained"
-              >
-                {mode === 'edit' ? '수정' : '생성'}
-              </Button>
-            </Box>
           </Box>
         </Card>
+        <Box
+          sx={{
+            display: 'flex',
+            mt: 6,
+            mx: '10%',
+          }}
+        >
+          <Button
+            color="secondary"
+            size="large"
+            variant="text"
+            component={RouterLink}
+            to={`/dashboard/cp`}
+          >
+            이전
+          </Button>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button type="submit" color="primary" variant="contained">
+            {mode === 'edit' ? '수정' : '생성'}
+          </Button>
+        </Box>
       </form>
     </>
   );

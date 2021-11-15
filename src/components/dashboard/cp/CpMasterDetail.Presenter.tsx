@@ -33,17 +33,16 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
       >
         <Button
           variant="outlined"
-          sx={{ mr: 2 }}
+          sx={{ mx: 10 }}
           component={RouterLink}
           to={`/dashboard/cp/${master.id}/edit/master`}
         >
           내용 수정
         </Button>
-        <Button variant="outlined">계정 삭제</Button>
       </Box>
-      <Card sx={{ mt: 2 }}>
+      <Card sx={{ mt: 2, mx: 10 }}>
         {loading && <LinearProgress />}
-        <CardHeader title="CP 달인 상세내용" />
+        <CardHeader sx={{ m: 1 }} title="달인 상세내용" />
         <Divider />
         <Table>
           <TableBody>

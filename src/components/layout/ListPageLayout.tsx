@@ -5,7 +5,6 @@ import {
   Breadcrumbs,
   Container,
   Grid,
-  Link,
   Typography,
   Button,
 } from '@material-ui/core';
@@ -15,8 +14,9 @@ import PlusIcon from 'src/icons/Plus';
 import { Link as RouterLink } from 'react-router-dom';
 
 interface IPageLayoutProps {
-  mainTopic: string;
-  pageTitle: string;
+  dashboard?: string;
+  mainTopic?: string;
+  pageTitle?: string;
   pageTopRef?: React.RefObject<HTMLDivElement>;
   hasCreateButton?: boolean;
   buttonName?: string;
@@ -36,6 +36,7 @@ interface IPageLayoutProps {
  */
 const PageLayout: React.FC<IPageLayoutProps> = (props) => {
   const {
+    dashboard,
     mainTopic,
     pageTitle,
     pageTopRef,
@@ -62,7 +63,7 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
         <Container maxWidth={settings.compact ? 'xl' : false}>
           <Grid container justifyContent="space-between" spacing={3}>
             <Grid item>
-              <Typography color="textPrimary" variant="h5">
+              <Typography color="textPrimary" variant="h4">
                 {pageTitle}
               </Typography>
               <Breadcrumbs
@@ -70,23 +71,10 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
                 separator={<ChevronRightIcon fontSize="small" />}
                 sx={{ mt: 1 }}
               >
-                <Link
-                  color="textPrimary"
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  대시보드
-                </Link>
-                <Link
-                  color="textPrimary"
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="subtitle2"
-                >
-                  컨텐츠관리
-                </Link>
                 <Typography color="textSecondary" variant="subtitle2">
+                  {dashboard}
+                </Typography>
+                <Typography color="textPrimary" variant="subtitle2">
                   {mainTopic}
                 </Typography>
               </Breadcrumbs>

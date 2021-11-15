@@ -40,22 +40,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
   const { loading, cpList } = cpListState;
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'end',
-          my: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          component={RouterLink}
-          to={`/dashboard/cp/create`}
-        >
-          CP 계정 생성
-        </Button>
-      </Box>
-      <Card sx={{ my: 2 }}>
+      <Card sx={{ my: 4 }}>
         {loading && <LinearProgress />}
         <Divider />
         <Box
@@ -63,7 +48,6 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
             alignItems: 'center',
             display: 'flex',
             flexWrap: 'wrap',
-            m: -1,
             p: 2,
           }}
         >
@@ -71,7 +55,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
             sx={{
               m: 1,
               maxWidth: '100%',
-              width: 500,
+              width: 400,
             }}
           >
             <TextField
@@ -94,11 +78,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
               variant="outlined"
             />
           </Box>
-          <Box
-            sx={{
-              mx: 1,
-            }}
-          >
+          <Box>
             <TextField
               select
               sx={{ mx: 2 }}
@@ -120,26 +100,42 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
             </TextField>
           </Box>
         </Box>
+        <Divider />
         <Scrollbar>
-          <Box sx={{ minWidth: 700 }}>
+          <Box>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    <Typography variant="subtitle2" sx={{ pl: 1 }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ fontWeight: 'bold' }}
+                    >
                       이름
                     </Typography>
                   </TableCell>
-                  <TableCell>번호</TableCell>
-                  <TableCell>이메일</TableCell>
-                  <TableCell>등록 날짜</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>
+                    번호
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>
+                    이메일
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>
+                    등록 날짜
+                  </TableCell>
                   <TableCell>
-                    <Typography variant="subtitle2" sx={{ pl: 2.3 }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ pl: 2.3, fontWeight: 'bold' }}
+                    >
                       달인
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="subtitle2" sx={{ pl: 1 }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ pl: 1, fontWeight: 'bold' }}
+                    >
                       히든 리포터
                     </Typography>
                   </TableCell>
@@ -157,7 +153,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               display: 'flex',
                             }}
                           >
-                            <Box sx={{ ml: 1, maxWidth: '150px' }}>
+                            <Box>
                               {cp.username
                                 ? cp.username
                                 : '이름이 없습니다.'}
@@ -172,12 +168,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell
-                          style={{
-                            maxWidth: '180px',
-                            minWidth: '180px',
-                          }}
-                        >
+                        <TableCell>
                           {cp.phone_number
                             ? cp.phone_number
                             : '전화번호가 없습니다.'}
@@ -240,6 +231,8 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
           </Box>
         </Scrollbar>
         <Pagination
+          sx={{ p: 1 }}
+          color="standard"
           count={Math.ceil(cpListState.cpListLength / 50)}
           variant="outlined"
           page={cpListState.page}

@@ -39,11 +39,10 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
         >
           내용 수정
         </Button>
-        <Button variant="outlined">계정 삭제</Button>
       </Box>
       <Card sx={{ mt: 2 }}>
         {loading && <LinearProgress />}
-        <CardHeader title="CP 달인 상세내용" />
+        <CardHeader title="히든 리포터 상세내용" />
         <Divider />
         <Table>
           <TableBody>

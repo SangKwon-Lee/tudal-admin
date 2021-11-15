@@ -6,7 +6,8 @@ const SchedulePage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <PageLayout
-      mainTopic={'키워드'}
+      dashboard="키워드"
+      mainTopic={'키워드 리스트'}
       pageTitle={'키워드 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}

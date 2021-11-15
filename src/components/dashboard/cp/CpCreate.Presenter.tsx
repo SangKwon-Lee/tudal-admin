@@ -1,10 +1,4 @@
-import {
-  Card,
-  Typography,
-  Box,
-  TextField,
-  Button,
-} from '@material-ui/core';
+import { Card, Box, TextField, Button } from '@material-ui/core';
 import { CpCreateState, CpCreateAction } from './CpCreate.Container';
 import { Link as RouterLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -63,13 +57,8 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(createCp)}>
-      <Card sx={{ p: 3, my: 2 }}>
-        <Typography color="textPrimary" variant="h6">
-          {mode === 'edit'
-            ? '수정할 내용을 입력해주세요.'
-            : '생성할 내용을 입력해주세요.'}
-        </Typography>
-        <Box sx={{ mt: 2 }}>
+      <Card sx={{ p: 3, my: 4, mx: '10%' }}>
+        <Box sx={{ my: 2 }}>
           <TextField
             {...register('username')}
             fullWidth
@@ -173,27 +162,33 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
             helperText="올바른 이메일 형식을 지켜주세요"
           />
         </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            mt: 6,
-          }}
-        >
-          <Button
-            color="primary"
-            size="large"
-            variant="text"
-            component={RouterLink}
-            to={`/dashboard/cp`}
-          >
-            이전
-          </Button>
-          <Box sx={{ flexGrow: 1 }} />
-          <Button type="submit" color="primary" variant="contained">
-            {mode === 'edit' ? '수정' : '생성'}
-          </Button>
-        </Box>
       </Card>
+      <Box
+        sx={{
+          display: 'flex',
+          mt: 3,
+          mx: '10%',
+        }}
+      >
+        <Button
+          color="secondary"
+          size="large"
+          variant="text"
+          component={RouterLink}
+          to={`/dashboard/cp`}
+        >
+          이전
+        </Button>
+        <Box sx={{ flexGrow: 1 }} />
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          size="large"
+        >
+          {mode === 'edit' ? '수정' : '생성'}
+        </Button>
+      </Box>
     </form>
   );
 };

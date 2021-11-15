@@ -6,7 +6,8 @@ const NewsPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <PageLayout
-      mainTopic={'그룹'}
+      dashboard="그룹 코멘트"
+      mainTopic={'그룹 리스트'}
       pageTitle={'그룹 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}

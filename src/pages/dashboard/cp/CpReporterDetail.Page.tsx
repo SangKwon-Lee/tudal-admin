@@ -7,8 +7,9 @@ const CpReporterDetailPage: FC = () => {
   return (
     <>
       <PageLayout
-        mainTopic={'CP 히든 리포터 상세보기'}
-        pageTitle={'CP 히든 리포터 상세보기'}
+        dashboard={'CP 관리'}
+        mainTopic={'히든 리포터 상세보기'}
+        pageTitle={'히든 리포터 상세보기'}
         pageTopRef={pageTopRef}
       >
         <CpReporterDetailContainer />

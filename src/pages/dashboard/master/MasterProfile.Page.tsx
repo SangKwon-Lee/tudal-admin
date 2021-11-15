@@ -10,6 +10,7 @@ const MasterProfilePage: FC = () => {
   return (
     <>
       <PageLayout
+        dashboard="달인"
         mainTopic={'달인 프로필'}
         pageTitle={'달인 프로필'}
         pageTopRef={pageTopRef}

@@ -65,7 +65,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
   const selectedAll = selected.length === list.length;
   return (
     <>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'end' }}>
         <Button
           color="primary"
           sx={{ ml: 2 }}
@@ -97,9 +97,9 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
         >
           <Box
             sx={{
-              m: 1,
+              m: 2,
               maxWidth: '100%',
-              width: 500,
+              width: 400,
             }}
           >
             <TextField
@@ -149,14 +149,13 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
             <Box
               sx={{
                 backgroundColor: 'background.paper',
-                px: '4px',
                 width: '100%',
                 zIndex: 2,
               }}
             >
               <Button
                 color="primary"
-                sx={{ ml: 2 }}
+                sx={{ ml: 1 }}
                 variant="outlined"
                 onClick={() => {
                   dispatch({
@@ -179,7 +178,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
           </Box>
         )}
         <Scrollbar>
-          <Box sx={{ minWidth: 700 }}>
+          <Box>
             <Table>
               <TableHead>
                 <TableRow>
@@ -256,6 +255,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
           </Box>
         </Scrollbar>
         <Pagination
+          sx={{ p: 1 }}
           count={Math.ceil(listLength / 50)}
           variant="outlined"
           onChange={(event, page) => {

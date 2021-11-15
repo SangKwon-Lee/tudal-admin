@@ -64,7 +64,7 @@ const NavItem: FC<NavItemProps> = (props) => {
           onClick={handleToggle}
           startIcon={icon}
           sx={{
-            color: 'text.secondary',
+            color: 'white',
             fontWeight: 'fontWeightMedium',
             justifyContent: 'flex-start',
             pl: `${paddingLeft}px`,
@@ -97,7 +97,7 @@ const NavItem: FC<NavItemProps> = (props) => {
         component={path && RouterLink}
         startIcon={icon}
         sx={{
-          color: 'text.secondary',
+          color: 'white',
           fontWeight: 'fontWeightMedium',
           justifyContent: 'flex-start',
           textAlign: 'left',
@@ -107,10 +107,10 @@ const NavItem: FC<NavItemProps> = (props) => {
           textTransform: 'none',
           width: '100%',
           ...(active && {
-            color: 'primary.main',
+            color: 'rgb(16, 185, 129)',
             fontWeight: 'fontWeightBold',
             '& svg': {
-              color: 'primary.main',
+              color: 'rgb(16, 185, 129)',
             },
           }),
         }}
