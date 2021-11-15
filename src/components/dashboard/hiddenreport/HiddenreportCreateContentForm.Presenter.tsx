@@ -1,5 +1,5 @@
 import { Link as RouterLink } from 'react-router-dom';
-import React, { FC, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import {
   Autocomplete,
   Box,
@@ -13,25 +13,26 @@ import {
   TextField,
   InputAdornment,
   Typography,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
-import { DatePicker } from '@material-ui/lab';
 
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
 
 import { Stock, Tag } from 'src/types/schedule';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import * as yup from 'yup';
 
-import toast from 'react-hot-toast';
-
 import {
   IHiddenReportForm,
   HiddenReportCreateAction,
+  HiddenReportCreateActionKind,
   HiddenReportCreateState,
+  HIDDENREPORT_CATEGORIES,
 } from './HiddenreportCreate.Container';
 
 interface IHRContentFormProps {
@@ -52,17 +53,20 @@ interface IHRContentFormProps {
   onTagChange: (event, tag: Tag[], reason, item) => void;
   onStockChange: (event, stock: Stock[], reason, item) => void;
 }
+
 const schema = yup
   .object()
   .shape({
     title: yup.string().required(),
-    // thumnail_text: yup.string().required(),
-    // price: yup.number().required().max(9900),
-    // category: yup.string().required(),
-    // intro: yup.string().required(),
-    // catchphrase: yup.string().required(),
-    // summary: yup.string().required(),
-    // reason: yup.string().required(),
+    price: yup
+      .number()
+      .max(9900)
+      .test('divided-by-5', 'invalid', (value) => value % 5 === 0)
+      .required(),
+    intro: yup.string().required(),
+    catchphrase: yup.string().required(),
+    summary: yup.string().required(),
+    reason: yup.string().required(),
   })
   .required();
 
@@ -88,12 +92,18 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<IHiddenReportForm>({
     defaultValues: reportCreateState.newReport,
     resolver: yupResolver(schema),
   });
   const { newReport, loading } = reportCreateState;
+
+  useEffect(() => {
+    reportCreateState.newReport.contents &&
+      reset(reportCreateState.newReport);
+  }, [reportCreateState.newReport]);
 
   return (
     <Box
@@ -118,9 +128,10 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
-                helperText={'3글자 이상 입력하세요'}
                 variant="outlined"
                 {...register('title')}
+                error={Boolean(errors?.title)}
+                helperText={'3글자 이상 입력하세요'}
               />
             </Grid>
             <Grid item xs={12}>
@@ -133,10 +144,11 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
+                multiline
+                error={Boolean(errors?.intro)}
                 helperText={
                   '현 시점에 리포트를 작성한 계기나 배경, 이유 등을 쉽게 풀어 2줄 이내로 표현해 주세요.'
                 }
-                multiline
                 {...register('intro')}
               />
             </Grid>
@@ -150,9 +162,11 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
-                placeholder={'-\n-\n-\n'}
-                helperText={'요약문 세가지를 적어주세요.'}
                 multiline
+                rows={3}
+                error={Boolean(errors?.summary)}
+                helperText={'요약문 세가지를 적어주세요.'}
+                placeholder={'-\n-\n-\n'}
                 {...register('summary')}
               />
             </Grid>
@@ -166,6 +180,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
+                error={Boolean(errors?.reason)}
                 helperText={'근거를 적어주세요.'}
                 multiline
                 {...register('reason')}
@@ -196,6 +211,9 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                     inputRef={tagInput}
                     name="keyword"
                     variant="outlined"
+                    helperText={
+                      '키워드는 최대 10개까지 등록이 가능합니다.'
+                    }
                     InputProps={{
                       ...params.InputProps,
                       endAdornment: (
@@ -238,6 +256,9 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                     fullWidth
                     onChange={handleStockChange}
                     inputRef={stockInput}
+                    helperText={
+                      '종목은 최대 10개까지 등록이 가능합니다.'
+                    }
                     name="stocks"
                     variant="outlined"
                     InputProps={{
@@ -258,6 +279,142 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 )}
               />
             </Grid>
+            <Grid item xs={12} lg={4}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                대상
+              </Typography>
+
+              <Select
+                size="medium"
+                variant="outlined"
+                name="subject"
+                value={reportCreateState.newReport.subject}
+                {...register('subject')}
+                style={{ width: '100%' }}
+                onChange={(e) => {
+                  dispatch({
+                    type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
+                    payload: {
+                      value: e.target.value,
+                      name: e.target.name,
+                    },
+                  });
+                }}
+              >
+                {HIDDENREPORT_CATEGORIES.subject.map((item, i) => (
+                  <MenuItem key={i} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                유형
+              </Typography>
+              <Select
+                size="medium"
+                variant="outlined"
+                name={'type'}
+                value={reportCreateState.newReport.type}
+                {...register('type')}
+                style={{ width: '100%' }}
+                onChange={(e) => {
+                  dispatch({
+                    type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
+                    payload: {
+                      value: e.target.value,
+                      name: e.target.name,
+                    },
+                  });
+                }}
+              >
+                {HIDDENREPORT_CATEGORIES.type.map((item, i) => (
+                  <MenuItem key={i} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                대응 전략
+              </Typography>
+
+              <Select
+                size="medium"
+                variant="outlined"
+                name="counter"
+                {...register('counter')}
+                value={reportCreateState.newReport.counter}
+                style={{ width: '100%' }}
+                onChange={(e) => {
+                  dispatch({
+                    type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
+                    payload: {
+                      value: e.target.value,
+                      name: e.target.name,
+                    },
+                  });
+                }}
+              >
+                {HIDDENREPORT_CATEGORIES.counter.map((item, i) => (
+                  <MenuItem key={i} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                캐치프레이즈
+              </Typography>
+              <TextField
+                fullWidth
+                helperText={'캐치프레이즈를 적어주세요.'}
+                multiline
+                error={Boolean(errors?.catchphrase)}
+                {...register('catchphrase')}
+              />
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                가격
+              </Typography>
+              <TextField
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      GOLD
+                    </InputAdornment>
+                  ),
+                }}
+                helperText={'5G 단위로 적어주세요. (최대 9900G)'}
+                error={Boolean(errors?.price)}
+                {...register('price')}
+              />
+            </Grid>
             <Grid item xs={12} lg={6}>
               <Typography
                 color="textPrimary"
@@ -267,12 +424,22 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 PDF 첨부
               </Typography>
               <input
-                id="image"
-                name="image"
-                accept="pdf/*"
+                id="pdf"
+                name="pdf"
+                accept="*"
                 type="file"
                 onChange={onPDFChange}
               />
+
+              {newReport.pdfUrl && (
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                  sx={{ mt: 1 }}
+                >
+                  <a href={newReport.pdfUrl}>기존 파일 다운로드</a>
+                </Typography>
+              )}
 
               <Typography
                 color="textSecondary"

@@ -101,7 +101,6 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
 ) => {
   const mode = props.mode || 'create';
   const { id } = useParams();
-  console.log(id, mode);
 
   const [HRImageCreateState, dispatch] = useReducer(
     PopUpCreateReducer,

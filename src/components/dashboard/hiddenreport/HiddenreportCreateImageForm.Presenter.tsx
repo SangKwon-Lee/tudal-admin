@@ -40,13 +40,136 @@ import {
 } from './HiddenreportCreate.Container';
 import useMounted from 'src/hooks/useMounted';
 import toast from 'react-hot-toast';
+import { IHRImage } from 'src/types/hiddenreport';
 
 interface HiddenReportCreateImageFormPresenterProps {
   reportCreateState: HiddenReportCreateState;
+  mode: string;
+  reportId: number;
   dispatch: (params: HiddenReportCreateAction) => void;
   getImages: (query) => void;
   setStep: (prev) => void;
 }
+
+const ImageCard = (props) => {
+  const { image, isSelected, onChange, isMain } = props;
+
+  return (
+    <Grid item key={image.id} md={4} xs={12}>
+      <Card
+        style={{
+          border: `${
+            isSelected ? '5px solid rgb(69,76,199)' : 'none'
+          }`,
+          boxShadow: 'none',
+        }}
+        onClick={() => onChange(image)}
+      >
+        {image.thumbnailImageUrl ? (
+          <CardMedia
+            image={image.thumbnailImageUrl}
+            component="img"
+            src={image.thumbnailImageUrl}
+            sx={{
+              backgroundColor: 'background.default',
+              height: 200,
+            }}
+          />
+        ) : (
+          <Box
+            sx={{
+              alignItems: 'center',
+              backgroundColor: blueGrey['50'],
+              color: '#000000',
+              display: 'flex',
+              height: 140,
+              justifyContent: 'center',
+            }}
+          >
+            <DocumentTextIcon fontSize="large" />
+          </Box>
+        )}
+        <CardContent
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <Typography color="textPrimary" variant="subtitle2">
+              {image.id}
+            </Typography>
+            <Typography color="textSecondary" variant="caption">
+              {/* {bytesToSize(image.size)} */}
+            </Typography>
+          </div>
+          <div>
+            <Tooltip title="More options">
+              <IconButton
+                edge="end"
+                // onClick={handleMenuOpen}
+                // ref={moreRef}
+                size="small"
+              >
+                <DotsHorizontalIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </CardContent>
+        <Divider />
+        <CardActions>
+          <Button
+            color="primary"
+            fullWidth
+            startIcon={<DownloadIcon fontSize="small" />}
+            variant="text"
+          >
+            Download
+          </Button>
+        </CardActions>
+        <Menu
+          // anchorEl={moreRef.current}
+          anchorOrigin={{
+            horizontal: 'left',
+            vertical: 'top',
+          }}
+          elevation={1}
+          // onClose={handleMenuClose}
+          open={false}
+          PaperProps={{
+            sx: {
+              maxWidth: '100%',
+              width: 250,
+            },
+          }}
+          transformOrigin={{
+            horizontal: 'left',
+            vertical: 'top',
+          }}
+        >
+          <MenuItem divider>
+            <ListItemIcon>
+              <PencilAltIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Rename" />
+          </MenuItem>
+          <MenuItem divider>
+            <ListItemIcon>
+              <TrashIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Delete" />
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <ArchiveIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Archive" />
+          </MenuItem>
+        </Menu>
+      </Card>
+    </Grid>
+  );
+};
 const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresenterProps> =
   ({ reportCreateState, dispatch, setStep }) => {
     const { loading, image, newReport } = reportCreateState;
@@ -154,136 +277,33 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
           }}
         >
           <Grid container spacing={3}>
-            {image.list.map((image) => {
+            {newReport.hidden_report_image && (
+              <ImageCard
+                image={newReport.hidden_report_image}
+                isSelected={true}
+                onChange={(img) =>
+                  dispatch({
+                    type: HiddenReportCreateActionKind.CHANGE_IMAGE,
+                    payload: img,
+                  })
+                }
+              />
+            )}
+            {image.list.map((image, i) => {
               const isSelected =
                 newReport.hidden_report_image?.id === image.id;
               return (
-                <Grid item key={image.id} md={4} xs={12}>
-                  <Card
-                    style={{
-                      border: `${
-                        isSelected
-                          ? '3px solid rgb(69,76,199)'
-                          : 'none'
-                      }`,
-                      boxShadow: 'none',
-                    }}
-                    onClick={() => {
-                      dispatch({
-                        type: HiddenReportCreateActionKind.CHANGE_IMAGE,
-                        payload: image,
-                      });
-                    }}
-                  >
-                    {true ? (
-                      <CardMedia
-                        image={image.thumbnailImageUrl}
-                        component="img"
-                        src={image.thumbnailImageUrl}
-                        sx={{
-                          backgroundColor: 'background.default',
-                          height: 200,
-                        }}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          alignItems: 'center',
-                          backgroundColor: blueGrey['50'],
-                          color: '#000000',
-                          display: 'flex',
-                          height: 140,
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <DocumentTextIcon fontSize="large" />
-                      </Box>
-                    )}
-                    <CardContent
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <div>
-                        <Typography
-                          color="textPrimary"
-                          variant="subtitle2"
-                        >
-                          {image.id}
-                        </Typography>
-                        <Typography
-                          color="textSecondary"
-                          variant="caption"
-                        >
-                          {/* {bytesToSize(image.size)} */}
-                        </Typography>
-                      </div>
-                      <div>
-                        <Tooltip title="More options">
-                          <IconButton
-                            edge="end"
-                            onClick={handleMenuOpen}
-                            ref={moreRef}
-                            size="small"
-                          >
-                            <DotsHorizontalIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    </CardContent>
-                    <Divider />
-                    <CardActions>
-                      <Button
-                        color="primary"
-                        fullWidth
-                        startIcon={<DownloadIcon fontSize="small" />}
-                        variant="text"
-                      >
-                        Download
-                      </Button>
-                    </CardActions>
-                    <Menu
-                      anchorEl={moreRef.current}
-                      anchorOrigin={{
-                        horizontal: 'left',
-                        vertical: 'top',
-                      }}
-                      elevation={1}
-                      onClose={handleMenuClose}
-                      open={openMenu}
-                      PaperProps={{
-                        sx: {
-                          maxWidth: '100%',
-                          width: 250,
-                        },
-                      }}
-                      transformOrigin={{
-                        horizontal: 'left',
-                        vertical: 'top',
-                      }}
-                    >
-                      <MenuItem divider>
-                        <ListItemIcon>
-                          <PencilAltIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Rename" />
-                      </MenuItem>
-                      <MenuItem divider>
-                        <ListItemIcon>
-                          <TrashIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Delete" />
-                      </MenuItem>
-                      <MenuItem>
-                        <ListItemIcon>
-                          <ArchiveIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Archive" />
-                      </MenuItem>
-                    </Menu>
-                  </Card>
-                </Grid>
+                <ImageCard
+                  key={i}
+                  image={image}
+                  isSelected={isSelected}
+                  onChange={(img) =>
+                    dispatch({
+                      type: HiddenReportCreateActionKind.CHANGE_IMAGE,
+                      payload: img,
+                    })
+                  }
+                />
               );
             })}
           </Grid>

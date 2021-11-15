@@ -195,6 +195,14 @@ const HiddenReportCreate = Loadable(
       ),
   ),
 );
+const HiddenReportDetailView = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/hiddenReportDeatilView.Page'
+      ),
+  ),
+);
 
 // Error pages
 
@@ -281,6 +289,10 @@ const routes: PartialRouteObject[] = [
             element: <HiddenReportList />,
           },
           {
+            path: '/:reportId',
+            element: <HiddenReportDetailView />,
+          },
+          {
             path: 'images',
             element: <HiddenReportImageList />,
           },
@@ -292,16 +304,13 @@ const routes: PartialRouteObject[] = [
             path: 'images/:id/edit',
             element: <HiddenReportImageCreate mode={'edit'} />,
           },
-          {
-            path: ':reportId',
-            element: <HiddenboxDetails />,
-          },
-          {
-            path: ':hiddenboxId/edit',
-            element: <HiddenboxEdit />,
-          },
+
           {
             path: 'new',
+            element: <HiddenReportCreate />,
+          },
+          {
+            path: '/:reportId/edit',
             element: <HiddenReportCreate />,
           },
         ],

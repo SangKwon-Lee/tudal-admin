@@ -1,4 +1,6 @@
 import { FC, useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+
 import {
   Box,
   Card,
@@ -18,19 +20,22 @@ import axios, { CMSURL } from '../../../lib/axios';
 import { Viewer } from '@toast-ui/react-editor';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
 import productStatusFunc from 'src/utils/productStatus';
-import { HiddenReportCreateState } from './HiddenreportCreate.Container';
+import {
+  HiddenReportCreateState,
+  IHiddenReportForm,
+} from './HiddenreportCreate.Container';
 import dayjs from 'dayjs';
+import { IHR } from 'src/types/hiddenreport';
 
 interface HiddenReportDetailViewPresenterProps {
-  state: HiddenReportCreateState;
-  onSubmit: () => Promise<void>;
-  setStep: (prev) => void;
+  state: IHR | IHiddenReportForm;
+  isCreating?: boolean;
+  onSubmit?: () => Promise<void>;
+  setStep?: (prev) => void;
 }
 
 const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterProps> =
-  ({ state, onSubmit, setStep }) => {
-    const handleEdit = () => setStep(1);
-    const { newReport } = state;
+  ({ state, onSubmit, setStep, isCreating }) => {
     return (
       <Box sx={{ pt: 2 }}>
         <Card>
@@ -46,7 +51,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {newReport.title}
+                    {state.title}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -56,7 +61,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                     도입배경
                   </Typography>
                 </TableCell>
-                <TableCell>{newReport.intro}</TableCell>
+                <TableCell>{state.intro}</TableCell>
               </TableRow>
 
               <TableRow>
@@ -66,7 +71,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <pre>{newReport.summary}</pre>
+                  <pre>{state.summary}</pre>
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -77,7 +82,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {newReport.reason}
+                    {state.reason}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -89,7 +94,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {newReport.price} GOLD
+                    {state.price} GOLD
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -101,7 +106,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {newReport.catchphrase}
+                    {state.catchphrase}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -114,7 +119,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${dayjs(newReport.expirationDate).format(
+                    {`${dayjs(state.expirationDate).format(
                       'YYYY년 M월 D일',
                     )}`}
                   </Typography>
@@ -127,9 +132,9 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  {console.log(newReport)}
+                  {console.log(state)}
                   <Typography color="textSecondary" variant="body2">
-                    {newReport?.stocks.map(
+                    {state?.stocks.map(
                       (stock) => `${stock.name}(${stock.code})\n`,
                     )}
                   </Typography>
@@ -143,7 +148,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {newReport?.tags.map((tag) => `#${tag.name} `)}
+                    {state?.tags.map((tag) => `#${tag.name} `)}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -162,7 +167,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             </Typography>
             <Box sx={{ py: 3 }}>
               <Container maxWidth="md">
-                <Viewer initialValue={newReport.contents} />
+                <Viewer initialValue={state.contents} />
               </Container>
             </Box>
           </Box>
@@ -171,13 +176,24 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
           style={{ display: 'flex', justifyContent: 'space-between' }}
           sx={{ mt: 3 }}
         >
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleEdit}
-          >
-            수정
-          </Button>
+          {isCreating ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setStep(1)}
+            >
+              수정
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              component={RouterLink}
+              to={`/dashboard/hiddenreports/${state.id}/edit`}
+            >
+              수정
+            </Button>
+          )}
           <Button variant="contained" onClick={onSubmit}>
             제출
           </Button>
