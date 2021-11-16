@@ -53,7 +53,7 @@ const ImageCard = (props) => {
   const { image, isSelected, onChange, isMain } = props;
 
   return (
-    <Grid item key={image.id} md={4} xs={12}>
+    <Grid item md={4} xs={12}>
       <Card
         style={{
           border: `${
@@ -61,9 +61,11 @@ const ImageCard = (props) => {
           }`,
           boxShadow: 'none',
         }}
-        onClick={() => onChange(image)}
+        onClick={() => {
+          image && onChange(image);
+        }}
       >
-        {image.thumbnailImageUrl ? (
+        {image?.thumbnailImageUrl ? (
           <CardMedia
             image={image.thumbnailImageUrl}
             component="img"
@@ -95,75 +97,10 @@ const ImageCard = (props) => {
         >
           <div>
             <Typography color="textPrimary" variant="subtitle2">
-              {image.id}
+              {image?.name || '이미지를 선택해주세요'}
             </Typography>
-            <Typography color="textSecondary" variant="caption">
-              {/* {bytesToSize(image.size)} */}
-            </Typography>
-          </div>
-          <div>
-            <Tooltip title="More options">
-              <IconButton
-                edge="end"
-                // onClick={handleMenuOpen}
-                // ref={moreRef}
-                size="small"
-              >
-                <DotsHorizontalIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
           </div>
         </CardContent>
-        <Divider />
-        <CardActions>
-          <Button
-            color="primary"
-            fullWidth
-            startIcon={<DownloadIcon fontSize="small" />}
-            variant="text"
-          >
-            Download
-          </Button>
-        </CardActions>
-        <Menu
-          // anchorEl={moreRef.current}
-          anchorOrigin={{
-            horizontal: 'left',
-            vertical: 'top',
-          }}
-          elevation={1}
-          // onClose={handleMenuClose}
-          open={false}
-          PaperProps={{
-            sx: {
-              maxWidth: '100%',
-              width: 250,
-            },
-          }}
-          transformOrigin={{
-            horizontal: 'left',
-            vertical: 'top',
-          }}
-        >
-          <MenuItem divider>
-            <ListItemIcon>
-              <PencilAltIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Rename" />
-          </MenuItem>
-          <MenuItem divider>
-            <ListItemIcon>
-              <TrashIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Delete" />
-          </MenuItem>
-          <MenuItem>
-            <ListItemIcon>
-              <ArchiveIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Archive" />
-          </MenuItem>
-        </Menu>
       </Card>
     </Grid>
   );
@@ -171,20 +108,12 @@ const ImageCard = (props) => {
 const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresenterProps> =
   ({ reportCreateState, dispatch, setStep }) => {
     const { loading, image, newReport } = reportCreateState;
+    console.log(newReport.hidden_report_image);
     const { isLoadMoreAvailable } = image;
 
     const showAlert = useRef(true);
     const loader = useRef<HTMLDivElement | null>(null);
-    const moreRef = useRef<HTMLButtonElement | null>(null);
-    const [openMenu, setOpenMenu] = useState<boolean>(false);
 
-    const handleMenuOpen = (): void => {
-      setOpenMenu(true);
-    };
-
-    const handleMenuClose = (): void => {
-      setOpenMenu(false);
-    };
     const onChangeSearch = _.debounce((e) => {
       const { value } = e.target;
       dispatch({
@@ -228,12 +157,54 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
       if (loader.current) observer.observe(loader.current);
     }, [handleObserver]);
 
-    const handleStep = () => {
+    const handleNext = () => {
+      if (!newReport.hidden_report_image?.id) {
+        toast.error('이미지를 선택해주세요');
+        return;
+      }
       setStep((prev) => prev + 1);
+    };
+    const handlePrev = () => {
+      setStep((prev) => prev - 1);
     };
 
     return (
       <>
+        <Box
+          sx={{
+            display: 'flex',
+            p: 2,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography color="textPrimary" variant="h5">
+            리포트에 사용될 썸네일 이미지를 선택해주세요
+          </Typography>
+          <Box
+            sx={{
+              p: 2,
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button
+              color="secondary"
+              variant="contained"
+              aria-label="add"
+              onClick={handlePrev}
+              style={{ marginRight: '10px' }}
+            >
+              뒤로가기
+            </Button>
+            <Button
+              color="primary"
+              variant="contained"
+              aria-label="add"
+              onClick={handleNext}
+            >
+              이미지 선택
+            </Button>
+          </Box>
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -275,18 +246,19 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
           }}
         >
           <Grid container spacing={3}>
-            {newReport.hidden_report_image && (
-              <ImageCard
-                image={newReport.hidden_report_image}
-                isSelected={true}
-                onChange={(img) =>
-                  dispatch({
-                    type: HiddenReportCreateActionKind.CHANGE_IMAGE,
-                    payload: img,
-                  })
-                }
-              />
-            )}
+            <ImageCard
+              image={newReport.hidden_report_image}
+              isSelected={
+                newReport.hidden_report_image?.id ? true : false
+              }
+              onChange={(img) =>
+                dispatch({
+                  type: HiddenReportCreateActionKind.CHANGE_IMAGE,
+                  payload: img,
+                })
+              }
+            />
+
             {image.list.map((image, i) => {
               const isSelected =
                 newReport.hidden_report_image?.id === image.id;
@@ -306,17 +278,6 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
             })}
           </Grid>
         </Box>
-        {newReport.hidden_report_image?.id && (
-          <Box style={{ position: 'fixed', right: 10, bottom: 10 }}>
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={handleStep}
-            >
-              <ArrowRightIcon />
-            </Fab>
-          </Box>
-        )}
         {!loading && image.list.length && <div ref={loader} />}
       </>
     );

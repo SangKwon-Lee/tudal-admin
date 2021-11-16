@@ -59,6 +59,7 @@ export enum HiddenReportCreateActionKind {
   CHANGE_INPUT = 'CHANGE_INPUT',
   CHANGE_PDF = 'CHANGE_PDF',
   CHANGE_CATEGORY = 'CHANGE_CATEGORY',
+  CHANGE_EXPIRATION_DATE = 'CHANGE_EXPIRATION_DATE',
 
   // images
   NEXT_PAGE = 'NEXT_PAGE',
@@ -76,7 +77,6 @@ export interface IHiddenReportForm {
   id?: number; // 수정하는 경우 ID 필요
   title: string;
   hidden_report_image: IHRImage; // IHRImage ID
-  thumnail_text: string;
   price: number;
   intro: string;
   catchphrase: string;
@@ -114,7 +114,6 @@ export const initialState: HiddenReportCreateState = {
   loading: false,
   newReport: {
     title: '',
-    thumnail_text: '',
     price: 5,
     subject: HIDDENREPORT_CATEGORIES.subject[0], // 대상 (카테고리)
     type: HIDDENREPORT_CATEGORIES.type[0], // 유형 (카테고리)
@@ -194,6 +193,14 @@ const HiddenReportCreateReducer = (
         newReport: {
           ...state.newReport,
           tags: payload,
+        },
+      };
+    case HiddenReportCreateActionKind.CHANGE_EXPIRATION_DATE:
+      return {
+        ...state,
+        newReport: {
+          ...state.newReport,
+          expirationDate: payload,
         },
       };
     case HiddenReportCreateActionKind.NEXT_PAGE:
@@ -281,7 +288,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           const newReportData: IHiddenReportForm = {
             id: data.id,
             title: data.title,
-            thumnail_text: data.thumnail_text,
             price: data.price,
             counter: data.counter,
             subject: data.subject,
