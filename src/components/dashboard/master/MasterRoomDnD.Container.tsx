@@ -314,7 +314,9 @@ const DraggableCard: React.FC<CardProps> = ({
               ))}
             </TextField>
           ) : (
-            <Typography>타입 : {openType}</Typography>
+            <Typography>
+              타입 : {openType === 'free' ? '무료' : '프리미엄'}
+            </Typography>
           )}
           {newState.edit ? (
             <Box

@@ -14,7 +14,7 @@ export interface CP_Hidden_Reporter {
   intro: string;
   imageUrl: string;
   tudalRecommendScore?: number;
-  catchPhrase: string;
+  catchphrase: string;
   user: any;
   created_at?: string;
 }

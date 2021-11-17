@@ -186,7 +186,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                         <TableCell>
                           {cp.master?.id ? (
                             <Button
-                              variant="outlined"
+                              variant="contained"
                               component={RouterLink}
                               to={`/dashboard/cp/${cp.master.id}/master`}
                             >
@@ -206,7 +206,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                         <TableCell>
                           {cp.hidden_reporter?.id ? (
                             <Button
-                              variant="outlined"
+                              variant="contained"
                               component={RouterLink}
                               to={`/dashboard/cp/${cp.hidden_reporter.id}/reporter`}
                             >

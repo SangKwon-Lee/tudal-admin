@@ -23,7 +23,7 @@ const schema = yup
   .object({
     user: yup.string().required(),
     nickname: yup.string().required(),
-    catchPhrase: yup.string().required(),
+    catchphrase: yup.string().required(),
     intro: yup.string().required(),
     tudalRecommendScore: yup.number().required(),
   })
@@ -138,11 +138,11 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               캐치 프레이즈
             </Typography>
             <TextField
-              {...register('catchPhrase')}
+              {...register('catchphrase')}
               fullWidth
               multiline
               variant="outlined"
-              error={Boolean(errors?.catchPhrase)}
+              error={Boolean(errors?.catchphrase)}
               helperText={'캐치 프레이즈는 필수입니다.'}
             />
           </Box>
@@ -199,8 +199,15 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             >
               이미지 삭제
             </Button>
-            <Typography variant="subtitle2" sx={{ my: 2 }}>
-              업로드시 이미지를 클릭하여 원하는 부분을 Crop해주세요.
+            <Typography
+              variant="subtitle2"
+              color="secondary"
+              fontSize="14px"
+              fontWeight="bold"
+              sx={{ my: 2 }}
+            >
+              업로드시 이미지를 드래그하여 원하는 부분을 Crop해주세요.
+              (프로필 미리보기에 이미지가 나와야 합니다.)
             </Typography>
             <div>
               <ImageCropper
@@ -226,14 +233,14 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
               내외)
             </Typography>
             <Box>
-              <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
+              <Typography sx={{ my: 2 }}>프로필 미리보기</Typography>
               <div>
                 {newCpReporter.imageUrl && (
                   <div>
                     <img
                       alt="Cropped"
                       src={newCpReporter.imageUrl}
-                      style={{ borderRadius: '50%' }}
+                      style={{ borderRadius: '50%', width: '100px' }}
                     />
                   </div>
                 )}

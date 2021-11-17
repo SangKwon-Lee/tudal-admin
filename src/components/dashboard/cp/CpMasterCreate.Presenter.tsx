@@ -163,8 +163,15 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             >
               이미지 삭제
             </Button>
-            <Typography variant="subtitle2" sx={{ my: 2 }}>
-              업로드시 이미지를 클릭하여 원하는 부분을 Crop해주세요.
+            <Typography
+              variant="subtitle2"
+              color="secondary"
+              fontSize="14px"
+              fontWeight="bold"
+              sx={{ my: 2 }}
+            >
+              업로드시 이미지를 드래그하여 원하는 부분을 Crop해주세요.
+              (프로필 미리보기에 이미지가 나와야 합니다.)
             </Typography>
 
             <div>
@@ -192,14 +199,14 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               내외)
             </Typography>
             <Box>
-              <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
+              <Typography sx={{ my: 2 }}>프로필 미리보기</Typography>
               <div>
                 {newCpMaster.profile_image_url && (
                   <div>
                     <img
                       alt="Cropped"
                       src={newCpMaster.profile_image_url}
-                      style={{ borderRadius: '50%' }}
+                      style={{ borderRadius: '50%', width: '100px' }}
                     />
                   </div>
                 )}
