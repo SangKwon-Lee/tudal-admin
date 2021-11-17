@@ -326,7 +326,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
           master: master.id,
         };
         if (mode === 'create') {
-          console.log(newMaster);
           try {
             const response = await cmsServer.post(
               '/master-feeds',

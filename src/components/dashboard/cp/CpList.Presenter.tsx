@@ -232,9 +232,10 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
         </Scrollbar>
         <Pagination
           sx={{ p: 1 }}
-          color="standard"
+          size="small"
+          color="primary"
+          variant="text"
           count={Math.ceil(cpListState.cpListLength / 50)}
-          variant="outlined"
           page={cpListState.page}
           onChange={(event, page) => {
             dispatch({

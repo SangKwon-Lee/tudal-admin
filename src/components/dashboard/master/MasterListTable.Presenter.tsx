@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   Checkbox,
-  Divider,
   IconButton,
   InputAdornment,
   Link,
@@ -45,14 +44,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
   return (
     <>
       <Card sx={{ my: 3 }}>
-        {newState.loading && (
-          <div data-testid="news-list-loading">
-            <LinearProgress />
-          </div>
-        )}
-
-        <Divider />
-
+        {newState.loading && <LinearProgress />}
         <Box
           sx={{
             alignItems: 'center',
@@ -125,7 +117,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               label={'방 정렬'}
               name="sort"
               onChange={(event) => {
-                console.log(event.target.value);
                 dispatch({
                   type: MasterListTableActionKind.CHANGE_ROOM,
                   payload: event.target.value,
@@ -291,8 +282,11 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
           </Box>
         </Scrollbar>
         <Pagination
+          size="small"
+          color="primary"
+          sx={{ m: 1 }}
           count={Math.ceil(newState.list.feedLength / 20)}
-          variant="outlined"
+          variant="text"
           onChange={(event, page) => {
             dispatch({
               type: MasterListTableActionKind.CHANGE_PAGE,

@@ -80,10 +80,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     >
       {({ setFieldValue }): JSX.Element => (
         <form>
-          <Card sx={{ p: 3, my: 3 }}>
-            <Typography color="textPrimary" variant="h6">
-              피드 내용을 입력해주세요.
-            </Typography>
+          <Card sx={{ p: 3, my: 4, mx: 10 }}>
             {!isHasRoom ? (
               <>
                 <Box sx={{ mt: 2 }}>
@@ -335,7 +332,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                   }}
                 >
                   <Button
-                    color="primary"
+                    color="secondary"
                     size="large"
                     variant="text"
                     component={RouterLink}

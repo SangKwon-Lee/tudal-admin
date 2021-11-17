@@ -4,7 +4,6 @@ import {
   Box,
   TextField,
   Button,
-  LinearProgress,
   Autocomplete,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
@@ -18,6 +17,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useEffect } from 'react';
 import { CP_Master } from 'src/types/cp';
+import ImageCropper from 'src/components/common/ImageCropper';
 
 const schema = yup
   .object({
@@ -33,20 +33,13 @@ interface CpMasterCreateProps {
   cpCreateState: CpMasterCreateState;
   mode: string;
   createCpMaster: (data: CP_Master) => Promise<void>;
-  onChangeImgae: (event: any) => Promise<boolean>;
 }
 
 const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
   props,
 ) => {
-  const {
-    cpCreateState,
-    dispatch,
-    mode,
-    onChangeImgae,
-    createCpMaster,
-  } = props;
-  const { newCpMaster, loading, users } = cpCreateState;
+  const { cpCreateState, dispatch, mode, createCpMaster } = props;
+  const { newCpMaster, users } = cpCreateState;
   const {
     register,
     handleSubmit,
@@ -71,12 +64,26 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     });
   }, [register]);
 
+  const onUploadFile = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        dispatch({
+          type: CpMasterCreateActionKind.PRE_CROP_IMAGE,
+          payload: reader.result,
+        });
+      });
+
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit(createCpMaster)}>
         <Card sx={{ p: 3, my: 4, mx: '10%' }}>
           <Box sx={{ my: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               유저 선택
             </Typography>
             <Autocomplete
@@ -98,7 +105,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               닉네임 (채널 이름)
             </Typography>
             <TextField
@@ -110,7 +117,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               소개 글
             </Typography>
             <TextField
@@ -123,7 +130,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               키워드
             </Typography>
             <TextField
@@ -135,11 +142,13 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography sx={{ my: 2 }}>프로필 이미지 등록</Typography>
+            <Typography variant="subtitle2" sx={{ my: 2 }}>
+              프로필 이미지 등록
+            </Typography>
             <TextField
               name="profile_image_url"
               type="file"
-              onChange={onChangeImgae}
+              onChange={onUploadFile}
             />
             <Button
               sx={{ ml: 2 }}
@@ -147,13 +156,33 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               variant="contained"
               onClick={() => {
                 dispatch({
-                  type: CpMasterCreateActionKind.CHANGE_IMAGE,
+                  type: CpMasterCreateActionKind.PRE_CROP_IMAGE,
                   payload: null,
                 });
               }}
             >
               이미지 삭제
             </Button>
+            <Typography variant="subtitle2" sx={{ my: 2 }}>
+              업로드시 이미지를 클릭하여 원하는 부분을 Crop해주세요.
+            </Typography>
+
+            <div>
+              <ImageCropper
+                imageToCrop={cpCreateState.cropImg}
+                onImageCropped={(croppedImage) => {
+                  dispatch({
+                    type: CpMasterCreateActionKind.CHANGE_IMAGE,
+                    payload: croppedImage[0],
+                  });
+                  dispatch({
+                    type: CpMasterCreateActionKind.SAVE_CROP_IMAGE,
+                    payload: croppedImage[1],
+                  });
+                }}
+              />
+            </div>
+
             <Typography
               color="textSecondary"
               variant="subtitle2"
@@ -164,16 +193,17 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             </Typography>
             <Box>
               <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
-              {loading && (
-                <div data-testid="news-list-loading">
-                  <LinearProgress />
-                </div>
-              )}
-              <img
-                style={{ width: '100%' }}
-                alt={''}
-                src={newCpMaster.profile_image_url}
-              />
+              <div>
+                {newCpMaster.profile_image_url && (
+                  <div>
+                    <img
+                      alt="Cropped"
+                      src={newCpMaster.profile_image_url}
+                      style={{ borderRadius: '50%' }}
+                    />
+                  </div>
+                )}
+              </div>
             </Box>
           </Box>
         </Card>

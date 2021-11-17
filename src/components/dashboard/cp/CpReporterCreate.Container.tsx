@@ -14,6 +14,8 @@ export enum CpReporterCreateActionKind {
   GET_REPORTER = 'GET_REPORTER',
   GET_USER_ID = 'GET_USER_ID',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
+  PRE_CROP_IMAGE = 'PRE_CROP_IMAGE',
+  SAVE_CROP_IMAGE = 'SAVE_CROP_IMAGE',
 }
 
 export interface CpReporterCreateAction {
@@ -26,6 +28,8 @@ export interface CpReporterCreateState {
   newCpReporter: CP_Hidden_Reporter;
   users: IUser[];
   userId: number;
+  cropImg: string;
+  saveCropImg: string;
 }
 
 const initialState: CpReporterCreateState = {
@@ -40,6 +44,8 @@ const initialState: CpReporterCreateState = {
   },
   users: [],
   userId: 0,
+  cropImg: '',
+  saveCropImg: '',
 };
 
 const CpReporterCreateReducer = (
@@ -78,6 +84,16 @@ const CpReporterCreateReducer = (
       return {
         ...state,
         userId: payload,
+      };
+    case CpReporterCreateActionKind.PRE_CROP_IMAGE:
+      return {
+        ...state,
+        cropImg: payload,
+      };
+    case CpReporterCreateActionKind.SAVE_CROP_IMAGE:
+      return {
+        ...state,
+        saveCropImg: payload,
       };
   }
 };
@@ -155,13 +171,20 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   //* 리포터 등록
   const createCpReporter = async (data: CP_Hidden_Reporter) => {
     if (mode === 'create') {
-      const newInput = {
+      let newInput = {
         ...data,
         // keyword: cpCreateState.newCpReporter.keyword.trim(),
         tudalRecommendScore: Number(data.tudalRecommendScore),
-        imageUrl: cpCreateState.newCpReporter.imageUrl,
       };
       try {
+        const imgUrl = await registerImage(
+          cpCreateState.saveCropImg,
+          bucket_hiddenbox,
+        );
+        newInput = {
+          ...newInput,
+          imageUrl: imgUrl,
+        };
         const { status } = await APICp.postReporter(newInput);
         if (status === 200) {
           toast.success('새로운 히든 리포터가 만들어졌습니다.');
@@ -173,11 +196,14 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       }
     } else {
       try {
+        const imgUrl = await registerImage(
+          cpCreateState.saveCropImg,
+          bucket_hiddenbox,
+        );
         const newInput = {
           ...data,
-          // keyword: cpCreateState.newCpReporter.keyword.trim(),
           tudalRecommendScore: Number(data.tudalRecommendScore),
-          imageUrl: cpCreateState.newCpReporter.imageUrl,
+          imageUrl: imgUrl,
           user: cpCreateState.userId,
         };
         const { status } = await APICp.putReporter(
@@ -196,23 +222,23 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   };
 
   //* 이미지 등록
-  const onChangeImgae = async (event) => {
-    var file = event.target.files;
-    dispatch({
-      type: CpReporterCreateActionKind.LOADING,
-      payload: true,
-    });
-    try {
-      const imageUrl = await registerImage(file, bucket_hiddenbox);
-      dispatch({
-        type: CpReporterCreateActionKind.CHANGE_IMAGE,
-        payload: imageUrl,
-      });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  };
+  // const onChangeImgae = async (event) => {
+  //   var file = event.target.files;
+  //   dispatch({
+  //     type: CpReporterCreateActionKind.LOADING,
+  //     payload: true,
+  //   });
+  //   try {
+  //     const imageUrl = await registerImage(file, bucket_hiddenbox);
+  //     dispatch({
+  //       type: CpReporterCreateActionKind.CHANGE_IMAGE,
+  //       payload: imageUrl,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false;
+  //   }
+  // };
 
   useEffect(() => {
     getUsers();
@@ -224,7 +250,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     <CpReporterCreatePresenter
       dispatch={dispatch}
       cpCreateState={cpCreateState}
-      onChangeImgae={onChangeImgae}
+      // onChangeImgae={onChangeImgae}
       mode={mode}
       createCpReporter={createCpReporter}
     />

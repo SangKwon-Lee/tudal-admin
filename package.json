@@ -67,6 +67,7 @@
     "date-fns": "^2.21.3",
     "dayjs": "^1.10.6",
     "draft-js": "^0.11.7",
+    "file-saver": "^2.0.5",
     "firebase": "^8.2.3",
     "formik": "^2.2.7",
     "fusioncharts": "^3.17.0",
@@ -93,6 +94,7 @@
     "react-hook-form": "^7.19.3",
     "react-hot-toast": "^2.1.0",
     "react-i18next": "^11.8.5",
+    "react-image-crop": "^9.0.5",
     "react-markdown": "^5.0.3",
     "react-modal-image": "^2.5.0",
     "react-perfect-scrollbar": "^1.5.8",
@@ -109,6 +111,7 @@
     "stylis-plugin-rtl": "^2.1.0",
     "typescript": "^4.2.4",
     "web-vitals": "^2.1.0",
+    "xlsx": "^0.17.4",
     "yup": "^0.32.11"
   },
   "devDependencies": {

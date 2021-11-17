@@ -7,6 +7,8 @@ import { APICoupon } from 'src/lib/api';
 import { CouponType, IssuedCoupon } from 'src/types/coupon';
 import { expirationDate } from 'src/utils/expirationDate';
 import CouponIssuedListTablePresenter from './CouponIssuedListTable.Presenter';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 export enum CouponIssuedListTableActionKind {
   LOADING = 'LOADING',
@@ -424,6 +426,72 @@ const CouponIssuedListTableContainer = () => {
       CouponIssuedListTableState.sort,
     ],
   );
+  const workSheetColumnNames = [
+    'id',
+    'code',
+    'displayName',
+    'name',
+    'agency',
+    'type',
+    'applyDays',
+    'issuedDate',
+    'created_at',
+    'expirationDate',
+    'issuedBy',
+    'userId',
+    'isUsed',
+    'usedDate',
+  ];
+
+  //* 엑셀파일 데이터 불러오기
+  const fileDownload = async () => {
+    const { data: xlsxData } = await APICoupon.getAllList(couponId);
+    exportUsersToExcel(xlsxData, workSheetColumnNames);
+  };
+
+  //* 엑셀파일로 다운받기
+  const exportExcel = (data, workSheetColumnNames, workSheetName) => {
+    const fileType =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const workBook = XLSX.utils.book_new();
+    const workSheetData = [workSheetColumnNames, ...data];
+    const workSheet = XLSX.utils.aoa_to_sheet(workSheetData);
+    XLSX.utils.book_append_sheet(workBook, workSheet, workSheetName);
+    const excelBuffer = XLSX.write(workBook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const data2 = new Blob([excelBuffer], { type: fileType });
+    saveAs(data2, `file${fileExtension}`);
+  };
+
+  //* 엑셀파일로 컬럼명
+  const exportUsersToExcel = (
+    users?,
+    workSheetColumnNames?,
+    workSheetName?,
+  ) => {
+    const data = users.map((user) => {
+      return [
+        user.id,
+        user.code,
+        user.coupon.displayName,
+        user.coupon.name,
+        user.coupon.agency,
+        user.coupon.type,
+        user.coupon.applyDays,
+        user.issuedDate,
+        user.created_at,
+        user.expirationDate,
+        user.issuedBy.username,
+        user.userId,
+        user.isUsed,
+        user.usedDate,
+      ];
+    });
+    exportExcel(data, workSheetColumnNames, workSheetName);
+  };
 
   return (
     <CouponIssuedListTablePresenter
@@ -435,6 +503,7 @@ const CouponIssuedListTableContainer = () => {
       handleSelectAll={handleSelectAll}
       addIssuedCoupon={addIssuedCoupon}
       handleChangeExpirationDate={handleChangeExpirationDate}
+      fileDownload={fileDownload}
     />
   );
 };

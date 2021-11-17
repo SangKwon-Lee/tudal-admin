@@ -166,7 +166,6 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
             <img
               src={master.profile_image_url}
               alt="프로필이미지"
-              style={{ width: '100%' }}
             ></img>
           ) : (
             '프로필 이미지가 없습니다.'

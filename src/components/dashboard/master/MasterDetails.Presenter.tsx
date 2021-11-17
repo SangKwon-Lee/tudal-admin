@@ -2,7 +2,6 @@ import {
   Box,
   Card,
   CardHeader,
-  Divider,
   Table,
   TableBody,
   TableCell,
@@ -24,18 +23,12 @@ interface IMasterDetailsProps {
 const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
   const { masterDetailState, ...other } = props;
   const { master, loading, likes } = masterDetailState;
-  console.log(masterDetailState);
 
   return (
     <>
-      <Card {...other}>
-        {loading && (
-          <div data-testid="news-list-loading">
-            <LinearProgress />
-          </div>
-        )}
+      <Card sx={{ my: 4, mx: 10 }} {...other}>
+        {loading && <LinearProgress />}
         <CardHeader title="피드 상세내용" />
-        <Divider />
         <Table>
           <TableBody>
             <TableRow>

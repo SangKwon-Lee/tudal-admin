@@ -105,7 +105,6 @@ const newsReducer = (
       };
 
     case NewsListActionKind.SELECT_TARGET:
-      console.log(payload);
       return {
         ...state,
         list: state.list.map((news) => {
@@ -203,7 +202,6 @@ const NewsListContainer: React.FC<INewsListContainerProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [newsListState.query, shouldUpdate],
   );
-  console.log(newsListState.query);
   useEffect(() => {
     function refreshTimer() {
       return setTimeout(() => {

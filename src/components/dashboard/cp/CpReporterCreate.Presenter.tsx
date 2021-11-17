@@ -4,7 +4,6 @@ import {
   Box,
   TextField,
   Button,
-  LinearProgress,
   Autocomplete,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
@@ -18,6 +17,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useEffect } from 'react';
 import { CP_Hidden_Reporter } from 'src/types/cp';
+import ImageCropper from 'src/components/common/ImageCropper';
 
 const schema = yup
   .object({
@@ -49,20 +49,14 @@ interface CpReporterCreateProps {
   cpCreateState: CpReporterCreateState;
   mode: string;
   createCpReporter: (data: CP_Hidden_Reporter) => Promise<void>;
-  onChangeImgae: (event: any) => Promise<boolean>;
+  // onChangeImgae: (event: any) => Promise<boolean>;
 }
 
 const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
   props,
 ) => {
-  const {
-    cpCreateState,
-    dispatch,
-    mode,
-    createCpReporter,
-    onChangeImgae,
-  } = props;
-  const { newCpReporter, loading, users } = cpCreateState;
+  const { cpCreateState, dispatch, mode, createCpReporter } = props;
+  const { newCpReporter, users } = cpCreateState;
   const {
     register,
     handleSubmit,
@@ -87,12 +81,26 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
     });
   }, [register]);
 
+  const onUploadFile = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        dispatch({
+          type: CpReporterCreateActionKind.PRE_CROP_IMAGE,
+          payload: reader.result,
+        });
+      });
+
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit(createCpReporter)}>
         <Card sx={{ p: 3, my: 4, mx: '10%' }}>
           <Box sx={{ my: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               유저 선택
             </Typography>
             <Autocomplete
@@ -114,7 +122,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               닉네임
             </Typography>
             <TextField
@@ -126,7 +134,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               캐치 프레이즈
             </Typography>
             <TextField
@@ -139,7 +147,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               소개글
             </Typography>
             <TextField
@@ -152,7 +160,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             />
           </Box>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ my: 1 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               추천 순위
             </Typography>
             <TextField
@@ -176,7 +184,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <TextField
               name="imageUrl"
               type="file"
-              onChange={onChangeImgae}
+              onChange={onUploadFile}
             />
             <Button
               sx={{ ml: 2 }}
@@ -191,6 +199,24 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             >
               이미지 삭제
             </Button>
+            <Typography variant="subtitle2" sx={{ my: 2 }}>
+              업로드시 이미지를 클릭하여 원하는 부분을 Crop해주세요.
+            </Typography>
+            <div>
+              <ImageCropper
+                imageToCrop={cpCreateState.cropImg}
+                onImageCropped={(croppedImage) => {
+                  dispatch({
+                    type: CpReporterCreateActionKind.CHANGE_IMAGE,
+                    payload: croppedImage[0],
+                  });
+                  dispatch({
+                    type: CpReporterCreateActionKind.SAVE_CROP_IMAGE,
+                    payload: croppedImage[1],
+                  });
+                }}
+              />
+            </div>
             <Typography
               color="textSecondary"
               variant="subtitle2"
@@ -201,16 +227,17 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             </Typography>
             <Box>
               <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
-              {loading && (
-                <div data-testid="news-list-loading">
-                  <LinearProgress />
-                </div>
-              )}
-              <img
-                style={{ width: '100%' }}
-                alt={''}
-                src={newCpReporter.imageUrl}
-              />
+              <div>
+                {newCpReporter.imageUrl && (
+                  <div>
+                    <img
+                      alt="Cropped"
+                      src={newCpReporter.imageUrl}
+                      style={{ borderRadius: '50%' }}
+                    />
+                  </div>
+                )}
+              </div>
             </Box>
           </Box>
         </Card>

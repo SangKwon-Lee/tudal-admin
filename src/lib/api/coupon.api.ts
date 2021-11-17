@@ -44,3 +44,7 @@ export async function getIsusedCouponLength(id) {
 export async function deleteIssuedCoupon(couponId) {
   return axios.delete(`/issued-coupons/${couponId}`);
 }
+
+export async function getAllList(id) {
+  return axios.get(`/issued-coupons/?coupon.id=${id}&_limit=-1`);
+}

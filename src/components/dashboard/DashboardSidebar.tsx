@@ -234,7 +234,6 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     handleFilterSection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
-  console.log(user);
   const handleFilterSection = () => {
     if (user.type === 'admin') {
       setFilterSection(sections);
