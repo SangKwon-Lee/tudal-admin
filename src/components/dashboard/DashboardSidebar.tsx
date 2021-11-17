@@ -18,7 +18,6 @@ import CashIcon from 'src/icons/Cash';
 import useAuth from 'src/hooks/useAuth';
 import UsersIcon from 'src/icons/Users';
 import ChatAltIcon from 'src/icons/ChatAlt';
-import ImageIcon from 'src/icons/Image';
 import HomeIcon from 'src/icons/Home';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import SpellcheckIcon from '@material-ui/icons/Spellcheck';
@@ -58,6 +57,10 @@ const sections = [
           {
             title: '히든 리포터 생성',
             path: '/dashboard/cp/createReporter',
+          },
+          {
+            title: '히든리포트 이미지 관리',
+            path: '/dashboard/hiddenreports/images',
           },
         ],
       },
@@ -130,11 +133,6 @@ const sections = [
             path: '/dashboard/hiddenreports',
           },
         ],
-      },
-      {
-        title: '히든리포트 이미지',
-        path: '/dashboard/hiddenreports/images',
-        icon: <ImageIcon fontSize="small" />,
       },
     ],
   },
@@ -282,6 +280,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        backgroundColor: '#101827',
       }}
     >
       <Scrollbar options={{ suppressScrollX: true }}>

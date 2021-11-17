@@ -74,10 +74,10 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
     } catch (error) {
       console.log(error);
     }
-  }, [user.master.id]);
+  }, [user]);
 
   useEffect(() => {
-    if (user) {
+    if (user?.master?.id) {
       getMasterFeed();
     }
   }, [getMasterFeed, user]);

@@ -11,8 +11,8 @@ const HiddenReportProfilePage: FC = () => {
     <>
       <PageLayout
         dashboard="히든 리포트"
-        mainTopic={'프로필'}
-        pageTitle={'프로필'}
+        mainTopic={'히든 리포터 프로필'}
+        pageTitle={'히든 리포터 프로필'}
         pageTopRef={pageTopRef}
       >
         <HiddenReportProfileContainer user={user} />
