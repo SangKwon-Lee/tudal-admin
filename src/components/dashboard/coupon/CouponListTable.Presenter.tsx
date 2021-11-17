@@ -18,6 +18,7 @@ import {
   Dialog,
   LinearProgress,
   Pagination,
+  IconButton,
 } from '@material-ui/core';
 import SearchIcon from 'src/icons/Search';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
@@ -28,6 +29,7 @@ import {
   CouponListTableState,
 } from './CouponListTable.Container';
 import CouponCreateContainer from './CouponCreate.Container';
+import ArrowRight from 'src/icons/ArrowRight';
 
 interface ICouponListTableProps {
   couponListTableState: CouponListTableState;
@@ -195,6 +197,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                   <TableCell>기관</TableCell>
                   <TableCell>무료 기간</TableCell>
                   <TableCell>발급 날짜</TableCell>
+                  <TableCell>더보기</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -246,6 +249,18 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                           {dayjs(list.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton>
+                            <Link
+                              color="textPrimary"
+                              component={RouterLink}
+                              to={`/dashboard/coupons/${list.id}`}
+                              variant="subtitle2"
+                            >
+                              <ArrowRight fontSize="small" />
+                            </Link>
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     );

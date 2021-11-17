@@ -24,6 +24,7 @@ import { registerImage } from 'src/utils/registerImage';
 import { bucket_hiddenbox } from 'src/components/common/conf/aws';
 import useUserVerification from 'src/hooks/useUserVerification';
 import { CP_Hidden_Reporter } from 'src/types/cp';
+import useAuth from 'src/hooks/useAuth';
 export const HIDDENREPORT_CATEGORIES = {
   subject: [
     '국내주식',
@@ -266,6 +267,7 @@ const HiddenReportCreateReducer = (
 
 const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
+    const { user } = useAuth();
     const { mode, reportId, pageTopRef } = props;
     const [step, setStep] = useState<number>(1);
     const [reportCreateState, dispatch] = useReducer(
@@ -279,7 +281,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const { newReport, image, loading } = reportCreateState;
     const { stocks, tags } = newReport;
 
-    console.log('loading', loading);
     useUserVerification(
       newReport.hidden_reporter?.id,
       'hiddenReporter',
@@ -365,6 +366,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         ...reportCreateState.newReport,
         tags: tags.map((data) => data.id) || [],
         stocks: stocks.map((data) => data.id) || [],
+        hidden_reporter: user.hidden_reporter.id,
       };
 
       try {

@@ -256,6 +256,8 @@ const CouponIssuedListTableContainer = () => {
         isUsed: false,
         code: '',
         issuedBy: user.id,
+        applyDays: CouponIssuedListTableState.coupon.applyDays,
+        eventType: CouponIssuedListTableState.coupon.type,
       };
       const { status } = await APICoupon.createIssuedCoupon(
         CouponInput,

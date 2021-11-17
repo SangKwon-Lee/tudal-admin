@@ -144,6 +144,27 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
               </TableRow>
+              {state.pdfUrl && (
+                <TableRow>
+                  <TableCell>
+                    <Typography
+                      color="textPrimary"
+                      variant="subtitle2"
+                    >
+                      PDF 파일
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      color="textSecondary"
+                      variant="subtitle2"
+                      sx={{ mt: 1 }}
+                    >
+                      <a href={state.pdfUrl}>PDF</a>
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <Box
