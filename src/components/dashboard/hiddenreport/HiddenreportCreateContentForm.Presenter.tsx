@@ -33,12 +33,11 @@ import {
   HiddenReportCreateState,
   HIDDENREPORT_CATEGORIES,
 } from './HiddenreportCreate.Container';
+import { DatePicker } from '@material-ui/lab';
 
 interface IHRContentFormProps {
   reportCreateState: HiddenReportCreateState;
-  dispatch: (params: HiddenReportCreateAction) => void;
   editorRef: React.MutableRefObject<any>;
-  onSubmitContentForm: (data, e) => void;
 
   tagInput: React.MutableRefObject<any>;
   tagList: Tag[];
@@ -48,6 +47,8 @@ interface IHRContentFormProps {
   stockInput: React.MutableRefObject<any>;
   handleStockChange: _.DebouncedFunc<() => void>;
   handleTagChange: _.DebouncedFunc<() => void>;
+  dispatch: (params: HiddenReportCreateAction) => void;
+  onSubmitContentForm: (data, e) => void;
   onPDFChange: (event) => void;
   onTagChange: (event, tag: Tag[], reason, item) => void;
   onStockChange: (event, stock: Stock[], reason, item) => void;
@@ -292,7 +293,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 name="subject"
                 value={reportCreateState.newReport.subject}
                 {...register('subject')}
-                style={{ width: '100%' }}
+                fullWidth
                 onChange={(e) => {
                   dispatch({
                     type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
@@ -324,7 +325,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 name={'type'}
                 value={reportCreateState.newReport.type}
                 {...register('type')}
-                style={{ width: '100%' }}
+                fullWidth
                 onChange={(e) => {
                   dispatch({
                     type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
@@ -357,7 +358,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 name="counter"
                 {...register('counter')}
                 value={reportCreateState.newReport.counter}
-                style={{ width: '100%' }}
+                fullWidth
                 onChange={(e) => {
                   dispatch({
                     type: HiddenReportCreateActionKind.CHANGE_CATEGORY,
@@ -391,7 +392,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 {...register('catchphrase')}
               />
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid item xs={12} lg={2}>
               <Typography
                 color="textPrimary"
                 sx={{ mb: 1 }}
@@ -411,6 +412,27 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 helperText={'5G 단위로 적어주세요. (최대 9900G)'}
                 error={Boolean(errors?.price)}
                 {...register('price')}
+              />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                만료일
+              </Typography>
+
+              <DatePicker
+                disablePast={false}
+                value={newReport.expirationDate}
+                onChange={(e) => {
+                  dispatch({
+                    type: HiddenReportCreateActionKind.CHANGE_EXPIRATION_DATE,
+                    payload: e,
+                  });
+                }}
+                renderInput={(params) => <TextField {...params} />}
               />
             </Grid>
             <Grid item xs={12} lg={6}>

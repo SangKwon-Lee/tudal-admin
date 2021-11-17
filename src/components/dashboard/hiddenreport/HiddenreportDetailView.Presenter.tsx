@@ -16,11 +16,8 @@ import {
 } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 import { SocialPostComment, SocialPostCommentAdd } from '../social';
-import productStatusFunc from 'src/utils/productStatus';
-import {
-  HiddenReportCreateState,
-  IHiddenReportForm,
-} from './HiddenreportCreate.Container';
+
+import { IHiddenReportForm } from './HiddenreportCreate.Container';
 import dayjs from 'dayjs';
 import { IHR } from 'src/types/hiddenreport';
 
@@ -47,7 +44,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state.title}
                   </Typography>
                 </TableCell>
@@ -60,7 +57,6 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>{state.intro}</TableCell>
               </TableRow>
-
               <TableRow>
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
@@ -78,7 +74,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state.reason}
                   </Typography>
                 </TableCell>
@@ -90,7 +86,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state.price} GOLD
                   </Typography>
                 </TableCell>
@@ -102,7 +98,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state.catchphrase}
                   </Typography>
                 </TableCell>
@@ -115,7 +111,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {`${dayjs(state.expirationDate).format(
                       'YYYY년 M월 D일',
                     )}`}
@@ -129,8 +125,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  {console.log(state)}
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state?.stocks.map(
                       (stock) => `${stock.name}(${stock.code})\n`,
                     )}
@@ -144,7 +139,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body1">
                     {state?.tags.map((tag) => `#${tag.name} `)}
                   </Typography>
                 </TableCell>

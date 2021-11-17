@@ -2,7 +2,10 @@ import { FC, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { APIHR } from 'src/lib/api';
+import { registerImage } from 'src/utils/registerImage';
 import HiddenreportImageCreatePresenter from './HiddenreportImageCreate.Presenter';
+import { useNavigate } from 'react-router-dom';
+
 const AWS = require('aws-sdk');
 const region = 'ap-northeast-2';
 
@@ -22,7 +25,8 @@ export enum HRImageCreateActionKind {
   CHANGE_INPUT = 'CHANGE_INPUT',
   CHANGE_OPENTIME = 'CHANGE_OPENTIME',
   CHANGE_CLOSETIME = 'CHANGE_CLOSETIME',
-  CHANGE_IMAGE = 'CHANGE_IMAGE',
+  CHANGE_THUMBNAIL_IMAGE = 'CHANGE_THUMBNAIL_IMAGE',
+  CHANGE_SQUARE_IMAGE = 'CHANGE_SQUARE_IMAGE',
 }
 
 export interface HRImageCreateAction {
@@ -36,6 +40,7 @@ export interface HRImageCreateState {
     name: string;
     keyword: string;
     thumbnailImageUrl: string;
+    squareImageUrl: string;
   };
 }
 
@@ -45,6 +50,7 @@ const initialState: HRImageCreateState = {
     name: '',
     keyword: '',
     thumbnailImageUrl: '',
+    squareImageUrl: '',
   },
 };
 
@@ -68,7 +74,7 @@ const PopUpCreateReducer = (
         },
       };
 
-    case HRImageCreateActionKind.CHANGE_IMAGE:
+    case HRImageCreateActionKind.CHANGE_THUMBNAIL_IMAGE:
       return {
         ...state,
         createInput: {
@@ -76,8 +82,15 @@ const PopUpCreateReducer = (
           thumbnailImageUrl: payload,
         },
       };
+    case HRImageCreateActionKind.CHANGE_SQUARE_IMAGE:
+      return {
+        ...state,
+        createInput: {
+          ...state.createInput,
+          squareImageUrl: payload,
+        },
+      };
     case HRImageCreateActionKind.GET_IMAGE:
-      console.log('1231', payload);
       return {
         ...state,
         createInput: {
@@ -100,13 +113,14 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
 ) => {
   const mode = props.mode || 'create';
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [HRImageCreateState, dispatch] = useReducer(
     PopUpCreateReducer,
     initialState,
   );
 
-  //* 새로운 팝업 생성
+  //* 새로운 이미지 생성
   const createNewHRimage = async () => {
     try {
       dispatch({
@@ -123,6 +137,8 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
           type: HRImageCreateActionKind.LOADING,
           payload: false,
         });
+
+        navigate('/dashboard/hiddenreports/images');
       }
     } catch (error) {
       toast.error('오류가 생겼습니다.');
@@ -131,7 +147,7 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
   };
 
   //* 이미지 등록
-  const onChangeImage = async (event) => {
+  const onChangeImage = async (event, type) => {
     var file = event.target.files;
     dispatch({
       type: HRImageCreateActionKind.LOADING,
@@ -139,18 +155,13 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     });
     try {
       // Koscom Cloud에 업로드하기!
-      await S3.putObject({
-        Bucket: bucket_name,
-        Key: file[0].name,
-        ACL: 'public-read',
-        // ACL을 지우면 전체공개가 되지 않습니다.
-        Body: file[0],
-      }).promise();
-      const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
+      const imageUrl = await registerImage(file, 'hiddenbox-photo');
+
       dispatch({
-        type: HRImageCreateActionKind.CHANGE_IMAGE,
+        type,
         payload: imageUrl,
       });
+
       dispatch({
         type: HRImageCreateActionKind.LOADING,
         payload: false,
@@ -161,7 +172,7 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     }
   };
 
-  const getPopUp = async () => {
+  const getImage = async () => {
     dispatch({
       type: HRImageCreateActionKind.LOADING,
       payload: true,
@@ -185,7 +196,7 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
 
   useEffect(() => {
     if (mode === 'edit') {
-      getPopUp();
+      getImage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

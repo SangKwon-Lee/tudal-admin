@@ -3,7 +3,6 @@ import { Stock, Tag } from './schedule';
 export interface IHR {
   id: number;
   title: string;
-  thumnail_text: string;
   price: number;
   subject: string; // 대상 (카테고리)
   type: string; // 유형 (카테고리)
@@ -30,6 +29,7 @@ export interface IHRImage {
   id: number;
   name: string;
   thumbnailImageUrl: string;
+  squareImageUrl: string;
   keyword: string;
   created_at: Date;
   updated_at: Date;
