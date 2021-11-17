@@ -5,13 +5,18 @@ import dayjs from 'dayjs';
 const OverviewContainer: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [time, setTime] = useState(dayjs().format('HH:mm'));
-  // const [greet, setGreet] = useState('');
-
+  const [greet, setGreet] = useState('');
   useEffect(() => {
-    console.log(time.slice(0, 2));
+    if (time.slice(0, 2) < '12') {
+      setGreet('morning');
+    } else if (time.slice(0, 2) < '18') {
+      setGreet('afternoon');
+    } else {
+      setGreet('evening');
+    }
   }, [time]);
 
-  return <OverviewPresenter time={time} />;
+  return <OverviewPresenter time={time} greet={greet} />;
 };
 
 export default OverviewContainer;

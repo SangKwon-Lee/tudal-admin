@@ -35,6 +35,7 @@ interface ICouponIssuedListTableProps {
   handleSelectAll: (event: any) => void;
   addIssuedCoupon: () => void;
   handleChangeExpirationDate: (event: any) => void;
+  fileDownload: () => void;
 }
 
 const isUsedOption = [
@@ -111,6 +112,7 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
       handleSelectAll,
       addIssuedCoupon,
       handleChangeExpirationDate,
+      fileDownload,
     } = props;
     const { loading, query, selected, list, listLength } =
       CouponIssuedListTableState;
@@ -244,16 +246,24 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-around',
+                alignItems: 'center',
               }}
             >
               <Button
+                sx={{ mt: 5 }}
                 color="primary"
-                sx={{ m: 5 }}
                 variant="contained"
                 onClick={addIssuedCoupon}
               >
                 쿠폰 추가 발급
+              </Button>
+              <Button
+                sx={{ mt: 5 }}
+                variant="contained"
+                onClick={fileDownload}
+              >
+                엑셀로 다운 받기
               </Button>
             </Box>
           </Card>

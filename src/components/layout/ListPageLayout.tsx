@@ -54,7 +54,7 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
 
       <Box
         sx={{
-          backgroundColor: 'background.default',
+          backgroundColor: '#F9FAFC',
           minHeight: '100%',
           py: 8,
         }}

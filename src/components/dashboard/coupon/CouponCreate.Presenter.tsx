@@ -2,7 +2,9 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   Dialog,
+  FormControlLabel,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -60,6 +62,18 @@ const applyDays = [
   {
     day: '7일',
     value: 7,
+  },
+  {
+    day: '30일',
+    value: 30,
+  },
+  {
+    day: '60일',
+    value: 60,
+  },
+  {
+    day: '90일',
+    value: 90,
   },
 ];
 const numbers = [
@@ -156,26 +170,65 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
           />
         </Box>
         <Box sx={{ my: 2, display: 'flex' }}>
-          <TextField
-            select
-            sx={{ mx: 2 }}
-            label={'무료 기간'}
-            name="applyDays"
-            SelectProps={{ native: true }}
-            variant="outlined"
-            onChange={(event) => {
-              dispatch({
-                type: CouponCreateActionKind.CHANGE_INPUT,
-                payload: event,
-              });
-            }}
-          >
-            {applyDays.map((date: any, i) => (
-              <option key={i} value={date.value}>
-                {date.day}
-              </option>
-            ))}
-          </TextField>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            {!couponCreateState.isWriteApplyDays ? (
+              <TextField
+                select
+                sx={{ mx: 2 }}
+                label={'무료 기간'}
+                name="applyDays"
+                SelectProps={{ native: true }}
+                variant="outlined"
+                onChange={(event) => {
+                  dispatch({
+                    type: CouponCreateActionKind.CHANGE_INPUT,
+                    payload: event,
+                  });
+                }}
+              >
+                {applyDays.map((date: any, i) => (
+                  <option key={i} value={date.value}>
+                    {date.day}
+                  </option>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                // select
+                type="number"
+                sx={{ mx: 2, width: '140px' }}
+                label={'무료 기간 ex) 30'}
+                name="applyDays"
+                InputProps={{
+                  inputProps: {
+                    min: 1,
+                  },
+                }}
+                // SelectProps={{ native: true }}
+                variant="outlined"
+                onChange={(event) => {
+                  dispatch({
+                    type: CouponCreateActionKind.CHANGE_INPUT,
+                    payload: event,
+                  });
+                }}
+              ></TextField>
+            )}
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(e) => {
+                    dispatch({
+                      type: CouponCreateActionKind.WRITE_APPLY_DAYS,
+                      payload: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="직접 입력"
+            />
+          </Box>
           <TextField
             select
             sx={{ mx: 1 }}
@@ -211,26 +264,69 @@ const CouponCreatePresenter: FC<ICouponCreateProps> = (props) => {
               </option>
             ))}
           </TextField>
-          <TextField
-            select
-            sx={{ mx: 1 }}
-            label={'쿠폰 발급 개수'}
-            name="quantity"
-            SelectProps={{ native: true }}
-            variant="outlined"
-            onChange={(event) => {
-              dispatch({
-                type: CouponCreateActionKind.CHANGE_INPUT,
-                payload: event,
-              });
-            }}
-          >
-            {numbers.map((date: any, i) => (
-              <option key={i} value={date.value}>
-                {date.title}
-              </option>
-            ))}
-          </TextField>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            {!couponCreateState.isWriteQuantity ? (
+              <TextField
+                select
+                sx={{ mx: 1 }}
+                label={'쿠폰 발급 개수'}
+                name="quantity"
+                InputProps={{
+                  inputProps: {
+                    min: 1,
+                  },
+                }}
+                SelectProps={{ native: true }}
+                variant="outlined"
+                onChange={(event) => {
+                  dispatch({
+                    type: CouponCreateActionKind.CHANGE_INPUT,
+                    payload: event,
+                  });
+                }}
+              >
+                {numbers.map((date: any, i) => (
+                  <option key={i} value={date.value}>
+                    {date.title}
+                  </option>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                sx={{ mx: 1, width: '140px' }}
+                type="number"
+                label={'쿠폰 발급 개수'}
+                name="quantity"
+                variant="outlined"
+                onChange={(event) => {
+                  dispatch({
+                    type: CouponCreateActionKind.CHANGE_INPUT,
+                    payload: event,
+                  });
+                }}
+              >
+                {numbers.map((date: any, i) => (
+                  <option key={i} value={date.value}>
+                    {date.title}
+                  </option>
+                ))}
+              </TextField>
+            )}
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(e) => {
+                    dispatch({
+                      type: CouponCreateActionKind.WRITE_QUANTITY,
+                      payload: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="직접 입력"
+            />
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end' }}>
           <Button

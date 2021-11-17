@@ -62,7 +62,7 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
     <>
       {selectChannel !== 0 ? (
         <>
-          <Card sx={{ p: 3, my: 3 }}>
+          <Card sx={{ p: 3, my: 4, width: '70%' }}>
             <Box
               sx={{
                 width: '100%',

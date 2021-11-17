@@ -23,6 +23,8 @@ export enum CouponCreateActionKind {
   CHANGE_INPUT = 'CHANGE_INPUT',
   CHANGE_EXPIRATIONDATE = 'CHANGE_EXPIRATIONDATE',
   RESET_STATE = 'RESET_STATE',
+  WRITE_APPLY_DAYS = 'WRITE_APPLY_DAYS',
+  WRITE_QUANTITY = 'WRITE_QUANTITY',
 }
 export interface CouponCreateAction {
   type: CouponCreateActionKind;
@@ -42,6 +44,8 @@ export interface CouponCreateState {
     expirationDate: any;
     quantity: number;
   };
+  isWriteApplyDays: boolean;
+  isWriteQuantity: boolean;
 }
 let newDate = dayjs();
 newDate = newDate.add(7, 'day');
@@ -59,6 +63,8 @@ const initialState: CouponCreateState = {
     expirationDate: newDate.format('YYYY-MM-DD HH:mm:ss'),
     quantity: 1,
   },
+  isWriteApplyDays: false,
+  isWriteQuantity: false,
 };
 
 const CouponCreateReducer = (
@@ -103,6 +109,16 @@ const CouponCreateReducer = (
           expirationDate: newDate,
           quantity: 1,
         },
+      };
+    case CouponCreateActionKind.WRITE_APPLY_DAYS:
+      return {
+        ...state,
+        isWriteApplyDays: payload,
+      };
+    case CouponCreateActionKind.WRITE_QUANTITY:
+      return {
+        ...state,
+        isWriteQuantity: payload,
       };
   }
 };

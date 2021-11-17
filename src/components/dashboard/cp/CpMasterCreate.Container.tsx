@@ -13,6 +13,8 @@ export enum CpMasterCreateActionKind {
   GET_MASTER = 'GET_MASTER',
   GET_USER_ID = 'GET_USER_ID',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
+  PRE_CROP_IMAGE = 'PRE_CROP_IMAGE',
+  SAVE_CROP_IMAGE = 'SAVE_CROP_IMAGE',
 }
 
 export interface CpMasterCreateAction {
@@ -25,6 +27,8 @@ export interface CpMasterCreateState {
   newCpMaster: CP_Master;
   users: IUser[];
   userId: number;
+  cropImg: string;
+  saveCropImg: string;
 }
 
 const initialState: CpMasterCreateState = {
@@ -38,6 +42,8 @@ const initialState: CpMasterCreateState = {
   },
   users: [],
   userId: 0,
+  cropImg: '',
+  saveCropImg: '',
 };
 
 const CpMasterCreateReducer = (
@@ -76,6 +82,16 @@ const CpMasterCreateReducer = (
       return {
         ...state,
         userId: payload,
+      };
+    case CpMasterCreateActionKind.PRE_CROP_IMAGE:
+      return {
+        ...state,
+        cropImg: payload,
+      };
+    case CpMasterCreateActionKind.SAVE_CROP_IMAGE:
+      return {
+        ...state,
+        saveCropImg: payload,
       };
   }
 };
@@ -153,13 +169,19 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   //* cp 등록
   const createCpMaster = async (data: CP_Master) => {
     if (mode === 'create') {
-      const newInput = {
+      let newInput = {
         ...data,
         keyword: data.keyword.trim(),
-        profile_image_url:
-          cpCreateState.newCpMaster.profile_image_url,
       };
       try {
+        const imgUrl = await registerImage(
+          cpCreateState.saveCropImg,
+          bucket_hiddenbox,
+        );
+        newInput = {
+          ...newInput,
+          profile_image_url: imgUrl,
+        };
         const { status, data } = await APICp.postMaster(newInput);
         if (status === 200) {
           const input = {
@@ -183,14 +205,17 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
         console.log(error);
       }
     } else {
-      const newInput = {
-        ...data,
-        keyword: data.keyword.trim(),
-        profile_image_url:
-          cpCreateState.newCpMaster.profile_image_url,
-        user: cpCreateState.userId,
-      };
       try {
+        const imgUrl = await registerImage(
+          cpCreateState.saveCropImg,
+          bucket_hiddenbox,
+        );
+        const newInput = {
+          ...data,
+          keyword: data.keyword.trim(),
+          profile_image_url: imgUrl,
+          user: cpCreateState.userId,
+        };
         const { status } = await APICp.putMaster(masterId, newInput);
         if (status === 200) {
           navigate('/dashboard/cp');
@@ -204,23 +229,24 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   };
 
   //* 이미지 등록
-  const onChangeImgae = async (event) => {
-    var file = event.target.files;
-    dispatch({
-      type: CpMasterCreateActionKind.LOADING,
-      payload: true,
-    });
-    try {
-      const imageUrl = await registerImage(file, bucket_hiddenbox);
-      dispatch({
-        type: CpMasterCreateActionKind.CHANGE_IMAGE,
-        payload: imageUrl,
-      });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  };
+  // const onChangeImgae = async (event) => {
+  //   var file = event.target.files;
+  //   dispatch({
+  //     type: CpMasterCreateActionKind.LOADING,
+  //     payload: true,
+  //   });
+  //   try {
+  //     const imageUrl = await registerImage(file, bucket_hiddenbox);
+  //     dispatch({
+  //       type: CpMasterCreateActionKind.CHANGE_IMAGE,
+  //       payload: imageUrl,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false;
+  //   }
+  // };
+
   useEffect(() => {
     getUsers();
     if (masterId) {
@@ -231,7 +257,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     <CpMasterCreatePresenter
       dispatch={dispatch}
       cpCreateState={cpCreateState}
-      onChangeImgae={onChangeImgae}
       mode={mode}
       createCpMaster={createCpMaster}
     />

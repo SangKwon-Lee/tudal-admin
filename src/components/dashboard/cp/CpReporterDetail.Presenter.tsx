@@ -33,16 +33,16 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
       >
         <Button
           variant="outlined"
-          sx={{ mr: 2 }}
+          sx={{ mx: 10 }}
           component={RouterLink}
           to={`/dashboard/cp/${reporter.id}/edit/reporter`}
         >
           내용 수정
         </Button>
       </Box>
-      <Card sx={{ mt: 2 }}>
+      <Card sx={{ mt: 2, mx: 10 }}>
         {loading && <LinearProgress />}
-        <CardHeader title="히든 리포터 상세내용" />
+        <CardHeader sx={{ m: 1 }} title="히든 리포터 상세내용" />
         <Divider />
         <Table>
           <TableBody>
@@ -175,11 +175,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
             프로필 이미지
           </Typography>
           {reporter?.imageUrl ? (
-            <img
-              src={reporter.imageUrl}
-              alt="프로필이미지"
-              style={{ width: '100%' }}
-            ></img>
+            <img src={reporter.imageUrl} alt="프로필이미지"></img>
           ) : (
             '프로필 이미지가 없습니다.'
           )}
