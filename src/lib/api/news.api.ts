@@ -29,7 +29,7 @@ export async function getComments(newsId: number) {
 export async function updateIsSelected(
   id: number,
   isSelected: boolean,
-  user_id: string,
+  user_id: number,
 ) {
   return await axios.put(`/general-news/${id}`, {
     isSelected: !isSelected,
