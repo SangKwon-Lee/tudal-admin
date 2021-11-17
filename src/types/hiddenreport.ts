@@ -1,3 +1,4 @@
+import { CP_Hidden_Reporter } from './cp';
 import { Stock, Tag } from './schedule';
 
 export interface IHR {
@@ -23,6 +24,7 @@ export interface IHR {
   hidden_report_orders: [];
   hidden_report_likes: [];
   hidden_report_comments: [];
+  hidden_reporter: CP_Hidden_Reporter;
 }
 
 export interface IHRImage {

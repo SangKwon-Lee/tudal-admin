@@ -23,7 +23,7 @@ interface IRole {
 }
 
 export interface IUser {
-  id: string;
+  id: number;
   avatar?: Avatar;
   email: string;
   username: string;

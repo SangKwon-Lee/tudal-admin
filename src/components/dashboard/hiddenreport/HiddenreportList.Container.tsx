@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import useAuth from 'src/hooks/useAuth';
 import { APIHR } from 'src/lib/api';
 
 import { IHR } from 'src/types/hiddenreport';
@@ -131,7 +132,8 @@ const HRListReducer = (
   }
 };
 
-const HiddenReportList: React.FC = (props) => {
+const HiddenReportListContainer: React.FC = (props) => {
+  const { user } = useAuth();
   const [HRListState, dispatch] = useReducer(
     HRListReducer,
     initialState,
@@ -141,9 +143,13 @@ const HiddenReportList: React.FC = (props) => {
 
   const getList = useCallback(async () => {
     try {
-      const { data, status } = await APIHR.getList(query);
+      const _query = {
+        ...query,
+        hidden_reporter: user.hidden_reporter.id,
+      };
+      const { data, status } = await APIHR.getList(_query);
       if (data.length && status === 200) {
-        const { data: count } = await APIHR.getListLength(query);
+        const { data: count } = await APIHR.getListLength(_query);
 
         dispatch({
           type: HRListActionKind.LOAD_REPORTS,
@@ -167,4 +173,4 @@ const HiddenReportList: React.FC = (props) => {
   );
 };
 
-export default HiddenReportList;
+export default HiddenReportListContainer;

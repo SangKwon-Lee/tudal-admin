@@ -50,7 +50,7 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
       .set('hour', 17)
       .set('minute', 0)
       .toDate(),
-    author: parseInt(user.id),
+    author: user.id,
   };
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
