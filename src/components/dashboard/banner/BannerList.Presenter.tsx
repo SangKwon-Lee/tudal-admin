@@ -11,6 +11,7 @@ import {
   TableRow,
   TextField,
   Button,
+  Dialog,
 } from '@material-ui/core';
 import React from 'react';
 import {
@@ -22,10 +23,12 @@ import SearchIcon from '../../../icons/Search';
 import Scrollbar from 'src/components/layout/Scrollbar';
 import dayjs from 'dayjs';
 import DraggableCard from './BannerDnD.Container';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 interface IBannerListProps {
   bannerListState: BannerListState;
   dispatch: (param: BannerListAction) => void;
-  postOneBanner: (id: any) => void;
+  postOneBanner: () => void;
+  saveBanner: () => Promise<void>;
   moveCard: (
     dragIndex?: number,
     hoverIndex?: number,
@@ -44,9 +47,15 @@ const sortOptions = [
 ];
 
 const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
-  const { bannerListState, dispatch, postOneBanner, moveCard } =
-    props;
-  const { reports, orderEdit, openBannerList } = bannerListState;
+  const {
+    bannerListState,
+    dispatch,
+    postOneBanner,
+    moveCard,
+    saveBanner,
+  } = props;
+  const { reports, orderEdit, openBannerList, newOrder } =
+    bannerListState;
   return (
     <>
       <Card sx={{ my: 4, mx: 5 }}>
@@ -67,6 +76,10 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                   type: BannerListActionKind.CHANGE_ORDER_EDIT,
                   payload: true,
                 });
+                dispatch({
+                  type: BannerListActionKind.CHANGE_NEWORDER,
+                  payload: openBannerList,
+                });
               }}
             >
               배너 수정
@@ -81,6 +94,10 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                     type: BannerListActionKind.CHANGE_ORDER_EDIT,
                     payload: false,
                   });
+                  dispatch({
+                    type: BannerListActionKind.CHANGE_NEWORDER,
+                    payload: openBannerList,
+                  });
                 }}
               >
                 취소
@@ -89,8 +106,8 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                 variant="contained"
                 onClick={() => {
                   dispatch({
-                    type: BannerListActionKind.CHANGE_ORDER_EDIT,
-                    payload: false,
+                    type: BannerListActionKind.CHANGE_OPEN_MODAL,
+                    payload: true,
                   });
                 }}
               >
@@ -105,16 +122,47 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
             display: 'flex',
           }}
         >
-          {openBannerList.map((list, i) => (
-            <DraggableCard
-              key={i}
-              id={list.id}
-              index={i + 1}
-              orderEdit={orderEdit}
-              moveCard={moveCard}
-              img={list.hidden_report_image.thumbnailImageUrl}
-            />
-          ))}
+          {orderEdit
+            ? newOrder.map((list, i) => (
+                <DraggableCard
+                  key={i}
+                  id={list.id}
+                  index={i + 1}
+                  orderEdit={orderEdit}
+                  moveCard={moveCard}
+                  dispatch={dispatch}
+                  title={
+                    list?.title ? list?.title : '제목이 없습니다.'
+                  }
+                  nickname={
+                    list?.hidden_reporter?.nickname
+                      ? list?.hidden_reporter?.nickname
+                      : '닉네임이 없습니다.'
+                  }
+                  newOrder={newOrder}
+                  img={list.hidden_report_image.thumbnailImageUrl}
+                />
+              ))
+            : openBannerList.map((list, i) => (
+                <DraggableCard
+                  key={i}
+                  id={list.id}
+                  index={i + 1}
+                  orderEdit={orderEdit}
+                  moveCard={moveCard}
+                  dispatch={dispatch}
+                  title={
+                    list?.title ? list?.title : '제목이 없습니다.'
+                  }
+                  nickname={
+                    list?.hidden_reporter?.nickname
+                      ? list?.hidden_reporter?.nickname
+                      : '닉네임이 없습니다.'
+                  }
+                  newOrder={newOrder}
+                  img={list.hidden_report_image.thumbnailImageUrl}
+                />
+              ))}
         </div>
       </Card>
 
@@ -201,6 +249,7 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                 {reports.map((report) => (
                   <TableRow hover key={report.id}>
                     <TableCell>{report.title}</TableCell>
+
                     <TableCell>
                       <img
                         style={{ width: '100px' }}
@@ -226,13 +275,29 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                     </TableCell>
 
                     <TableCell>
-                      <Button
-                        id={String(report.id)}
-                        variant="contained"
-                        onClick={postOneBanner}
-                      >
-                        등록
-                      </Button>
+                      {openBannerList.filter(
+                        (data) => data.id === report.id,
+                      ).length === 0 ? (
+                        <Button
+                          variant="contained"
+                          onClick={() => {
+                            dispatch({
+                              type: BannerListActionKind.CHANGE_OPEN_MODAL,
+                              payload: true,
+                            });
+                            dispatch({
+                              type: BannerListActionKind.CHANGE_POST_ID,
+                              payload: report.id,
+                            });
+                          }}
+                        >
+                          등록
+                        </Button>
+                      ) : (
+                        <Button color="secondary" variant="contained">
+                          광고 중
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -259,6 +324,38 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
           </Box>
         </Scrollbar>
       </Card>
+      <Dialog
+        aria-labelledby="ConfirmModal"
+        open={bannerListState.openModal}
+        onClose={() => {
+          dispatch({
+            type: BannerListActionKind.CHANGE_OPEN_MODAL,
+            payload: false,
+          });
+        }}
+      >
+        <ConfirmModal
+          title={
+            bannerListState.orderEdit
+              ? '배너 목록을 수정하시겠습니까?'
+              : '해당 리포트를 배너로 등록하시겠습니까?'
+          }
+          content={''}
+          type={'CONFIRM'}
+          confirmTitle={'등록'}
+          handleOnClick={() => {
+            bannerListState.orderEdit
+              ? saveBanner()
+              : postOneBanner();
+          }}
+          handleOnCancel={() => {
+            dispatch({
+              type: BannerListActionKind.CHANGE_OPEN_MODAL,
+              payload: false,
+            });
+          }}
+        />
+      </Dialog>
     </>
   );
 };

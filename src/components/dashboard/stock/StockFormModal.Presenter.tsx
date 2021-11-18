@@ -427,18 +427,18 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
                     onChange={(event) =>
                       dispatch({
                         type: StockFormActionKind.CHANGE_COMMENT,
-                        payload: dayjs(event.target.value),
+                        payload: event.target.value,
                       })
                     }
                   />
                   <TextField
                     id="date"
                     type="date"
-                    value={dayjs(commentDate).format('YYYY-MM-DD')}
+                    value={commentDate.format('YYYY-MM-DD')}
                     onChange={(event) =>
                       dispatch({
                         type: StockFormActionKind.CHANGE_COMMENT_DATE,
-                        payload: event.target.value,
+                        payload: dayjs(event.target.value),
                       })
                     }
                   />

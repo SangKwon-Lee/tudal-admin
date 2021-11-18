@@ -72,7 +72,6 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     isHasRoom,
   } = masterContentFormState;
   const { user } = useAuth();
-  console.log(user);
   return (
     <>
       {user?.master ? (

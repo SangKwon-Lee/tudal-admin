@@ -2,16 +2,18 @@ import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { APIBanner, APIHR } from 'src/lib/api';
 import { IHR } from 'src/types/hiddenreport';
-import { swapItems } from 'src/utils/helper';
 import BannerListPresenter from './BannerList.Presenter';
 
 export enum BannerListActionKind {
   LOADING = 'LOADING',
   GET_ALL_REPORTS = 'GET_ALL_REPORTS',
+  GET_OPEN_BANNER = 'GET_OPEN_BANNER',
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
   CHANGE_ORDER_EDIT = 'CHANGE_EDIT',
-  GET_OPEN_BANNER = 'GET_OPEN_BANNER',
+  CHANGE_NEWORDER = 'CHANGE_NEWORDER',
+  CHANGE_OPEN_MODAL = 'CHANGE_OPEN_MODAL',
+  CHANGE_POST_ID = 'CHANGE_POST_ID',
 }
 
 export interface BannerListAction {
@@ -21,7 +23,7 @@ export interface BannerListAction {
 
 export interface BannerListState {
   loading: boolean;
-  openBannerList: any[];
+  openBannerList: IHR[];
   reports: IHR[];
   query: {
     _start: number;
@@ -32,7 +34,9 @@ export interface BannerListState {
   page: number;
   reportsLength: number;
   orderEdit: boolean;
-  newOrder: any[];
+  newOrder: IHR[];
+  openModal: boolean;
+  postId: number | string;
 }
 
 const initialState: BannerListState = {
@@ -49,6 +53,8 @@ const initialState: BannerListState = {
   reportsLength: 0,
   orderEdit: false,
   newOrder: [],
+  openModal: false,
+  postId: 0,
 };
 
 const BannerListReducer = (
@@ -98,6 +104,21 @@ const BannerListReducer = (
         ...state,
         openBannerList: payload,
       };
+    case BannerListActionKind.CHANGE_NEWORDER:
+      return {
+        ...state,
+        newOrder: payload,
+      };
+    case BannerListActionKind.CHANGE_OPEN_MODAL:
+      return {
+        ...state,
+        openModal: payload,
+      };
+    case BannerListActionKind.CHANGE_POST_ID:
+      return {
+        ...state,
+        postId: payload,
+      };
   }
 };
 
@@ -121,6 +142,16 @@ const BannerListContainer = () => {
           type: BannerListActionKind.GET_ALL_REPORTS,
           payload: { data, count },
         });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [bannerListState.query]);
+
+  const getOpenBanners = useCallback(async () => {
+    try {
+      const { data, status } = await APIBanner.getBanners();
+      if (status === 200) {
         dispatch({
           type: BannerListActionKind.GET_OPEN_BANNER,
           payload: data,
@@ -129,21 +160,60 @@ const BannerListContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [bannerListState.query]);
+  }, []);
 
   useEffect(() => {
+    getOpenBanners();
     getAllReports();
-  }, [getAllReports]);
+  }, [getAllReports, getOpenBanners]);
 
-  const postOneBanner = async (e: any) => {
+  const postOneBanner = async () => {
     dispatch({ type: BannerListActionKind.LOADING, payload: true });
     try {
-      const { status } = await APIBanner.postOneImage(e.target.id);
+      const newData = { candidate: String(bannerListState.postId) };
+      const { status } = await APIBanner.postOneImage(newData);
       if (status === 200) {
         toast.success('배너가 등록됐습니다.');
+        dispatch({
+          type: BannerListActionKind.LOADING,
+          payload: false,
+        });
+
+        getOpenBanners();
       }
     } catch (error) {
+      toast.error(error.message);
+    } finally {
+      dispatch({
+        type: BannerListActionKind.CHANGE_OPEN_MODAL,
+        payload: false,
+      });
+    }
+  };
+
+  const saveBanner = async () => {
+    try {
+      const newData = {
+        candidates: bannerListState.newOrder.map((data) => data.id),
+      };
+      const { status } = await APIBanner.putBanner(newData);
+
+      if (status === 200) {
+        getOpenBanners();
+        toast.success('배너가 수정됐습니다.');
+      }
+    } catch (error) {
+      toast.error(error.message);
       console.log(error);
+    } finally {
+      dispatch({
+        type: BannerListActionKind.CHANGE_OPEN_MODAL,
+        payload: false,
+      });
+      dispatch({
+        type: BannerListActionKind.CHANGE_ORDER_EDIT,
+        payload: false,
+      });
     }
   };
 
@@ -152,13 +222,12 @@ const BannerListContainer = () => {
     dragIndex?: number,
     hoverIndex?: number,
   ) => {
-    let card = [...bannerListState.openBannerList];
+    let card = [...bannerListState.newOrder];
     let cardSlice = card.splice(dragIndex - 1, 1);
     card.splice(hoverIndex - 1, 0, cardSlice[0]);
     if (bannerListState.orderEdit) {
-      console.log(card);
       dispatch({
-        type: BannerListActionKind.GET_OPEN_BANNER,
+        type: BannerListActionKind.CHANGE_NEWORDER,
         payload: card,
       });
     } else {
@@ -172,6 +241,7 @@ const BannerListContainer = () => {
       dispatch={dispatch}
       postOneBanner={postOneBanner}
       moveCard={moveCard}
+      saveBanner={saveBanner}
     />
   );
 };

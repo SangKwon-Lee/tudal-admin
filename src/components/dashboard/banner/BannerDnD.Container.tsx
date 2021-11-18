@@ -1,10 +1,12 @@
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
-import ConfirmModal from '../../widgets/modals/ConfirmModal';
 import { XYCoord } from 'dnd-core';
-import { Box, Button, Card } from '@material-ui/core';
-import { useReducer, useRef } from 'react';
-import toast from 'react-hot-toast';
-import useAuth from 'src/hooks/useAuth';
+import { Button, Card, Typography } from '@material-ui/core';
+import { useRef } from 'react';
+import {
+  BannerListAction,
+  BannerListActionKind,
+} from './BannerList.Container';
+import { IHR } from 'src/types/hiddenreport';
 
 interface DragItem {
   index: number;
@@ -18,51 +20,11 @@ export interface CardProps {
   moveCard?: (dragIndex: number, hoverIndex: number) => void;
   orderEdit?: boolean;
   img: string;
+  dispatch: (param: BannerListAction) => void;
+  newOrder: IHR[];
+  nickname: string;
+  title: string;
 }
-
-enum BannerDnDActionKind {
-  EDIT = 'EDIT',
-  SAVE = 'SAVE',
-  IS_DELETED_MODAL = 'IS_DELETED_MODAL',
-}
-
-interface BannerDnDAction {
-  type: BannerDnDActionKind;
-  payload?: any;
-}
-interface newState {
-  edit: boolean;
-  isDeletedOpen: boolean;
-}
-
-const BannerDnDReducer = (
-  state: newState,
-  action: BannerDnDAction,
-): newState => {
-  const { type, payload } = action;
-  switch (type) {
-    case BannerDnDActionKind.EDIT:
-      return {
-        ...state,
-        edit: true,
-      };
-    case BannerDnDActionKind.SAVE:
-      return {
-        ...state,
-        edit: false,
-      };
-    case BannerDnDActionKind.IS_DELETED_MODAL:
-      return {
-        ...state,
-        isDeletedOpen: payload,
-      };
-  }
-};
-
-const initialState: newState = {
-  edit: false,
-  isDeletedOpen: false,
-};
 
 // React DND card component
 const DraggableCard: React.FC<CardProps> = ({
@@ -71,12 +33,11 @@ const DraggableCard: React.FC<CardProps> = ({
   orderEdit,
   moveCard,
   img,
+  newOrder,
+  dispatch,
+  nickname,
+  title,
 }) => {
-  const [newState, dispatch] = useReducer(
-    BannerDnDReducer,
-    initialState,
-  );
-  const { user } = useAuth();
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop({
     accept: 'card',
@@ -137,8 +98,13 @@ const DraggableCard: React.FC<CardProps> = ({
 
   drag(drop(ref));
 
-  const deleteBanner = async () => {
-    console.log(id);
+  const deleteBanner = () => {
+    let newData = newOrder;
+    newData = newData.filter((data) => data.id !== id);
+    dispatch({
+      type: BannerListActionKind.CHANGE_NEWORDER,
+      payload: newData,
+    });
   };
 
   return (
@@ -176,6 +142,12 @@ const DraggableCard: React.FC<CardProps> = ({
             }}
             data-handler-id={handlerId}
           ></img>
+          <Typography variant="subtitle2" sx={{ my: 1 }}>
+            제목 : {title}
+          </Typography>
+          <Typography variant="subtitle2">
+            닉네임 : {nickname}
+          </Typography>
           {orderEdit && (
             <Button
               variant="outlined"
