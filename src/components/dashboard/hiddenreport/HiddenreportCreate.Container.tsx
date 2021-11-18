@@ -21,7 +21,6 @@ import { useNavigate } from 'react-router';
 import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter';
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
 import { registerImage } from 'src/utils/registerImage';
-import { bucket_hiddenbox } from 'src/components/common/conf/aws';
 import useUserVerification from 'src/hooks/useUserVerification';
 import { CP_Hidden_Reporter } from 'src/types/cp';
 import useAuth from 'src/hooks/useAuth';
@@ -336,8 +335,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const onSubmitContentForm = (data, e) => {
       try {
         // PDF 등록
-        console.log(e);
-        console.log('h21321321');
         const contents = log();
         const newReport: IHiddenReportForm = {
           ...data,
@@ -345,8 +342,6 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           stocks: reportCreateState.newReport.stocks,
           tags: reportCreateState.newReport.tags,
         };
-        console.log('here');
-
         dispatch({
           type: HiddenReportCreateActionKind.GET_REPORT,
           payload: newReport,

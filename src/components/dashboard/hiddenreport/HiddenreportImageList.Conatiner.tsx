@@ -98,7 +98,6 @@ const HRImageListReducer = (
 
     case HRImageListActionKind.CHANGE_QUERY:
       const { name, value } = payload;
-      console.log(payload);
       return {
         ...state,
         query: {

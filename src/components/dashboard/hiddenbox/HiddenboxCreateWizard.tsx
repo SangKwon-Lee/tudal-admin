@@ -116,13 +116,10 @@ const HiddenboxCreateWizard: FC<HiddenboxCreateWizardProps> = (
       ...prev,
       ...values,
     }));
-    // console.log('values are changed', values, newHiddenbox);
   };
 
   return (
     <div {...props}>
-      {/* {productStatus[0] === 'beforeSale' ||
-      productStatus[0] === 'onSale' ? ( */}
       <>
         {!completed ? (
           <>

@@ -52,11 +52,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           ...values,
           contents: contents,
         });
-        // console.log('여기', values.stocks);
-        // console.log(
-        //   '여기',
-        //   values.stocks.map((el) => el.id),
-        // );
 
         const newHiddenbox = {
           ...values,

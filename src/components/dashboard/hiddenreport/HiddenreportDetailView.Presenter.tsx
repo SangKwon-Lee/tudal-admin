@@ -1,6 +1,4 @@
-import { FC, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
 import {
   Box,
   Card,
@@ -15,8 +13,6 @@ import {
   Button,
 } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
-import { SocialPostComment, SocialPostCommentAdd } from '../social';
-
 import { IHiddenReportForm } from './HiddenreportCreate.Container';
 import dayjs from 'dayjs';
 import { IHR } from 'src/types/hiddenreport';

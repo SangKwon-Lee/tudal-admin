@@ -1,35 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
-  Divider,
   Grid,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Tooltip,
   Typography,
   TextField,
   InputAdornment,
-  Fab,
 } from '@material-ui/core';
 
 import blueGrey from '@material-ui/core/colors/blueGrey';
-import ArchiveIcon from 'src/icons/Archive';
 import DocumentTextIcon from 'src/icons/DocumentText';
-import DotsHorizontalIcon from 'src/icons/DotsHorizontal';
-import DownloadIcon from 'src/icons/Download';
-import PencilAltIcon from 'src/icons/PencilAlt';
-import TrashIcon from 'src/icons/Trash';
 import SearchIcon from 'src/icons/Search';
-import ArrowRightIcon from 'src/icons/ArrowRight';
 
 import * as _ from 'lodash';
 import {
@@ -38,7 +23,6 @@ import {
   HiddenReportCreateState,
 } from './HiddenreportCreate.Container';
 import toast from 'react-hot-toast';
-import { IHRImage } from 'src/types/hiddenreport';
 
 interface HiddenReportCreateImageFormPresenterProps {
   reportCreateState: HiddenReportCreateState;
@@ -50,7 +34,7 @@ interface HiddenReportCreateImageFormPresenterProps {
 }
 
 const ImageCard = (props) => {
-  const { image, isSelected, onChange, isMain } = props;
+  const { image, isSelected, onChange } = props;
 
   return (
     <Grid item md={4} xs={12}>
@@ -108,7 +92,6 @@ const ImageCard = (props) => {
 const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresenterProps> =
   ({ reportCreateState, dispatch, setStep }) => {
     const { loading, image, newReport } = reportCreateState;
-    console.log(newReport.hidden_report_image);
     const { isLoadMoreAvailable } = image;
 
     const showAlert = useRef(true);

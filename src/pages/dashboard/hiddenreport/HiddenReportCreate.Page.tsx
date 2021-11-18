@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import HiddenreportCreateContainer from 'src/components/dashboard/hiddenreport/HiddenreportCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
-import { useParams, useNavigate } from 'react-router-dom';
-import useAuth from 'src/hooks/useAuth';
+import { useParams } from 'react-router-dom';
 
 const HiddenReportListPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);

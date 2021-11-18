@@ -148,7 +148,6 @@ const groupCommentHandler = [
   rest.get(
     `${process.env.REACT_APP_CMS_URL}/tudal-groups/:groupCommentId`,
     (req, res, ctx) => {
-      console.log('IHIHI');
       return res(
         ctx.status(200),
         ctx.json(FixtureGroupComment.Detaillist),
@@ -158,7 +157,6 @@ const groupCommentHandler = [
   rest.get(
     `${process.env.REACT_APP_CMS_URL}/tudal-group-comments/:groupCommentId`,
     (req, res, ctx) => {
-      console.log('IHIHI');
       return res(
         ctx.status(200),
         ctx.json(FixtureGroupComment.Detaillist),

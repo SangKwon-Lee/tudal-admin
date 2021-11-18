@@ -102,6 +102,8 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
   useEffect(() => {
     reportCreateState.newReport.contents &&
       reset(reportCreateState.newReport);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportCreateState.newReport]);
 
   return (

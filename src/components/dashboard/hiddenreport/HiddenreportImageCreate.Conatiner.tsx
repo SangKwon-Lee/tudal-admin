@@ -6,19 +6,6 @@ import { registerImage } from 'src/utils/registerImage';
 import HiddenreportImageCreatePresenter from './HiddenreportImageCreate.Presenter';
 import { useNavigate } from 'react-router-dom';
 
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: process.env.ACCESS_KET,
-    secretAccessKey: process.env.SECRET_KEY,
-  },
-});
-
-const bucket_name = 'tudal-popup-photo';
-
 export enum HRImageCreateActionKind {
   LOADING = 'LOADING',
   GET_IMAGE = 'GET_IMAGE',

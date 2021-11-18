@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import type { MutableRefObject } from 'react';
 import useAuth from './useAuth';
 import { useNavigate } from 'react-router';
 import { isNull, isUndefined } from 'lodash';

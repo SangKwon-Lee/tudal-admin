@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { APIHR } from 'src/lib/api';
 import { IHR } from 'src/types/hiddenreport';
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';

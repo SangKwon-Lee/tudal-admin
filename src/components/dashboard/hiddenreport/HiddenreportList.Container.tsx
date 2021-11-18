@@ -159,7 +159,7 @@ const HiddenReportListContainer: React.FC = (props) => {
     } catch (error) {
       console.log(error);
     }
-  }, [query]);
+  }, [query, user.hidden_reporter.id]);
 
   useEffect(() => {
     getList();
