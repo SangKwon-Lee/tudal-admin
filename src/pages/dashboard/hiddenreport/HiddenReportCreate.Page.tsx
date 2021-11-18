@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import HiddenreportCreateContainer from 'src/components/dashboard/hiddenreport/HiddenreportCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import useAuth from 'src/hooks/useAuth';
 
 const HiddenReportListPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
@@ -10,7 +11,6 @@ const HiddenReportListPage: React.FC = () => {
 
   return (
     <PageLayout
-      dashboard="히든 리포트"
       mainTopic={'히든리포트'}
       pageTitle={'히든리포트 리스트'}
       pageTopRef={pageTopRef}

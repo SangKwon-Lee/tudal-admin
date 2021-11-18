@@ -86,7 +86,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body1">
+                  <Typography color="textSecondary" variant="body2">
                     {state.price} GOLD
                   </Typography>
                 </TableCell>
@@ -98,7 +98,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body1">
+                  <Typography color="textSecondary" variant="body2">
                     {state.catchphrase}
                   </Typography>
                 </TableCell>
@@ -111,7 +111,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body1">
+                  <Typography color="textSecondary" variant="body2">
                     {`${dayjs(state.expirationDate).format(
                       'YYYY년 M월 D일',
                     )}`}
@@ -125,7 +125,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body1">
+                  <Typography color="textSecondary" variant="body2">
                     {state?.stocks.map(
                       (stock) => `${stock.name}(${stock.code})\n`,
                     )}
@@ -139,13 +139,58 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography color="textSecondary" variant="body1">
+                  <Typography color="textSecondary" variant="body2">
                     {state?.tags.map((tag) => `#${tag.name} `)}
                   </Typography>
                 </TableCell>
               </TableRow>
+              {state.pdfUrl && (
+                <TableRow>
+                  <TableCell>
+                    <Typography
+                      color="textPrimary"
+                      variant="subtitle2"
+                    >
+                      PDF 파일
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      color="textSecondary"
+                      variant="subtitle2"
+                      sx={{ mt: 1 }}
+                    >
+                      <a href={state.pdfUrl}>PDF</a>
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          <Box
+            sx={{
+              alignItems: 'flex-start',
+              display: 'flex',
+              flexDirection: 'column',
+              p: 2,
+            }}
+          >
+            <Typography color="textPrimary" variant="subtitle2">
+              이미지
+            </Typography>
+            <Box sx={{ maxHeight: '300px' }}>
+              <img
+                style={{
+                  width: '300px',
+                  height: '300px',
+                  objectFit: 'cover',
+                }}
+                src={state.hidden_report_image.thumbnailImageUrl}
+                alt=""
+              />
+            </Box>
+          </Box>
+          <Divider />
           <Box
             sx={{
               alignItems: 'flex-start',

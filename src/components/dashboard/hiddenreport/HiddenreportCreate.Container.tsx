@@ -22,7 +22,9 @@ import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
 import { registerImage } from 'src/utils/registerImage';
 import { bucket_hiddenbox } from 'src/components/common/conf/aws';
-
+import useUserVerification from 'src/hooks/useUserVerification';
+import { CP_Hidden_Reporter } from 'src/types/cp';
+import useAuth from 'src/hooks/useAuth';
 export const HIDDENREPORT_CATEGORIES = {
   subject: [
     '국내주식',
@@ -87,10 +89,11 @@ export interface IHiddenReportForm {
   subject: string; // 대상 (카테고리)
   type: string; // 유형 (카테고리)
   counter: string; // 대응 전략 (카테고리)
-
   expirationDate: Date;
   stocks: Stock[];
   tags: Tag[];
+
+  hidden_reporter?: CP_Hidden_Reporter;
 }
 
 export interface HiddenReportCreateState {
@@ -111,7 +114,7 @@ const monthLater = new Date();
 monthLater.setMonth(monthLater.getMonth() + 1);
 
 export const initialState: HiddenReportCreateState = {
-  loading: false,
+  loading: true,
   newReport: {
     title: '',
     price: 5,
@@ -264,6 +267,7 @@ const HiddenReportCreateReducer = (
 
 const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
+    const { user } = useAuth();
     const { mode, reportId, pageTopRef } = props;
     const [step, setStep] = useState<number>(1);
     const [reportCreateState, dispatch] = useReducer(
@@ -274,8 +278,13 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     const stockInput = useRef(null);
     const navigate = useNavigate();
 
-    const { newReport, image } = reportCreateState;
+    const { newReport, image, loading } = reportCreateState;
     const { stocks, tags } = newReport;
+
+    useUserVerification(
+      newReport.hidden_reporter?.id,
+      'hiddenReporter',
+    );
 
     //* 수정 시 기존 데이터 불러오기
     const getReport = async () => {
@@ -283,8 +292,8 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       try {
         if (reportId.toString() === '0') return;
         const { status, data } = await APIHR.get(reportId.toString());
+
         if (status === 200) {
-          console.log(data);
           const newReportData: IHiddenReportForm = {
             id: data.id,
             title: data.title,
@@ -302,6 +311,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
             tags: data.tags,
             hidden_report_image: data.hidden_report_image,
             expirationDate: data.expirationDate,
+            hidden_reporter: data.hidden_reporter,
           };
 
           dispatch({
@@ -356,6 +366,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         ...reportCreateState.newReport,
         tags: tags.map((data) => data.id) || [],
         stocks: stocks.map((data) => data.id) || [],
+        hidden_reporter: user.hidden_reporter.id,
       };
 
       try {
@@ -535,23 +546,25 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
     switch (step) {
       case 1:
         return (
-          <HiddenReportContentForm
-            reportCreateState={reportCreateState}
-            dispatch={dispatch}
-            editorRef={editorRef}
-            onSubmitContentForm={onSubmitContentForm}
-            tagList={tagList}
-            tagInput={tagInput}
-            tagLoading={tagLoading}
-            handleTagChange={handleTagChange}
-            stockList={stockList}
-            stockLoading={stockLoading}
-            stockInput={stockInput}
-            handleStockChange={handleStockChange}
-            onTagChange={onTagChange}
-            onStockChange={onStockChange}
-            onPDFChange={onPDFChange}
-          />
+          !loading && (
+            <HiddenReportContentForm
+              reportCreateState={reportCreateState}
+              dispatch={dispatch}
+              editorRef={editorRef}
+              onSubmitContentForm={onSubmitContentForm}
+              tagList={tagList}
+              tagInput={tagInput}
+              tagLoading={tagLoading}
+              handleTagChange={handleTagChange}
+              stockList={stockList}
+              stockLoading={stockLoading}
+              stockInput={stockInput}
+              handleStockChange={handleStockChange}
+              onTagChange={onTagChange}
+              onStockChange={onStockChange}
+              onPDFChange={onPDFChange}
+            />
+          )
         );
       case 2:
         return (
