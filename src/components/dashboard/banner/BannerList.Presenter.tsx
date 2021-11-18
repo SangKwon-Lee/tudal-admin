@@ -56,6 +56,8 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
   } = props;
   const { reports, orderEdit, openBannerList, newOrder } =
     bannerListState;
+
+  const cards = orderEdit ? newOrder : openBannerList;
   return (
     <>
       <Card sx={{ my: 4, mx: 5 }}>
@@ -122,47 +124,24 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
             display: 'flex',
           }}
         >
-          {orderEdit
-            ? newOrder.map((list, i) => (
-                <DraggableCard
-                  key={i}
-                  id={list.id}
-                  index={i + 1}
-                  orderEdit={orderEdit}
-                  moveCard={moveCard}
-                  dispatch={dispatch}
-                  title={
-                    list?.title ? list?.title : '제목이 없습니다.'
-                  }
-                  nickname={
-                    list?.hidden_reporter?.nickname
-                      ? list?.hidden_reporter?.nickname
-                      : '닉네임이 없습니다.'
-                  }
-                  newOrder={newOrder}
-                  img={list.hidden_report_image.thumbnailImageUrl}
-                />
-              ))
-            : openBannerList.map((list, i) => (
-                <DraggableCard
-                  key={i}
-                  id={list.id}
-                  index={i + 1}
-                  orderEdit={orderEdit}
-                  moveCard={moveCard}
-                  dispatch={dispatch}
-                  title={
-                    list?.title ? list?.title : '제목이 없습니다.'
-                  }
-                  nickname={
-                    list?.hidden_reporter?.nickname
-                      ? list?.hidden_reporter?.nickname
-                      : '닉네임이 없습니다.'
-                  }
-                  newOrder={newOrder}
-                  img={list.hidden_report_image.thumbnailImageUrl}
-                />
-              ))}
+          {cards.map((list, i) => (
+            <DraggableCard
+              key={i}
+              id={list.id}
+              index={i + 1}
+              orderEdit={orderEdit}
+              moveCard={moveCard}
+              dispatch={dispatch}
+              title={list?.title ? list?.title : '제목이 없습니다.'}
+              nickname={
+                list?.hidden_reporter?.nickname
+                  ? list?.hidden_reporter?.nickname
+                  : '닉네임이 없습니다.'
+              }
+              newOrder={newOrder}
+              img={list.hidden_report_image.thumbnailImageUrl}
+            />
+          ))}
         </div>
       </Card>
 

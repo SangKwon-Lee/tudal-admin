@@ -71,10 +71,6 @@ const ImageCropper: React.FC<any> = (props): any => {
       style={{ width: '700px' }}
       src={imageToCrop || ''}
       crop={cropConfig}
-      // minHeight={70}
-      // minWidth={70}
-      // maxHeight={70}
-      // maxWidth={70}
       ruleOfThirds
       onImageLoaded={(imageRef) => setImageRef(imageRef)}
       onComplete={(cropConfig) => cropImage(cropConfig)}
