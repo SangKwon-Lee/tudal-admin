@@ -341,6 +341,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           contents,
           stocks: reportCreateState.newReport.stocks,
           tags: reportCreateState.newReport.tags,
+          pdfUrl: reportCreateState.newReport.pdfUrl,
         };
         dispatch({
           type: HiddenReportCreateActionKind.GET_REPORT,
