@@ -170,7 +170,6 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                 ))}
               </TableBody>
             </Table>
-
             <Pagination
               variant="outlined"
               count={Math.ceil(state.listLength / state.query._limit)}

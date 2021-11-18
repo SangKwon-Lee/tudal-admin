@@ -25,7 +25,7 @@ const initialState: CpReporterDetailState = {
     user: 0,
     created_at: '',
     id: 0,
-    catchPhrase: '',
+    catchphrase: '',
     tudalRecommendScore: 0,
   },
 };

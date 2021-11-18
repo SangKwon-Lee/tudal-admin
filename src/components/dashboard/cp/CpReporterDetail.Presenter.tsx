@@ -116,8 +116,8 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="subtitle2">
-                  {reporter?.catchPhrase
-                    ? reporter.catchPhrase
+                  {reporter?.catchphrase
+                    ? reporter.catchphrase
                     : '캐치프레이즈가 없습니다.'}
                 </Typography>
               </TableCell>
@@ -175,7 +175,11 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
             프로필 이미지
           </Typography>
           {reporter?.imageUrl ? (
-            <img src={reporter.imageUrl} alt="프로필이미지"></img>
+            <img
+              src={reporter.imageUrl}
+              style={{ borderRadius: '50%', width: '100px' }}
+              alt="프로필이미지"
+            ></img>
           ) : (
             '프로필 이미지가 없습니다.'
           )}
