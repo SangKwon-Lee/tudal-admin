@@ -40,7 +40,7 @@ const initialState: CpReporterCreateState = {
     user: 1,
     imageUrl: '',
     tudalRecommendScore: 3,
-    catchPhrase: '',
+    catchphrase: '',
   },
   users: [],
   userId: 0,

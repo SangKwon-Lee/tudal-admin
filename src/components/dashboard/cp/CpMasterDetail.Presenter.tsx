@@ -165,6 +165,7 @@ const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
           {master?.profile_image_url ? (
             <img
               src={master.profile_image_url}
+              style={{ borderRadius: '50%', width: '100px' }}
               alt="프로필이미지"
             ></img>
           ) : (
