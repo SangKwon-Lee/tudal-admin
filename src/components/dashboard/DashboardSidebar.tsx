@@ -22,6 +22,8 @@ import HomeIcon from 'src/icons/Home';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import SpellcheckIcon from '@material-ui/icons/Spellcheck';
 import CategoryIcon from '@material-ui/icons/Category';
+import PaletteIcon from '@material-ui/icons/Palette';
+
 interface DashboardSidebarProps {
   onMobileClose: () => void;
   openMobile: boolean;
@@ -104,6 +106,16 @@ const sections = [
       //     },
       //   ],
       // },
+    ],
+  },
+  {
+    title: 'Management',
+    items: [
+      {
+        title: '배너 관리',
+        path: '/dashboard/banner',
+        icon: <PaletteIcon fontSize="small" />,
+      },
     ],
   },
   {

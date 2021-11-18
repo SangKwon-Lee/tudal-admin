@@ -133,6 +133,11 @@ const PopUpDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/popup/PopUpDetail.Page')),
 );
 
+//* 배너
+const BannerListPage = Loadable(
+  lazy(() => import('./pages/dashboard/banner/BannerList.Page')),
+);
+
 //* 투달 그룹
 const GroupCommentCreatePage = Loadable(
   lazy(
@@ -546,6 +551,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <CpListPage />,
+          },
+        ],
+      },
+      {
+        path: 'banner',
+        children: [
+          {
+            path: '/',
+            element: <BannerListPage />,
           },
         ],
       },
