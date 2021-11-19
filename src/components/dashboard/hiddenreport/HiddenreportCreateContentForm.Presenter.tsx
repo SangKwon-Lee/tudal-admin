@@ -34,6 +34,7 @@ import {
   HIDDENREPORT_CATEGORIES,
 } from './HiddenreportCreate.Container';
 import { DatePicker } from '@material-ui/lab';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 interface IHRContentFormProps {
   reportCreateState: HiddenReportCreateState;
@@ -484,6 +485,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 <WebEditor
                   editorRef={editorRef}
                   contents={newReport.contents}
+                  bucket_name={IBuckets.HIDDENREPORT}
                 />
               </Paper>
             </Grid>

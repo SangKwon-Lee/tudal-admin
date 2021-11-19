@@ -24,6 +24,7 @@ import {
   MasterContentFormState,
 } from './MasterContentForm.Container';
 import useAuth from 'src/hooks/useAuth';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 interface IMasterContentFormProps {
   editorRef: React.MutableRefObject<any>;
@@ -318,6 +319,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                     <Paper sx={{ mt: 3 }} variant="outlined">
                       <WebEditor
                         editorRef={editorRef}
+                        bucket_name={IBuckets.MASTER_FEED}
                         contents={
                           newMaster?.contents
                             ? newMaster.contents

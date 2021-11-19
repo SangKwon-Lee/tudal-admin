@@ -24,6 +24,7 @@ import { registerImage } from 'src/utils/registerImage';
 import useUserVerification from 'src/hooks/useUserVerification';
 import { CP_Hidden_Reporter } from 'src/types/cp';
 import useAuth from 'src/hooks/useAuth';
+import { IBuckets } from 'src/components/common/conf/aws';
 export const HIDDENREPORT_CATEGORIES = {
   subject: [
     '국내주식',
@@ -492,7 +493,10 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       try {
         const file = event.target.files;
 
-        const imageUrl = await registerImage(file, 'hiddenbox-photo');
+        const imageUrl = await registerImage(
+          file,
+          IBuckets.HIDDENREPORT,
+        );
         dispatch({
           type: HiddenReportCreateActionKind.CHANGE_PDF,
           payload: imageUrl,

@@ -5,7 +5,7 @@ import { APICp } from 'src/lib/api';
 import { CP_Master } from 'src/types/cp';
 import { IUser } from 'src/types/user';
 import CpMasterCreatePresenter from './CpMasterCreate.Presenter';
-import { bucket_hiddenbox } from '../../common/conf/aws';
+import { IBuckets } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
 export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
@@ -176,7 +176,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
-          bucket_hiddenbox,
+          IBuckets.CP_PHOTO,
         );
         newInput = {
           ...newInput,
@@ -208,7 +208,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
-          bucket_hiddenbox,
+          IBuckets.CP_PHOTO,
         );
         const newInput = {
           ...data,
@@ -227,25 +227,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       }
     }
   };
-
-  //* 이미지 등록
-  // const onChangeImgae = async (event) => {
-  //   var file = event.target.files;
-  //   dispatch({
-  //     type: CpMasterCreateActionKind.LOADING,
-  //     payload: true,
-  //   });
-  //   try {
-  //     const imageUrl = await registerImage(file, bucket_hiddenbox);
-  //     dispatch({
-  //       type: CpMasterCreateActionKind.CHANGE_IMAGE,
-  //       payload: imageUrl,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     return false;
-  //   }
-  // };
 
   useEffect(() => {
     getUsers();
