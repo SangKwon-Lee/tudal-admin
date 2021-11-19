@@ -85,6 +85,7 @@ const PopUpCreateReducer = (
           name: payload.name,
           keyword: payload.keyword,
           thumbnailImageUrl: payload.thumbnailImageUrl,
+          squareImageUrl: payload.squareImageUrl,
         },
       };
   }
@@ -117,19 +118,27 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
       const newImage = {
         ...HRImageCreateState.createInput,
       };
-      const { status } = await APIHR.createImage(newImage);
-      if (status === 200) {
-        toast.success('이미지가 생성되었습니다.');
-        dispatch({
-          type: HRImageCreateActionKind.LOADING,
-          payload: false,
-        });
-
-        navigate('/dashboard/hiddenreports/images');
+      if (mode === 'edit') {
+        const { status } = await APIHR.editImage(id, newImage);
+        if (status === 200) {
+          toast.success('이미지가 수정되었습니다.');
+          navigate('/dashboard/hiddenreports/images');
+        }
+      } else {
+        const { status } = await APIHR.createImage(newImage);
+        if (status === 200) {
+          toast.success('이미지가 생성되었습니다.');
+          navigate('/dashboard/hiddenreports/images');
+        }
       }
     } catch (error) {
       toast.error('오류가 생겼습니다.');
       console.log(error);
+    } finally {
+      dispatch({
+        type: HRImageCreateActionKind.LOADING,
+        payload: false,
+      });
     }
   };
 
@@ -171,6 +180,7 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
           type: HRImageCreateActionKind.GET_IMAGE,
           payload: data,
         });
+        console.log(data);
         dispatch({
           type: HRImageCreateActionKind.LOADING,
           payload: false,

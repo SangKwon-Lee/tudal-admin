@@ -15,10 +15,10 @@ export enum CouponIssuedListTableActionKind {
   GET_COUPON = 'GET_COUPON',
   GET_ISSUED_COUPON = 'GET_ISSUED_COUPON',
   GET_ISSUED_COUPON_LENGTH = 'GET_COUPON_LENGTH',
+  GET_ISSUED_COUPON_ALL_LENGTH = 'GET_ISSUED_COUPON_ALL_LENGTH',
   GET_ISUSED_LENGTH = 'GET_ISUSED_LENGTH',
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
-  CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
   CHANGE_QUANTITY = 'CHANGE_QUANTITY',
@@ -60,6 +60,7 @@ export interface CouponIssuedListTableState {
     quantity: number;
   };
   coupon: CouponType;
+  allListlength: number;
 }
 
 let newDate = dayjs();
@@ -101,6 +102,7 @@ const initialState: CouponIssuedListTableState = {
     expirationDate: newDate.format('YYYY-MM-DD HH:mm:ss'),
     quantity: 1,
   },
+  allListlength: 0,
 };
 
 const CouponIssuedListTableReducer = (
@@ -126,6 +128,12 @@ const CouponIssuedListTableReducer = (
         list: payload,
         loading: false,
       };
+    case CouponIssuedListTableActionKind.GET_ISSUED_COUPON_ALL_LENGTH:
+      return {
+        ...state,
+        allListlength: payload,
+        loading: false,
+      };
     case CouponIssuedListTableActionKind.GET_ISSUED_COUPON_LENGTH:
       return {
         ...state,
@@ -138,7 +146,9 @@ const CouponIssuedListTableReducer = (
         query: {
           ...state.query,
           _q: payload,
+          _start: 0,
         },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.CHANGE_PAGE:
       return {
@@ -149,11 +159,6 @@ const CouponIssuedListTableReducer = (
           _start: (payload - 1) * 50,
         },
       };
-    case CouponIssuedListTableActionKind.CHANGE_LIMIT:
-      return {
-        ...state,
-        query: { ...state.query, _limit: payload },
-      };
     case CouponIssuedListTableActionKind.CHANGE_ISUSED:
       return {
         ...state,
@@ -163,7 +168,9 @@ const CouponIssuedListTableReducer = (
             ...state.query._where,
             isUsed: payload,
           },
+          _start: 0,
         },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.CHANGE_QUANTITY:
       return {
@@ -190,6 +197,11 @@ const CouponIssuedListTableReducer = (
       return {
         ...state,
         sort: payload,
+        query: {
+          ...state.query,
+          _start: 0,
+        },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.OPEN_DELETE_DIALOG:
       return {
@@ -288,10 +300,16 @@ const CouponIssuedListTableContainer = () => {
         CouponIssuedListTableState.sort,
         couponId,
       );
+      const { data: length } =
+        await APICoupon.getIssuedCouponAllListLength(couponId);
       if (status === 200) {
         dispatch({
           type: CouponIssuedListTableActionKind.GET_ISSUED_COUPON,
           payload: data,
+        });
+        dispatch({
+          type: CouponIssuedListTableActionKind.GET_ISSUED_COUPON_ALL_LENGTH,
+          payload: length,
         });
       }
     } catch (error) {
@@ -305,6 +323,7 @@ const CouponIssuedListTableContainer = () => {
     try {
       const { data, status } = await APICoupon.getIssuedCouponLength(
         couponId,
+        CouponIssuedListTableState.query,
       );
       if (status === 200) {
         dispatch({
@@ -315,7 +334,7 @@ const CouponIssuedListTableContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [couponId]);
+  }, [CouponIssuedListTableState.query, couponId]);
 
   //* 사용된 쿠폰 개수,
   const getIsusedCouponLength = useCallback(async () => {

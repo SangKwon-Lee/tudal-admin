@@ -72,6 +72,7 @@ const CpListReducer = (
         ...state,
         query: {
           ...state.query,
+          _start: 0,
           _q: payload,
         },
         page: 1,

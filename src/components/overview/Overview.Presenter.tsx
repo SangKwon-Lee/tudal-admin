@@ -33,7 +33,10 @@ const OverviewPresenter: React.FC<IOverviewProps> = ({ greet }) => {
   const { user } = useAuth();
   const hour = dayjs().hour() * 60;
   const min = dayjs().minute();
-  const deadline = ((hour + min - 540) / 390) * 100;
+  const deadline =
+    ((hour + min - 540) / 390) * 100 < 0
+      ? 0
+      : ((hour + min - 540) / 390) * 100;
   return (
     <>
       <Grid container spacing={3}>

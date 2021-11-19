@@ -44,3 +44,7 @@ export async function getImageListLength(param) {
 export async function createImage(image) {
   return await axios.post(`/hidden-report-images`, image);
 }
+
+export async function editImage(id, image) {
+  return await axios.put(`/hidden-report-images/${id}`, image);
+}

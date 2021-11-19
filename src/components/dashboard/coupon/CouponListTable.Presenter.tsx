@@ -37,7 +37,6 @@ interface ICouponListTableProps {
   handleDelete: () => void;
   getCouponList: () => void;
   getCouponListLength: () => void;
-  handleIsused: (event: any) => void;
   handleSelect: (event: any, selectId: number) => void;
   handleSelectAll: (event: any) => void;
 }
@@ -273,6 +272,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
           sx={{ p: 1 }}
           count={Math.ceil(listLength / 50)}
           variant="outlined"
+          page={couponListTableState.page}
           onChange={(event, page) => {
             dispatch({
               type: CouponListTableActionKind.CHANGE_PAGE,

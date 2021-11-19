@@ -113,6 +113,7 @@ const HRListReducer = (
         query: {
           ...state.query,
           [name]: value,
+          _start: 0,
         },
       };
     case HRListActionKind.CLOSE_SELECT_CONFIRM:
@@ -159,7 +160,7 @@ const HiddenReportListContainer: React.FC = (props) => {
     } catch (error) {
       console.log(error);
     }
-  }, [query, user.hidden_reporter.id]);
+  }, [query, user?.hidden_reporter?.id]);
 
   useEffect(() => {
     getList();

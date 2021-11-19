@@ -110,7 +110,9 @@ const MasterListTableReducer = (
         query: {
           ...state.query,
           _q: payload,
+          _start: 0,
         },
+        page: 1,
       };
     case MasterListTableActionKind.CHANGE_PAGE:
       return {

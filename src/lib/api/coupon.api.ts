@@ -7,8 +7,12 @@ export async function getCoupons(params, sort) {
   return await axios.get(`/coupons?${query}&_sort=${sort}`);
 }
 
-export async function getCouponLength() {
-  return await axios.get(`/coupons/count`);
+export async function getCouponLength(params) {
+  let query = qs.stringify(removeEmpty(params));
+  return await axios.get(`/coupons/count?${query}`);
+}
+export async function getIssuedCouponAllListLength(id) {
+  return await axios.get(`/issued-coupons/count?coupon.id=${id}`);
 }
 
 export async function deleteCoupon(couponId) {
@@ -30,8 +34,9 @@ export async function getIssuedCoupon(params, sort, id) {
   );
 }
 
-export async function getIssuedCouponLength(id) {
-  return axios.get(`/issued-coupons/count?coupon.id=${id}`);
+export async function getIssuedCouponLength(id, params) {
+  let query = qs.stringify(removeEmpty(params));
+  return axios.get(`/issued-coupons/count?coupon.id=${id}&${query}`);
 }
 export async function getCouponDetail(id) {
   return axios.get(`/coupons/${id}`);

@@ -24,6 +24,7 @@ import Scrollbar from 'src/components/layout/Scrollbar';
 import dayjs from 'dayjs';
 import DraggableCard from './BannerDnD.Container';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+
 interface IBannerListProps {
   bannerListState: BannerListState;
   dispatch: (param: BannerListAction) => void;
@@ -124,24 +125,25 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
             display: 'flex',
           }}
         >
-          {cards.map((list, i) => (
-            <DraggableCard
-              key={i}
-              id={list.id}
-              index={i + 1}
-              orderEdit={orderEdit}
-              moveCard={moveCard}
-              dispatch={dispatch}
-              title={list?.title ? list?.title : '제목이 없습니다.'}
-              nickname={
-                list?.hidden_reporter?.nickname
-                  ? list?.hidden_reporter?.nickname
-                  : '닉네임이 없습니다.'
-              }
-              newOrder={newOrder}
-              img={list.hidden_report_image.thumbnailImageUrl}
-            />
-          ))}
+          {cards.length > 0 &&
+            cards.map((list, i) => (
+              <DraggableCard
+                key={i}
+                id={list?.id}
+                index={i + 1}
+                orderEdit={orderEdit}
+                moveCard={moveCard}
+                dispatch={dispatch}
+                title={list?.title ? list?.title : '제목이 없습니다.'}
+                nickname={
+                  list?.hidden_reporter?.nickname
+                    ? list?.hidden_reporter?.nickname
+                    : '닉네임이 없습니다.'
+                }
+                newOrder={newOrder}
+                img={list?.hidden_report_image?.thumbnailImageUrl}
+              />
+            ))}
         </div>
       </Card>
 
@@ -288,6 +290,7 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                 bannerListState.reportsLength /
                   bannerListState.query._limit,
               )}
+              page={bannerListState.page}
               onChange={(event, page) => {
                 dispatch({
                   type: BannerListActionKind.CHANGE_PAGE,

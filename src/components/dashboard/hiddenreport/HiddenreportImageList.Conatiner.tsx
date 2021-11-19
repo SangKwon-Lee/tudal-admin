@@ -103,7 +103,9 @@ const HRImageListReducer = (
         query: {
           ...state.query,
           [name]: value,
+          _start: 0,
         },
+        page: 1,
       };
     case HRImageListActionKind.CLOSE_SELECT_CONFIRM:
       return {

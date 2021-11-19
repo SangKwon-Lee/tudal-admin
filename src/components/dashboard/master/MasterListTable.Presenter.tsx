@@ -285,6 +285,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
           size="small"
           color="primary"
           sx={{ m: 1 }}
+          page={newState.page}
           count={Math.ceil(newState.list.feedLength / 20)}
           variant="text"
           onChange={(event, page) => {

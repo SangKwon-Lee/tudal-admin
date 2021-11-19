@@ -292,7 +292,7 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
                 <Typography
                   sx={{ fontSize: 30, fontWeight: 'bold', mt: 6 }}
                 >
-                  {CouponIssuedListTableState.listLength}
+                  {CouponIssuedListTableState.allListlength}
                 </Typography>
               </Box>
             </Box>
@@ -444,6 +444,7 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
                 </TableHead>
                 <TableBody>
                   {!loading &&
+                    list.length > 0 &&
                     list.map((list) => {
                       const isSelected = selected.includes(list.id);
                       return (
@@ -500,6 +501,7 @@ const CouponIssuedListTablePresenter: React.FC<ICouponIssuedListTableProps> =
           <Pagination
             count={Math.ceil(listLength / 50)}
             variant="outlined"
+            page={CouponIssuedListTableState.page}
             onChange={(event, page) => {
               dispatch({
                 type: CouponIssuedListTableActionKind.CHANGE_PAGE,

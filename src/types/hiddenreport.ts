@@ -25,6 +25,9 @@ export interface IHR {
   hidden_report_likes: [];
   hidden_report_comments: [];
   hidden_reporter: CP_Hidden_Reporter;
+  numOfLikes: number;
+  numOfOrders: number;
+  numOfViews: number;
 }
 
 export interface IHRImage {

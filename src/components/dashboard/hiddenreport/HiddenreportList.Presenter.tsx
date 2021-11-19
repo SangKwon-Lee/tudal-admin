@@ -129,12 +129,8 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{report.title}</TableCell>
                     <TableCell>{report.price}</TableCell>
-                    <TableCell>
-                      {report.hidden_report_likes.length}
-                    </TableCell>
-                    <TableCell>
-                      {report.hidden_report_orders.length}
-                    </TableCell>
+                    <TableCell>{report.numOfLikes}</TableCell>
+                    <TableCell>{report.numOfOrders}</TableCell>
                     <TableCell>
                       {dayjs(report.created_at).format('YYYY-MM-DD')}
                     </TableCell>
@@ -179,6 +175,7 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                   payload: page,
                 });
               }}
+              page={state.page}
               style={{
                 display: 'flex',
                 justifyContent: 'flex-end',

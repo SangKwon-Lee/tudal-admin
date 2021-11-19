@@ -204,6 +204,7 @@ const HiddenreportImageListPresenter: FC<HiddenreportImageListPresenterProps> =
                     payload: page,
                   });
                 }}
+                page={state.page}
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-end',

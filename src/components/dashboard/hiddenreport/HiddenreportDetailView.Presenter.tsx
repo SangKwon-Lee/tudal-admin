@@ -174,11 +174,10 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             <Typography color="textPrimary" variant="subtitle2">
               이미지
             </Typography>
-            <Box sx={{ maxHeight: '300px' }}>
+            <Box sx={{ maxWidth: '500px' }}>
               <img
                 style={{
-                  width: '300px',
-                  height: '300px',
+                  width: '100%',
                   objectFit: 'cover',
                 }}
                 src={state.hidden_report_image.thumbnailImageUrl}

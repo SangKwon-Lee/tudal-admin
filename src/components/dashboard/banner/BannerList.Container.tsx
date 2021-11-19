@@ -83,6 +83,7 @@ const BannerListReducer = (
         query: {
           ...state.query,
           [name]: value,
+          _start: 0,
         },
       };
     case BannerListActionKind.CHANGE_PAGE:
