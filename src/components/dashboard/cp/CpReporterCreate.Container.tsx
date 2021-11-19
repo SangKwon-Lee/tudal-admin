@@ -5,7 +5,7 @@ import { APICp } from 'src/lib/api';
 import { CP_Hidden_Reporter } from 'src/types/cp';
 import { IUser } from 'src/types/user';
 import CpReporterCreatePresenter from './CpReporterCreate.Presenter';
-import { bucket_hiddenbox } from '../../common/conf/aws';
+import { IBuckets } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
 
 export enum CpReporterCreateActionKind {
@@ -179,7 +179,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
-          bucket_hiddenbox,
+          IBuckets.CP_PHOTO,
         );
         newInput = {
           ...newInput,
@@ -198,7 +198,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
-          bucket_hiddenbox,
+          IBuckets.CP_PHOTO,
         );
         const newInput = {
           ...data,
@@ -221,36 +221,17 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     }
   };
 
-  //* 이미지 등록
-  // const onChangeImgae = async (event) => {
-  //   var file = event.target.files;
-  //   dispatch({
-  //     type: CpReporterCreateActionKind.LOADING,
-  //     payload: true,
-  //   });
-  //   try {
-  //     const imageUrl = await registerImage(file, bucket_hiddenbox);
-  //     dispatch({
-  //       type: CpReporterCreateActionKind.CHANGE_IMAGE,
-  //       payload: imageUrl,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     return false;
-  //   }
-  // };
-
   useEffect(() => {
     getUsers();
     if (reporterId) {
       getCpReporter();
     }
   }, [getCpReporter, getUsers, reporterId]);
+
   return (
     <CpReporterCreatePresenter
       dispatch={dispatch}
       cpCreateState={cpCreateState}
-      // onChangeImgae={onChangeImgae}
       mode={mode}
       createCpReporter={createCpReporter}
     />

@@ -1,13 +1,20 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
-import { S3, bucket_hiddenbox } from '../common/conf/aws';
+import { S3 } from '../common/conf/aws';
+import React from 'react';
 var useDarkMode = window.matchMedia(
   '(prefers-color-scheme: dark)',
 ).matches;
 
-const WebEditor = (props) => {
-  const { editorRef, contents } = props;
+interface IWebEditorProps {
+  editorRef: any;
+  contents: string;
+  bucket_name: string;
+}
+
+const WebEditor: React.FC<IWebEditorProps> = (props) => {
+  const { editorRef, contents, bucket_name } = props;
   return (
     <Editor
       apiKey="4n6bz3uji80ya54n4873jyx6jyy75yn0mtu5d2y2nuclr6o7"
@@ -36,15 +43,16 @@ const WebEditor = (props) => {
           failure,
         ) {
           try {
-            // Koscom Cloud에 업로드하기!
+            const timestamp = +new Date(); // timestamp
+
             await S3.putObject({
-              Bucket: bucket_hiddenbox,
-              Key: blobInfo.filename(),
+              Bucket: bucket_name,
+              Key: timestamp + blobInfo.filename(),
               ACL: 'public-read',
               // ACL을 지우면 전체공개가 되지 않습니다.
               Body: blobInfo.blob(),
             }).promise();
-            const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${blobInfo.filename()}`;
+            const imageUrl = `https://${bucket_name}.s3.ap-northeast-2.amazonaws.com/${timestamp}${blobInfo.filename()}`;
             success(imageUrl);
           } catch (error) {
             return false;
@@ -64,15 +72,16 @@ const WebEditor = (props) => {
             )}.${ext}`;
 
             try {
-              // Koscom Cloud에 업로드하기!
+              const timestamp = +new Date(); // timestamp
+
               await S3.putObject({
-                Bucket: bucket_hiddenbox,
-                Key: imageName,
+                Bucket: bucket_name,
+                Key: timestamp + imageName,
                 ACL: 'public-read',
                 // ACL을 지우면 전체공개가 되지 않습니다.
                 Body: file,
               }).promise();
-              const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
+              const imageUrl = `https://${bucket_name}.s3.ap-northeast-2.amazonaws.com/${timestamp}${imageName}`;
               cb(imageUrl, { title: imageName });
             } catch (error) {
               return false;

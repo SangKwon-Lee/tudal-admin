@@ -5,6 +5,7 @@ import { APIHR } from 'src/lib/api';
 import { registerImage } from 'src/utils/registerImage';
 import HiddenreportImageCreatePresenter from './HiddenreportImageCreate.Presenter';
 import { useNavigate } from 'react-router-dom';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 export enum HRImageCreateActionKind {
   LOADING = 'LOADING',
@@ -151,7 +152,10 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     });
     try {
       // Koscom Cloud에 업로드하기!
-      const imageUrl = await registerImage(file, 'hiddenbox-photo');
+      const imageUrl = await registerImage(
+        file,
+        IBuckets.HIDDENREPORT_IMAGE,
+      );
 
       dispatch({
         type,

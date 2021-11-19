@@ -15,6 +15,7 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import WebEditor from 'src/components/common/WebEditor';
 import moment from 'moment';
 import { cmsServer } from '../../../lib/axios';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 interface HiddenboxContentFormProps {
   onBack?: () => void;
@@ -119,6 +120,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           <WebEditor
             editorRef={editorRef}
             contents={values.contents}
+            bucket_name={IBuckets.HIDDENBOX}
           />
         </Paper>
         {error && (
