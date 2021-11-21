@@ -96,7 +96,7 @@ const TodayKeywordChart: FC<Props> = (props) => {
             const keyword =
               eventObj && eventObj.data ? eventObj.data.name : null;
             if (keyword) {
-              location.href(`tudal://search/${keyword}`);
+              window.location.href(`tudal://search/${keyword}`);
               setTimeout(function () {
                 window.open('http://app.tudal.co.kr', '_blank');
               }, 2000);
