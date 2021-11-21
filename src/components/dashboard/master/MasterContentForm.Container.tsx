@@ -13,9 +13,9 @@ import MasterContentFormPresenter from './MasterContentForm.Presenter';
 import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { Room, Master, Channel } from 'src/types/master';
+import { IMasterRoom, IMasterChannel } from 'src/types/master';
 import useAsync from 'src/hooks/useAsync';
-import { Tag } from 'src/types/schedule';
+import { Stock, Tag } from 'src/types/schedule';
 import { APIMaster, APIStock, APITag } from 'src/lib/api';
 import _ from 'lodash';
 import toast from 'react-hot-toast';
@@ -29,7 +29,7 @@ export enum MasterContentFormActionKind {
   LOADING = 'LOADING',
 
   // Load APIS
-  GET_EXPERT = 'GET_EXPERT',
+  GET_MASTER = 'GET_MASTER',
   GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   // Changes
@@ -45,13 +45,26 @@ export interface MasterContentFormAction {
   payload?: any;
 }
 
+interface IMasterFeedForm {
+  id?: number;
+  title: string;
+  external_link: string;
+  master_room: string;
+  contents: string;
+  description: string;
+  source: string;
+  master: number;
+  stocks: Array<Stock>;
+  tags: Array<Tag>;
+}
+
 export interface MasterContentFormState {
-  newMaster: Master;
+  newMaster: IMasterFeedForm;
   loading: boolean;
   error: AxiosError<any> | boolean;
   isSubmitting: boolean;
-  master_room: Room[];
-  master_channels: Channel[];
+  master_room: IMasterRoom[];
+  master_channels: IMasterChannel[];
   submitError: boolean;
   isHasRoom: boolean;
 }
@@ -67,7 +80,7 @@ const MasterContentFormReducer = (
         ...state,
         loading: true,
       };
-    case MasterContentFormActionKind.GET_EXPERT:
+    case MasterContentFormActionKind.GET_MASTER:
       return {
         ...state,
         newMaster: payload,
@@ -129,29 +142,34 @@ const MasterContentFormReducer = (
   }
 };
 
+const initialState: MasterContentFormState = {
+  newMaster: {
+    id: null,
+    title: '',
+    external_link: '',
+    master_room: '',
+    contents: '',
+    description: '',
+    source: 'web',
+    master: null,
+    stocks: [],
+    tags: [],
+  },
+  master_channels: [],
+  master_room: [],
+  isSubmitting: false,
+  loading: false,
+  error: null,
+  submitError: false,
+  isHasRoom: false,
+};
+
 const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const { mode, onComplete } = props;
-  const { user } = useAuth();
-  const initialState: MasterContentFormState = {
-    newMaster: {
-      title: '',
-      external_link: '',
-      master_room: '',
-      contents: '',
-      author: user?.id,
-      source: 'web',
-      master: user?.id,
-      stocks: [],
-      tags: [],
-    },
-    master_channels: [],
-    master_room: [],
-    isSubmitting: false,
-    loading: false,
-    error: null,
-    submitError: false,
-    isHasRoom: false,
-  };
+  const {
+    user: { master },
+  } = useAuth();
+
   const [masterContentFormState, dispatch] = useReducer(
     MasterContentFormReducer,
     initialState,
@@ -162,11 +180,9 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const stockInput = useRef(null);
 
   const getMasterRoom = async () => {
-    const { data } = await cmsServer.get(
-      `/master-channels?master.id=${user.id}`,
-    );
-    const { data: roomData } = await cmsServer.get(
-      `/master-rooms?master.id=${user.id}&isDeleted=0`,
+    const { data } = await APIMaster.getChannels(master.id);
+    const { data: roomData } = await APIMaster.getRoomsByMaster(
+      master.id,
     );
     if (data.length === 0 || roomData.length === 0) {
       dispatch({
@@ -184,9 +200,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 채널 정보 불러오기
   const getMasterChannel = async () => {
     try {
-      const { data, status } = await APIMaster.getMasterChannel(
-        user.id,
-      );
+      const { data, status } = await APIMaster.getChannels(master.id);
       if (status === 200 && data.length > 0) {
         dispatch({
           type: MasterContentFormActionKind.GET_CHANNEL,
@@ -212,8 +226,9 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   //* 채널 변경시 방 데이터 불러오기
   const handleChangeChannel = async (event: any) => {
     try {
-      const { data, status } = await APIMaster.getMasterRoom(
-        Number(event.target.value),
+      const channel = Number(event.target.value);
+      const { data, status } = await APIMaster.getRoomsByChannel(
+        channel,
       );
       if (status === 200 && data.length > 0) {
         dispatch({
@@ -233,10 +248,12 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
 
   //* 채널 불러오는 useEffect
   useEffect(() => {
-    getMasterChannel();
-    getMasterRoom();
+    if (master?.id) {
+      getMasterChannel();
+      getMasterRoom();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [master]);
 
   //* 수정 시 기존 데이터 불러오기
   const getMaster = async () => {
@@ -246,19 +263,20 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       const { status, data } = await APIMaster.getDetailFeed(
         masterId.toString(),
       );
+
       if (status === 200) {
         const newMasterData = {
           id: data.id,
           title: data.title,
           contents: data.contents,
-          author: data.author,
+          master: data.master,
           room: data.master_room.id,
           tags: data.tags,
           stocks: data.stocks,
           external_link: data.external_link,
         };
         dispatch({
-          type: MasterContentFormActionKind.GET_EXPERT,
+          type: MasterContentFormActionKind.GET_MASTER,
           payload: newMasterData,
         });
       }
@@ -305,6 +323,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
               (data) => data.id,
             ) || [],
           contents,
+          master: master.id,
         };
         if (mode === 'create') {
           try {
@@ -334,6 +353,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
                 (data) => data.id,
               ) || [],
             contents,
+            master: master.id,
           };
           try {
             const response = await cmsServer.put(

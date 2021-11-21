@@ -9,9 +9,11 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   FixtureCategory,
+  FixtureGroup,
   FixtureNews,
   FixtureStocks,
   FixtureTags,
+  FixtureGroupComment,
 } from 'src/fixtures';
 
 const stockHandlers = [
@@ -123,11 +125,53 @@ const categoryHandler = [
   ),
 ];
 
+const groupHandler = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tudal-groups`,
+    (req, res, ctx) => {
+      const search = req.url.searchParams.get('_q');
+      const result = search
+        ? [FixtureGroup.list[0]]
+        : FixtureGroup.list;
+      return res(ctx.status(200), ctx.json(result));
+    },
+  ),
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tudal-groups/count`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(FixtureGroup.list.length));
+    },
+  ),
+];
+
+const groupCommentHandler = [
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tudal-groups/:groupCommentId`,
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json(FixtureGroupComment.Detaillist),
+      );
+    },
+  ),
+  rest.get(
+    `${process.env.REACT_APP_CMS_URL}/tudal-group-comments/:groupCommentId`,
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json(FixtureGroupComment.Detaillist),
+      );
+    },
+  ),
+];
+
 const server = setupServer(
   ...stockHandlers,
   ...newHandler,
   ...tagHandler,
   ...categoryHandler,
+  ...groupHandler,
+  ...groupCommentHandler,
 );
 
 beforeAll(() => server.listen());

@@ -7,16 +7,18 @@ import { APICoupon } from 'src/lib/api';
 import { CouponType, IssuedCoupon } from 'src/types/coupon';
 import { expirationDate } from 'src/utils/expirationDate';
 import CouponIssuedListTablePresenter from './CouponIssuedListTable.Presenter';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 export enum CouponIssuedListTableActionKind {
   LOADING = 'LOADING',
   GET_COUPON = 'GET_COUPON',
   GET_ISSUED_COUPON = 'GET_ISSUED_COUPON',
   GET_ISSUED_COUPON_LENGTH = 'GET_COUPON_LENGTH',
+  GET_ISSUED_COUPON_ALL_LENGTH = 'GET_ISSUED_COUPON_ALL_LENGTH',
   GET_ISUSED_LENGTH = 'GET_ISUSED_LENGTH',
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
-  CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
   CHANGE_QUANTITY = 'CHANGE_QUANTITY',
@@ -58,6 +60,7 @@ export interface CouponIssuedListTableState {
     quantity: number;
   };
   coupon: CouponType;
+  allListlength: number;
 }
 
 let newDate = dayjs();
@@ -99,6 +102,7 @@ const initialState: CouponIssuedListTableState = {
     expirationDate: newDate.format('YYYY-MM-DD HH:mm:ss'),
     quantity: 1,
   },
+  allListlength: 0,
 };
 
 const CouponIssuedListTableReducer = (
@@ -124,6 +128,12 @@ const CouponIssuedListTableReducer = (
         list: payload,
         loading: false,
       };
+    case CouponIssuedListTableActionKind.GET_ISSUED_COUPON_ALL_LENGTH:
+      return {
+        ...state,
+        allListlength: payload,
+        loading: false,
+      };
     case CouponIssuedListTableActionKind.GET_ISSUED_COUPON_LENGTH:
       return {
         ...state,
@@ -136,7 +146,9 @@ const CouponIssuedListTableReducer = (
         query: {
           ...state.query,
           _q: payload,
+          _start: 0,
         },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.CHANGE_PAGE:
       return {
@@ -147,11 +159,6 @@ const CouponIssuedListTableReducer = (
           _start: (payload - 1) * 50,
         },
       };
-    case CouponIssuedListTableActionKind.CHANGE_LIMIT:
-      return {
-        ...state,
-        query: { ...state.query, _limit: payload },
-      };
     case CouponIssuedListTableActionKind.CHANGE_ISUSED:
       return {
         ...state,
@@ -161,7 +168,9 @@ const CouponIssuedListTableReducer = (
             ...state.query._where,
             isUsed: payload,
           },
+          _start: 0,
         },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.CHANGE_QUANTITY:
       return {
@@ -188,6 +197,11 @@ const CouponIssuedListTableReducer = (
       return {
         ...state,
         sort: payload,
+        query: {
+          ...state.query,
+          _start: 0,
+        },
+        page: 1,
       };
     case CouponIssuedListTableActionKind.OPEN_DELETE_DIALOG:
       return {
@@ -254,6 +268,8 @@ const CouponIssuedListTableContainer = () => {
         isUsed: false,
         code: '',
         issuedBy: user.id,
+        applyDays: CouponIssuedListTableState.coupon.applyDays,
+        eventType: CouponIssuedListTableState.coupon.type,
       };
       const { status } = await APICoupon.createIssuedCoupon(
         CouponInput,
@@ -284,10 +300,16 @@ const CouponIssuedListTableContainer = () => {
         CouponIssuedListTableState.sort,
         couponId,
       );
+      const { data: length } =
+        await APICoupon.getIssuedCouponAllListLength(couponId);
       if (status === 200) {
         dispatch({
           type: CouponIssuedListTableActionKind.GET_ISSUED_COUPON,
           payload: data,
+        });
+        dispatch({
+          type: CouponIssuedListTableActionKind.GET_ISSUED_COUPON_ALL_LENGTH,
+          payload: length,
         });
       }
     } catch (error) {
@@ -301,6 +323,7 @@ const CouponIssuedListTableContainer = () => {
     try {
       const { data, status } = await APICoupon.getIssuedCouponLength(
         couponId,
+        CouponIssuedListTableState.query,
       );
       if (status === 200) {
         dispatch({
@@ -311,7 +334,7 @@ const CouponIssuedListTableContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [couponId]);
+  }, [CouponIssuedListTableState.query, couponId]);
 
   //* 사용된 쿠폰 개수,
   const getIsusedCouponLength = useCallback(async () => {
@@ -424,6 +447,72 @@ const CouponIssuedListTableContainer = () => {
       CouponIssuedListTableState.sort,
     ],
   );
+  const workSheetColumnNames = [
+    'id',
+    'code',
+    'displayName',
+    'name',
+    'agency',
+    'type',
+    'applyDays',
+    'issuedDate',
+    'created_at',
+    'expirationDate',
+    'issuedBy',
+    'userId',
+    'isUsed',
+    'usedDate',
+  ];
+
+  //* 엑셀파일 데이터 불러오기
+  const fileDownload = async () => {
+    const { data: xlsxData } = await APICoupon.getAllList(couponId);
+    exportUsersToExcel(xlsxData, workSheetColumnNames);
+  };
+
+  //* 엑셀파일로 다운받기
+  const exportExcel = (data, workSheetColumnNames, workSheetName) => {
+    const fileType =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const workBook = XLSX.utils.book_new();
+    const workSheetData = [workSheetColumnNames, ...data];
+    const workSheet = XLSX.utils.aoa_to_sheet(workSheetData);
+    XLSX.utils.book_append_sheet(workBook, workSheet, workSheetName);
+    const excelBuffer = XLSX.write(workBook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const data2 = new Blob([excelBuffer], { type: fileType });
+    saveAs(data2, `file${fileExtension}`);
+  };
+
+  //* 엑셀파일로 컬럼명
+  const exportUsersToExcel = (
+    users?,
+    workSheetColumnNames?,
+    workSheetName?,
+  ) => {
+    const data = users.map((user) => {
+      return [
+        user.id,
+        user.code,
+        user.coupon.displayName,
+        user.coupon.name,
+        user.coupon.agency,
+        user.coupon.type,
+        user.coupon.applyDays,
+        user.issuedDate,
+        user.created_at,
+        user.expirationDate,
+        user.issuedBy.username,
+        user.userId,
+        user.isUsed,
+        user.usedDate,
+      ];
+    });
+    exportExcel(data, workSheetColumnNames, workSheetName);
+  };
 
   return (
     <CouponIssuedListTablePresenter
@@ -435,6 +524,7 @@ const CouponIssuedListTableContainer = () => {
       handleSelectAll={handleSelectAll}
       addIssuedCoupon={addIssuedCoupon}
       handleChangeExpirationDate={handleChangeExpirationDate}
+      fileDownload={fileDownload}
     />
   );
 };

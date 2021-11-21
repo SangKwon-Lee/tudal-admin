@@ -109,7 +109,6 @@ describe('Stock List Test', () => {
 
     const targetComment =
       FixtureStocks.summaries[0].comments[4].message;
-    console.log(targetComment);
     expect(findAllByText(targetComment)).toBeTruthy();
 
     fireEvent.click(newsNextButton);

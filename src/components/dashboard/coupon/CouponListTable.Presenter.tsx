@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import {
   Dialog,
   LinearProgress,
   Pagination,
+  IconButton,
 } from '@material-ui/core';
 import SearchIcon from 'src/icons/Search';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
@@ -28,6 +29,7 @@ import {
   CouponListTableState,
 } from './CouponListTable.Container';
 import CouponCreateContainer from './CouponCreate.Container';
+import ArrowRight from 'src/icons/ArrowRight';
 
 interface ICouponListTableProps {
   couponListTableState: CouponListTableState;
@@ -35,7 +37,6 @@ interface ICouponListTableProps {
   handleDelete: () => void;
   getCouponList: () => void;
   getCouponListLength: () => void;
-  handleIsused: (event: any) => void;
   handleSelect: (event: any, selectId: number) => void;
   handleSelectAll: (event: any) => void;
 }
@@ -65,7 +66,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
   const selectedAll = selected.length === list.length;
   return (
     <>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'end' }}>
         <Button
           color="primary"
           sx={{ ml: 2 }}
@@ -97,9 +98,9 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
         >
           <Box
             sx={{
-              m: 1,
+              m: 2,
               maxWidth: '100%',
-              width: 500,
+              width: 400,
             }}
           >
             <TextField
@@ -149,14 +150,13 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
             <Box
               sx={{
                 backgroundColor: 'background.paper',
-                px: '4px',
                 width: '100%',
                 zIndex: 2,
               }}
             >
               <Button
                 color="primary"
-                sx={{ ml: 2 }}
+                sx={{ ml: 1 }}
                 variant="outlined"
                 onClick={() => {
                   dispatch({
@@ -179,7 +179,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
           </Box>
         )}
         <Scrollbar>
-          <Box sx={{ minWidth: 700 }}>
+          <Box>
             <Table>
               <TableHead>
                 <TableRow>
@@ -196,6 +196,7 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                   <TableCell>기관</TableCell>
                   <TableCell>무료 기간</TableCell>
                   <TableCell>발급 날짜</TableCell>
+                  <TableCell>더보기</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -244,9 +245,21 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
                             : '없습니다.'}
                         </TableCell>
                         <TableCell>
-                          {moment(list.created_at)
-                            .utc()
-                            .format('YYYY년 M월 D일 HH:mm')}
+                          {dayjs(list.created_at).format(
+                            'YYYY년 M월 D일 HH:mm',
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton>
+                            <Link
+                              color="textPrimary"
+                              component={RouterLink}
+                              to={`/dashboard/coupons/${list.id}`}
+                              variant="subtitle2"
+                            >
+                              <ArrowRight fontSize="small" />
+                            </Link>
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     );
@@ -256,8 +269,10 @@ const CouponListTablePresenter: React.FC<ICouponListTableProps> = (
           </Box>
         </Scrollbar>
         <Pagination
+          sx={{ p: 1 }}
           count={Math.ceil(listLength / 50)}
           variant="outlined"
+          page={couponListTableState.page}
           onChange={(event, page) => {
             dispatch({
               type: CouponListTableActionKind.CHANGE_PAGE,

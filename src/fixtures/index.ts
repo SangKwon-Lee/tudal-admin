@@ -3,3 +3,5 @@ export * as FixtureStocks from './stocks';
 export * as FixtureTags from './tags';
 export * as FixtureCategory from './category';
 export * as FixtureGeneralNewsComment from './generalNewsComment';
+export * as FixtureGroup from './group';
+export * as FixtureGroupComment from './groupComment';

@@ -33,90 +33,141 @@ const VerifyCode = Loadable(
 );
 
 // Dashboard pages
+
+//* Hiddenbox
 const HiddenboxList = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxList')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxList')),
 );
 const HiddenboxDetails = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxDetails')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxDetails')),
 );
-
 const HiddenboxCreate = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxCreate')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxCreate')),
 );
 const HiddenboxEdit = Loadable(
-  lazy(() => import('./pages/dashboard/HiddenboxEdit')),
+  lazy(() => import('./pages/dashboard/hiddenbox/HiddenboxEdit')),
 );
+
+//* Overview
 const Overview = Loadable(
-  lazy(() => import('./pages/dashboard/Overview.Page')),
+  lazy(() => import('./pages/dashboard/overview/Overview.Page')),
 );
+
+//* 리포트
 const ReportMaker = Loadable(
-  lazy(() => import('./pages/dashboard/ReportMaker')),
+  lazy(() => import('./pages/dashboard/report/ReportMaker')),
 );
+
+//* Schedule
 const ScheduleList = Loadable(
-  lazy(() => import('./pages/dashboard/Schedule.Page')),
+  lazy(() => import('./pages/dashboard/schedule/Schedule.Page')),
 );
+
+//* Stock
 const StockList = Loadable(
-  lazy(() => import('./pages/dashboard/Stock.Page')),
+  lazy(() => import('./pages/dashboard/stock/Stock.Page')),
 );
 
+//* Keyword
 const Keyword = Loadable(
-  lazy(() => import('./pages/dashboard/Keyword.Page')),
-);
-const CategoryList = Loadable(
-  lazy(() => import('./pages/dashboard/Category.Page')),
+  lazy(() => import('./pages/dashboard/keyword/Keyword.Page')),
 );
 
+//* category
+const CategoryList = Loadable(
+  lazy(() => import('./pages/dashboard/category/Category.Page')),
+);
+
+//* master
 const MastersListPage = Loadable(
-  lazy(() => import('./pages/dashboard/MastersList.Page')),
+  lazy(() => import('./pages/dashboard/master/MastersList.Page')),
 );
 const MasterCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterCreate.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterCreate.Page')),
 );
 const MasterDetailsPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterDetails.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterDetails.Page')),
 );
 const MasterEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterEdit.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterEdit.Page')),
 );
 const MasterRoomPage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterRoom.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterRoom.Page')),
 );
 const MasterSubscribePage = Loadable(
-  lazy(() => import('./pages/dashboard/MasterSubscribe.Page')),
+  lazy(() => import('./pages/dashboard/master/MasterSubscribe.Page')),
 );
+const MasterProfilePage = Loadable(
+  lazy(() => import('./pages/dashboard/master/MasterProfile.Page')),
+);
+
+//* gold
 const GoldList = Loadable(
-  lazy(() => import('./pages/dashboard/GoldList.Page')),
+  lazy(() => import('./pages/dashboard/gold/GoldList.Page')),
 );
 const GoldDetail = Loadable(
-  lazy(() => import('./pages/dashboard/GoldDetail.Page')),
+  lazy(() => import('./pages/dashboard/gold/GoldDetail.Page')),
 );
 
-// const ExpertsList = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertsList')),
-// );
-// const ExpertCreate = Loadable(
-//   lazy(() => import('./pages/dashboard/ExpertCreate')),
-// );
-
+//* coupon
 const CouponListPage = Loadable(
-  lazy(() => import('./pages/dashboard/CouponList.Page')),
+  lazy(() => import('./pages/dashboard/coupon/CouponList.Page')),
+);
+const CouponIssuedListPage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/coupon/CouponIssuedList.Page'),
+  ),
 );
 
-const CouponIssuedListPage = Loadable(
-  lazy(() => import('./pages/dashboard/CouponIssuedList.Page')),
-);
+//* popup
 const PopUpCreatePage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpCreate.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpCreate.Page')),
 );
 const PopUpEditPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpEdit.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpEdit.Page')),
 );
 const PopUpListPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpList.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpList.Page')),
 );
 const PopUpDetailPage = Loadable(
-  lazy(() => import('./pages/dashboard/PopUpDetail.Page')),
+  lazy(() => import('./pages/dashboard/popup/PopUpDetail.Page')),
 );
+
+//* 배너
+const BannerListPage = Loadable(
+  lazy(() => import('./pages/dashboard/banner/BannerList.Page')),
+);
+
+//* 투달 그룹
+const GroupCommentCreatePage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/group/GroupCommentCreate.page'),
+  ),
+);
+const GroupListPage = Loadable(
+  lazy(() => import('./pages/dashboard/group/GroupList.Page')),
+);
+
+//* CP 관리
+const CpCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpCreate.Page')),
+);
+const CpMasterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpMasterCreate.Page')),
+);
+const CpReporterCreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpReporterCreate.Page')),
+);
+const CpListPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpList.Page')),
+);
+const CpMasterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpMasterDetail.Page')),
+);
+const CpReporterDetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
+);
+
 // Viewer pages
 const HiddenboxViewer = Loadable(
   lazy(() => import('./pages/viewer/HiddenboxViewer')),
@@ -126,7 +177,57 @@ const TodayKeywordViewer = Loadable(
 );
 
 const NewsPage = Loadable(
-  lazy(() => import('./pages/dashboard/News.Page')),
+  lazy(() => import('./pages/dashboard/news/News.Page')),
+);
+
+//* 히든 리포터
+
+const HiddenReportProfilePage = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportProfile.Page'
+      ),
+  ),
+);
+
+const HiddenReportImageList = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportImageList.Page'
+      ),
+  ),
+);
+const HiddenReportImageCreate = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportImageCreate.Page'
+      ),
+  ),
+);
+const HiddenReportList = Loadable(
+  lazy(
+    () =>
+      import('./pages/dashboard/hiddenreport/HiddenReportList.Page'),
+  ),
+);
+const HiddenReportCreate = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportCreate.Page'
+      ),
+  ),
+);
+const HiddenReportDetailView = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/hiddenReportDeatilView.Page'
+      ),
+  ),
 );
 
 // Error pages
@@ -205,6 +306,44 @@ const routes: PartialRouteObject[] = [
       {
         path: '/',
         element: <Overview />,
+      },
+      {
+        path: 'hiddenreports',
+        children: [
+          {
+            path: '/',
+            element: <HiddenReportList />,
+          },
+          {
+            path: '/:reportId',
+            element: <HiddenReportDetailView />,
+          },
+          {
+            path: 'images',
+            element: <HiddenReportImageList />,
+          },
+          {
+            path: 'images/new',
+            element: <HiddenReportImageCreate />,
+          },
+          {
+            path: 'images/:id/edit',
+            element: <HiddenReportImageCreate mode={'edit'} />,
+          },
+
+          {
+            path: 'new',
+            element: <HiddenReportCreate />,
+          },
+          {
+            path: '/:reportId/edit',
+            element: <HiddenReportCreate />,
+          },
+          {
+            path: '/profile',
+            element: <HiddenReportProfilePage />,
+          },
+        ],
       },
       {
         path: 'hiddenboxes',
@@ -298,19 +437,6 @@ const routes: PartialRouteObject[] = [
           },
         ],
       },
-      // {
-      //   path: 'experts',
-      //   children: [
-      //     {
-      //       path: '/',
-      //       element: <ExpertsList />,
-      //     },
-      //     {
-      //       path: '/new',
-      //       element: <ExpertCreate />,
-      //     },
-      //   ],
-      // },
       {
         path: 'master',
         children: [
@@ -337,6 +463,10 @@ const routes: PartialRouteObject[] = [
           {
             path: 'subscribe',
             element: <MasterSubscribePage />,
+          },
+          {
+            path: '/profile',
+            element: <MasterProfilePage />,
           },
         ],
       },
@@ -371,6 +501,65 @@ const routes: PartialRouteObject[] = [
           {
             path: ':popupId',
             element: <PopUpDetailPage />,
+          },
+        ],
+      },
+      {
+        path: 'groups',
+        children: [
+          {
+            path: '/',
+            element: <GroupListPage />,
+          },
+          {
+            path: '/comments/:groupCommentId',
+            element: <GroupCommentCreatePage />,
+          },
+        ],
+      },
+      {
+        path: 'cp',
+        children: [
+          {
+            path: '/create',
+            element: <CpCreatePage />,
+          },
+          {
+            path: '/createMaster',
+            element: <CpMasterCreatePage />,
+          },
+          {
+            path: '/createReporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: ':masterId/edit/master',
+            element: <CpMasterCreatePage />,
+          },
+          {
+            path: ':reporterId/edit/reporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: ':masterId/master',
+            element: <CpMasterDetailPage />,
+          },
+          {
+            path: ':reporterId/reporter',
+            element: <CpReporterDetailPage />,
+          },
+          {
+            path: '/',
+            element: <CpListPage />,
+          },
+        ],
+      },
+      {
+        path: 'banner',
+        children: [
+          {
+            path: '/',
+            element: <BannerListPage />,
           },
         ],
       },

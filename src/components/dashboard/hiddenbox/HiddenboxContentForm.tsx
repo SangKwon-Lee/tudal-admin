@@ -15,6 +15,7 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import WebEditor from 'src/components/common/WebEditor';
 import moment from 'moment';
 import { cmsServer } from '../../../lib/axios';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 interface HiddenboxContentFormProps {
   onBack?: () => void;
@@ -52,11 +53,6 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           ...values,
           contents: contents,
         });
-        // console.log('여기', values.stocks);
-        // console.log(
-        //   '여기',
-        //   values.stocks.map((el) => el.id),
-        // );
 
         const newHiddenbox = {
           ...values,
@@ -124,6 +120,7 @@ const HiddenboxContentForm: FC<HiddenboxContentFormProps> = (
           <WebEditor
             editorRef={editorRef}
             contents={values.contents}
+            bucket_name={IBuckets.HIDDENBOX}
           />
         </Paper>
         {error && (

@@ -81,17 +81,6 @@ const HiddenboxDetailsForm: FC<HiddenboxDetailsProps> = (props) => {
 
   const handleStockChange = _.debounce(refetchStock, 300);
 
-  // const fetchStockList = async () => {
-  //   const response = await apiServer.get('/stocks/stkNmCd');
-  //   if (response.status === 200) {
-  //     console.log('stocklist', response.data);
-  //   }
-  // };
-
-  // const isStock = (object: any): object is Stock => {
-  //   return object && object.stockcode !== undefined;
-  // };
-
   return (
     <Formik
       initialValues={{

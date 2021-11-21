@@ -22,6 +22,7 @@ export interface ITagAlias {
 }
 
 export interface Stock {
+  id?: number;
   code?: string;
   name?: string;
   stockcode?: string;
@@ -72,7 +73,7 @@ export interface IScheduleForm {
   title: string;
   comment: string;
   stockCodes: string[];
-  author: string; //id
+  author: number; //id
   keywords: number[];
   categories: number[];
   priority: Priority;

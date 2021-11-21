@@ -69,7 +69,7 @@ const GoldListPresenter: React.FC<IGoldListPresenterProps> = ({
     }),
   );
   return (
-    <Card>
+    <Card sx={{ my: 4 }}>
       <Box
         sx={{
           alignItems: 'center',

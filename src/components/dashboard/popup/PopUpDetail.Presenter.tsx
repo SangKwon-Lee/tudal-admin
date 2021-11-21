@@ -10,7 +10,7 @@ import {
   Typography,
   Box,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Label from 'src/components/widgets/Label';
 import { PopUpDetailState } from './PopUpDetail.Container';
 
@@ -125,7 +125,7 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
                   {popUp.openTime
-                    ? `${moment(popUp.openTime).format(
+                    ? `${dayjs(popUp.openTime).format(
                         'YYYY년 M월 D일 HH:mm',
                       )}`
                     : '공개일이 없습니다.'}
@@ -141,7 +141,7 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
                   {popUp.closeTime
-                    ? `${moment(popUp.closeTime).format(
+                    ? `${dayjs(popUp.closeTime).format(
                         'YYYY년 M월 D일 HH:mm',
                       )}`
                     : '종료일이 없습니다.'}

@@ -14,7 +14,6 @@ export enum CouponListTableActionKind {
   // changes
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
-  CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
 
@@ -98,7 +97,9 @@ const CouponListTableReducer = (
         query: {
           ...state.query,
           _q: payload,
+          _start: 0,
         },
+        page: 1,
       };
     case CouponListTableActionKind.CHANGE_PAGE:
       return {
@@ -108,11 +109,6 @@ const CouponListTableReducer = (
           ...state.query,
           _start: (payload - 1) * 50,
         },
-      };
-    case CouponListTableActionKind.CHANGE_LIMIT:
-      return {
-        ...state,
-        query: { ...state.query, _limit: payload },
       };
     case CouponListTableActionKind.CHANGE_ISUSED:
       return {
@@ -125,6 +121,11 @@ const CouponListTableReducer = (
       return {
         ...state,
         sort: payload,
+        query: {
+          ...state.query,
+          _start: 0,
+        },
+        page: 1,
       };
     case CouponListTableActionKind.OPEN_DELETE_DIALOG:
       return {
@@ -174,6 +175,7 @@ const CouponListTableContainer = () => {
         couponListTableState.query,
         couponListTableState.sort,
       );
+
       if (status === 200) {
         dispatch({
           type: CouponListTableActionKind.GET_COUPON,
@@ -189,7 +191,9 @@ const CouponListTableContainer = () => {
   const getCouponListLength = useCallback(async () => {
     dispatch({ type: CouponListTableActionKind.LOADING });
     try {
-      const { data, status } = await APICoupon.getCouponLength();
+      const { data, status } = await APICoupon.getCouponLength(
+        couponListTableState.query,
+      );
       if (status === 200) {
         dispatch({
           type: CouponListTableActionKind.GET_COUPON_LENGTH,
@@ -199,7 +203,7 @@ const CouponListTableContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [couponListTableState.query]);
 
   //* 쿠폰 삭제
   const handleDelete = async () => {
@@ -221,21 +225,6 @@ const CouponListTableContainer = () => {
       getCouponList();
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  //* 사용여부 필터
-  const handleIsused = async (event) => {
-    if (event.target.value === '0,1') {
-      dispatch({
-        type: CouponListTableActionKind.CHANGE_ISUSED,
-        payload: [0, 1],
-      });
-    } else {
-      dispatch({
-        type: CouponListTableActionKind.CHANGE_ISUSED,
-        payload: event.target.value,
-      });
     }
   };
 
@@ -289,7 +278,6 @@ const CouponListTableContainer = () => {
       handleDelete={handleDelete}
       getCouponList={getCouponList}
       getCouponListLength={getCouponListLength}
-      handleIsused={handleIsused}
       handleSelect={handleSelect}
       handleSelectAll={handleSelectAll}
     />

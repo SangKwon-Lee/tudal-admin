@@ -110,7 +110,9 @@ const MasterListTableReducer = (
         query: {
           ...state.query,
           _q: payload,
+          _start: 0,
         },
+        page: 1,
       };
     case MasterListTableActionKind.CHANGE_PAGE:
       return {
@@ -207,11 +209,13 @@ const MasterListTableContainer = () => {
     initialState,
   );
 
-  const { user } = useAuth();
+  const {
+    user: { master },
+  } = useAuth();
 
   const getChannels = useCallback(async () => {
     try {
-      const { data, status } = await APIMaster.getChannels(user.id);
+      const { data, status } = await APIMaster.getChannels(master.id);
       if (status === 200) {
         dispatch({
           type: MasterListTableActionKind.GET_CHANNEL,
@@ -228,14 +232,14 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [user]);
+  }, [master]);
 
   const getRooms = useCallback(async () => {
     try {
       const channelId =
         masterListState.query['master_room.master_channel.id'];
 
-      const response = await APIMaster.getRooms(user.id, channelId);
+      const response = await APIMaster.getRoomsByChannel(channelId);
       dispatch({
         type: MasterListTableActionKind.GET_ROOM,
         payload: response.data,
@@ -251,7 +255,7 @@ const MasterListTableContainer = () => {
       console.log(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, masterListState.query['master_room.master_channel.id']]);
+  }, [masterListState.query['master_room.master_channel.id']]);
 
   const getFeeds = useCallback(async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
@@ -259,10 +263,9 @@ const MasterListTableContainer = () => {
     try {
       const { data, status } = await APIMaster.getFeeds(
         masterListState.query,
-        user.id,
+        master.id,
       );
 
-      console.log(status);
       if (status === 200) {
         if (
           masterListState.query['master_room.id'] &&
@@ -286,14 +289,14 @@ const MasterListTableContainer = () => {
         type: MasterListTableActionKind.DONE,
       });
     }
-  }, [masterListState.query, user]);
+  }, [masterListState.query, master]);
 
   const getFeedLength = useCallback(async () => {
     try {
       const roomId = masterListState.query['master_room.id'];
 
       const { data, status } = await APIMaster.getFeedLength(
-        user.id,
+        master.id,
         roomId,
       );
       if (status === 200) {
@@ -306,7 +309,7 @@ const MasterListTableContainer = () => {
       console.error(err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, masterListState.query['master_room.id']]);
+  }, [master, masterListState.query['master_room.id']]);
 
   const handleDelete = async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
