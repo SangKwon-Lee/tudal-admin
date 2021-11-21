@@ -59,7 +59,7 @@ const AccountPopover: FC = () => {
             }}
           />
         ) : (
-          <UserIcon fontSize="small" />
+          <UserIcon fontSize="small" color="action" />
         )}
       </Box>
       <Popover

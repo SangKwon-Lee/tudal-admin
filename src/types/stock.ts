@@ -1,6 +1,6 @@
 import { INews } from './news';
 import { Tag } from './schedule';
-import { User } from './user';
+import { IUser } from './user';
 
 export interface IStockComment {
   id: number;
@@ -11,7 +11,7 @@ export interface IStockComment {
   created_at: string;
   updated_at: string;
   stock: IStockDetails;
-  author: User;
+  author: IUser;
 }
 
 export interface IStockDetails {

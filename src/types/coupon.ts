@@ -1,4 +1,4 @@
-import { User } from './user';
+import { IUser } from './user';
 
 export interface CouponType {
   id: number;
@@ -7,7 +7,7 @@ export interface CouponType {
   agency: string;
   type: string;
   applyDays: number;
-  issuedBy: User;
+  issuedBy: IUser;
   created_at: string;
 }
 
@@ -20,6 +20,6 @@ export interface IssuedCoupon {
   userId: number;
   isUsed: boolean;
   type: string;
-  issuedBy: User;
+  issuedBy: IUser;
   coupon: number;
 }

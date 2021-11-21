@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   Box,
   Button,
   Card,
   Checkbox,
-  Divider,
   IconButton,
   InputAdornment,
   Link,
@@ -44,15 +43,8 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
 
   return (
     <>
-      <Card>
-        {newState.loading && (
-          <div data-testid="news-list-loading">
-            <LinearProgress />
-          </div>
-        )}
-
-        <Divider />
-
+      <Card sx={{ my: 3 }}>
+        {newState.loading && <LinearProgress />}
         <Box
           sx={{
             alignItems: 'center',
@@ -125,7 +117,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               label={'방 정렬'}
               name="sort"
               onChange={(event) => {
-                console.log(event.target.value);
                 dispatch({
                   type: MasterListTableActionKind.CHANGE_ROOM,
                   payload: event.target.value,
@@ -253,12 +244,12 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                             minWidth: '180px',
                           }}
                         >
-                          {`${moment(feed.created_at).format(
+                          {`${dayjs(feed.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
                         <TableCell>
-                          {moment(feed.updated_at).format(
+                          {dayjs(feed.updated_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}
                         </TableCell>
@@ -291,8 +282,12 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
           </Box>
         </Scrollbar>
         <Pagination
+          size="small"
+          color="primary"
+          sx={{ m: 1 }}
+          page={newState.page}
           count={Math.ceil(newState.list.feedLength / 20)}
-          variant="outlined"
+          variant="text"
           onChange={(event, page) => {
             dispatch({
               type: MasterListTableActionKind.CHANGE_PAGE,

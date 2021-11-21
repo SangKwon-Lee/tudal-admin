@@ -1,3 +1,4 @@
+import { CP_Master, CP_Hidden_Reporter } from './cp';
 import { Hiddenbox } from './hiddenbox';
 import { Schedule } from './schedule';
 
@@ -21,8 +22,8 @@ interface IRole {
   lms: boolean;
 }
 
-export interface User {
-  id: string;
+export interface IUser {
+  id: number;
   avatar?: Avatar;
   email: string;
   username: string;
@@ -32,7 +33,20 @@ export interface User {
   confirmed: boolean;
   role: IRole;
   schedules: Schedule[];
-  isHiddenboxAvailable?: boolean;
-  isMasterAvailable?: boolean;
   [key: string]: any;
+  master: CP_Master;
+  hidden_reporter: CP_Hidden_Reporter;
+  phone_number: string;
+  contact_email: string;
+}
+
+export interface UserInput {
+  username: string;
+  email: string;
+  password: string;
+  role: number;
+  nickname: string;
+  type: string;
+  contact_email: string;
+  phone_number: string;
 }

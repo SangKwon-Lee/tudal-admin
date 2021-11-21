@@ -1,27 +1,20 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
-
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-const access_key = 'AKIAY53UECMD2OMWX4UR';
-const secret_key = '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';
+import { S3 } from '../common/conf/aws';
+import React from 'react';
 var useDarkMode = window.matchMedia(
   '(prefers-color-scheme: dark)',
 ).matches;
 
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: access_key,
-    secretAccessKey: secret_key,
-  },
-});
+interface IWebEditorProps {
+  editorRef: any;
+  contents: string;
+  bucket_name: string;
+}
 
-const bucket_name = 'hiddenbox-photo';
-
-const WebEditor = (props) => {
-  const { editorRef, contents } = props;
+const WebEditor: React.FC<IWebEditorProps> = (props) => {
+  const { editorRef, contents, bucket_name } = props;
   return (
     <Editor
       apiKey="4n6bz3uji80ya54n4873jyx6jyy75yn0mtu5d2y2nuclr6o7"
@@ -50,15 +43,16 @@ const WebEditor = (props) => {
           failure,
         ) {
           try {
-            // Koscom Cloud에 업로드하기!
+            const timestamp = +new Date(); // timestamp
+
             await S3.putObject({
               Bucket: bucket_name,
-              Key: blobInfo.filename(),
+              Key: timestamp + blobInfo.filename(),
               ACL: 'public-read',
               // ACL을 지우면 전체공개가 되지 않습니다.
               Body: blobInfo.blob(),
             }).promise();
-            const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${blobInfo.filename()}`;
+            const imageUrl = `https://${bucket_name}.s3.ap-northeast-2.amazonaws.com/${timestamp}${blobInfo.filename()}`;
             success(imageUrl);
           } catch (error) {
             return false;
@@ -78,15 +72,16 @@ const WebEditor = (props) => {
             )}.${ext}`;
 
             try {
-              // Koscom Cloud에 업로드하기!
+              const timestamp = +new Date(); // timestamp
+
               await S3.putObject({
                 Bucket: bucket_name,
-                Key: imageName,
+                Key: timestamp + imageName,
                 ACL: 'public-read',
                 // ACL을 지우면 전체공개가 되지 않습니다.
                 Body: file,
               }).promise();
-              const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${imageName}`;
+              const imageUrl = `https://${bucket_name}.s3.ap-northeast-2.amazonaws.com/${timestamp}${imageName}`;
               cb(imageUrl, { title: imageName });
             } catch (error) {
               return false;
@@ -99,7 +94,7 @@ const WebEditor = (props) => {
         importcss_append: true,
         mobile: {
           plugins:
-            'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker textpattern noneditable help formatpainter pageembed charmap mentions quickbars linkchecker emoticons advtable',
+            'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount textpattern noneditable help formatpainter pageembed charmap quickbars emoticons advtable',
         },
         menu: {
           tc: {
@@ -125,7 +120,7 @@ const WebEditor = (props) => {
         skin: useDarkMode ? 'oxide-dark' : 'oxide',
         content_css: useDarkMode ? 'dark' : 'default',
         plugins:
-          'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker textpattern noneditable help formatpainter permanentpen pageembed charmap mentions quickbars linkchecker emoticons advtable export',
+          'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists checklist wordcount textpattern noneditable help formatpainter permanentpen pageembed charmap quickbars emoticons advtable export',
         toolbar:
           'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
       }}

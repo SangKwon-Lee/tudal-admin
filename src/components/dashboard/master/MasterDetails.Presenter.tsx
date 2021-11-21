@@ -2,7 +2,6 @@ import {
   Box,
   Card,
   CardHeader,
-  Divider,
   Table,
   TableBody,
   TableCell,
@@ -11,11 +10,10 @@ import {
   Container,
   LinearProgress,
 } from '@material-ui/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { FC } from 'react';
-import useAuth from 'src/hooks/useAuth';
 import { MasterDetailsState } from './MasterDetails.Container';
 
 interface IMasterDetailsProps {
@@ -25,18 +23,12 @@ interface IMasterDetailsProps {
 const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
   const { masterDetailState, ...other } = props;
   const { master, loading, likes } = masterDetailState;
-  const { user } = useAuth();
 
   return (
     <>
-      <Card {...other}>
-        {loading && (
-          <div data-testid="news-list-loading">
-            <LinearProgress />
-          </div>
-        )}
+      <Card sx={{ my: 4, mx: 10 }} {...other}>
+        {loading && <LinearProgress />}
         <CardHeader title="피드 상세내용" />
-        <Divider />
         <Table>
           <TableBody>
             <TableRow>
@@ -59,11 +51,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${
-                    typeof master.author === 'string'
-                      ? master.author
-                      : user.nickname
-                  }`}
+                  {`${master?.master.nickname}`}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -76,9 +64,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.master_room?.title
-                    ? master.master_room.title
-                    : master.type}
+                  {master?.master_room && master.master_room.title}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -90,7 +76,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master?.created_at).format(
+                  {`${dayjs(master?.created_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -104,7 +90,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {`${moment(master?.updated_at).format(
+                  {`${dayjs(master?.updated_at).format(
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
@@ -191,7 +177,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
           </Typography>
           <Box sx={{ py: 3 }}>
             <Container maxWidth="md">
-              {master.contents && (
+              {master?.contents && (
                 <Viewer initialValue={master.contents} />
               )}
             </Container>

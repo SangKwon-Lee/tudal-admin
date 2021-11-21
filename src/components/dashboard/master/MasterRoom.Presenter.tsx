@@ -62,7 +62,7 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
     <>
       {selectChannel !== 0 ? (
         <>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 3, my: 4, width: '70%' }}>
             <Box
               sx={{
                 width: '100%',
@@ -262,9 +262,9 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
           </Card>{' '}
         </>
       ) : (
-        <Box>
-          채널이 필요합니다. 채널 생성은 관리자에게 문의해주세요.
-        </Box>
+        <Typography variant="subtitle2" fontSize="20px" sx={{ m: 4 }}>
+          계정을 생성해주세요.
+        </Typography>
       )}
     </>
   );

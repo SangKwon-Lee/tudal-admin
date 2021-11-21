@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
-import { Channel, Room } from 'src/types/master';
+import { IMasterChannel, IMasterRoom } from 'src/types/master';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -25,12 +25,12 @@ export interface MasterRoomAction {
 }
 
 export interface MasterRoomState {
-  master_room: Room[];
+  master_room: IMasterRoom[];
   title: string;
   openType: string;
   loading: boolean;
   edit: boolean;
-  master_channel: Channel[];
+  master_channel: IMasterChannel[];
   selectChannel: number | string;
   order: number;
   sortChannel: number | string;
@@ -108,16 +108,20 @@ const initialState: MasterRoomState = {
   orderEdit: false,
 };
 const MasterRoomContainer = () => {
-  const { user } = useAuth();
+  const {
+    user: { master },
+  } = useAuth();
+
   const [MasterRoomState, dispatch] = useReducer(
     MasterRoomReducer,
     initialState,
   );
+
   const getChannel = async () => {
     dispatch({ type: MasterRoomActionKind.LOADING });
     try {
       const { status, data } = await cmsServer.get(
-        `/master-channels?master.id=${user.id}`,
+        `/master-channels?master.id=${master.id}`,
       );
       if (status === 200 && data.length > 0) {
         dispatch({
@@ -171,7 +175,7 @@ const MasterRoomContainer = () => {
   const createRoom = async () => {
     try {
       const { status, data } = await cmsServer.get(
-        `/master-rooms?master.id=${user.id}&master_channel=${MasterRoomState.selectChannel}`,
+        `/master-rooms?master.id=${master.id}&master_channel=${MasterRoomState.selectChannel}`,
       );
 
       if (status === 200) {
@@ -190,7 +194,7 @@ const MasterRoomContainer = () => {
     try {
       const { status } = await cmsServer.post(`/master-rooms`, {
         title: MasterRoomState.title,
-        master: user.id,
+        master: master.id,
         master_channel: Number(MasterRoomState.selectChannel),
         order: MasterRoomState.master_room.length + 1,
         openType: MasterRoomState.openType,

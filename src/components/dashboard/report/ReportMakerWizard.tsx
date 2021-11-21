@@ -69,7 +69,6 @@ const ReportMakerWizard: FC<ReportMakerWizardProps> = (props) => {
             const response = await axios.get(url);
             if (response.status === 200) {
               newTagList = newTagList.concat(response.data);
-              console.log(response.data);
             }
           }),
         );
