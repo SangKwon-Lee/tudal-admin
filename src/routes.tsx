@@ -529,7 +529,15 @@ const routes: PartialRouteObject[] = [
             element: <CpMasterCreatePage />,
           },
           {
+            path: '/createMaster/:masterId',
+            element: <CpMasterCreatePage />,
+          },
+          {
             path: '/createReporter',
+            element: <CpReporterCreatePage />,
+          },
+          {
+            path: '/createReporter/:reporterId',
             element: <CpReporterCreatePage />,
           },
           {

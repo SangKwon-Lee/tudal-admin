@@ -7,6 +7,10 @@ export const getUsers = () => {
   return axios.get(`/users`);
 };
 
+export const getUser = (id) => {
+  return axios.get(`/users/${id}`);
+};
+
 export const getUsersNoMaster = () => {
   return axios.get(`/users?master_null=true`);
 };

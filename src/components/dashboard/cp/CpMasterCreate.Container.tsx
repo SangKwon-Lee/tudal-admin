@@ -116,26 +116,48 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       type: CpMasterCreateActionKind.LOADING,
       payload: true,
     });
-    try {
-      const { data, status } = await APICp.getMaster(masterId);
-      let newData = {
-        ...data,
-        user: data.user.username,
-      };
-      if (status === 200) {
+    if (mode === 'create' && masterId) {
+      try {
+        const { data } = await APICp.getUser(masterId);
+        let newData = {
+          ...cpCreateState.newCpMaster,
+          user: data.username,
+          id: data.id,
+        };
         dispatch({
           type: CpMasterCreateActionKind.GET_MASTER,
           payload: newData,
         });
         dispatch({
           type: CpMasterCreateActionKind.GET_USER_ID,
-          payload: data.user.id,
+          payload: masterId,
         });
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        const { data, status } = await APICp.getMaster(masterId);
+        let newData = {
+          ...data,
+          user: data.user.username,
+        };
+        if (status === 200) {
+          dispatch({
+            type: CpMasterCreateActionKind.GET_MASTER,
+            payload: newData,
+          });
+          dispatch({
+            type: CpMasterCreateActionKind.GET_USER_ID,
+            payload: data.user.id,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [masterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [masterId, mode]);
 
   //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
@@ -168,11 +190,23 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 
   //* cp 등록
   const createCpMaster = async (data: CP_Master) => {
+    let newInput = {
+      ...data,
+    };
+
     if (mode === 'create') {
-      let newInput = {
-        ...data,
-        keyword: data.keyword.trim(),
-      };
+      if (cpCreateState.userId) {
+        newInput = {
+          ...newInput,
+          keyword: data.keyword.trim(),
+          user: cpCreateState.userId,
+        };
+      } else {
+        newInput = {
+          ...newInput,
+          keyword: data.keyword.trim(),
+        };
+      }
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
@@ -229,7 +263,9 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   };
 
   useEffect(() => {
-    getUsers();
+    if (!masterId) {
+      getUsers();
+    }
     if (masterId) {
       getCpMaster();
     }

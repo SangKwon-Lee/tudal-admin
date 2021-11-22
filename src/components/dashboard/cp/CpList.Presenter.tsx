@@ -197,7 +197,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               variant="outlined"
                               color="inherit"
                               component={RouterLink}
-                              to="/dashboard/cp/createMaster"
+                              to={`/dashboard/cp/createMaster/${cp.id}`}
                             >
                               생성
                             </Button>
@@ -217,7 +217,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               color="inherit"
                               variant="outlined"
                               component={RouterLink}
-                              to="/dashboard/cp/createReporter"
+                              to={`/dashboard/cp/createReporter/${cp.id}`}
                             >
                               생성
                             </Button>
