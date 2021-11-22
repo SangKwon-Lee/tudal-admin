@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 interface IOverviewProps {
-  time: string;
   greet: string;
 }
 
@@ -36,6 +35,8 @@ const OverviewPresenter: React.FC<IOverviewProps> = ({ greet }) => {
   const deadline =
     ((hour + min - 540) / 390) * 100 < 0
       ? 0
+      : ((hour + min - 540) / 390) * 100 > 100
+      ? 100
       : ((hour + min - 540) / 390) * 100;
   return (
     <>

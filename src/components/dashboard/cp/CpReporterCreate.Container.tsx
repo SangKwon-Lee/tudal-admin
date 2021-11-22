@@ -118,26 +118,48 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       type: CpReporterCreateActionKind.LOADING,
       payload: true,
     });
-    try {
-      const { data, status } = await APICp.getReporter(reporterId);
-      let newData = {
-        ...data,
-        user: data.user.username,
-      };
-      if (status === 200) {
+    if (mode === 'create' && reporterId) {
+      try {
+        const { data } = await APICp.getUser(reporterId);
+        let newData = {
+          ...cpCreateState.newCpReporter,
+          user: data.username,
+          id: data.id,
+        };
         dispatch({
           type: CpReporterCreateActionKind.GET_REPORTER,
           payload: newData,
         });
         dispatch({
           type: CpReporterCreateActionKind.GET_USER_ID,
-          payload: data.user.id,
+          payload: reporterId,
         });
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        const { data, status } = await APICp.getReporter(reporterId);
+        let newData = {
+          ...data,
+          user: data.user.username,
+        };
+        if (status === 200) {
+          dispatch({
+            type: CpReporterCreateActionKind.GET_REPORTER,
+            payload: newData,
+          });
+          dispatch({
+            type: CpReporterCreateActionKind.GET_USER_ID,
+            payload: data.user.id,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [reporterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, reporterId]);
 
   //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
@@ -145,37 +167,35 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       type: CpReporterCreateActionKind.LOADING,
       payload: true,
     });
-    if (mode === 'edit') {
-      try {
-        const { data } = await APICp.getUsers();
-        dispatch({
-          type: CpReporterCreateActionKind.GET_USERS,
-          payload: data,
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      try {
-        const { data } = await APICp.getUsersNoReporter();
-        dispatch({
-          type: CpReporterCreateActionKind.GET_USERS,
-          payload: data,
-        });
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      const { data } = await APICp.getUsersNoReporter();
+      dispatch({
+        type: CpReporterCreateActionKind.GET_USERS,
+        payload: data,
+      });
+    } catch (error) {
+      console.log(error);
     }
-  }, [mode]);
+  }, []);
 
   //* 리포터 등록
   const createCpReporter = async (data: CP_Hidden_Reporter) => {
+    let newInput = {
+      ...data,
+    };
     if (mode === 'create') {
-      let newInput = {
-        ...data,
-        // keyword: cpCreateState.newCpReporter.keyword.trim(),
-        tudalRecommendScore: Number(data.tudalRecommendScore),
-      };
+      if (cpCreateState.userId) {
+        newInput = {
+          ...newInput,
+          tudalRecommendScore: Number(data.tudalRecommendScore),
+          user: cpCreateState.userId,
+        };
+      } else {
+        newInput = {
+          ...newInput,
+          tudalRecommendScore: Number(data.tudalRecommendScore),
+        };
+      }
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
@@ -222,7 +242,9 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   };
 
   useEffect(() => {
-    getUsers();
+    if (!reporterId) {
+      getUsers();
+    }
     if (reporterId) {
       getCpReporter();
     }
