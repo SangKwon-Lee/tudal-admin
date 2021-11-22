@@ -214,8 +214,7 @@ const HiddenReportCreateReducer = (
           isAddingImageList: true,
           query: {
             ...state.image.query,
-            _start:
-              state.image.list.length + state.image.query._limit,
+            _start: state.image.list.length,
           },
         },
       };
@@ -269,7 +268,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
     const { user } = useAuth();
     const { mode, reportId, pageTopRef } = props;
-    const [step, setStep] = useState<number>(1);
+    const [step, setStep] = useState<number>(2);
     const [reportCreateState, dispatch] = useReducer(
       HiddenReportCreateReducer,
       initialState,
