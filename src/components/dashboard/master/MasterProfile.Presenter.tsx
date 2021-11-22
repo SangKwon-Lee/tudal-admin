@@ -68,9 +68,11 @@ const MasterProfilePresenter: React.FC<IMasterProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {user?.master?.keyword
-                      .split(',')
-                      .map((data) => data + ' / ')}
+                    {user.master?.keyword
+                      ? user.master.keyword
+                          .split(',')
+                          .map((data) => data + ' / ')
+                      : ''}
                   </Typography>
                 </TableCell>
               </TableRow>
