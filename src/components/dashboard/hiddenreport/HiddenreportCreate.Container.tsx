@@ -268,7 +268,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
   (props) => {
     const { user } = useAuth();
     const { mode, reportId, pageTopRef } = props;
-    const [step, setStep] = useState<number>(2);
+    const [step, setStep] = useState<number>(1);
     const [reportCreateState, dispatch] = useReducer(
       HiddenReportCreateReducer,
       initialState,
@@ -542,6 +542,12 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       }
     }, [getImages, image.isAddingImageList]);
 
+    useEffect(() => {
+      if (!user.hidden_reporter?.id) {
+        toast.error('먼저 히든 리포터를 생성해주세요');
+        navigate('/dashboard');
+      }
+    }, [user, navigate]);
     switch (step) {
       case 1:
         return (
