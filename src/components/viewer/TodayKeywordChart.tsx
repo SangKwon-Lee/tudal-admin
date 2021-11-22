@@ -93,7 +93,16 @@ const TodayKeywordChart: FC<Props> = (props) => {
         dataSource={dataSource}
         events={{
           dataPlotClick: (eventObj, dataObj) => {
-            window.open('http://app.tudal.co.kr', '_blank');
+            const keyword =
+              eventObj && eventObj.data ? eventObj.data.name : null;
+            if (keyword) {
+              window.location.href = `tudal://search/${keyword}`;
+              setTimeout(function () {
+                window.open('http://app.tudal.co.kr', '_blank');
+              }, 2000);
+            } else {
+              window.open('http://app.tudal.co.kr', '_blank');
+            }
           },
         }}
       />
