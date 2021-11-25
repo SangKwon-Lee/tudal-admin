@@ -14,7 +14,7 @@ const CpListPage: FC = () => {
         pageTopRef={pageTopRef}
         hasCreateButton={true}
         buttonName="계정 생성"
-        buttonClickLink="/dashboard/cp/create"
+        buttonClickLink="/dashboard/cp/signup"
       >
         <CpListContainer />
       </PageLayout>

@@ -34,7 +34,7 @@ export interface IUser {
   role: IRole;
   schedules: Schedule[];
   [key: string]: any;
-  master: CP_Master;
+  masters: CP_Master[];
   hidden_reporter: CP_Hidden_Reporter;
   phone_number: string;
   contact_email: string;

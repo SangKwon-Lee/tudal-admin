@@ -521,23 +521,23 @@ const routes: PartialRouteObject[] = [
         path: 'cp',
         children: [
           {
-            path: '/create',
+            path: '/signup',
             element: <CpCreatePage />,
           },
           {
-            path: '/createMaster',
+            path: '/master/signup/',
             element: <CpMasterCreatePage />,
           },
           {
-            path: '/createMaster/:masterId',
+            path: '/master/signup/:masterId',
             element: <CpMasterCreatePage />,
           },
           {
-            path: '/createReporter',
+            path: '/reporter/signup',
             element: <CpReporterCreatePage />,
           },
           {
-            path: '/createReporter/:reporterId',
+            path: '/reporter/signup/:reporterId',
             element: <CpReporterCreatePage />,
           },
           {
@@ -549,7 +549,7 @@ const routes: PartialRouteObject[] = [
             element: <CpReporterCreatePage />,
           },
           {
-            path: ':masterId/master',
+            path: ':userId/master',
             element: <CpMasterDetailPage />,
           },
           {

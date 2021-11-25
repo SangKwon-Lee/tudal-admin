@@ -1,7 +1,11 @@
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
-import { IMasterChannel, IMasterRoom } from 'src/types/master';
+import {
+  IMaster,
+  IMasterChannel,
+  IMasterRoom,
+} from 'src/types/master';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -9,13 +13,13 @@ import toast from 'react-hot-toast';
 
 export enum MasterRoomActionKind {
   LOADING = 'LOADING',
-  GET_CHANNEL = 'GET_CHANNEL',
+  GET_MASTER = 'GET_MASTER',
   GET_ROOM = 'GET_ROOM',
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_TYPE = 'CHANGE_TYPE',
   CHANGE_CHANNEL = 'CHANGE_CHANNEL',
-  SORT_CHANNEL = 'SORT_CHANNEL',
+  SORT_MASTER = 'SORT_MASTER',
   IS_ORDER = 'IS_ORDER',
 }
 
@@ -25,15 +29,15 @@ export interface MasterRoomAction {
 }
 
 export interface MasterRoomState {
+  masters: IMaster[];
   master_room: IMasterRoom[];
   title: string;
-  openType: string;
+  type: string;
   loading: boolean;
   edit: boolean;
-  master_channel: IMasterChannel[];
-  selectChannel: number | string;
+  selectMaster: number | string;
   order: number;
-  sortChannel: number | string;
+  sortMaster: number | string;
   orderEdit: boolean;
 }
 
@@ -54,12 +58,12 @@ const MasterRoomReducer = (
         master_room: payload,
         loading: false,
       };
-    case MasterRoomActionKind.GET_CHANNEL:
+    case MasterRoomActionKind.GET_MASTER:
       return {
         ...state,
-        master_channel: payload,
-        selectChannel: Number(payload[0].id),
-        sortChannel: Number(payload[0].id),
+        masters: payload,
+        selectMaster: Number(payload[0].id),
+        sortMaster: Number(payload[0].id),
         loading: false,
       };
     case MasterRoomActionKind.CHANGE_ROOM:
@@ -81,51 +85,50 @@ const MasterRoomReducer = (
     case MasterRoomActionKind.CHANGE_TYPE:
       return {
         ...state,
-        openType: payload,
+        type: payload,
       };
     case MasterRoomActionKind.CHANGE_CHANNEL:
       return {
         ...state,
-        selectChannel: payload,
+        selectMaster: payload,
       };
-    case MasterRoomActionKind.SORT_CHANNEL:
+    case MasterRoomActionKind.SORT_MASTER:
       return {
         ...state,
-        sortChannel: payload,
+        sortMaster: payload,
       };
   }
 };
 const initialState: MasterRoomState = {
+  masters: [],
   master_room: [],
-  master_channel: [],
   title: '',
-  openType: 'free',
+  type: 'free',
   loading: false,
   edit: false,
   order: 0,
-  selectChannel: 0,
-  sortChannel: 0,
+  selectMaster: 0,
+  sortMaster: 0,
   orderEdit: false,
 };
 const MasterRoomContainer = () => {
-  const {
-    user: { master },
-  } = useAuth();
+  const { user } = useAuth();
+  const { master } = user;
 
   const [MasterRoomState, dispatch] = useReducer(
     MasterRoomReducer,
     initialState,
   );
 
-  const getChannel = async () => {
+  const getMasters = async () => {
     dispatch({ type: MasterRoomActionKind.LOADING });
     try {
       const { status, data } = await cmsServer.get(
-        `/master-channels?master.id=${master.id}`,
+        `/masters?user=${user.id}`,
       );
       if (status === 200 && data.length > 0) {
         dispatch({
-          type: MasterRoomActionKind.GET_CHANNEL,
+          type: MasterRoomActionKind.GET_MASTER,
           payload: data,
         });
         if (data[0].master_rooms) {
@@ -139,7 +142,7 @@ const MasterRoomContainer = () => {
         }
       } else {
         dispatch({
-          type: MasterRoomActionKind.GET_CHANNEL,
+          type: MasterRoomActionKind.GET_MASTER,
           payload: [{ name: '없음', id: 0 }],
         });
       }
@@ -149,19 +152,19 @@ const MasterRoomContainer = () => {
   };
 
   useEffect(() => {
-    getChannel();
+    getMasters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //* 채널 변경 (방 목록)
-  const handleChangeChannelSort = async (event) => {
+  //* 달인 변경 (방 목록)
+  const handleChangeMasterSort = async (event) => {
     dispatch({ type: MasterRoomActionKind.LOADING });
     dispatch({
-      type: MasterRoomActionKind.SORT_CHANNEL,
+      type: MasterRoomActionKind.SORT_MASTER,
       payload: Number(event.target.value),
     });
     const { data } = await cmsServer.get(
-      `/master-rooms?master_channel=${Number(
+      `/master-rooms?master=${Number(
         event.target.value,
       )}&isDeleted=0`,
     );
@@ -174,34 +177,15 @@ const MasterRoomContainer = () => {
   //* 방 생성
   const createRoom = async () => {
     try {
-      const { status, data } = await cmsServer.get(
-        `/master-rooms?master.id=${master.id}&master_channel=${MasterRoomState.selectChannel}`,
-      );
-
-      if (status === 200) {
-        if (
-          data.filter((data) => data.title !== MasterRoomState.title)
-            .length !== data.length
-        ) {
-          toast.error('중복된 이름으로 추가할 수 없습니다.');
-          return;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
       const { status } = await cmsServer.post(`/master-rooms`, {
         title: MasterRoomState.title,
-        master: master.id,
-        master_channel: Number(MasterRoomState.selectChannel),
+        master: MasterRoomState.selectMaster,
         order: MasterRoomState.master_room.length + 1,
-        openType: MasterRoomState.openType,
+        type: MasterRoomState.type,
       });
       if (status === 200) {
         toast.success('방이 추가되었습니다.');
-        getChannel();
+        getMasters();
       }
     } catch (error) {
       console.log(error);
@@ -236,7 +220,7 @@ const MasterRoomContainer = () => {
         }),
       );
       const { data } = await cmsServer.get(
-        `/master-rooms?master_channel=${MasterRoomState.sortChannel}&isDeleted=0`,
+        `/master-rooms?master_channel=${MasterRoomState.sortMaster}&isDeleted=0`,
       );
       dispatch({
         type: MasterRoomActionKind.GET_ROOM,
@@ -265,9 +249,9 @@ const MasterRoomContainer = () => {
       <MasterRoomPresenter
         MasterRoomState={MasterRoomState}
         moveCard={moveCard}
-        handleChangeChannelSort={handleChangeChannelSort}
+        handleChangeMasterSort={handleChangeMasterSort}
         createRoom={createRoom}
-        getChannel={getChannel}
+        getMasters={getMasters}
         handleOrderSave={handleOrderSave}
         handleOrderCancle={handleOrderCancle}
         dispatch={dispatch}

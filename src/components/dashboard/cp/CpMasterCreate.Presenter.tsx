@@ -25,6 +25,7 @@ const schema = yup
     nickname: yup.string().required(),
     intro: yup.string().required(),
     keyword: yup.string().required(),
+    type: yup.string().required(),
   })
   .required();
 
@@ -140,6 +141,24 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               helperText="쉼표(,)로 구분해주세요. (필수 항목)"
               error={Boolean(errors?.keyword)}
             />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
+              타입
+            </Typography>
+            <TextField
+              select
+              fullWidth
+              {...register('type')}
+              helperText="쉼표(,)로 구분해주세요. (필수 항목)"
+              error={Boolean(errors?.type)}
+              SelectProps={{ native: true }}
+              variant="outlined"
+              sx={{ mx: 1 }}
+            >
+              <option value="free">무료</option>
+              <option value="paid">유료</option>
+            </TextField>
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 2 }}>

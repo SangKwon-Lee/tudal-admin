@@ -7,7 +7,7 @@ const CpReporterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { reporterId } = useParams();
   const path = useLocation();
-  const pathName = path.pathname.includes('createReporter');
+  const pathName = path.pathname.includes('signup');
   const mode =
     reporterId && pathName
       ? 'create'
