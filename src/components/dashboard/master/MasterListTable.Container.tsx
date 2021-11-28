@@ -3,6 +3,7 @@ import { APIMaster } from 'src/lib/api';
 import MasterListTablePresenter from './MasterListTable.Presenter';
 import useAuth from 'src/hooks/useAuth';
 import {
+  IMaster,
   IMasterChannel,
   IMasterFeed,
   IMasterRoom,
@@ -16,7 +17,7 @@ export enum MasterListTableActionKind {
   ROOM_LOADING = 'ROOM_LOADING',
 
   // Load APIS
-  GET_CHANNEL = 'GET_CHANNEL',
+  GET_MASTER = 'GET_MASTER',
   GET_ROOM = 'GET_ROOM',
   GET_FEED = 'GET_FEED',
   GET_FEED_LENGTH = 'GET_FEED_LENGTH',
@@ -27,7 +28,7 @@ export enum MasterListTableActionKind {
   CHANGE_PAGE = 'CHANGE_PAGE',
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ROOM = 'CHANGE_ROOM',
-  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
+  CHANGE_MASTER = 'CHANGE_MASTER',
 
   // delete & update
   SELECT_FEED = 'SELECT_FEED',
@@ -50,7 +51,7 @@ export interface IMasterListState {
   list: {
     feed: IMasterFeed[];
     feedLength: number;
-    channel: IMasterChannel[];
+    masters: IMaster[];
     room: IMasterRoom[];
   };
   delete: {
@@ -62,13 +63,14 @@ export interface IMasterListState {
     _limit: number;
     _q: string;
     isDeleted: boolean;
+    master: number;
     'master_room.id': number;
     'master_room.master_channel.id': number;
   };
 }
 
 const initialState: IMasterListState = {
-  list: { feed: [], feedLength: 0, channel: [], room: [] },
+  list: { masters: [], feed: [], feedLength: 0, room: [] },
   loading: true,
   channelLoading: true,
   roomLoading: true,
@@ -83,6 +85,7 @@ const initialState: IMasterListState = {
     _start: 0,
     _limit: 20,
     isDeleted: false,
+    master: null,
     'master_room.id': null,
     'master_room.master_channel.id': null,
   },
@@ -154,11 +157,11 @@ const MasterListTableReducer = (
         list: { ...state.list, room: payload },
       };
     }
-    case MasterListTableActionKind.GET_CHANNEL: {
+    case MasterListTableActionKind.GET_MASTER: {
       return {
         ...state,
         channelLoading: false,
-        list: { ...state.list, channel: payload },
+        list: { ...state.list, masters: payload },
       };
     }
     case MasterListTableActionKind.GET_FEED: {
@@ -169,13 +172,12 @@ const MasterListTableReducer = (
       };
     }
 
-    case MasterListTableActionKind.CHANGE_CHANNEL: {
+    case MasterListTableActionKind.CHANGE_MASTER: {
       return {
         ...state,
         query: {
           ...state.query,
-          'master_room.master_channel.id': payload,
-          'master_room.id': null,
+          master: payload,
         },
       };
     }
@@ -209,22 +211,21 @@ const MasterListTableContainer = () => {
     initialState,
   );
 
-  const {
-    user: { master },
-  } = useAuth();
+  const { user } = useAuth();
+  const { masters } = user;
 
-  const getChannels = useCallback(async () => {
+  const getMasters = useCallback(async () => {
     try {
-      const { data, status } = await APIMaster.getChannels(master.id);
+      const { data, status } = await APIMaster.getMasters(user.id);
       if (status === 200) {
         dispatch({
-          type: MasterListTableActionKind.GET_CHANNEL,
+          type: MasterListTableActionKind.GET_MASTER,
           payload: data,
         });
 
         if (data.length >= 1) {
           dispatch({
-            type: MasterListTableActionKind.CHANGE_CHANNEL,
+            type: MasterListTableActionKind.CHANGE_MASTER,
             payload: data[0].id,
           });
         }
@@ -232,14 +233,13 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [master]);
+  }, [user.id]);
 
   const getRooms = useCallback(async () => {
     try {
-      const channelId =
-        masterListState.query['master_room.master_channel.id'];
-
-      const response = await APIMaster.getRoomsByChannel(channelId);
+      const response = await APIMaster.getRoomsByMaster(
+        masterListState.query.master,
+      );
       dispatch({
         type: MasterListTableActionKind.GET_ROOM,
         payload: response.data,
@@ -254,8 +254,7 @@ const MasterListTableContainer = () => {
     } catch (error) {
       console.log(error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [masterListState.query['master_room.master_channel.id']]);
+  }, [masterListState.query.master]);
 
   const getFeeds = useCallback(async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
@@ -263,14 +262,11 @@ const MasterListTableContainer = () => {
     try {
       const { data, status } = await APIMaster.getFeeds(
         masterListState.query,
-        master.id,
+        masterListState.query.master,
       );
 
       if (status === 200) {
-        if (
-          masterListState.query['master_room.id'] &&
-          masterListState.query['master_room.master_channel.id']
-        ) {
+        if (masterListState.query['master_room.id']) {
           dispatch({
             type: MasterListTableActionKind.GET_FEED,
             payload: data,
@@ -289,14 +285,14 @@ const MasterListTableContainer = () => {
         type: MasterListTableActionKind.DONE,
       });
     }
-  }, [masterListState.query, master]);
+  }, [masterListState.query]);
 
   const getFeedLength = useCallback(async () => {
     try {
       const roomId = masterListState.query['master_room.id'];
 
       const { data, status } = await APIMaster.getFeedLength(
-        master.id,
+        masterListState.query.master,
         roomId,
       );
       if (status === 200) {
@@ -308,8 +304,7 @@ const MasterListTableContainer = () => {
     } catch (err) {
       console.error(err);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [master, masterListState.query['master_room.id']]);
+  }, [masterListState.query]);
 
   const handleDelete = async () => {
     dispatch({ type: MasterListTableActionKind.LOADING });
@@ -333,8 +328,8 @@ const MasterListTableContainer = () => {
   }, [getFeeds]);
 
   useEffect(() => {
-    getChannels();
-  }, [getChannels]);
+    getMasters();
+  }, [getMasters]);
 
   useEffect(() => {
     getRooms();
@@ -346,7 +341,7 @@ const MasterListTableContainer = () => {
 
   return (
     <MasterListTablePresenter
-      newState={masterListState}
+      masterListState={masterListState}
       dispatch={dispatch}
       handleDelete={handleDelete}
     />

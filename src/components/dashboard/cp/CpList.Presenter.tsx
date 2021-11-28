@@ -184,11 +184,11 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                           )}`}
                         </TableCell>
                         <TableCell>
-                          {cp.master?.id ? (
+                          {cp.masters[0]?.id ? (
                             <Button
                               variant="contained"
                               component={RouterLink}
-                              to={`/dashboard/cp/${cp.master.id}/master`}
+                              to={`/dashboard/cp/${cp.id}/master`}
                             >
                               달인
                             </Button>
@@ -197,7 +197,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               variant="outlined"
                               color="inherit"
                               component={RouterLink}
-                              to={`/dashboard/cp/createMaster/${cp.id}`}
+                              to={`/dashboard/cp/master/signup/${cp.id}`}
                             >
                               생성
                             </Button>
@@ -217,7 +217,7 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               color="inherit"
                               variant="outlined"
                               component={RouterLink}
-                              to={`/dashboard/cp/createReporter/${cp.id}`}
+                              to={`/dashboard/cp/reporter/signup/${cp.id}`}
                             >
                               생성
                             </Button>

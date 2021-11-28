@@ -12,7 +12,7 @@ export const getUser = (id) => {
 };
 
 export const getUsersNoMaster = () => {
-  return axios.get(`/users?master_null=true`);
+  return axios.get(`/users?masters_null=true`);
 };
 
 export const getUsersNoReporter = () => {
@@ -39,7 +39,7 @@ export const putMaster = (masterId, input) => {
 };
 
 export const getMaster = (masterId) => {
-  return axios.get(`masters/${masterId}`);
+  return axios.get(`/masters/${masterId}`);
 };
 
 //* 히든 리포터
@@ -58,9 +58,4 @@ export const putReporter = (reporterId, input) => {
 //* cp 계정
 export const postCp = (input) => {
   return axios.post(`/users`, input);
-};
-
-//* 달인 채널 생성
-export const postMasterChannel = (input) => {
-  return axios.post(`/master-channels`, input);
 };

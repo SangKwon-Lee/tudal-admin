@@ -7,7 +7,7 @@ const CpMasterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { masterId } = useParams();
   const path = useLocation();
-  const pathName = path.pathname.includes('createMaster');
+  const pathName = path.pathname.includes('signup');
   const mode =
     masterId && pathName ? 'create' : masterId ? 'edit' : 'create';
   return (

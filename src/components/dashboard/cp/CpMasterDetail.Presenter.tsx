@@ -1,179 +1,52 @@
-import {
-  Card,
-  CardHeader,
-  Divider,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  Typography,
-  LinearProgress,
-  Box,
-  Button,
-  TextField,
-} from '@material-ui/core';
-import dayjs from 'dayjs';
+import { Box, Button } from '@material-ui/core';
 import { CpMasterDetailState } from './CpMasterDetail.Container';
+import MasterProfileTable from '../master/MasterProfileTable.Presenter';
 import { Link as RouterLink } from 'react-router-dom';
+import useAuth from 'src/hooks/useAuth';
+import toast from 'react-hot-toast';
+
 interface CpMasterDetailProps {
   cpMasterDetailState: CpMasterDetailState;
 }
 const CpMasterDetailPresenter: React.FC<CpMasterDetailProps> = (
   props,
 ) => {
+  const { user } = useAuth();
   const { cpMasterDetailState } = props;
-  const { loading, master } = cpMasterDetailState;
+  const { masters } = cpMasterDetailState;
+  const showError = () => {
+    toast.error(
+      '2개의 달인까지 등록할 수 있습니다. 관리자에게 문의 바랍니다.',
+    );
+  };
+
   return (
-    <>
+    <Box>
+      {masters.map((master, i) => (
+        <MasterProfileTable key={i} master={master} />
+      ))}
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'end',
+          mt: 6,
+          justifyContent: 'flex-end',
         }}
       >
-        <Button
-          variant="outlined"
-          sx={{ mx: 10 }}
-          component={RouterLink}
-          to={`/dashboard/cp/${master.id}/edit/master`}
-        >
-          내용 수정
-        </Button>
-      </Box>
-      <Card sx={{ mt: 2, mx: 10 }}>
-        {loading && <LinearProgress />}
-        <CardHeader sx={{ m: 1 }} title="달인 상세내용" />
-        <Divider />
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  이름
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {master?.user?.username
-                    ? master.user.username
-                    : '이름이 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  이메일
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {master?.user?.contact_email
-                    ? master.user.contact_email
-                    : '이메일이 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  전화 번호
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {master?.user?.phone_number
-                    ? master.user.phone_number
-                    : '전화번호가 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  소개
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  disabled
-                  variant="standard"
-                  InputProps={{ disableUnderline: true }}
-                  multiline
-                  value={
-                    master.intro
-                      ? master.intro
-                      : '소개 글이 없습니다.'
-                  }
-                ></TextField>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  닉네임
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {master?.nickname
-                    ? master.nickname
-                    : '닉네임이 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  키워드
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {master?.keyword
-                    ? master.keyword
-                        .split(',')
-                        .map((data) => data + ' / ')
-                    : '키워드가 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  생성일
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {`${dayjs(master?.created_at).format(
-                    'YYYY년 M월 D일 HH:mm',
-                  )}`}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-        <Box sx={{ m: 2 }}>
-          <Typography
-            color="textPrimary"
-            variant="subtitle2"
-            sx={{ my: 2 }}
+        {masters.length < 2 ? (
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to={`/dashboard/cp/master/signup/${user.id}`}
           >
-            프로필 이미지
-          </Typography>
-          {master?.profile_image_url ? (
-            <img
-              src={master.profile_image_url}
-              style={{ borderRadius: '50%', width: '100px' }}
-              alt="프로필이미지"
-            ></img>
-          ) : (
-            '프로필 이미지가 없습니다.'
-          )}
-        </Box>
-      </Card>
-    </>
+            달인 추가생성
+          </Button>
+        ) : (
+          <Button variant="contained" onClick={showError}>
+            달인 추가생성
+          </Button>
+        )}
+      </Box>
+    </Box>
   );
 };
 

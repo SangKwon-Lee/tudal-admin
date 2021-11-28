@@ -37,8 +37,9 @@ const initialState: CpMasterCreateState = {
     nickname: '',
     intro: '',
     keyword: '',
-    user: 1,
+    user: null,
     profile_image_url: '',
+    type: 'free',
   },
   users: [],
   userId: 0,
@@ -103,6 +104,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   props,
 ) => {
   const { masterId } = useParams();
+
   const mode = props.mode || 'create';
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
@@ -116,7 +118,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       type: CpMasterCreateActionKind.LOADING,
       payload: true,
     });
-    if (mode === 'create' && masterId) {
+    if (mode === 'create') {
       try {
         const { data } = await APICp.getUser(masterId);
         let newData = {
@@ -216,23 +218,10 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
           ...newInput,
           profile_image_url: imgUrl,
         };
-        const { status, data } = await APICp.postMaster(newInput);
+        const { status } = await APICp.postMaster(newInput);
         if (status === 200) {
-          const input = {
-            master: data.id,
-            name: data.nickname,
-          };
-          try {
-            const { status: chnnelSattus } =
-              await APICp.postMasterChannel(input);
-            if (chnnelSattus === 200) {
-              toast.success('새로운 달인이 만들어졌습니다.');
-              navigate('/dashboard/cp');
-            }
-          } catch (error) {
-            toast.error('오류가 발생했습니다.');
-            console.log(error);
-          }
+          toast.success('새로운 달인이 만들어졌습니다.');
+          navigate('/dashboard/cp');
         }
       } catch (error) {
         toast.error('오류가 발생했습니다.');

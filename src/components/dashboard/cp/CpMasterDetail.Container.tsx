@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
-import { APICp } from 'src/lib/api';
+import { APICp, APIMaster } from 'src/lib/api';
 import { CP_Master } from 'src/types/cp';
 import CpMasterDetailPresenter from './CpMasterDetail.Presenter';
 export enum CpMasterDetailActionKind {
@@ -13,20 +13,12 @@ export interface CpMasterDetailAction {
 }
 export interface CpMasterDetailState {
   loading: boolean;
-  master: CP_Master;
+  masters: CP_Master[];
 }
 
 const initialState: CpMasterDetailState = {
   loading: false,
-  master: {
-    intro: '',
-    keyword: '',
-    nickname: '',
-    profile_image_url: '',
-    user: 0,
-    created_at: '',
-    id: 0,
-  },
+  masters: [],
 };
 const CpMasterDetailReducer = (
   state: CpMasterDetailState,
@@ -42,14 +34,15 @@ const CpMasterDetailReducer = (
     case CpMasterDetailActionKind.GET_MASTER_DETAIL:
       return {
         ...state,
-        master: payload,
+        masters: payload,
         loading: false,
       };
   }
 };
 
 const CpMasterDetailContainer = () => {
-  const { masterId } = useParams();
+  const { userId } = useParams();
+  console.log(useParams());
   const [cpMasterDetailState, dispatch] = useReducer(
     CpMasterDetailReducer,
     initialState,
@@ -62,7 +55,8 @@ const CpMasterDetailContainer = () => {
       payload: true,
     });
     try {
-      const { data, status } = await APICp.getMaster(masterId);
+      const { data, status } = await APIMaster.getMasters(userId);
+
       if (status === 200) {
         dispatch({
           type: CpMasterDetailActionKind.GET_MASTER_DETAIL,
@@ -72,12 +66,13 @@ const CpMasterDetailContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [masterId]);
+  }, [userId]);
 
   useEffect(() => {
     getCpMasterDetail();
-  }, [getCpMasterDetail, masterId]);
+  }, [getCpMasterDetail]);
 
+  console.log(cpMasterDetailState);
   return (
     <CpMasterDetailPresenter
       cpMasterDetailState={cpMasterDetailState}
