@@ -60,10 +60,6 @@ const sections = [
             title: '히든 리포터 생성',
             path: '/dashboard/cp/createReporter',
           },
-          {
-            title: '히든리포트 이미지 관리',
-            path: '/dashboard/hiddenreports/images',
-          },
         ],
       },
     ],
@@ -112,9 +108,19 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '배너 관리',
-        path: '/dashboard/banner',
+        title: '히든 리포트 관리',
+        path: '/dashboard',
         icon: <PaletteIcon fontSize="small" />,
+        children: [
+          {
+            title: '히든 리포트 배너 관리',
+            path: '/dashboard/banner',
+          },
+          {
+            title: '히든리포트 이미지 관리',
+            path: '/dashboard/hiddenreports/images',
+          },
+        ],
       },
     ],
   },
@@ -144,6 +150,10 @@ const sections = [
             title: '리스트',
             path: '/dashboard/hiddenreports',
           },
+          {
+            title: '정산/통계',
+            path: '/dashboard/hiddenreports/stats',
+          },
         ],
       },
     ],
@@ -172,10 +182,10 @@ const sections = [
             title: '방 관리',
             path: '/dashboard/master/room',
           },
-          {
-            title: '구독현황',
-            path: '/dashboard/master/subscribe',
-          },
+          // {
+          //   title: '구독현황',
+          //   path: '/dashboard/master/subscribe',
+          // },
         ],
       },
     ],

@@ -6,6 +6,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
+import HiddenReportStatPage from './pages/dashboard/hiddenreport/HiddenReportStats.Page';
 
 const Loadable = (Component) => (props) =>
   (
@@ -342,6 +343,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/profile',
             element: <HiddenReportProfilePage />,
+          },
+          {
+            path: '/stats',
+            element: <HiddenReportStatPage />,
           },
         ],
       },

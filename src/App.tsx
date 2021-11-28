@@ -17,6 +17,7 @@ import moment from 'moment';
 import SocketProvider from './contexts/SocketContext';
 import AdapterMoment from '@material-ui/lab/AdapterMoment';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const koLocale = require('moment/locale/ko');
 moment.locale('ko', koLocale);
