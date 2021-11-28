@@ -553,6 +553,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         return (
           !loading && (
             <HiddenReportContentForm
+              mode={mode}
               reportCreateState={reportCreateState}
               dispatch={dispatch}
               editorRef={editorRef}

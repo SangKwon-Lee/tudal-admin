@@ -37,9 +37,9 @@ import { DatePicker } from '@material-ui/lab';
 import { IBuckets } from 'src/components/common/conf/aws';
 
 interface IHRContentFormProps {
+  mode: string;
   reportCreateState: HiddenReportCreateState;
   editorRef: React.MutableRefObject<any>;
-
   tagInput: React.MutableRefObject<any>;
   tagList: Tag[];
   tagLoading: boolean;
@@ -73,6 +73,7 @@ const schema = yup
 
 const HRContentForm: FC<IHRContentFormProps> = (props) => {
   const {
+    mode,
     editorRef,
     onSubmitContentForm,
     reportCreateState,
@@ -405,6 +406,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
+                disabled={mode === 'edit' ? true : false}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
