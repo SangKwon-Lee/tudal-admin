@@ -3,6 +3,8 @@ import { APIMaster } from 'src/lib/api';
 import MasterListTablePresenter from './MasterListTable.Presenter';
 import useAuth from 'src/hooks/useAuth';
 import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
+import { useNavigate } from 'react-router';
+import toast from 'react-hot-toast';
 
 export enum MasterListTableActionKind {
   // loading
@@ -207,6 +209,7 @@ const MasterListTableContainer = () => {
   );
 
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const getMasters = useCallback(async () => {
     try {
@@ -332,6 +335,13 @@ const MasterListTableContainer = () => {
   useEffect(() => {
     getFeedLength();
   }, [getFeedLength]);
+
+  useEffect(() => {
+    if (user && !user.masters[0]?.id) {
+      navigate('/dashboard');
+      toast.error('달인을 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
 
   return (
     <MasterListTablePresenter

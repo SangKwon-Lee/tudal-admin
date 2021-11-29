@@ -208,7 +208,7 @@ const HiddenReportStatPresenter: React.FC<IHiddenReportStatPresenter> =
             />
 
             <Box sx={{ p: 3 }}></Box>
-            <Card sx={{ p: 3 }}>
+            <Card sx={{ p: 3 }} style={{ minHeight: '350px' }}>
               <CardHeader title="판매 내역" />
               <Divider />
               <Scrollbar>

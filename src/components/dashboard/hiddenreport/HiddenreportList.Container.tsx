@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 import useAuth from 'src/hooks/useAuth';
 import { APIHR } from 'src/lib/api';
 
@@ -135,6 +137,7 @@ const HRListReducer = (
 
 const HiddenReportListContainer: React.FC = (props) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [HRListState, dispatch] = useReducer(
     HRListReducer,
     initialState,
@@ -165,6 +168,13 @@ const HiddenReportListContainer: React.FC = (props) => {
   useEffect(() => {
     getList();
   }, [getList]);
+
+  useEffect(() => {
+    if (user && !user.hidden_reporter.id) {
+      navigate('/dashboard');
+      toast.error('리포터를 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
 
   return (
     <HiddenreportListPresenter
