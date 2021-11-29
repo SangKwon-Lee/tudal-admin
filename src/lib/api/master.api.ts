@@ -29,6 +29,7 @@ export async function getFeedLength(masterId, roomId) {
   );
 }
 
+// deprecated
 export async function getRoomsByChannel(channelId) {
   return await axios.get<IMasterRoom[]>(
     `/master-rooms?master_channel.id=${channelId}&isDeleted=0`,
@@ -37,12 +38,6 @@ export async function getRoomsByChannel(channelId) {
 export async function getRoomsByMaster(masterId) {
   return await axios.get<IMasterRoom[]>(
     `/master-rooms?master.id=${masterId}&isDeleted=0`,
-  );
-}
-
-export async function getChannels(masterId) {
-  return await axios.get<IMasterChannel[]>(
-    `/master-channels?master.id=${masterId}`,
   );
 }
 
@@ -124,4 +119,8 @@ export async function getThisMonth(masterId) {
   );
 
   return [This, Last];
+}
+
+export async function getMasters(userId) {
+  return await axios.get<IMasterChannel[]>(`/masters?user=${userId}`);
 }

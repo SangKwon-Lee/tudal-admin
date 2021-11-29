@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FC } from 'react';
+import * as _ from 'lodash';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -54,15 +55,11 @@ const sections = [
           },
           {
             title: '달인 생성',
-            path: '/dashboard/cp/createMaster',
+            path: '/dashboard/cp/master/signup',
           },
           {
             title: '히든 리포터 생성',
-            path: '/dashboard/cp/createReporter',
-          },
-          {
-            title: '히든리포트 이미지 관리',
-            path: '/dashboard/hiddenreports/images',
+            path: '/dashboard/cp/reporter/signup',
           },
         ],
       },
@@ -112,9 +109,19 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '배너 관리',
-        path: '/dashboard/banner',
+        title: '히든 리포트 관리',
+        path: '/dashboard',
         icon: <PaletteIcon fontSize="small" />,
+        children: [
+          {
+            title: '히든 리포트 배너 관리',
+            path: '/dashboard/banner',
+          },
+          {
+            title: '히든리포트 이미지 관리',
+            path: '/dashboard/hiddenreports/images',
+          },
+        ],
       },
     ],
   },
@@ -144,6 +151,10 @@ const sections = [
             title: '리스트',
             path: '/dashboard/hiddenreports',
           },
+          {
+            title: '정산/통계',
+            path: '/dashboard/hiddenreports/stats',
+          },
         ],
       },
     ],
@@ -172,10 +183,10 @@ const sections = [
             title: '방 관리',
             path: '/dashboard/master/room',
           },
-          {
-            title: '구독현황',
-            path: '/dashboard/master/subscribe',
-          },
+          // {
+          //   title: '구독현황',
+          //   path: '/dashboard/master/subscribe',
+          // },
         ],
       },
     ],
@@ -245,16 +256,17 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
   const handleFilterSection = () => {
+    const isMaster = !_.isEmpty(user.masters);
     if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.type === 'cp' && !user.master && !user.hidden_reporter) {
+    if (user.type === 'cp' && !isMaster && !user.hidden_reporter) {
       const section = sections.filter((data) => {
         return data.title === 'Home';
       });
       setFilterSection(section);
     }
-    if (user.type === 'cp' && user.master) {
+    if (user.type === 'cp' && isMaster) {
       const section = sections.filter((data) => {
         return data.title === 'Master' || data.title === 'Home';
       });
@@ -268,7 +280,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
       });
       setFilterSection(section);
     }
-    if (user.type === 'cp' && user.hidden_reporter && user.master) {
+    if (user.type === 'cp' && user.hidden_reporter && isMaster) {
       const section = sections.filter((data) => {
         return (
           data.title === 'Hidden-Reporter' ||

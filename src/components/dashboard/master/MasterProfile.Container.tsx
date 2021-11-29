@@ -55,6 +55,8 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
     initialState,
   );
 
+  console.log(user);
+
   const getMasterFeed = useCallback(async () => {
     dispatch({
       type: MasterProfileActionKind.LOADING,

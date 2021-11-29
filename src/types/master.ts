@@ -48,7 +48,7 @@ export interface IMasterRoom {
   id?: number;
   title?: string;
   author?: string;
-  openType?: string;
+  type?: string;
   order?: number;
   isDeleted?: boolean;
   master?: IMaster;

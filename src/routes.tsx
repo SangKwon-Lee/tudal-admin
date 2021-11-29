@@ -6,6 +6,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GuestGuard from './components/guards/GuestGuard';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MainLayout from './components/layout/MainLayout';
+import HiddenReportStatPage from './pages/dashboard/hiddenreport/HiddenReportStats.Page';
 
 const Loadable = (Component) => (props) =>
   (
@@ -343,6 +344,10 @@ const routes: PartialRouteObject[] = [
             path: '/profile',
             element: <HiddenReportProfilePage />,
           },
+          {
+            path: '/stats',
+            element: <HiddenReportStatPage />,
+          },
         ],
       },
       {
@@ -521,23 +526,23 @@ const routes: PartialRouteObject[] = [
         path: 'cp',
         children: [
           {
-            path: '/create',
+            path: '/signup',
             element: <CpCreatePage />,
           },
           {
-            path: '/createMaster',
+            path: '/master/signup/',
             element: <CpMasterCreatePage />,
           },
           {
-            path: '/createMaster/:masterId',
+            path: '/master/signup/:masterId',
             element: <CpMasterCreatePage />,
           },
           {
-            path: '/createReporter',
+            path: '/reporter/signup',
             element: <CpReporterCreatePage />,
           },
           {
-            path: '/createReporter/:reporterId',
+            path: '/reporter/signup/:reporterId',
             element: <CpReporterCreatePage />,
           },
           {
@@ -549,7 +554,7 @@ const routes: PartialRouteObject[] = [
             element: <CpReporterCreatePage />,
           },
           {
-            path: ':masterId/master',
+            path: ':userId/master',
             element: <CpMasterDetailPage />,
           },
           {

@@ -37,7 +37,7 @@ const initialState: CpReporterCreateState = {
   newCpReporter: {
     nickname: '',
     intro: '',
-    user: 1,
+    user: null,
     imageUrl: '',
     tudalRecommendScore: 3,
     catchphrase: '',
