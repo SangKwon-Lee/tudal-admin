@@ -8,12 +8,9 @@ import {
   TableRow,
   TableCell,
   Typography,
-  Link,
   TextField,
 } from '@material-ui/core';
-import * as _ from 'lodash';
 import dayjs from 'dayjs';
-import { IMaster } from 'src/types/master';
 import { CP_Master } from 'src/types/cp';
 
 interface IMasterProfileProps {

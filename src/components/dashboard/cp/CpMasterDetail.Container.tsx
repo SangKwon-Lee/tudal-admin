@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
-import { APICp, APIMaster } from 'src/lib/api';
+import { APIMaster } from 'src/lib/api';
 import { CP_Master } from 'src/types/cp';
 import CpMasterDetailPresenter from './CpMasterDetail.Presenter';
 export enum CpMasterDetailActionKind {

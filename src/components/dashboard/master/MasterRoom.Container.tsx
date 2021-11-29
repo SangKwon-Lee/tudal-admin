@@ -1,11 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { cmsServer } from 'src/lib/axios';
-import {
-  IMaster,
-  IMasterChannel,
-  IMasterRoom,
-} from 'src/types/master';
+import { IMaster, IMasterRoom } from 'src/types/master';
 import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -113,8 +109,6 @@ const initialState: MasterRoomState = {
 };
 const MasterRoomContainer = () => {
   const { user } = useAuth();
-  const { master } = user;
-
   const [MasterRoomState, dispatch] = useReducer(
     MasterRoomReducer,
     initialState,

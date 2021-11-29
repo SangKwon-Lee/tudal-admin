@@ -2,12 +2,7 @@ import { useCallback, useEffect, useReducer } from 'react';
 import { APIMaster } from 'src/lib/api';
 import MasterListTablePresenter from './MasterListTable.Presenter';
 import useAuth from 'src/hooks/useAuth';
-import {
-  IMaster,
-  IMasterChannel,
-  IMasterFeed,
-  IMasterRoom,
-} from 'src/types/master';
+import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
 
 export enum MasterListTableActionKind {
   // loading
@@ -212,7 +207,6 @@ const MasterListTableContainer = () => {
   );
 
   const { user } = useAuth();
-  const { masters } = user;
 
   const getMasters = useCallback(async () => {
     try {
