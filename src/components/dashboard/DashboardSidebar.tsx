@@ -152,8 +152,8 @@ const sections = [
             path: '/dashboard/hiddenreports',
           },
           {
-            title: '정산/통계',
-            path: '/dashboard/hiddenreports/stats',
+            title: '판매내역',
+            path: '/dashboard/hiddenreports/history',
           },
         ],
       },
