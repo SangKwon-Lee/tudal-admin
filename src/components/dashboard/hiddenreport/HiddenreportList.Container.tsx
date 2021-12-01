@@ -152,9 +152,8 @@ const HiddenReportListContainer: React.FC = (props) => {
         hidden_reporter: user.hidden_reporter.id,
       };
       const { data, status } = await APIHR.getList(_query);
-      if (data.length && status === 200) {
+      if (status === 200) {
         const { data: count } = await APIHR.getListLength(_query);
-
         dispatch({
           type: HRListActionKind.LOAD_REPORTS,
           payload: { data, count },

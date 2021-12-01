@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { FC } from 'react';
-import * as _ from 'lodash';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';

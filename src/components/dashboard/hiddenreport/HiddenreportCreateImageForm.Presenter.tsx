@@ -230,7 +230,6 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
             <ImageCard
               image={{
                 ...newReport.hidden_report_image,
-                name: '이미지를 선택해 주세요',
               }}
               isSelected={
                 newReport.hidden_report_image?.id ? true : false
