@@ -1,11 +1,7 @@
 import axios from '../axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
-import {
-  IMasterChannel,
-  IMasterFeed,
-  IMasterRoom,
-} from 'src/types/master';
+import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
 
 /** 구 버전 달인 (에디터) */
 // export async function getList() {
@@ -122,5 +118,5 @@ export async function getThisMonth(masterId) {
 }
 
 export async function getMasters(userId) {
-  return await axios.get<IMasterChannel[]>(`/masters?user=${userId}`);
+  return await axios.get<IMaster[]>(`/masters?user=${userId}`);
 }

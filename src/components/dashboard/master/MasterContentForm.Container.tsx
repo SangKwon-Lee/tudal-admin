@@ -19,6 +19,7 @@ import { Stock, Tag } from 'src/types/schedule';
 import { APIMaster, APIStock, APITag } from 'src/lib/api';
 import _ from 'lodash';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface MasterFormProps {
   onComplete?: () => void;
@@ -171,7 +172,7 @@ const initialState: MasterContentFormState = {
 const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const { mode, onComplete } = props;
   const { user } = useAuth();
-  const { master } = user;
+  const navigate = useNavigate();
 
   const [masterContentFormState, dispatch] = useReducer(
     MasterContentFormReducer,
@@ -237,12 +238,11 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     }
   };
 
-  //* 채널 불러오는 useEffect
+  //* 달인 불러오는 useEffect
   useEffect(() => {
     getMasters();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [master]);
+  }, []);
 
   //* 수정 시 기존 데이터 불러오기
   const getMaster = async () => {
@@ -274,14 +274,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     }
   };
 
-  //* 수정 모드일 때 데이터 불러오기
-  useEffect(() => {
-    if (mode === 'edit') {
-      getMaster();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   //* 웹 에디터에 전달되는 Props
   const editorRef = useRef(null);
   const log = () => {
@@ -300,7 +292,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     try {
       setIsSubmitting(true);
       if (editorRef.current) {
-        console.log(masterContentFormState.newFeed);
+        // 수정
+
         const contents = log();
         const newFeed = {
           ...masterContentFormState.newFeed,
@@ -343,7 +336,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
                 (data) => data.id,
               ) || [],
             contents,
-            master: master.id,
           };
           try {
             const response = await cmsServer.put(
@@ -393,6 +385,37 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     }
   };
 
+  //* 수정 모드일 때 데이터 불러오기
+  useEffect(() => {
+    if (mode === 'edit') {
+      getMaster();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 달인 방 확인
+  useEffect(() => {
+    async function navigateIfRoomNotExisted() {
+      let isExist = false;
+      try {
+        const { data } = await APIMaster.getMasters(user.id);
+        data.forEach((master) => {
+          master.master_rooms.length && (isExist = true);
+        });
+
+        if (!isExist) {
+          toast.error('방을 먼저 생성해주세요');
+          navigate('/dashboard/master/room');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    navigateIfRoomNotExisted();
+  }, [user, navigate]);
+
   //* 태그 관련
   const getTagList = useCallback(() => {
     const value = tagInput.current ? tagInput.current.value : '';
@@ -401,8 +424,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);
   const handleTagChange = _.debounce(refetchTag, 300);
-  //* 종목 관련
 
+  //* 종목 관련
   const getStockList = useCallback(() => {
     return APIStock.getSimpleList();
   }, []);
