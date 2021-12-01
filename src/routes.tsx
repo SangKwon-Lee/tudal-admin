@@ -345,7 +345,7 @@ const routes: PartialRouteObject[] = [
             element: <HiddenReportProfilePage />,
           },
           {
-            path: '/stats',
+            path: '/history',
             element: <HiddenReportStatPage />,
           },
         ],

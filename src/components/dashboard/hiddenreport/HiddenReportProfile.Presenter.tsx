@@ -60,7 +60,7 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
               <TableRow>
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
-                    CatchPhrase
+                    캐치프레이즈
                   </Typography>
                 </TableCell>
                 <TableCell>

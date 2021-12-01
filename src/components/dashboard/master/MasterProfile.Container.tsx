@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 import { APIMaster } from 'src/lib/api';
 import { IMasterFeed } from 'src/types/master';
 import { IUser } from 'src/types/user';
@@ -50,12 +52,11 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
   props,
 ) => {
   const { user } = props;
+  const navigate = useNavigate();
   const [masterProfileState, dispatch] = useReducer(
     MasterProfileReducer,
     initialState,
   );
-
-  console.log(user);
 
   const getMasterFeed = useCallback(async () => {
     dispatch({
@@ -83,6 +84,14 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
       getMasterFeed();
     }
   }, [getMasterFeed, user]);
+
+  useEffect(() => {
+    if (user && !user.masters[0]?.id) {
+      navigate('/dashboard');
+      toast.error('달인을 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
+
   return (
     <MasterProfilePresenter
       user={props.user}

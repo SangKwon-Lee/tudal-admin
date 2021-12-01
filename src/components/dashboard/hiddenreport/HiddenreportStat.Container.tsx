@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 import useAuth from 'src/hooks/useAuth';
 import { APIHR } from 'src/lib/api';
 import { IHR, IHROrders } from 'src/types/hiddenreport';
@@ -93,9 +95,9 @@ const orderListToMap = (orders: IHROrders[]) => {
 };
 
 const HiddenReportStatContainer: React.FC = (props) => {
-  const {
-    user: { hidden_reporter },
-  } = useAuth();
+  const { user } = useAuth();
+  const { hidden_reporter } = user;
+  const navigate = useNavigate();
 
   const [HRStatState, dispatch] = useReducer(
     HRStatReducer,
@@ -125,6 +127,13 @@ const HiddenReportStatContainer: React.FC = (props) => {
   useEffect(() => {
     getOrders();
   }, [getOrders]);
+
+  useEffect(() => {
+    if (user && !user.hidden_reporter?.id) {
+      navigate('/dashboard');
+      toast.error('리포터를 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
 
   return (
     <HiddenReportStatPresenter

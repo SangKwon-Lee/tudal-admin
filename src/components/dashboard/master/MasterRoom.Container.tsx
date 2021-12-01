@@ -6,6 +6,7 @@ import MasterRoomPresenter from './MasterRoom.Presenter';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 
 export enum MasterRoomActionKind {
   LOADING = 'LOADING',
@@ -109,6 +110,7 @@ const initialState: MasterRoomState = {
 };
 const MasterRoomContainer = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [MasterRoomState, dispatch] = useReducer(
     MasterRoomReducer,
     initialState,
@@ -120,7 +122,7 @@ const MasterRoomContainer = () => {
       const { status, data } = await cmsServer.get(
         `/masters?user=${user.id}`,
       );
-      if (status === 200 && data.length > 0) {
+      if (status === 200 && data.length) {
         dispatch({
           type: MasterRoomActionKind.GET_MASTER,
           payload: data,
@@ -237,6 +239,13 @@ const MasterRoomContainer = () => {
     });
     toast.success('취소했습니다.');
   };
+
+  useEffect(() => {
+    if (user && !user.masters[0]?.id) {
+      navigate('/dashboard');
+      toast.error('달인을 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
 
   return (
     <DndProvider backend={HTML5Backend}>

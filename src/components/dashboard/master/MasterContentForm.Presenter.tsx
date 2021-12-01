@@ -25,6 +25,7 @@ import {
 } from './MasterContentForm.Container';
 import useAuth from 'src/hooks/useAuth';
 import { IBuckets } from 'src/components/common/conf/aws';
+import * as _ from 'lodash';
 
 interface IMasterContentFormProps {
   editorRef: React.MutableRefObject<any>;
@@ -73,9 +74,10 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     isHasRoom,
   } = masterContentFormState;
   const { user } = useAuth();
+
   return (
     <>
-      {user?.master ? (
+      {!_.isEmpty(user?.masters) ? (
         <Formik
           initialValues={{
             submit: null,
