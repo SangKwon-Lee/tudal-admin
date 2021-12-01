@@ -404,6 +404,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               >
                 가격
               </Typography>
+              {console.log(mode)}
               <TextField
                 fullWidth
                 disabled={mode === 'edit' ? true : false}
