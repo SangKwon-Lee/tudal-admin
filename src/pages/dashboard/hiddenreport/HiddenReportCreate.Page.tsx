@@ -7,7 +7,7 @@ const HiddenReportListPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { reportId } = useParams();
   const path = useLocation();
-  const isCreate = path.pathname.includes('signup');
+  const isCreate = path.pathname.includes('new');
 
   const mode = isCreate ? 'create' : 'edit';
 

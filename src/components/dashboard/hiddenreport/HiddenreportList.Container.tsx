@@ -170,7 +170,7 @@ const HiddenReportListContainer: React.FC = (props) => {
   }, [getList]);
 
   useEffect(() => {
-    if (user && !user.hidden_reporter.id) {
+    if (user && !user.hidden_reporter?.id) {
       navigate('/dashboard');
       toast.error('리포터를 먼저 생성해주세요');
     }

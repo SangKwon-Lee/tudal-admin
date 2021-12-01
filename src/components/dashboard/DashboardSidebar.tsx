@@ -136,7 +136,7 @@ const sections = [
     ],
   },
   {
-    title: 'Hidden-Reporter',
+    title: 'Contents',
     items: [
       {
         title: '히든리포트',
@@ -157,11 +157,6 @@ const sections = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: 'Master',
-    items: [
       {
         title: '달인',
         path: '/dashboard/master',
@@ -255,41 +250,19 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     handleFilterSection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
   const handleFilterSection = () => {
-    const isMaster = !_.isEmpty(user.masters);
     if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.type === 'cp' && !isMaster && !user.hidden_reporter) {
+
+    if (user.type === 'cp') {
       const section = sections.filter((data) => {
-        return data.title === 'Home';
+        return data.title === 'Contents' || data.title === 'Home';
       });
       setFilterSection(section);
     }
-    if (user.type === 'cp' && isMaster) {
-      const section = sections.filter((data) => {
-        return data.title === 'Master' || data.title === 'Home';
-      });
-      setFilterSection(section);
-    }
-    if (user.type === 'cp' && user.hidden_reporter) {
-      const section = sections.filter((data) => {
-        return (
-          data.title === 'Hidden-Reporter' || data.title === 'Home'
-        );
-      });
-      setFilterSection(section);
-    }
-    if (user.type === 'cp' && user.hidden_reporter && isMaster) {
-      const section = sections.filter((data) => {
-        return (
-          data.title === 'Hidden-Reporter' ||
-          data.title === 'Home' ||
-          data.title === 'Master'
-        );
-      });
-      setFilterSection(section);
-    }
+
     if (user.type === 'cms') {
       const section = sections.filter(
         (data) => data.title === 'Home' || data.title === 'CMS',
