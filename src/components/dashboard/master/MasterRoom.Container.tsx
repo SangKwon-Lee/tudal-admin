@@ -15,8 +15,7 @@ export enum MasterRoomActionKind {
   CHANGE_ROOM = 'CHANGE_ROOM',
   CHANGE_TITLE = 'CHANGE_TITLE',
   CHANGE_TYPE = 'CHANGE_TYPE',
-  CHANGE_CHANNEL = 'CHANGE_CHANNEL',
-  SORT_MASTER = 'SORT_MASTER',
+  SET_SELECT_MASTER = 'SET_SELECT_MASTER',
   IS_ORDER = 'IS_ORDER',
 }
 
@@ -26,15 +25,14 @@ export interface MasterRoomAction {
 }
 
 export interface MasterRoomState {
+  selectMaster: IMaster;
   masters: IMaster[];
-  master_room: IMasterRoom[];
+  rooms: IMasterRoom[];
   title: string;
   type: string;
   loading: boolean;
   edit: boolean;
-  selectMaster: number | string;
   order: number;
-  sortMaster: number | string;
   orderEdit: boolean;
 }
 
@@ -49,30 +47,23 @@ const MasterRoomReducer = (
         ...state,
         loading: true,
       };
-    case MasterRoomActionKind.GET_ROOM:
-      return {
-        ...state,
-        master_room: payload,
-        loading: false,
-      };
     case MasterRoomActionKind.GET_MASTER:
       return {
         ...state,
         masters: payload,
-        selectMaster: Number(payload[0].id),
-        sortMaster: Number(payload[0].id),
+        selectMaster: payload[0],
         loading: false,
       };
-    case MasterRoomActionKind.CHANGE_ROOM:
-      return {
-        ...state,
-        master_room: payload,
-        loading: false,
-      };
+
     case MasterRoomActionKind.IS_ORDER:
       return {
         ...state,
         orderEdit: payload,
+      };
+    case MasterRoomActionKind.CHANGE_ROOM:
+      return {
+        ...state,
+        rooms: payload,
       };
     case MasterRoomActionKind.CHANGE_TITLE:
       return {
@@ -84,28 +75,23 @@ const MasterRoomReducer = (
         ...state,
         type: payload,
       };
-    case MasterRoomActionKind.CHANGE_CHANNEL:
+    case MasterRoomActionKind.SET_SELECT_MASTER:
       return {
         ...state,
         selectMaster: payload,
-      };
-    case MasterRoomActionKind.SORT_MASTER:
-      return {
-        ...state,
-        sortMaster: payload,
+        rooms: payload.master_rooms,
       };
   }
 };
 const initialState: MasterRoomState = {
+  selectMaster: null,
   masters: [],
-  master_room: [],
+  rooms: [],
   title: '',
   type: 'free',
   loading: false,
   edit: false,
   order: 0,
-  selectMaster: 0,
-  sortMaster: 0,
   orderEdit: false,
 };
 const MasterRoomContainer = () => {
@@ -115,6 +101,9 @@ const MasterRoomContainer = () => {
     MasterRoomReducer,
     initialState,
   );
+
+  console.log('asdas', MasterRoomState);
+  const { masters, selectMaster } = MasterRoomState;
 
   const getMasters = async () => {
     dispatch({ type: MasterRoomActionKind.LOADING });
@@ -127,15 +116,20 @@ const MasterRoomContainer = () => {
           type: MasterRoomActionKind.GET_MASTER,
           payload: data,
         });
-        if (data[0].master_rooms) {
-          const roomData = data[0].master_rooms.filter(
-            (data) => data.isDeleted === false,
+
+        let _selectMaster = selectMaster
+          ? data.filter((master) => master.id === selectMaster.id)[0]
+          : data[0];
+
+        _selectMaster.master_rooms =
+          _selectMaster.master_rooms.filter(
+            (room) => !room.isDeleted,
           );
-          dispatch({
-            type: MasterRoomActionKind.GET_ROOM,
-            payload: roomData,
-          });
-        }
+
+        dispatch({
+          type: MasterRoomActionKind.SET_SELECT_MASTER,
+          payload: _selectMaster,
+        });
       } else {
         dispatch({
           type: MasterRoomActionKind.GET_MASTER,
@@ -154,19 +148,13 @@ const MasterRoomContainer = () => {
 
   //* 달인 변경 (방 목록)
   const handleChangeMasterSort = async (event) => {
-    dispatch({ type: MasterRoomActionKind.LOADING });
+    const selectMaster = masters.filter(
+      (master) => master.id === Number(event.target.value),
+    )[0];
+
     dispatch({
-      type: MasterRoomActionKind.SORT_MASTER,
-      payload: Number(event.target.value),
-    });
-    const { data } = await cmsServer.get(
-      `/master-rooms?master=${Number(
-        event.target.value,
-      )}&isDeleted=0`,
-    );
-    dispatch({
-      type: MasterRoomActionKind.GET_ROOM,
-      payload: data,
+      type: MasterRoomActionKind.SET_SELECT_MASTER,
+      payload: selectMaster,
     });
   };
 
@@ -176,11 +164,17 @@ const MasterRoomContainer = () => {
       const { status } = await cmsServer.post(`/master-rooms`, {
         title: MasterRoomState.title,
         master: MasterRoomState.selectMaster,
-        order: MasterRoomState.master_room.length + 1,
+        order: MasterRoomState.selectMaster.master_rooms.length + 1,
         type: MasterRoomState.type,
       });
       if (status === 200) {
         toast.success('방이 추가되었습니다.');
+
+        dispatch({
+          type: MasterRoomActionKind.CHANGE_TITLE,
+          payload: '',
+        });
+
         getMasters();
       }
     } catch (error) {
@@ -194,11 +188,11 @@ const MasterRoomContainer = () => {
     hoverIndex?: number,
   ) => {
     // const dragCard = MasterRoomState.master_room[dragIndex - 1];
-    let card = [...MasterRoomState.master_room];
+    let card = [...MasterRoomState.rooms];
     let cardSlice = card.splice(dragIndex - 1, 1);
     card.splice(hoverIndex - 1, 0, cardSlice[0]);
     dispatch({
-      type: MasterRoomActionKind.GET_ROOM,
+      type: MasterRoomActionKind.CHANGE_ROOM,
       payload: card,
     });
   };
@@ -206,7 +200,7 @@ const MasterRoomContainer = () => {
   const handleOrderSave = async () => {
     try {
       await Promise.all(
-        MasterRoomState.master_room.map(async (data, i) => {
+        MasterRoomState.rooms.map(async (data, i) => {
           return await cmsServer.put(
             `/master-rooms/${data.id}?isDeleted=0`,
             {
@@ -215,13 +209,20 @@ const MasterRoomContainer = () => {
           );
         }),
       );
+
       const { data } = await cmsServer.get(
-        `/master-rooms?master_channel=${MasterRoomState.sortMaster}&isDeleted=0`,
+        `/masters?user=${user.id}`,
       );
+
+      const selected = data.filter(
+        (master) => master.id === selectMaster.id,
+      )[0];
+
       dispatch({
-        type: MasterRoomActionKind.GET_ROOM,
-        payload: data,
+        type: MasterRoomActionKind.SET_SELECT_MASTER,
+        payload: selected,
       });
+
       dispatch({
         type: MasterRoomActionKind.IS_ORDER,
         payload: false,
