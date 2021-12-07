@@ -9,7 +9,7 @@ import {
   Button,
   FormHelperText,
   TextField,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import useAuth from '../../../hooks/useAuth';
 import useMounted from '../../../hooks/useMounted';
@@ -36,41 +36,33 @@ const PasswordResetAmplify: FC = () => {
         email: location.state?.username || '',
         password: '',
         passwordConfirm: '',
-        submit: null
+        submit: null,
       }}
-      validationSchema={
-        Yup
-          .object()
-          .shape({
-            code: Yup
-              .array()
-              .of(Yup.string().required('Code is required')),
-            email: Yup
-              .string()
-              .email('Must be a valid email')
-              .max(255)
-              .required('Email is required'),
-            password: Yup
-              .string()
-              .min(7, 'Must be at least 7 characters')
-              .max(255)
-              .required('Required'),
-            passwordConfirm: Yup
-              .string()
-              .oneOf([Yup.ref('password'), null], 'Passwords must match')
-              .required('Required')
-          })
-      }
-      onSubmit={async (values, {
-        setErrors,
-        setStatus,
-        setSubmitting
-      }): Promise<void> => {
+      validationSchema={Yup.object().shape({
+        code: Yup.array().of(
+          Yup.string().required('Code is required'),
+        ),
+        email: Yup.string()
+          .email('Must be a valid email')
+          .max(255)
+          .required('Email is required'),
+        password: Yup.string()
+          .min(7, 'Must be at least 7 characters')
+          .max(255)
+          .required('Required'),
+        passwordConfirm: Yup.string()
+          .oneOf([Yup.ref('password'), null], 'Passwords must match')
+          .required('Required'),
+      })}
+      onSubmit={async (
+        values,
+        { setErrors, setStatus, setSubmitting },
+      ): Promise<void> => {
         try {
           await passwordReset(
             values.email,
             values.code.join(''),
-            values.password
+            values.password,
           );
 
           navigate('/authentication/login');
@@ -92,45 +84,38 @@ const PasswordResetAmplify: FC = () => {
         isSubmitting,
         setFieldValue,
         touched,
-        values
+        values,
       }): JSX.Element => (
-        <form
-          noValidate
-          onSubmit={handleSubmit}
-        >
-          {
-            !location.state?.username
-              ? (
-                <TextField
-                  autoFocus
-                  error={Boolean(touched.email && errors.email)}
-                  fullWidth
-                  helperText={touched.email && errors.email}
-                  label="Email Address"
-                  margin="normal"
-                  name="email"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  type="email"
-                  value={values.email}
-                  variant="outlined"
-                />
-              )
-              : (
-                <TextField
-                  disabled
-                  fullWidth
-                  margin="normal"
-                  value={location.state.username}
-                  variant="outlined"
-                />
-              )
-          }
+        <form noValidate onSubmit={handleSubmit}>
+          {!location.state?.username ? (
+            <TextField
+              autoFocus
+              error={Boolean(touched.email && errors.email)}
+              fullWidth
+              helperText={touched.email && errors.email}
+              label="Email Address"
+              margin="normal"
+              name="email"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              type="email"
+              value={values.email}
+              variant="outlined"
+            />
+          ) : (
+            <TextField
+              disabled
+              fullWidth
+              margin="normal"
+              value={location.state.username}
+              variant="outlined"
+            />
+          )}
           <Typography
             color="textSecondary"
             sx={{
               mb: 2,
-              mt: 3
+              mt: 3,
             }}
             variant="subtitle2"
           >
@@ -141,18 +126,18 @@ const PasswordResetAmplify: FC = () => {
               columnGap: '16px',
               display: 'grid',
               gridTemplateColumns: 'repeat(7, 1fr)',
-              py: 1
+              py: 1,
             }}
           >
             {[1, 2, 3, 4, 5, 6].map((ref, i) => (
               <TextField
                 error={Boolean(
-                  Array.isArray(touched.code)
-                  && touched.code.length === 6
-                  && errors.code
+                  Array.isArray(touched.code) &&
+                    touched.code.length === 6 &&
+                    errors.code,
                 )}
                 fullWidth
-                inputRef={(el) => itemsRef.current[i] = el}
+                inputRef={(el) => (itemsRef.current[i] = el)}
                 // eslint-disable-next-line react/no-array-index-key
                 key={`codeNumber-${i}`}
                 name={`code[${i}]`}
@@ -205,23 +190,23 @@ const PasswordResetAmplify: FC = () => {
                   display: 'inline-block',
                   textAlign: 'center',
                   '& .MuiInputBase-input': {
-                    textAlign: 'center'
-                  }
+                    textAlign: 'center',
+                  },
                 }}
                 variant="outlined"
               />
             ))}
           </Box>
-          {
-            Boolean(Array.isArray(touched.code) && touched.code.length === 6 && errors.code) && (
-              <FormHelperText
-                error
-                sx={{ mx: '14px' }}
-              >
-                {Array.isArray(errors.code) && errors.code.find((x) => x !== undefined)}
-              </FormHelperText>
-            )
-          }
+          {Boolean(
+            Array.isArray(touched.code) &&
+              touched.code.length === 6 &&
+              errors.code,
+          ) && (
+            <FormHelperText error sx={{ mx: '14px' }}>
+              {Array.isArray(errors.code) &&
+                errors.code.find((x) => x !== undefined)}
+            </FormHelperText>
+          )}
           <TextField
             error={Boolean(touched.password && errors.password)}
             fullWidth
@@ -236,9 +221,13 @@ const PasswordResetAmplify: FC = () => {
             variant="outlined"
           />
           <TextField
-            error={Boolean(touched.passwordConfirm && errors.passwordConfirm)}
+            error={Boolean(
+              touched.passwordConfirm && errors.passwordConfirm,
+            )}
             fullWidth
-            helperText={touched.passwordConfirm && errors.passwordConfirm}
+            helperText={
+              touched.passwordConfirm && errors.passwordConfirm
+            }
             label="Password Confirmation"
             margin="normal"
             name="passwordConfirm"
@@ -250,9 +239,7 @@ const PasswordResetAmplify: FC = () => {
           />
           {errors.submit && (
             <Box sx={{ mt: 3 }}>
-              <FormHelperText error>
-                {errors.submit}
-              </FormHelperText>
+              <FormHelperText error>{errors.submit}</FormHelperText>
             </Box>
           )}
           <Box sx={{ mt: 3 }}>

@@ -38,6 +38,11 @@ const sections = [
         path: '/dashboard',
         icon: <HomeIcon fontSize="small" />,
       },
+      {
+        title: '문의사항',
+        path: '/dashboard/qas',
+        icon: <HomeIcon fontSize="small" />,
+      },
     ],
   },
   {

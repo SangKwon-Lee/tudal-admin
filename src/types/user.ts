@@ -11,6 +11,11 @@ export enum IRoleType {
   Public = 'public',
   Author = 'author',
 }
+export enum IUserType {
+  ADMIN = 'admin',
+  CMS = 'cms',
+  CP = 'cp',
+}
 
 interface IRole {
   Lv: number;
@@ -38,6 +43,7 @@ export interface IUser {
   hidden_reporter: CP_Hidden_Reporter;
   phone_number: string;
   contact_email: string;
+  type: IUserType
 }
 
 export interface UserInput {

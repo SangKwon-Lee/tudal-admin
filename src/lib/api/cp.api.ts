@@ -55,7 +55,36 @@ export const putReporter = (reporterId, input) => {
   return axios.put(`/hidden-reporters/${reporterId}`, input);
 };
 
+
 //* cp 계정
 export const postCp = (input) => {
   return axios.post(`/users`, input);
 };
+
+
+//* CP 문의사항
+export const getQandA = (id) => {
+  return axios.get(`/cp-question-answers/${id}`);
+}
+
+
+export const getQandAList = (params, filter, user) => {
+  const query = qs.stringify(removeEmpty({...params, writer:user}));
+  return axios.get(`/cp-question-answers?${query}&${filter}&isAnswer=false`);
+}
+
+export const getQandALength = (params, filter) => {
+  const query = qs.stringify(removeEmpty(params));
+  return axios.get(`/cp-question-answers/count?${query}&${filter}&isAnswer=false`);
+};
+
+
+
+
+export const postQandA = (body) => {
+  return axios.post(`/cp-question-answers`, body);
+};
+export const putQandA = (id, body) => {
+  return axios.put(`/cp-question-answers/${id}`, body);
+};
+
