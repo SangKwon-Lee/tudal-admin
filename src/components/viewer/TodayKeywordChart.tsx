@@ -92,7 +92,7 @@ const TodayKeywordChart: FC<Props> = (props) => {
         dataFormat={'json'}
         dataSource={dataSource}
         events={{
-          dataPlotClick: (eventObj, dataObj) => {
+          dataPlotClick: (eventObj) => {
             const keyword =
               eventObj && eventObj.data ? eventObj.data.name : null;
             if (keyword) {

@@ -1,12 +1,12 @@
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container, Typography } from '@material-ui/core';
 import TodayKeywordChart from '../../components/viewer/TodayKeywordChart';
 import gtm from '../../lib/gtm';
-import { SocketContext } from '../../contexts/SocketContext';
 import { apiServer } from 'src/lib/axios';
 import type { Stock, Tag, TagData } from '../../types/todaykeyword';
+import moment from 'moment';
 
 const colorsets = [
   'f19066',
@@ -22,12 +22,12 @@ const colorsets = [
 ];
 
 const TodayKeywordViewer: FC = () => {
-  const { queryManager } = useContext(SocketContext);
   const [showKeyword, setShowKeyword] = useState(false);
   const [list, setList] = useState<Stock[]>([]);
   const tagData = useRef({});
   const [tagArray, setTagArray] = useState<TagData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [issueDatetime, setIssueDatetime] = useState(null);
   const [screenSize, setScreenSize] = useState({
     width: 0,
     height: 0,
@@ -43,34 +43,51 @@ const TodayKeywordViewer: FC = () => {
     const getTodayRanking = async () => {
       try {
         setLoading(true);
-        queryManager.current.sendProcessByName(
-          'i0043',
-          function (queryData) {
-            if (!queryData) {
-              return;
-            }
-
-            var block = queryData.getBlockData('InBlock1')[0];
-            // 0: 전체, 1: 코스피, 2: 코스닥
-            block['exc_tp'] = '0';
-            // 1:거래상위 2:상승률 3:하락률 4:시가총액상위
-            block['gbn'] = '2';
-            block['req_cnt'] = '20';
-            block['req_page'] = '1';
-          },
-          function (queryData) {
-            if (!queryData) {
-              setShowKeyword(false);
-              return;
-            }
-
-            // let result1 = queryData.getBlockData('OutBlock1');
-            let result2 = queryData.getBlockData('OutBlock2');
-            if (result2 && result2.length >= 20) {
-              setList([...result2]);
-            }
-          },
+        const { data, status } = await apiServer.get(
+          `/analytics/todayKeyword`,
         );
+        if (status === 200) {
+          let tempArray = [];
+          data.keywords.map((keyword, i) => {
+            tempArray.push({
+              label: keyword.keyword,
+              value: keyword.value,
+              svalue: keyword.value,
+              fillColor: colorsets[i],
+            });
+          });
+
+          tempArray.sort((a, b) => {
+            return parseInt(b.svalue) - parseInt(a.svalue);
+          });
+
+          const today = moment();
+          const lastUpdate = moment(data.datetime);
+
+          if (today.format('DD') === lastUpdate.format('DD')) {
+            if (moment().format('HH') < '09') {
+              setIssueDatetime('오늘 | 개장전');
+            } else if (
+              moment().format('HH') >= '09' &&
+              moment().format('HH') < '16'
+            ) {
+              setIssueDatetime('오늘 | 정규장');
+            } else if (
+              moment().format('HH') >= '16' &&
+              moment().format('HH') < '18'
+            ) {
+              setIssueDatetime('오늘 | 시간외');
+            } else {
+              setIssueDatetime('오늘 | 장마감');
+            }
+          } else {
+            setIssueDatetime(
+              lastUpdate.format('MM.DD 마감영업일 기준'),
+            );
+          }
+          console.log('TempArray', tempArray);
+          setTagArray(tempArray);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -179,7 +196,20 @@ const TodayKeywordViewer: FC = () => {
         }}
       >
         <Container>
-          <Typography variant="h5">{'Today Keyword'}</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="h5" color="black" sx={{ mr: 1 }}>
+              {'Today Keyword'}
+            </Typography>
+            <Typography variant="body2" color="gray">
+              {issueDatetime}
+            </Typography>
+          </Box>
           {showKeyword && !loading ? (
             <TodayKeywordChart
               data={tagArray}
