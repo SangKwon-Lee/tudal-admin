@@ -15,7 +15,7 @@ import {
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
-import { IMasterRoom } from 'src/types/master';
+import { IMaster, IMasterRoom } from 'src/types/master';
 import { Stock, Tag } from 'src/types/schedule';
 import { Formik } from 'formik';
 import {
@@ -25,6 +25,7 @@ import {
 } from './MasterContentForm.Container';
 import useAuth from 'src/hooks/useAuth';
 import { IBuckets } from 'src/components/common/conf/aws';
+import * as _ from 'lodash';
 
 interface IMasterContentFormProps {
   editorRef: React.MutableRefObject<any>;
@@ -40,7 +41,7 @@ interface IMasterContentFormProps {
   handleStockChange: _.DebouncedFunc<() => void>;
   handleTagChange: _.DebouncedFunc<() => void>;
   handleSubmitError: (e: any) => void;
-  handleChangeChannel: (e: any) => void;
+  handleChangeMaster: (e: any) => void;
   dispatch: (params: MasterContentFormAction) => void;
 }
 const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
@@ -59,23 +60,24 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
     stockInput,
     handleStockChange,
     handleTagChange,
-    handleChangeChannel,
+    handleChangeMaster,
     handleSubmitError,
     dispatch,
   } = props;
 
   const {
     error,
-    newMaster,
-    master_channels,
+    newFeed,
+    masters,
     master_room,
     submitError,
     isHasRoom,
   } = masterContentFormState;
   const { user } = useAuth();
+
   return (
     <>
-      {user?.master ? (
+      {!_.isEmpty(user?.masters) ? (
         <Formik
           initialValues={{
             submit: null,
@@ -99,24 +101,24 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                             payload: event,
                           });
                         }}
-                        value={newMaster?.title || ''}
+                        value={newFeed?.title || ''}
                         variant="outlined"
                       />
                     </Box>
                     <Box sx={{ my: 2 }}>
-                      {master_channels.length > 0 && (
+                      {masters.length > 0 && (
                         <TextField
                           select
                           fullWidth
-                          label={'채널 선택'}
-                          name="channel"
+                          label={'달인 선택'}
+                          name="master"
                           SelectProps={{ native: true }}
                           variant="outlined"
-                          onChange={handleChangeChannel}
+                          onChange={handleChangeMaster}
                         >
-                          {master_channels.map((channel: any, i) => (
-                            <option key={i} value={channel.id}>
-                              {channel.name}
+                          {masters.map((master: IMaster, i) => (
+                            <option key={i} value={master.id}>
+                              {master.nickname}
                             </option>
                           ))}
                         </TextField>
@@ -128,7 +130,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                           select
                           fullWidth
                           label={'방 선택'}
-                          name="room"
+                          name="master_room"
                           SelectProps={{ native: true }}
                           variant="outlined"
                           onChange={(event) => {
@@ -140,7 +142,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         >
                           {master_room.map((room: IMasterRoom, i) => (
                             <option key={i} value={room.id}>
-                              {room.title} ({room.openType})
+                              {room.title} ({room.type})
                             </option>
                           ))}
                         </TextField>
@@ -153,7 +155,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         fullWidth
                         autoHighlight
                         options={tagList}
-                        value={newMaster.tags}
+                        value={newFeed.tags}
                         getOptionLabel={(option) => option.name}
                         onChange={(
                           event,
@@ -163,7 +165,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         ) => {
                           if (reason === 'selectOption') {
                             const tags = [
-                              ...newMaster.tags,
+                              ...newFeed.tags,
                               item.option,
                             ];
                             dispatch({
@@ -172,12 +174,12 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                             });
 
                             setFieldValue('tags', [
-                              ...newMaster.tags,
+                              ...newFeed.tags,
                               item.option,
                             ]);
                           }
                           if (reason === 'removeOption') {
-                            const tags = newMaster?.tags.filter(
+                            const tags = newFeed?.tags.filter(
                               //@ts-ignore
                               (tag) => tag.id !== item.option.id,
                             );
@@ -230,7 +232,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         fullWidth
                         autoHighlight
                         options={stockList}
-                        value={newMaster.stocks}
+                        value={newFeed.stocks}
                         getOptionLabel={(option) =>
                           option.name + `(${option.code})`
                         }
@@ -242,7 +244,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         ) => {
                           if (reason === 'selectOption') {
                             const stocks = [
-                              ...newMaster.stocks,
+                              ...newFeed.stocks,
                               item.option,
                             ];
                             dispatch({
@@ -250,12 +252,12 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                               payload: stocks,
                             });
                             setFieldValue('stocks', [
-                              ...newMaster.stocks,
+                              ...newFeed.stocks,
                               item.option,
                             ]);
                           }
                           if (reason === 'removeOption') {
-                            const stocks = newMaster?.stocks.filter(
+                            const stocks = newFeed?.stocks.filter(
                               (stocks) =>
                                 stocks.id !== item.option.id,
                             );
@@ -312,7 +314,7 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         name="external_link"
                         onBlur={handleSubmitError}
                         onChange={handleSubmitError}
-                        value={newMaster?.external_link || ''}
+                        value={newFeed?.external_link || ''}
                         variant="outlined"
                       />
                     </Box>
@@ -321,9 +323,9 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         editorRef={editorRef}
                         bucket_name={IBuckets.MASTER_FEED}
                         contents={
-                          newMaster?.contents
-                            ? newMaster.contents
-                            : newMaster.description
+                          newFeed?.contents
+                            ? newFeed.contents
+                            : newFeed.description
                         }
                       />
                     </Paper>

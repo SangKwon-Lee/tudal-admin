@@ -2,11 +2,14 @@ import type { FC } from 'react';
 import CpMasterCreateContainer from 'src/components/dashboard/cp/CpMasterCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 const CpMasterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { masterId } = useParams();
-  const mode = masterId ? 'edit' : 'create';
+  const path = useLocation();
+  const pathName = path.pathname.includes('signup');
+  const mode =
+    masterId && pathName ? 'create' : masterId ? 'edit' : 'create';
   return (
     <>
       <PageLayout

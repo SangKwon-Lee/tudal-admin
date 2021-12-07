@@ -37,8 +37,9 @@ const initialState: CpMasterCreateState = {
     nickname: '',
     intro: '',
     keyword: '',
-    user: 1,
+    user: null,
     profile_image_url: '',
+    type: 'free',
   },
   users: [],
   userId: 0,
@@ -103,6 +104,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   props,
 ) => {
   const { masterId } = useParams();
+
   const mode = props.mode || 'create';
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
@@ -116,26 +118,48 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       type: CpMasterCreateActionKind.LOADING,
       payload: true,
     });
-    try {
-      const { data, status } = await APICp.getMaster(masterId);
-      let newData = {
-        ...data,
-        user: data.user.username,
-      };
-      if (status === 200) {
+    if (mode === 'create') {
+      try {
+        const { data } = await APICp.getUser(masterId);
+        let newData = {
+          ...cpCreateState.newCpMaster,
+          user: data.username,
+          id: data.id,
+        };
         dispatch({
           type: CpMasterCreateActionKind.GET_MASTER,
           payload: newData,
         });
         dispatch({
           type: CpMasterCreateActionKind.GET_USER_ID,
-          payload: data.user.id,
+          payload: masterId,
         });
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        const { data, status } = await APICp.getMaster(masterId);
+        let newData = {
+          ...data,
+          user: data.user.username,
+        };
+        if (status === 200) {
+          dispatch({
+            type: CpMasterCreateActionKind.GET_MASTER,
+            payload: newData,
+          });
+          dispatch({
+            type: CpMasterCreateActionKind.GET_USER_ID,
+            payload: data.user.id,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [masterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [masterId, mode]);
 
   //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
@@ -168,11 +192,23 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 
   //* cp 등록
   const createCpMaster = async (data: CP_Master) => {
+    let newInput = {
+      ...data,
+    };
+
     if (mode === 'create') {
-      let newInput = {
-        ...data,
-        keyword: data.keyword.trim(),
-      };
+      if (cpCreateState.userId) {
+        newInput = {
+          ...newInput,
+          keyword: data.keyword.trim(),
+          user: cpCreateState.userId,
+        };
+      } else {
+        newInput = {
+          ...newInput,
+          keyword: data.keyword.trim(),
+        };
+      }
       try {
         const imgUrl = await registerImage(
           cpCreateState.saveCropImg,
@@ -182,23 +218,10 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
           ...newInput,
           profile_image_url: imgUrl,
         };
-        const { status, data } = await APICp.postMaster(newInput);
+        const { status } = await APICp.postMaster(newInput);
         if (status === 200) {
-          const input = {
-            master: data.id,
-            name: data.nickname,
-          };
-          try {
-            const { status: chnnelSattus } =
-              await APICp.postMasterChannel(input);
-            if (chnnelSattus === 200) {
-              toast.success('새로운 달인이 만들어졌습니다.');
-              navigate('/dashboard/cp');
-            }
-          } catch (error) {
-            toast.error('오류가 발생했습니다.');
-            console.log(error);
-          }
+          toast.success('새로운 달인이 만들어졌습니다.');
+          navigate('/dashboard/cp');
         }
       } catch (error) {
         toast.error('오류가 발생했습니다.');
@@ -229,7 +252,9 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   };
 
   useEffect(() => {
-    getUsers();
+    if (!masterId) {
+      getUsers();
+    }
     if (masterId) {
       getCpMaster();
     }

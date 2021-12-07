@@ -39,3 +39,11 @@ export interface IHRImage {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface IHROrders {
+  id: number;
+  hidden_report: IHR;
+  userId: string;
+  created_at: Date;
+  updated_at: Date;
+}

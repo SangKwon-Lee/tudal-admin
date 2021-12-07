@@ -214,8 +214,7 @@ const HiddenReportCreateReducer = (
           isAddingImageList: true,
           query: {
             ...state.image.query,
-            _start:
-              state.image.list.length + state.image.query._limit,
+            _start: state.image.list.length,
           },
         },
       };
@@ -543,11 +542,18 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
       }
     }, [getImages, image.isAddingImageList]);
 
+    useEffect(() => {
+      if (!user.hidden_reporter?.id) {
+        toast.error('먼저 히든 리포터를 생성해주세요');
+        navigate('/dashboard');
+      }
+    }, [user, navigate]);
     switch (step) {
       case 1:
         return (
           !loading && (
             <HiddenReportContentForm
+              mode={mode}
               reportCreateState={reportCreateState}
               dispatch={dispatch}
               editorRef={editorRef}

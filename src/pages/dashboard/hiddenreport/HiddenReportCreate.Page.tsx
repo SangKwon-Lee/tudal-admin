@@ -1,12 +1,15 @@
 import React from 'react';
 import HiddenreportCreateContainer from 'src/components/dashboard/hiddenreport/HiddenreportCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 const HiddenReportListPage: React.FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { reportId } = useParams();
-  const mode = reportId ? 'edit' : 'create';
+  const path = useLocation();
+  const isCreate = path.pathname.includes('new');
+
+  const mode = isCreate ? 'create' : 'edit';
 
   return (
     <PageLayout

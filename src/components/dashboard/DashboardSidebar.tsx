@@ -54,15 +54,11 @@ const sections = [
           },
           {
             title: '달인 생성',
-            path: '/dashboard/cp/createMaster',
+            path: '/dashboard/cp/master/signup',
           },
           {
             title: '히든 리포터 생성',
-            path: '/dashboard/cp/createReporter',
-          },
-          {
-            title: '히든리포트 이미지 관리',
-            path: '/dashboard/hiddenreports/images',
+            path: '/dashboard/cp/reporter/signup',
           },
         ],
       },
@@ -112,9 +108,19 @@ const sections = [
     title: 'Management',
     items: [
       {
-        title: '배너 관리',
-        path: '/dashboard/banner',
+        title: '히든 리포트 관리',
+        path: '/dashboard',
         icon: <PaletteIcon fontSize="small" />,
+        children: [
+          {
+            title: '히든 리포트 배너 관리',
+            path: '/dashboard/banner',
+          },
+          {
+            title: '히든리포트 이미지 관리',
+            path: '/dashboard/hiddenreports/images',
+          },
+        ],
       },
     ],
   },
@@ -129,7 +135,7 @@ const sections = [
     ],
   },
   {
-    title: 'Hidden-Reporter',
+    title: 'Contents',
     items: [
       {
         title: '히든리포트',
@@ -144,13 +150,12 @@ const sections = [
             title: '리스트',
             path: '/dashboard/hiddenreports',
           },
+          {
+            title: '판매내역',
+            path: '/dashboard/hiddenreports/history',
+          },
         ],
       },
-    ],
-  },
-  {
-    title: 'Master',
-    items: [
       {
         title: '달인',
         path: '/dashboard/master',
@@ -172,10 +177,10 @@ const sections = [
             title: '방 관리',
             path: '/dashboard/master/room',
           },
-          {
-            title: '구독현황',
-            path: '/dashboard/master/subscribe',
-          },
+          // {
+          //   title: '구독현황',
+          //   path: '/dashboard/master/subscribe',
+          // },
         ],
       },
     ],
@@ -244,40 +249,19 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
     handleFilterSection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
   const handleFilterSection = () => {
     if (user.type === 'admin') {
       setFilterSection(sections);
     }
-    if (user.type === 'cp' && !user.master && !user.hidden_reporter) {
+
+    if (user.type === 'cp') {
       const section = sections.filter((data) => {
-        return data.title === 'Home';
+        return data.title === 'Contents' || data.title === 'Home';
       });
       setFilterSection(section);
     }
-    if (user.type === 'cp' && user.master) {
-      const section = sections.filter((data) => {
-        return data.title === 'Master' || data.title === 'Home';
-      });
-      setFilterSection(section);
-    }
-    if (user.type === 'cp' && user.hidden_reporter) {
-      const section = sections.filter((data) => {
-        return (
-          data.title === 'Hidden-Reporter' || data.title === 'Home'
-        );
-      });
-      setFilterSection(section);
-    }
-    if (user.type === 'cp' && user.hidden_reporter && user.master) {
-      const section = sections.filter((data) => {
-        return (
-          data.title === 'Hidden-Reporter' ||
-          data.title === 'Home' ||
-          data.title === 'Master'
-        );
-      });
-      setFilterSection(section);
-    }
+
     if (user.type === 'cms') {
       const section = sections.filter(
         (data) => data.title === 'Home' || data.title === 'CMS',

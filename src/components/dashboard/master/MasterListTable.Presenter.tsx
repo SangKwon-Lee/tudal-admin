@@ -32,19 +32,19 @@ import {
 import Scrollbar from 'src/components/layout/Scrollbar';
 
 interface IMasterListTableProps {
-  newState: IMasterListState;
+  masterListState: IMasterListState;
   dispatch: (params: MasterListTableAction) => void;
   handleDelete: () => void;
 }
 const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
   props,
 ) => {
-  const { newState, dispatch, handleDelete } = props;
+  const { masterListState, dispatch, handleDelete } = props;
 
   return (
     <>
       <Card sx={{ my: 3 }}>
-        {newState.loading && <LinearProgress />}
+        {masterListState.loading && <LinearProgress />}
         <Box
           sx={{
             alignItems: 'center',
@@ -77,7 +77,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                 });
               }}
               placeholder="달인 검색"
-              value={newState.query._q}
+              value={masterListState.query._q}
               variant="outlined"
             />
           </Box>
@@ -87,11 +87,11 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
             }}
           >
             <TextField
-              label={'채널 선택'}
+              label={'달인 선택'}
               name="sort"
               onChange={(event) => {
                 dispatch({
-                  type: MasterListTableActionKind.CHANGE_CHANNEL,
+                  type: MasterListTableActionKind.CHANGE_MASTER,
                   payload: event.target.value,
                 });
               }}
@@ -100,11 +100,11 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {newState.list.channel.length > 0 ? (
-                newState.list.channel.map((channel) => (
+              {masterListState.list.masters.length > 0 ? (
+                masterListState.list.masters.map((master) => (
                   //@ts-ignore
-                  <option key={channel.id} value={channel.id}>
-                    {channel.name}
+                  <option key={master.id} value={master.id}>
+                    {master.nickname}
                   </option>
                 ))
               ) : (
@@ -126,8 +126,8 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               variant="outlined"
               sx={{ mx: 1 }}
             >
-              {newState.list.room.length > 0 ? (
-                newState.list.room.map((option) => (
+              {masterListState.list.room.length > 0 ? (
+                masterListState.list.room.map((option) => (
                   <option key={option.id} value={option.id}>
                     {option.title}
                   </option>
@@ -138,7 +138,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
             </TextField>
           </Box>
         </Box>
-        {newState.selected && (
+        {masterListState.selected && (
           <Box sx={{ position: 'relative' }}>
             <Box
               sx={{
@@ -165,7 +165,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                 sx={{ ml: 2 }}
                 variant="outlined"
                 component={RouterLink}
-                to={`/dashboard/master/${newState.selected}/edit`}
+                to={`/dashboard/master/${masterListState.selected}/edit`}
               >
                 수정
               </Button>
@@ -188,10 +188,10 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!newState.loading &&
-                  newState.list.feed.map((feed) => {
+                {!masterListState.loading &&
+                  masterListState.list.feed.map((feed) => {
                     const isMasterSelected =
-                      newState.selected === feed.id;
+                      masterListState.selected === feed.id;
 
                     return (
                       <TableRow hover key={feed.id}>
@@ -285,8 +285,8 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
           size="small"
           color="primary"
           sx={{ m: 1 }}
-          page={newState.page}
-          count={Math.ceil(newState.list.feedLength / 20)}
+          page={masterListState.page}
+          count={Math.ceil(masterListState.list.feedLength / 20)}
           variant="text"
           onChange={(event, page) => {
             dispatch({
@@ -298,7 +298,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
       </Card>
       <Dialog
         aria-labelledby="ConfirmModal"
-        open={newState.delete.isDeleting}
+        open={masterListState.delete.isDeleting}
         onClose={() =>
           dispatch({
             type: MasterListTableActionKind.CLOSE_DELETE_DIALOG,

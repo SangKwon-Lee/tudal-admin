@@ -70,7 +70,7 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                   </InputAdornment>
                 ),
               }}
-              placeholder="키워드, 이름 검색"
+              placeholder="제목"
               variant="outlined"
               onChange={(e) => {
                 dispatch({
@@ -127,7 +127,17 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                 {list.map((report: IHR, index) => (
                   <TableRow hover key={report.id}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{report.title}</TableCell>
+                    <TableCell>
+                      <Link
+                        color="textPrimary"
+                        component={RouterLink}
+                        to={`/dashboard/hiddenreports/${report.id}`}
+                        variant="subtitle2"
+                        style={{ textDecoration: 'underline' }}
+                      >
+                        {report.title}
+                      </Link>
+                    </TableCell>
                     <TableCell>{report.price}</TableCell>
                     <TableCell>{report.numOfLikes}</TableCell>
                     <TableCell>{report.numOfOrders}</TableCell>

@@ -24,6 +24,12 @@ export async function update(body) {
   return await axios.put(`/hidden-reports/${body.id}`, body);
 }
 
+export async function getOrders(reporterId) {
+  return await axios.get(
+    `/hidden-report-orders?hidden_report.hidden_reporter=${reporterId}&_limit=-1&_sort=created_at:DESC`,
+  );
+}
+
 /** 히든 리포트 이미지*/
 export async function getImage(id) {
   return await axios.get<IHRImage>(`/hidden-report-images/${id}`);

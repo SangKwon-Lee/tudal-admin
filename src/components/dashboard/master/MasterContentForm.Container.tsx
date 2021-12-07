@@ -13,12 +13,13 @@ import MasterContentFormPresenter from './MasterContentForm.Presenter';
 import { AxiosError } from 'axios';
 import useAuth from 'src/hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { IMasterRoom, IMasterChannel } from 'src/types/master';
+import { IMasterRoom, IMaster } from 'src/types/master';
 import useAsync from 'src/hooks/useAsync';
 import { Stock, Tag } from 'src/types/schedule';
 import { APIMaster, APIStock, APITag } from 'src/lib/api';
 import _ from 'lodash';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface MasterFormProps {
   onComplete?: () => void;
@@ -29,8 +30,8 @@ export enum MasterContentFormActionKind {
   LOADING = 'LOADING',
 
   // Load APIS
+  GET_FEED = 'GET_FEED',
   GET_MASTER = 'GET_MASTER',
-  GET_CHANNEL = 'GET_CHANNEL',
   GET_ROOM = 'GET_ROOM',
   // Changes
   NO_ROOM = 'NO_ROOM',
@@ -59,12 +60,12 @@ interface IMasterFeedForm {
 }
 
 export interface MasterContentFormState {
-  newMaster: IMasterFeedForm;
+  newFeed: IMasterFeedForm;
   loading: boolean;
   error: AxiosError<any> | boolean;
   isSubmitting: boolean;
   master_room: IMasterRoom[];
-  master_channels: IMasterChannel[];
+  masters: IMaster[];
   submitError: boolean;
   isHasRoom: boolean;
 }
@@ -80,41 +81,45 @@ const MasterContentFormReducer = (
         ...state,
         loading: true,
       };
-    case MasterContentFormActionKind.GET_MASTER:
+    case MasterContentFormActionKind.GET_FEED:
       return {
         ...state,
-        newMaster: payload,
+        newFeed: payload,
         loading: false,
       };
     case MasterContentFormActionKind.GET_ROOM:
       return {
         ...state,
         master_room: payload,
-        newMaster: {
-          ...state.newMaster,
+        newFeed: {
+          ...state.newFeed,
           master_room: payload[0].id,
         },
       };
     case MasterContentFormActionKind.CHANGE_TAGS:
       return {
         ...state,
-        newMaster: {
-          ...state.newMaster,
+        newFeed: {
+          ...state.newFeed,
           tags: payload,
         },
       };
     case MasterContentFormActionKind.CHANGE_STOCKS:
       return {
         ...state,
-        newMaster: {
-          ...state.newMaster,
+        newFeed: {
+          ...state.newFeed,
           stocks: payload,
         },
       };
-    case MasterContentFormActionKind.GET_CHANNEL:
+    case MasterContentFormActionKind.GET_MASTER:
       return {
         ...state,
-        master_channels: payload,
+        masters: payload,
+        newFeed: {
+          ...state.newFeed,
+          master: payload[0].id,
+        },
       };
     case MasterContentFormActionKind.REGEX_LINK:
       return {
@@ -134,8 +139,8 @@ const MasterContentFormReducer = (
     case MasterContentFormActionKind.CHANGE_INPUT:
       return {
         ...state,
-        newMaster: {
-          ...state.newMaster,
+        newFeed: {
+          ...state.newFeed,
           [payload.target.name]: payload.target.value,
         },
       };
@@ -143,7 +148,7 @@ const MasterContentFormReducer = (
 };
 
 const initialState: MasterContentFormState = {
-  newMaster: {
+  newFeed: {
     id: null,
     title: '',
     external_link: '',
@@ -155,7 +160,7 @@ const initialState: MasterContentFormState = {
     stocks: [],
     tags: [],
   },
-  master_channels: [],
+  masters: [],
   master_room: [],
   isSubmitting: false,
   loading: false,
@@ -166,9 +171,8 @@ const initialState: MasterContentFormState = {
 
 const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const { mode, onComplete } = props;
-  const {
-    user: { master },
-  } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [masterContentFormState, dispatch] = useReducer(
     MasterContentFormReducer,
@@ -179,31 +183,14 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const tagInput = useRef(null);
   const stockInput = useRef(null);
 
-  const getMasterRoom = async () => {
-    const { data } = await APIMaster.getChannels(master.id);
-    const { data: roomData } = await APIMaster.getRoomsByMaster(
-      master.id,
-    );
-    if (data.length === 0 || roomData.length === 0) {
-      dispatch({
-        type: MasterContentFormActionKind.IS_HAS_ROOM,
-        payload: true,
-      });
-    } else {
-      dispatch({
-        type: MasterContentFormActionKind.IS_HAS_ROOM,
-        payload: false,
-      });
-    }
-  };
-
-  //* 채널 정보 불러오기
-  const getMasterChannel = async () => {
+  //* 마스터 정보 불러오기
+  const getMasters = async () => {
     try {
-      const { data, status } = await APIMaster.getChannels(master.id);
+      const { data, status } = await APIMaster.getMasters(user.id);
+
       if (status === 200 && data.length > 0) {
         dispatch({
-          type: MasterContentFormActionKind.GET_CHANNEL,
+          type: MasterContentFormActionKind.GET_MASTER,
           payload: data,
         });
         if (data[0].master_rooms) {
@@ -224,11 +211,16 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   };
 
   //* 채널 변경시 방 데이터 불러오기
-  const handleChangeChannel = async (event: any) => {
+  const handleChangeMaster = async (event: any) => {
     try {
-      const channel = Number(event.target.value);
-      const { data, status } = await APIMaster.getRoomsByChannel(
-        channel,
+      dispatch({
+        type: MasterContentFormActionKind.CHANGE_INPUT,
+        payload: event,
+      });
+      const masterId = Number(event.target.value);
+
+      const { data, status } = await APIMaster.getRoomsByMaster(
+        masterId,
       );
       if (status === 200 && data.length > 0) {
         dispatch({
@@ -246,14 +238,11 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     }
   };
 
-  //* 채널 불러오는 useEffect
+  //* 달인 불러오는 useEffect
   useEffect(() => {
-    if (master?.id) {
-      getMasterChannel();
-      getMasterRoom();
-    }
+    getMasters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [master]);
+  }, []);
 
   //* 수정 시 기존 데이터 불러오기
   const getMaster = async () => {
@@ -276,7 +265,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
           external_link: data.external_link,
         };
         dispatch({
-          type: MasterContentFormActionKind.GET_MASTER,
+          type: MasterContentFormActionKind.GET_FEED,
           payload: newMasterData,
         });
       }
@@ -284,14 +273,6 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       console.log(err);
     }
   };
-
-  //* 수정 모드일 때 데이터 불러오기
-  useEffect(() => {
-    if (mode === 'edit') {
-      getMaster();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   //* 웹 에디터에 전달되는 Props
   const editorRef = useRef(null);
@@ -311,25 +292,27 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
     try {
       setIsSubmitting(true);
       if (editorRef.current) {
+        // 수정
+
         const contents = log();
-        const newMaster = {
-          ...masterContentFormState.newMaster,
+        const newFeed = {
+          ...masterContentFormState.newFeed,
           tags:
-            masterContentFormState.newMaster.tags.map(
+            masterContentFormState.newFeed.tags.map(
               (data) => data.id,
             ) || [],
           stocks:
-            masterContentFormState.newMaster.stocks.map(
+            masterContentFormState.newFeed.stocks.map(
               (data) => data.id,
             ) || [],
           contents,
-          master: master.id,
+          master: masterContentFormState.newFeed.master,
         };
         if (mode === 'create') {
           try {
             const response = await cmsServer.post(
               '/master-feeds',
-              newMaster,
+              newFeed,
             );
             if (response.status === 200) {
               if (onComplete) {
@@ -342,23 +325,22 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
             console.log(e);
           }
         } else {
-          const newMaster = {
-            ...masterContentFormState.newMaster,
+          const newFeed = {
+            ...masterContentFormState.newFeed,
             tags:
-              masterContentFormState.newMaster.tags.map(
+              masterContentFormState.newFeed.tags.map(
                 (data) => data.id,
               ) || [],
             stocks:
-              masterContentFormState.newMaster.stocks.map(
+              masterContentFormState.newFeed.stocks.map(
                 (data) => data.id,
               ) || [],
             contents,
-            master: master.id,
           };
           try {
             const response = await cmsServer.put(
-              `/master-feeds/${newMaster.id}`,
-              newMaster,
+              `/master-feeds/${newFeed.id}`,
+              newFeed,
             );
             if (response.status === 200) {
               if (onComplete) {
@@ -395,13 +377,44 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
         payload: true,
       });
     }
-    if (masterContentFormState.newMaster.external_link === '') {
+    if (masterContentFormState.newFeed.external_link === '') {
       dispatch({
         type: MasterContentFormActionKind.REGEX_LINK,
         payload: false,
       });
     }
   };
+
+  //* 수정 모드일 때 데이터 불러오기
+  useEffect(() => {
+    if (mode === 'edit') {
+      getMaster();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 달인 방 확인
+  useEffect(() => {
+    async function navigateIfRoomNotExisted() {
+      let isExist = false;
+      try {
+        const { data } = await APIMaster.getMasters(user.id);
+        data.forEach((master) => {
+          master.master_rooms.length && (isExist = true);
+        });
+
+        if (!isExist) {
+          toast.error('방을 먼저 생성해주세요');
+          navigate('/dashboard/master/room');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    navigateIfRoomNotExisted();
+  }, [user, navigate]);
 
   //* 태그 관련
   const getTagList = useCallback(() => {
@@ -411,8 +424,8 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [tagInput.current], []);
   const handleTagChange = _.debounce(refetchTag, 300);
-  //* 종목 관련
 
+  //* 종목 관련
   const getStockList = useCallback(() => {
     return APIStock.getSimpleList();
   }, []);
@@ -427,7 +440,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       handleSubmit={handleSubmit}
       masterContentFormState={masterContentFormState}
       isSubmitting={isSubmitting}
-      handleChangeChannel={handleChangeChannel}
+      handleChangeMaster={handleChangeMaster}
       tagList={tagList}
       tagInput={tagInput}
       tagLoading={tagLoading}

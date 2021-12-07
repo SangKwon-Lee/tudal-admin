@@ -76,14 +76,12 @@ const ImageCard = (props) => {
         <CardContent
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
           }}
         >
-          <div>
-            <Typography color="textPrimary" variant="subtitle2">
-              {image?.name || '이미지를 선택해주세요'}
-            </Typography>
-          </div>
+          <Typography color="textPrimary" variant="subtitle1">
+            {image?.name || ''}
+          </Typography>
         </CardContent>
       </Card>
     </Grid>
@@ -230,7 +228,9 @@ const HiddenReportCreateImageFormPresenter: FC<HiddenReportCreateImageFormPresen
         >
           <Grid container spacing={3}>
             <ImageCard
-              image={newReport.hidden_report_image}
+              image={{
+                ...newReport.hidden_report_image,
+              }}
               isSelected={
                 newReport.hidden_report_image?.id ? true : false
               }

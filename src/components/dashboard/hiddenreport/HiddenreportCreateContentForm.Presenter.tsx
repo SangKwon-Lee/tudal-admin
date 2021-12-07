@@ -37,9 +37,9 @@ import { DatePicker } from '@material-ui/lab';
 import { IBuckets } from 'src/components/common/conf/aws';
 
 interface IHRContentFormProps {
+  mode: string;
   reportCreateState: HiddenReportCreateState;
   editorRef: React.MutableRefObject<any>;
-
   tagInput: React.MutableRefObject<any>;
   tagList: Tag[];
   tagLoading: boolean;
@@ -61,7 +61,7 @@ const schema = yup
     title: yup.string().required(),
     price: yup
       .number()
-      .max(9900)
+      .max(990)
       .test('divided-by-5', 'invalid', (value) => value % 5 === 0)
       .required(),
     intro: yup.string().required(),
@@ -73,6 +73,7 @@ const schema = yup
 
 const HRContentForm: FC<IHRContentFormProps> = (props) => {
   const {
+    mode,
     editorRef,
     onSubmitContentForm,
     reportCreateState,
@@ -405,6 +406,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
               </Typography>
               <TextField
                 fullWidth
+                disabled={mode === 'edit' ? true : false}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -412,7 +414,9 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                     </InputAdornment>
                   ),
                 }}
-                helperText={'5G 단위로 적어주세요. (최대 9900G)'}
+                helperText={
+                  '5G 단위로 적어주세요. 설정한 가격은 변경이 불가능합니다. (최대 990G)'
+                }
                 error={Boolean(errors?.price)}
                 {...register('price')}
               />

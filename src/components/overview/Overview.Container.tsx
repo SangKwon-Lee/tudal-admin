@@ -16,7 +16,7 @@ const OverviewContainer: React.FC = () => {
     }
   }, [time]);
 
-  return <OverviewPresenter time={time} greet={greet} />;
+  return <OverviewPresenter greet={greet} />;
 };
 
 export default OverviewContainer;

@@ -48,20 +48,11 @@ export interface IMasterRoom {
   id?: number;
   title?: string;
   author?: string;
-  openType?: string;
+  type?: string;
   order?: number;
   isDeleted?: boolean;
   master?: IMaster;
   master_channel?: any;
-}
-
-export interface IMasterChannel {
-  id?: number;
-  name?: string;
-  master?: IMaster;
-  created_at?: string;
-  updated_at?: string;
-  master_rooms?: IMasterRoom[];
 }
 
 export interface IMasterFeedLikes {
@@ -86,4 +77,5 @@ export interface IMaster {
   user: number;
   created_at: Date;
   updated_at: Date;
+  master_rooms?: IMasterRoom[];
 }

@@ -29,8 +29,8 @@ const roomType = [
     value: 'free',
   },
   {
-    label: '프리미엄',
-    value: 'premium',
+    label: '유료',
+    value: 'paid',
   },
 ];
 
@@ -38,11 +38,11 @@ export interface CardProps {
   id: any;
   title: string;
   index: number;
-  openType: string;
-  getChannel: () => void;
+  type: string;
+  getMasters: () => void;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   orderEdit: boolean;
-  selectChannel: any;
+  selectMaster: any;
 }
 
 enum MasterRoomDnDActionKind {
@@ -61,7 +61,7 @@ interface MasterRommDnDAction {
 interface newState {
   edit: boolean;
   title: string;
-  openType: string;
+  type: string;
   isDeletedOpen: boolean;
 }
 
@@ -84,7 +84,7 @@ const MasterRoomDnDReducer = (
     case MasterRoomDnDActionKind.CHANGE_TYPE:
       return {
         ...state,
-        openType: payload,
+        type: payload,
       };
     case MasterRoomDnDActionKind.SAVE:
       return {
@@ -101,7 +101,7 @@ const MasterRoomDnDReducer = (
 
 const initialState: newState = {
   edit: false,
-  openType: '',
+  type: '',
   title: '',
   isDeletedOpen: false,
 };
@@ -113,9 +113,9 @@ const DraggableCard: React.FC<CardProps> = ({
   index,
   orderEdit,
   moveCard,
-  openType,
-  getChannel,
-  selectChannel,
+  type,
+  getMasters,
+  selectMaster,
 }) => {
   const [newState, dispatch] = useReducer(
     MasterRoomDnDReducer,
@@ -191,7 +191,7 @@ const DraggableCard: React.FC<CardProps> = ({
     });
     dispatch({
       type: MasterRoomDnDActionKind.CHANGE_TYPE,
-      payload: openType,
+      payload: type,
     });
   };
 
@@ -199,7 +199,7 @@ const DraggableCard: React.FC<CardProps> = ({
   const handleSaveRoom = async () => {
     try {
       const { status, data } = await cmsServer.get(
-        `/master-rooms?master.id=${user.id}&master_channel=${selectChannel}`,
+        `/master-rooms?master.id=${user.id}&master_channel=${selectMaster}`,
       );
 
       if (status === 200) {
@@ -217,12 +217,12 @@ const DraggableCard: React.FC<CardProps> = ({
     try {
       const { status } = await cmsServer.put(`/master-rooms/${id}`, {
         title: newState.title,
-        openType: newState.openType,
+        type: newState.type,
       });
       if (status === 200) {
         toast.success('저장했습니다.');
         dispatch({ type: MasterRoomDnDActionKind.SAVE });
-        getChannel();
+        getMasters();
       }
     } catch (error) {
       console.log(error);
@@ -242,7 +242,7 @@ const DraggableCard: React.FC<CardProps> = ({
           type: MasterRoomDnDActionKind.IS_DELETED_MODAL,
           payload: false,
         });
-        getChannel();
+        getMasters();
       }
     } catch (error) {
       console.log(error);
@@ -294,14 +294,14 @@ const DraggableCard: React.FC<CardProps> = ({
             <TextField
               sx={{ width: '130px', mt: 2 }}
               label="방 타입"
-              value={newState.openType}
+              value={newState.type}
               onChange={(event) => {
                 dispatch({
                   type: MasterRoomDnDActionKind.CHANGE_TYPE,
                   payload: event.target.value,
                 });
               }}
-              name="openType"
+              name="type"
               select
               placeholder="방 타입"
               variant="outlined"
@@ -315,7 +315,7 @@ const DraggableCard: React.FC<CardProps> = ({
             </TextField>
           ) : (
             <Typography>
-              타입 : {openType === 'free' ? '무료' : '프리미엄'}
+              타입 : {type === 'free' ? '무료' : '유료'}
             </Typography>
           )}
           {newState.edit ? (

@@ -139,6 +139,7 @@ const DraggableCard: React.FC<CardProps> = ({
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
+              cursor: 'pointer',
             }}
             data-handler-id={handlerId}
           ></img>

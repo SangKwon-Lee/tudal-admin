@@ -6,6 +6,7 @@ export interface CP_Master {
   keyword: string;
   user: any;
   created_at?: string;
+  type: 'free' | 'paid';
 }
 
 export interface CP_Hidden_Reporter {

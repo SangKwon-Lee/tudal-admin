@@ -2,11 +2,18 @@ import type { FC } from 'react';
 import CpReporterCreateContainer from 'src/components/dashboard/cp/CpReporterCreate.Container';
 import PageLayout from 'src/components/layout/ListPageLayout';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 const CpReporterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
   const { reporterId } = useParams();
-  const mode = reporterId ? 'edit' : 'create';
+  const path = useLocation();
+  const pathName = path.pathname.includes('signup');
+  const mode =
+    reporterId && pathName
+      ? 'create'
+      : reporterId
+      ? 'edit'
+      : 'create';
   return (
     <>
       <PageLayout

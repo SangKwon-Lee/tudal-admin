@@ -23,17 +23,17 @@ const roomType = [
     value: 'free',
   },
   {
-    label: '프리미엄',
-    value: 'premium',
+    label: '유료',
+    value: 'paid',
   },
 ];
 
 interface IMasterRoomProps {
   MasterRoomState: MasterRoomState;
-  handleChangeChannelSort: (e: any) => void;
+  handleChangeMasterSort: (e: any) => void;
   createRoom: () => void;
   moveCard: any;
-  getChannel: () => void;
+  getMasters: () => void;
   dispatch: (params: MasterRoomAction) => void;
   handleOrderSave: () => void;
   handleOrderCancle: () => void;
@@ -44,109 +44,24 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
     MasterRoomState,
     moveCard,
     createRoom,
-    handleChangeChannelSort,
-    getChannel,
+    handleChangeMasterSort,
+    getMasters,
     handleOrderSave,
     handleOrderCancle,
     dispatch,
   } = props;
   const {
     master_room,
-    master_channel,
-    selectChannel,
-    sortChannel,
+    masters,
+    selectMaster,
+    sortMaster,
     orderEdit,
     loading,
   } = MasterRoomState;
   return (
     <>
-      {selectChannel !== 0 ? (
+      {selectMaster !== 0 ? (
         <>
-          <Card sx={{ p: 3, my: 4, width: '70%' }}>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
-                방 만들기
-              </Typography>
-              <Button
-                color="primary"
-                startIcon={<PlusIcon fontSize="small" />}
-                sx={{ mb: 3 }}
-                onClick={createRoom}
-                variant="contained"
-              >
-                방 추가
-              </Button>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            <Box>
-              <TextField
-                sx={{ mr: 2 }}
-                label="방 이름"
-                placeholder="방 이름"
-                variant="outlined"
-                onChange={(event) => {
-                  dispatch({
-                    type: MasterRoomActionKind.CHANGE_TITLE,
-                    payload: event.target.value,
-                  });
-                }}
-                name="title"
-              />
-              <TextField
-                sx={{ width: 200, mr: 2 }}
-                label="채널"
-                onChange={(event) => {
-                  dispatch({
-                    type: MasterRoomActionKind.CHANGE_CHANNEL,
-                    payload: event.target.value,
-                  });
-                }}
-                value={selectChannel}
-                name="channel"
-                select
-                placeholder="채널"
-                variant="outlined"
-                SelectProps={{
-                  native: true,
-                }}
-              >
-                {master_channel &&
-                  master_channel.length > 0 &&
-                  master_channel.map((master, i) => (
-                    <option key={i} value={master.id}>
-                      {master.name}
-                    </option>
-                  ))}
-              </TextField>
-              <TextField
-                sx={{ width: 200 }}
-                label="방 타입"
-                onChange={(event) => {
-                  dispatch({
-                    type: MasterRoomActionKind.CHANGE_TYPE,
-                    payload: event.target.value,
-                  });
-                }}
-                name="openType"
-                select
-                placeholder="방 타입"
-                variant="outlined"
-                SelectProps={{ native: true }}
-              >
-                {roomType.map((room) => (
-                  <option key={room.label} value={room.value}>
-                    {room.label}
-                  </option>
-                ))}
-              </TextField>
-            </Box>
-          </Card>
           <Card sx={{ p: 3, mt: 3 }}>
             {loading && <LinearProgress />}
             <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
@@ -160,20 +75,20 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
             >
               <TextField
                 sx={{ width: 200, my: 2 }}
-                label="채널"
-                onChange={handleChangeChannelSort}
-                value={sortChannel}
+                label="달인"
+                onChange={handleChangeMasterSort}
+                value={sortMaster}
                 name="channel"
                 select
-                placeholder="채널"
+                placeholder="달인"
                 variant="outlined"
                 SelectProps={{ native: true }}
               >
-                {master_channel &&
-                  master_channel.length > 0 &&
-                  master_channel.map((master, i) => (
+                {masters &&
+                  masters.length > 0 &&
+                  masters.map((master, i) => (
                     <option key={i} value={master.id}>
-                      {master.name}
+                      {master.nickname}
                     </option>
                   ))}
               </TextField>
@@ -234,12 +149,12 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
                         key={i}
                         id={room.id}
                         title={room.title}
-                        openType={room.openType}
+                        type={room.type}
                         index={i + 1}
                         orderEdit={orderEdit}
                         moveCard={moveCard}
-                        getChannel={getChannel}
-                        selectChannel={selectChannel}
+                        getMasters={getMasters}
+                        selectMaster={selectMaster}
                       />
                     ))
                   : master_room
@@ -249,17 +164,102 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
                           key={i}
                           id={room.id}
                           title={room.title}
-                          openType={room.openType}
+                          type={room.type}
                           index={room.order}
                           orderEdit={orderEdit}
                           moveCard={moveCard}
-                          getChannel={getChannel}
-                          selectChannel={selectChannel}
+                          getMasters={getMasters}
+                          selectMaster={selectMaster}
                         />
                       ))}
               </div>
             </Box>
-          </Card>{' '}
+          </Card>
+          <Card sx={{ p: 3, my: 4, width: '100%' }}>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography sx={{ fontSize: 15, fontWeight: 'bold' }}>
+                방 만들기
+              </Typography>
+              <Button
+                color="primary"
+                startIcon={<PlusIcon fontSize="small" />}
+                sx={{ mb: 3 }}
+                onClick={createRoom}
+                variant="contained"
+              >
+                방 추가
+              </Button>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            <Box>
+              <TextField
+                sx={{ mr: 2 }}
+                label="방 이름"
+                placeholder="방 이름"
+                variant="outlined"
+                onChange={(event) => {
+                  dispatch({
+                    type: MasterRoomActionKind.CHANGE_TITLE,
+                    payload: event.target.value,
+                  });
+                }}
+                name="title"
+              />
+              <TextField
+                sx={{ width: 200, mr: 2 }}
+                label="달인"
+                onChange={(event) => {
+                  dispatch({
+                    type: MasterRoomActionKind.CHANGE_CHANNEL,
+                    payload: event.target.value,
+                  });
+                }}
+                value={selectMaster}
+                name="channel"
+                select
+                placeholder="달인"
+                variant="outlined"
+                SelectProps={{
+                  native: true,
+                }}
+              >
+                {masters &&
+                  masters.length > 0 &&
+                  masters.map((master, i) => (
+                    <option key={i} value={master.id}>
+                      {master.nickname}
+                    </option>
+                  ))}
+              </TextField>
+              <TextField
+                sx={{ width: 200 }}
+                label="방 타입"
+                onChange={(event) => {
+                  dispatch({
+                    type: MasterRoomActionKind.CHANGE_TYPE,
+                    payload: event.target.value,
+                  });
+                }}
+                name="openType"
+                select
+                placeholder="방 타입"
+                variant="outlined"
+                SelectProps={{ native: true }}
+              >
+                {roomType.map((room) => (
+                  <option key={room.label} value={room.value}>
+                    {room.label}
+                  </option>
+                ))}
+              </TextField>
+            </Box>
+          </Card>
         </>
       ) : (
         <Typography variant="subtitle2" fontSize="20px" sx={{ m: 4 }}>
