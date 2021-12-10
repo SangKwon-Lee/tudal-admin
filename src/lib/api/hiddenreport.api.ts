@@ -1,4 +1,4 @@
-import axios from 'src/lib/axios';
+import axios, {apiServer} from 'src/lib/axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
 import { IHR, IHRImage } from 'src/types/hiddenreport';
@@ -53,4 +53,8 @@ export async function createImage(image) {
 
 export async function editImage(id, image) {
   return await axios.put(`/hidden-report-images/${id}`, image);
+}
+
+export async function postReportComment(body) {
+  return await apiServer.post('/hiddenReport/report/comments', body)
 }
