@@ -23,7 +23,7 @@ export interface IHR {
   stocks: Stock[];
   hidden_report_orders: [];
   hidden_report_likes: [];
-  hidden_report_comments: [];
+  hidden_report_comments: IHRComment[];
   hidden_reporter: CP_Hidden_Reporter;
   numOfLikes: number;
   numOfOrders: number;
@@ -46,4 +46,15 @@ export interface IHROrders {
   userId: string;
   created_at: Date;
   updated_at: Date;
+}
+
+
+export interface IHRComment {
+  id: number;
+  hidden_report: number;
+  userId: string,
+  comment: string,
+  parentId: string,
+  created_at: string,
+  updated_at: string
 }
