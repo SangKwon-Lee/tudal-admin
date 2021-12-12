@@ -230,6 +230,14 @@ const HiddenReportDetailView = Loadable(
       ),
   ),
 );
+const HiddenReportViewer = Loadable(
+  lazy(
+    () =>
+      import(
+        './pages/dashboard/hiddenreport/HiddenReportViewer.Page'
+      ),
+  ),
+);
 
 // Error pages
 
@@ -294,6 +302,10 @@ const routes: PartialRouteObject[] = [
         path: 'todaykeyword',
         element: <TodayKeywordViewer />,
       },
+      {
+        path: 'hiddenreport/:id',
+        element: <HiddenReportViewer />,
+      },
     ],
   },
   {
@@ -347,6 +359,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/history',
             element: <HiddenReportStatPage />,
+          },
+          {
+            path: '/viewer/:id',
+            element: <HiddenReportViewer />,
           },
         ],
       },

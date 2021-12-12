@@ -16,20 +16,41 @@ import { Viewer } from '@toast-ui/react-editor';
 import { IHiddenReportForm } from './HiddenreportCreate.Container';
 import dayjs from 'dayjs';
 import { IHR } from 'src/types/hiddenreport';
+import {
+  SocialPostComment,
+  SocialPostCommentAdd,
+} from 'src/components/dashboard/social';
 
 interface HiddenReportDetailViewPresenterProps {
   state: IHR | IHiddenReportForm;
   isCreating?: boolean;
   onSubmit?: () => Promise<void>;
+  writeComment?: (comment) => Promise<void>;
   setStep?: (prev) => void;
 }
 
 const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterProps> =
-  ({ state, onSubmit, setStep, isCreating }) => {
+  ({ state, onSubmit, setStep, isCreating, writeComment }) => {
     return (
-      <Box sx={{ pt: 2 }}>
+      <Box sx={{ p: 10, pt: 2 }}>
         <Card>
-          <CardHeader title="리뷰" />
+          <Box
+            style={{
+              margin: '3px',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <CardHeader title="리뷰" />
+            <Button
+              variant="contained"
+              color="secondary"
+              component={RouterLink}
+              to={`/dashboard/hiddenreports/${state.id}/edit`}
+            >
+              수정
+            </Button>
+          </Box>
           <Divider />
           <Table>
             <TableBody>
@@ -174,7 +195,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             <Typography color="textPrimary" variant="subtitle2">
               이미지
             </Typography>
-            <Box sx={{ maxWidth: '500px' }}>
+            <Box sx={{ maxWidth: '300px' }}>
               <img
                 style={{
                   width: '100%',
@@ -204,32 +225,41 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             </Box>
           </Box>
         </Card>
+
         <Box
           style={{ display: 'flex', justifyContent: 'space-between' }}
           sx={{ mt: 3 }}
         >
-          {isCreating ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => setStep(1)}
-            >
-              수정
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              component={RouterLink}
-              to={`/dashboard/hiddenreports/${state.id}/edit`}
-            >
-              수정
-            </Button>
+          {isCreating && (
+            <>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => setStep(1)}
+              >
+                수정
+              </Button>
+              <Button variant="contained" onClick={onSubmit}>
+                제출
+              </Button>
+            </>
           )}
-          <Button variant="contained" onClick={onSubmit}>
-            제출
-          </Button>
         </Box>
+
+        {/* 댓글 */}
+        {!isCreating && 'hidden_report_comments' in state && (
+          <SocialPostCommentAdd handleWriteComment={writeComment} />
+        )}
+        {!isCreating &&
+          'hidden_report_comments' in state &&
+          state.hidden_report_comments.map((comment) => (
+            <SocialPostComment
+              authorName={comment.userId}
+              createdAt={comment.created_at}
+              message={comment.comment}
+              authorAvatar={''}
+            />
+          ))}
       </Box>
     );
   };
