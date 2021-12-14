@@ -24,6 +24,11 @@ export async function update(body) {
   return await axios.put(`/hidden-reports/${body.id}`, body);
 }
 
+export async function remove(id) {
+  return await axios.delete(`/hidden-reports/${id}`);
+}
+
+
 export async function getOrders(reporterId) {
   return await axios.get(
     `/hidden-report-orders?hidden_report.hidden_reporter=${reporterId}&_limit=-1&_sort=created_at:DESC`,

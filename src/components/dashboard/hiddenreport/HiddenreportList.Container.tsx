@@ -164,6 +164,22 @@ const HiddenReportListContainer: React.FC = (props) => {
     }
   }, [query, user?.hidden_reporter?.id]);
 
+  const deleteReport = useCallback(
+    async (id) => {
+      try {
+        const { data, status } = await APIHR.remove(id);
+
+        if (status === 200) {
+          toast.success('성공했습니다.');
+          getList();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [getList],
+  );
+
   useEffect(() => {
     getList();
   }, [getList]);
@@ -179,6 +195,7 @@ const HiddenReportListContainer: React.FC = (props) => {
     <HiddenreportListPresenter
       state={HRListState}
       dispatch={dispatch}
+      deleteReport={deleteReport}
     />
   );
 };
