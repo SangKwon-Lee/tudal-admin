@@ -9,16 +9,12 @@ import {
   TableCell,
   TableRow,
   Typography,
-  Container,
   Button,
 } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 
 import dayjs from 'dayjs';
-import { IHR } from 'src/types/hiddenreport';
 import { ICPQuestion } from 'src/types/cp';
-import { SocialPostComment } from '../social';
-import { CMSURL } from 'src/lib/axios';
 import Label from 'src/components/widgets/Label';
 import useAuth from 'src/hooks/useAuth';
 import { IUserType } from 'src/types/user';

@@ -15,7 +15,6 @@ import {
   Pagination,
   Link,
 } from '@material-ui/core';
-import SearchIcon from 'src/icons/Search';
 import Scrollbar from 'src/components/layout/Scrollbar';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 
@@ -28,7 +27,7 @@ import {
 import dayjs from 'dayjs';
 import PencilAlt from 'src/icons/PencilAlt';
 import useAuth from 'src/hooks/useAuth';
-import { IRoleType, IUserType } from 'src/types/user';
+import { IUserType } from 'src/types/user';
 import Label from 'src/components/widgets/Label';
 interface CpListProps {
   dispatch: (params: CpListAction) => void;

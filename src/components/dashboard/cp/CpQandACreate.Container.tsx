@@ -6,7 +6,6 @@ import CPQandACreatePresenter from './CpQandACreate.Presenter';
 import useAuth from 'src/hooks/useAuth';
 import CONF from 'src/etc/config';
 import axios from 'axios';
-import { ICPQuestion } from 'src/types/cp';
 
 const headers = {
   headers: {

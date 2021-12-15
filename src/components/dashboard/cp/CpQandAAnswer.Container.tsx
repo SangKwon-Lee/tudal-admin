@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { APICp } from 'src/lib/api';
 import useAuth from 'src/hooks/useAuth';
 import CPQandACreateAnswerPresenter from './CpQandAAnswer.Presenter';

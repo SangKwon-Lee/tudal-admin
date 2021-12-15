@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
-import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router';
+import { useCallback, useEffect, useReducer } from 'react';
+import { useNavigate } from 'react-router';
 import { APICp } from 'src/lib/api';
-import CPQandACreatePresenter from './CpQandACreate.Presenter';
-import useAuth from 'src/hooks/useAuth';
 import { ICPQuestion } from 'src/types/cp';
 import CPQandADetailPresenter from './CpQandADetail.Presenter';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';

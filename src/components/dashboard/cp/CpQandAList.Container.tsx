@@ -2,7 +2,6 @@ import { useCallback, useEffect, useReducer } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import { APICp } from 'src/lib/api';
 import { ICPQuestion } from 'src/types/cp';
-import { IRoleType, IUser } from 'src/types/user';
 import CPQandAListPresenter from './CpQandAList.Presenter';
 
 export enum CPQandAActionKind {

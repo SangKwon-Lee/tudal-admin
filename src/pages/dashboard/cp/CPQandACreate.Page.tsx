@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import PageLayout from 'src/components/layout/ListPageLayout';
 import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import CPQandACreateContainer from 'src/components/dashboard/cp/CpQandACreate.Container';
 const CpMasterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);

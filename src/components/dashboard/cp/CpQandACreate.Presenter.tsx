@@ -4,7 +4,6 @@ import {
   Box,
   TextField,
   Button,
-  Autocomplete,
   MenuItem,
   Paper,
   Select,
@@ -22,7 +21,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useEffect } from 'react';
-import { CP_Master, ICPQuestion } from 'src/types/cp';
 import { IBuckets } from 'src/components/common/conf/aws';
 
 const schema = yup

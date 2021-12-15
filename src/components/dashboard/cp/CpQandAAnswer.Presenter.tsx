@@ -4,10 +4,7 @@ import {
   Box,
   TextField,
   Button,
-  Autocomplete,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -17,7 +14,6 @@ import WebEditor from 'src/components/common/WebEditor';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   CPQandAAnswerAction,
-  CPQandAAnswerActionKind,
   ICPQandAAnswerState,
   IAnswerForm,
 } from './CpQandAAnswer.Container';
