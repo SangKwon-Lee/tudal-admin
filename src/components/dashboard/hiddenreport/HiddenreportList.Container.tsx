@@ -167,6 +167,14 @@ const HiddenReportListContainer: React.FC = (props) => {
   const deleteReport = useCallback(
     async (id) => {
       try {
+        const { data: orderList } = await APIHR.getOrdersByReport(id);
+        console.log('hasdasd', orderList);
+        if (orderList.length) {
+          toast.error(
+            '이미 구매한 사용자가 있어 삭제가 불가능합니다. 관리자에게 문의 부탁드립니다.',
+          );
+          return;
+        }
         const { data, status } = await APIHR.remove(id);
 
         if (status === 200) {

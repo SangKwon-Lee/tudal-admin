@@ -35,6 +35,12 @@ export async function getOrders(reporterId) {
   );
 }
 
+export async function getOrdersByReport(reportId) {
+  return await axios.get(
+    `/hidden-report-orders?hidden_report=${reportId}&_limit=-1&_sort=created_at:DESC`,
+  );
+}
+
 /** 히든 리포트 이미지*/
 export async function getImage(id) {
   return await axios.get<IHRImage>(`/hidden-report-images/${id}`);

@@ -46,14 +46,6 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             }}
           >
             <CardHeader title="리뷰" />
-            <Button
-              variant="contained"
-              color="secondary"
-              component={RouterLink}
-              to={`/dashboard/hiddenreports/${state.id}/edit`}
-            >
-              수정
-            </Button>
           </Box>
           <Divider />
           <Table>

@@ -28,7 +28,7 @@ const HiddenreportPreviewPresenter: FC<IProps> = ({
         sx={{
           py: 3,
           backgroundColor: 'white',
-          width: 'md',
+          width: '500px',
           height: '3200px',
         }}
       >
