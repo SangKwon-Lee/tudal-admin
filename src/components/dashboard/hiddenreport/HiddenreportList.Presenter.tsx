@@ -16,7 +16,6 @@ import {
   TextField,
 } from '@material-ui/core';
 import Scrollbar from '../../layout/Scrollbar';
-import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import { IHR } from 'src/types/hiddenreport';

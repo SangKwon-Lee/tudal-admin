@@ -39,7 +39,7 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
         userId: user.id,
       };
 
-      const { data, status } = await APIHR.postReportComment(body);
+      const { status } = await APIHR.postReportComment(body);
 
       if (status === 200) {
         toast.success('댓글 작성에 성공하였습니다');

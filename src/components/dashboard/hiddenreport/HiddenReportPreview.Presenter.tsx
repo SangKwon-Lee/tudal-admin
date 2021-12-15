@@ -1,12 +1,7 @@
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 
 import { Box, Container, Typography } from '@material-ui/core';
 import { Helmet } from 'react-helmet-async';
-import crypto from 'crypto';
-import { useNavigate, useParams } from 'react-router';
-import { IHR } from 'src/types/hiddenreport';
-import { cmsServer, CMS_TOKEN } from 'src/lib/axios';
-import useMounted from 'src/hooks/useMounted';
 import './HiddenReportViewer.css';
 
 interface IProps {

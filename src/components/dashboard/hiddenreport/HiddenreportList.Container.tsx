@@ -175,7 +175,7 @@ const HiddenReportListContainer: React.FC = (props) => {
           );
           return;
         }
-        const { data, status } = await APIHR.remove(id);
+        const { status } = await APIHR.remove(id);
 
         if (status === 200) {
           toast.success('성공했습니다.');
