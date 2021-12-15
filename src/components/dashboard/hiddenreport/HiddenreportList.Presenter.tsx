@@ -127,7 +127,7 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                   <TableCell>판매량</TableCell>
                   <TableCell>등록일</TableCell>
                   <TableCell>만료일</TableCell>
-                  <TableCell>수정 / 더보기 / 삭제</TableCell>
+                  <TableCell>더보기 / 삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -158,15 +158,6 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                     </TableCell>
 
                     <TableCell>
-                      <IconButton>
-                        <Link
-                          color="textPrimary"
-                          component={RouterLink}
-                          to={`/dashboard/hiddenreports/${report.id}/edit`}
-                        >
-                          <PencilAltIcon fontSize="small" />
-                        </Link>
-                      </IconButton>
                       <IconButton>
                         <Link
                           color="textPrimary"

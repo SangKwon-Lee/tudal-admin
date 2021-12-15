@@ -11,6 +11,7 @@ import {
   Typography,
   Container,
   Button,
+  Dialog,
 } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 import { IHiddenReportForm } from './HiddenreportCreate.Container';
@@ -20,6 +21,8 @@ import {
   SocialPostComment,
   SocialPostCommentAdd,
 } from 'src/components/dashboard/social';
+import HiddenreportPreviewPresenter from './HiddenReportPreview.Presenter';
+import { useState } from 'react';
 
 interface HiddenReportDetailViewPresenterProps {
   state: IHR | IHiddenReportForm;
@@ -31,6 +34,7 @@ interface HiddenReportDetailViewPresenterProps {
 
 const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterProps> =
   ({ state, onSubmit, setStep, isCreating, writeComment }) => {
+    const [isOpenPreview, setOpenPreview] = useState<boolean>(false);
     return (
       <Box sx={{ p: 10, pt: 2 }}>
         <Card>
@@ -216,7 +220,10 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
             }}
           >
             <Typography color="textPrimary" variant="subtitle2">
-              리포트 내용
+              리포트 내용{' '}
+              <Button onClick={() => setOpenPreview(!isOpenPreview)}>
+                미리보기
+              </Button>
             </Typography>
             <Box sx={{ py: 3 }}>
               <Container maxWidth="md">
@@ -260,6 +267,17 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
               authorAvatar={''}
             />
           ))}
+
+        <Dialog
+          open={isOpenPreview}
+          onClose={() => setOpenPreview(false)}
+        >
+          <HiddenreportPreviewPresenter
+            contents={state.contents}
+            title={state.title}
+            nickname={state.hidden_reporter?.nickname}
+          />
+        </Dialog>
       </Box>
     );
   };
