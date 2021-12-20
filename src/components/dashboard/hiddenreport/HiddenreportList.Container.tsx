@@ -164,6 +164,30 @@ const HiddenReportListContainer: React.FC = (props) => {
     }
   }, [query, user?.hidden_reporter?.id]);
 
+  const deleteReport = useCallback(
+    async (id) => {
+      try {
+        const { data: orderList } = await APIHR.getOrdersByReport(id);
+        console.log('hasdasd', orderList);
+        if (orderList.length) {
+          toast.error(
+            '이미 구매한 사용자가 있어 삭제가 불가능합니다. 관리자에게 문의 부탁드립니다.',
+          );
+          return;
+        }
+        const { status } = await APIHR.remove(id);
+
+        if (status === 200) {
+          toast.success('성공했습니다.');
+          getList();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [getList],
+  );
+
   useEffect(() => {
     getList();
   }, [getList]);
@@ -179,6 +203,7 @@ const HiddenReportListContainer: React.FC = (props) => {
     <HiddenreportListPresenter
       state={HRListState}
       dispatch={dispatch}
+      deleteReport={deleteReport}
     />
   );
 };

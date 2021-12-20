@@ -62,6 +62,7 @@ const schema = yup
     price: yup
       .number()
       .max(990)
+      .min(0)
       .test('divided-by-5', 'invalid', (value) => value % 5 === 0)
       .required(),
     intro: yup.string().required(),

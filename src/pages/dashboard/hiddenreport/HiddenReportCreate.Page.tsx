@@ -14,7 +14,7 @@ const HiddenReportListPage: React.FC = () => {
   return (
     <PageLayout
       mainTopic={'히든리포트'}
-      pageTitle={'히든리포트 리스트'}
+      pageTitle={'히든리포트 생성'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}
     >

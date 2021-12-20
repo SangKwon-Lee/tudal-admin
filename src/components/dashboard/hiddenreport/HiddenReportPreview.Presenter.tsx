@@ -9,7 +9,7 @@ interface IProps {
   nickname: string;
   contents: string;
 }
-const HiddenreportViewerPresenter: FC<IProps> = ({
+const HiddenreportPreviewPresenter: FC<IProps> = ({
   title,
   nickname,
   contents,
@@ -19,7 +19,14 @@ const HiddenreportViewerPresenter: FC<IProps> = ({
       <Helmet>
         <title>Dashboard: Hiddenbox Viewer | TUDAL Admin</title>
       </Helmet>
-      <Box sx={{ py: 3, backgroundColor: 'white' }}>
+      <Box
+        sx={{
+          py: 3,
+          backgroundColor: 'white',
+          width: '500px',
+          height: '3200px',
+        }}
+      >
         <Container maxWidth="md">
           <Typography variant="h3">{title}</Typography>
           <Typography variant="h6" style={{ textAlign: 'right' }}>
@@ -38,4 +45,4 @@ const HiddenreportViewerPresenter: FC<IProps> = ({
   );
 };
 
-export default HiddenreportViewerPresenter;
+export default HiddenreportPreviewPresenter;

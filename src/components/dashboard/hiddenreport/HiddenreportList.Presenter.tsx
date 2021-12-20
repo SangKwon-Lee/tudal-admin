@@ -1,8 +1,9 @@
-import type { FC } from 'react';
+import { FC, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Card,
+  Dialog,
   IconButton,
   InputAdornment,
   Link,
@@ -15,7 +16,6 @@ import {
   TextField,
 } from '@material-ui/core';
 import Scrollbar from '../../layout/Scrollbar';
-import PencilAltIcon from '../../../icons/PencilAlt';
 import SearchIcon from '../../../icons/Search';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import { IHR } from 'src/types/hiddenreport';
@@ -27,15 +27,21 @@ import {
 } from './HiddenreportList.Container';
 import dayjs from 'dayjs';
 
+import DeleteIcon from '@material-ui/icons/Delete';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+
 interface HRListPresenterProps {
   state: IHRListState;
   dispatch: (param: IHRListAction) => void;
+  deleteReport: (id: number) => void;
 }
 
 const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
   state,
   dispatch,
+  deleteReport,
 }) => {
+  const [deleteTarget, setDeleteTarget] = useState<number>(null);
   const { list } = state;
   return (
     <Box
@@ -120,7 +126,7 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                   <TableCell>판매량</TableCell>
                   <TableCell>등록일</TableCell>
                   <TableCell>만료일</TableCell>
-                  <TableCell>수정 / 더보기</TableCell>
+                  <TableCell>더보기 / 삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -155,21 +161,17 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                         <Link
                           color="textPrimary"
                           component={RouterLink}
-                          to={`/dashboard/hiddenreports/${report.id}/edit`}
-                          variant="subtitle2"
-                        >
-                          <PencilAltIcon fontSize="small" />
-                        </Link>
-                      </IconButton>
-                      <IconButton>
-                        <Link
-                          color="textPrimary"
-                          component={RouterLink}
                           to={`/dashboard/hiddenreports/${report.id}`}
-                          variant="subtitle2"
                         >
                           <ArrowRightIcon fontSize="small" />
                         </Link>
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setDeleteTarget(report.id);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -191,6 +193,28 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                 justifyContent: 'flex-end',
               }}
             />
+
+            <Dialog
+              aria-labelledby="ConfirmModal"
+              open={Boolean(deleteTarget)}
+              onClose={() => {
+                setDeleteTarget(null);
+              }}
+            >
+              <ConfirmModal
+                title="리포트 삭제"
+                content="해당 리포트를 삭제하시겠습니까?"
+                confirmTitle={'삭제'}
+                type={'ERROR'}
+                handleOnClick={() => {
+                  deleteReport(deleteTarget);
+                  setDeleteTarget(null);
+                }}
+                handleOnCancel={() => {
+                  setDeleteTarget(null);
+                }}
+              />
+            </Dialog>
           </Box>
         </Scrollbar>
       </Card>
