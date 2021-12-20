@@ -1,4 +1,0 @@
-.viewer img {
-  /* Set width of image to maximum width of Card, height will follow aspect ratio */
-  width: 100%;
-}
