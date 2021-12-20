@@ -168,6 +168,18 @@ const CpMasterDetailPage = Loadable(
 const CpReporterDetailPage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpReporterDetail.Page')),
 );
+const CPQandAListPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CPQandAList.Page')),
+);
+const CPQandACreatePage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CPQandACreate.Page')),
+);
+const CPQandAAnswerPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CPQandAAnswer.Page')),
+);
+const CPQandADetailPage = Loadable(
+  lazy(() => import('./pages/dashboard/cp/CPQandADetail.Page')),
+);
 
 // Viewer pages
 const HiddenboxViewer = Loadable(
@@ -319,6 +331,30 @@ const routes: PartialRouteObject[] = [
       {
         path: '/',
         element: <Overview />,
+      },
+      {
+        path: '/qas',
+        element: <CPQandAListPage />,
+      },
+      {
+        path: '/qas/new',
+        element: <CPQandACreatePage />,
+      },
+      {
+        path: '/qas/:qId/edit',
+        element: <CPQandACreatePage />,
+      },
+      {
+        path: '/qas/:qId/answer',
+        element: <CPQandAAnswerPage />,
+      },
+      {
+        path: '/qas/:qId/answer/:aId/edit',
+        element: <CPQandAAnswerPage />,
+      },
+      {
+        path: '/qas/:qId',
+        element: <CPQandADetailPage />,
       },
       {
         path: 'hiddenreports',

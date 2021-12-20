@@ -1,3 +1,5 @@
+import { IUser } from "./user";
+
 export interface CP_Master {
   id?: number | string;
   nickname: string;
@@ -18,4 +20,19 @@ export interface CP_Hidden_Reporter {
   catchphrase: string;
   user: any;
   created_at?: string;
+}
+
+
+export interface ICPQuestion {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  isAnswer: boolean;
+  isCompleted: boolean;
+  answeredBy: IUser;
+  writer: IUser;
+  created_at: Date;
+  updated_by: Date;
+  answers: ICPQuestion[]
 }

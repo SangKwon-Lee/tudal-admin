@@ -46,7 +46,7 @@ interface ICpCreateProps {
   mode?: string;
 }
 
-const CpCreateContainer: React.FC<ICpCreateProps> = (props) => {
+const CpCreateContainer: React.FC<ICpCreateProps> = ({ mode }) => {
   const [cpCreateState, dispatch] = useReducer(
     CpCreateReducer,
     initialState,
@@ -73,7 +73,7 @@ const CpCreateContainer: React.FC<ICpCreateProps> = (props) => {
       cpCreateState={cpCreateState}
       dispatch={dispatch}
       createCp={createCp}
-      mode={props.mode}
+      mode={mode}
     />
   );
 };
