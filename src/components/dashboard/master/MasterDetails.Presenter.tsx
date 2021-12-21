@@ -132,9 +132,7 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master?.external_link
-                    ? master.external_link
-                    : '링크가 없습니다.'}
+                  {master?.url ? master.url : '링크가 없습니다.'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -177,8 +175,8 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
           </Typography>
           <Box sx={{ py: 3 }}>
             <Container maxWidth="md">
-              {master?.contents && (
-                <Viewer initialValue={master.contents} />
+              {master?.description && (
+                <Viewer initialValue={master.description} />
               )}
             </Container>
           </Box>

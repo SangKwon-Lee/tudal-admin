@@ -29,10 +29,11 @@ export interface Expert {
 export interface IMasterFeed {
   id: number;
   title: string;
-  contents: string;
+  description: string;
   source: string;
   msgId: string;
-  external_link: string;
+  url: string;
+  datetime: Date;
   viewCount: string;
   isDeleted: boolean;
   master_room: IMasterRoom;
@@ -41,6 +42,8 @@ export interface IMasterFeed {
   updated_at: string;
   stocks: IStockDetails[];
   tags: Tag[];
+  mater_feed_images: IMasterFeedImage[];
+
   master_feed_likes: [];
 }
 
@@ -78,4 +81,9 @@ export interface IMaster {
   created_at: Date;
   updated_at: Date;
   master_rooms?: IMasterRoom[];
+}
+
+export interface IMasterFeedImage {
+  image_url: string;
+  master_feed: IMasterFeed;
 }
