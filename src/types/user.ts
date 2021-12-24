@@ -49,4 +49,5 @@ export interface UserInput {
   type: string;
   contact_email: string;
   phone_number: string;
+  appId: number;
 }

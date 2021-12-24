@@ -23,6 +23,8 @@ const schema = yup
   .object({
     user: yup.string().required(),
     nickname: yup.string().required(),
+    price_gold: yup.number().positive().required(),
+    subscription_days: yup.number().positive().required(),
     intro: yup.string().required(),
     keyword: yup.string().required(),
     type: yup.string().required(),
@@ -144,6 +146,30 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>
+              구독료 (Gold)
+            </Typography>
+            <TextField
+              fullWidth
+              {...register('price_gold')}
+              variant="outlined"
+              error={Boolean(errors?.price_gold)}
+              helperText={'구독료 입력은 필수입니다.'}
+            ></TextField>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
+              기본 구독 기간 (일)
+            </Typography>
+            <TextField
+              fullWidth
+              {...register('subscription_days')}
+              variant="outlined"
+              error={Boolean(errors?.subscription_days)}
+              helperText={'구독기간 입력은 필수입니다. '}
+            ></TextField>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               타입
             </Typography>
             <TextField
@@ -158,6 +184,8 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             >
               <option value="free">무료</option>
               <option value="paid">유료</option>
+              <option value="test">테스트</option>
+              <option value="hidden">숨김</option>
             </TextField>
           </Box>
           <Box sx={{ mt: 2 }}>

@@ -26,6 +26,7 @@ const initialState: CpCreateState = {
     role: 1,
     type: 'admin',
     username: '',
+    appId: null,
   },
 };
 
