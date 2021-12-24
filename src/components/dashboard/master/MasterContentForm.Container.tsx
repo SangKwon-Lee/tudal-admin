@@ -49,9 +49,8 @@ export interface MasterContentFormAction {
 interface IMasterFeedForm {
   id?: number;
   title: string;
-  external_link: string;
+  url: string;
   master_room: string;
-  contents: string;
   description: string;
   source: string;
   master: number;
@@ -151,9 +150,8 @@ const initialState: MasterContentFormState = {
   newFeed: {
     id: null,
     title: '',
-    external_link: '',
+    url: '',
     master_room: '',
-    contents: '',
     description: '',
     source: 'web',
     master: null,
@@ -257,12 +255,12 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
         const newMasterData = {
           id: data.id,
           title: data.title,
-          contents: data.contents,
+          description: data.description,
           master: data.master,
           room: data.master_room.id,
           tags: data.tags,
           stocks: data.stocks,
-          external_link: data.external_link,
+          url: data.url,
         };
         dispatch({
           type: MasterContentFormActionKind.GET_FEED,
@@ -294,7 +292,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       if (editorRef.current) {
         // 수정
 
-        const contents = log();
+        const description = log();
         const newFeed = {
           ...masterContentFormState.newFeed,
           tags:
@@ -305,8 +303,9 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
             masterContentFormState.newFeed.stocks.map(
               (data) => data.id,
             ) || [],
-          contents,
+          description,
           master: masterContentFormState.newFeed.master,
+          datetime: new Date(),
         };
         if (mode === 'create') {
           try {
@@ -335,7 +334,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
               masterContentFormState.newFeed.stocks.map(
                 (data) => data.id,
               ) || [],
-            contents,
+            description,
           };
           try {
             const response = await cmsServer.put(
@@ -377,7 +376,7 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
         payload: true,
       });
     }
-    if (masterContentFormState.newFeed.external_link === '') {
+    if (masterContentFormState.newFeed.url === '') {
       dispatch({
         type: MasterContentFormActionKind.REGEX_LINK,
         payload: false,
