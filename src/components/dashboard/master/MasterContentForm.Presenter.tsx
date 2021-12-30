@@ -311,10 +311,10 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         }
                         error={submitError ? true : false}
                         label="링크"
-                        name="external_link"
+                        name="url"
                         onBlur={handleSubmitError}
                         onChange={handleSubmitError}
-                        value={newFeed?.external_link || ''}
+                        value={newFeed?.url || ''}
                         variant="outlined"
                       />
                     </Box>
@@ -323,11 +323,12 @@ const MasterContentFormPresenter: FC<IMasterContentFormProps> = (
                         editorRef={editorRef}
                         bucket_name={IBuckets.MASTER_FEED}
                         contents={
-                          newFeed?.contents
-                            ? newFeed.contents
-                            : newFeed.description
+                          newFeed.description
+                            ? newFeed.description
+                            : ''
                         }
                       />
+                      )
                     </Paper>
                     {error && (
                       <Box sx={{ mt: 2 }}>

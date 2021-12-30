@@ -16,6 +16,7 @@ const schema = yup
     role: yup.string().required(),
     phone_number: yup.string().required(),
     contact_email: yup.string().email().required(),
+    appId: yup.number().required(),
   })
   .required();
 
@@ -141,6 +142,17 @@ const CpCreatePresenter: React.FC<ICpCreateProps> = (props) => {
                   ))}
               </TextField>
             )}
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              {...register('appId')}
+              fullWidth
+              name="appId"
+              label="투달 App ID"
+              error={Boolean(errors?.appId)}
+              helperText="투자의달인 user ID를 입력해주세요."
+              variant="outlined"
+            />
           </Box>
           <Box sx={{ mt: 2 }}>
             <TextField

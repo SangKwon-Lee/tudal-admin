@@ -175,10 +175,6 @@ const sections = [
             path: '/dashboard/master',
           },
           {
-            title: '생성',
-            path: '/dashboard/master/new',
-          },
-          {
             title: '방 관리',
             path: '/dashboard/master/room',
           },

@@ -199,7 +199,7 @@ const DraggableCard: React.FC<CardProps> = ({
   const handleSaveRoom = async () => {
     try {
       const { status, data } = await cmsServer.get(
-        `/master-rooms?master.id=${user.id}&master_channel=${selectMaster}`,
+        `/master-rooms?master.id=${user.id}`,
       );
 
       if (status === 200) {

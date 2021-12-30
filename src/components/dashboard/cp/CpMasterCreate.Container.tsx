@@ -35,6 +35,8 @@ const initialState: CpMasterCreateState = {
   loading: false,
   newCpMaster: {
     nickname: '',
+    subscription_days: null,
+    price_gold: null,
     intro: '',
     keyword: '',
     user: null,

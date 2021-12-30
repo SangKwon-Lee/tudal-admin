@@ -62,7 +62,6 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {console.log(master)}
                   {master.keyword.length
                     ? master.keyword.split(',').length === 1
                       ? master.keyword
@@ -73,6 +72,31 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
                 </Typography>
               </TableCell>
             </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  구독료 (GOLD)
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master.price_gold}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  기본 구독 기간 (일)
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master.subscription_days}
+                </Typography>
+              </TableCell>
+            </TableRow>
+
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">

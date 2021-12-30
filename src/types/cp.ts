@@ -4,6 +4,8 @@ export interface CP_Master {
   id?: number | string;
   nickname: string;
   profile_image_url: string;
+  price_gold: number;
+  subscription_days: number;
   intro: string;
   keyword: string;
   user: any;
