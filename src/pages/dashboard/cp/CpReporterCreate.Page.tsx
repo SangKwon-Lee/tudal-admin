@@ -5,12 +5,12 @@ import React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 const CpReporterCreatePage: FC = () => {
   const pageTopRef = React.useRef<HTMLDivElement>(null);
-  const { reporterId } = useParams();
+  const { userId, reporterId } = useParams();
   const path = useLocation();
   const pathName = path.pathname.includes('signup');
   const mode =
-    reporterId && pathName
-      ? 'create'
+    userId && pathName
+      ? 'selectAndCreate'
       : reporterId
       ? 'edit'
       : 'create';

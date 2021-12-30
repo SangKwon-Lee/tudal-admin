@@ -12,7 +12,7 @@ export enum CpReporterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
   GET_REPORTER = 'GET_REPORTER',
-  GET_USER_ID = 'GET_USER_ID',
+  GET_USER = 'GET_USER',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
   PRE_CROP_IMAGE = 'PRE_CROP_IMAGE',
   SAVE_CROP_IMAGE = 'SAVE_CROP_IMAGE',
@@ -26,8 +26,8 @@ export interface CpReporterCreateAction {
 export interface CpReporterCreateState {
   loading: boolean;
   newCpReporter: CP_Hidden_Reporter;
+  newReporterUser: IUser;
   users: IUser[];
-  userId: number;
   cropImg: string;
   saveCropImg: string;
 }
@@ -37,13 +37,13 @@ const initialState: CpReporterCreateState = {
   newCpReporter: {
     nickname: '',
     intro: '',
-    user: null,
     imageUrl: '',
     tudalRecommendScore: 3,
     catchphrase: '',
   },
+  newReporterUser: null,
+
   users: [],
-  userId: 0,
   cropImg: '',
   saveCropImg: '',
 };
@@ -80,10 +80,10 @@ const CpReporterCreateReducer = (
         newCpReporter: payload,
         loading: false,
       };
-    case CpReporterCreateActionKind.GET_USER_ID:
+    case CpReporterCreateActionKind.GET_USER:
       return {
         ...state,
-        userId: payload,
+        newReporterUser: payload,
       };
     case CpReporterCreateActionKind.PRE_CROP_IMAGE:
       return {
@@ -104,7 +104,7 @@ interface ICpReporterCreateProps {
 const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   props,
 ) => {
-  const { reporterId } = useParams();
+  const { userId, reporterId } = useParams();
   const mode = props.mode || 'create';
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
@@ -112,27 +112,22 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     initialState,
   );
 
+  const { newReporterUser } = cpCreateState;
+
   //* 기존 리포터 데이터 불러오기
   const getCpReporter = useCallback(async () => {
+    console.log('cp reporter!!');
     dispatch({
       type: CpReporterCreateActionKind.LOADING,
       payload: true,
     });
-    if (mode === 'create' && reporterId) {
+
+    if (mode === 'selectAndCreate') {
       try {
-        const { data } = await APICp.getUser(reporterId);
-        let newData = {
-          ...cpCreateState.newCpReporter,
-          user: data.username,
-          id: data.id,
-        };
+        const { data } = await APICp.getUser(userId);
         dispatch({
-          type: CpReporterCreateActionKind.GET_REPORTER,
-          payload: newData,
-        });
-        dispatch({
-          type: CpReporterCreateActionKind.GET_USER_ID,
-          payload: reporterId,
+          type: CpReporterCreateActionKind.GET_USER,
+          payload: data,
         });
       } catch (error) {
         console.log(error);
@@ -144,14 +139,15 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
           ...data,
           user: data.user.username,
         };
+
         if (status === 200) {
           dispatch({
             type: CpReporterCreateActionKind.GET_REPORTER,
             payload: newData,
           });
           dispatch({
-            type: CpReporterCreateActionKind.GET_USER_ID,
-            payload: data.user.id,
+            type: CpReporterCreateActionKind.GET_USER,
+            payload: data.user,
           });
         }
       } catch (error) {
@@ -159,7 +155,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, reporterId]);
+  }, [mode, reporterId, userId]);
 
   //* 유저 선택 불러오기
   const getUsers = useCallback(async () => {
@@ -180,75 +176,55 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
 
   //* 리포터 등록
   const createCpReporter = async (data: CP_Hidden_Reporter) => {
-    let newInput = {
-      ...data,
-    };
-    if (mode === 'create') {
-      if (cpCreateState.userId) {
-        newInput = {
-          ...newInput,
-          tudalRecommendScore: Number(data.tudalRecommendScore),
-          user: cpCreateState.userId,
-        };
-      } else {
-        newInput = {
-          ...newInput,
-          tudalRecommendScore: Number(data.tudalRecommendScore),
-        };
-      }
-      try {
-        const imgUrl = await registerImage(
-          cpCreateState.saveCropImg,
-          IBuckets.CP_PHOTO,
-        );
-        newInput = {
-          ...newInput,
-          imageUrl: imgUrl,
-        };
-        const { status } = await APICp.postReporter(newInput);
-        if (status === 200) {
-          toast.success('새로운 히든 리포터가 만들어졌습니다.');
-          navigate('/dashboard/cp');
-        }
-      } catch (error) {
-        toast.error('오류가 발생했습니다.');
-        console.log(error);
-      }
-    } else {
-      try {
-        const imgUrl = await registerImage(
-          cpCreateState.saveCropImg,
-          IBuckets.CP_PHOTO,
-        );
-        const newInput = {
-          ...data,
-          tudalRecommendScore: Number(data.tudalRecommendScore),
-          imageUrl: imgUrl,
-          user: cpCreateState.userId,
-        };
+    let reporter: CP_Hidden_Reporter = { ...data };
+
+    const { cropImg, saveCropImg } = cpCreateState;
+    if (cropImg && !saveCropImg) {
+      toast.error('이미지를 크롭해주세요');
+      return;
+    }
+    try {
+      const imgUrl = await registerImage(
+        cpCreateState.saveCropImg,
+        IBuckets.CP_PHOTO,
+      );
+
+      reporter = {
+        ...reporter,
+        tudalRecommendScore: Number(data.tudalRecommendScore),
+        user: newReporterUser.id,
+        imageUrl: imgUrl,
+      };
+
+      if (mode === 'edit') {
         const { status } = await APICp.putReporter(
           reporterId,
-          newInput,
+          reporter,
         );
         if (status === 200) {
           toast.success('히든 리포터가 수정됐습니다.');
           navigate('/dashboard/cp');
         }
-      } catch (error) {
-        toast.error('오류가 발생했습니다.');
-        console.log(error);
+      } else {
+        const { status } = await APICp.postReporter(reporter);
+        if (status === 200) {
+          toast.success('새로운 히든 리포터가 만들어졌습니다.');
+          navigate('/dashboard/cp');
+        }
       }
+    } catch (error) {
+      toast.error('오류가 발생했습니다.');
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    if (!reporterId) {
+    if (!userId && !reporterId) {
       getUsers();
+      return;
     }
-    if (reporterId) {
-      getCpReporter();
-    }
-  }, [getCpReporter, getUsers, reporterId]);
+    getCpReporter();
+  }, [getCpReporter, getUsers, reporterId, userId]);
 
   return (
     <CpReporterCreatePresenter

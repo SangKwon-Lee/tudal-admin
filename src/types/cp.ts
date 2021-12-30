@@ -1,4 +1,4 @@
-import { IUser } from "./user";
+import { IUser } from './user';
 
 export interface CP_Master {
   id?: number | string;
@@ -18,10 +18,9 @@ export interface CP_Hidden_Reporter {
   imageUrl: string;
   tudalRecommendScore?: number;
   catchphrase: string;
-  user: any;
+  user?: any;
   created_at?: string;
 }
-
 
 export interface ICPQuestion {
   id: number;
@@ -34,5 +33,5 @@ export interface ICPQuestion {
   writer: IUser;
   created_at: Date;
   updated_by: Date;
-  answers: ICPQuestion[]
+  answers: ICPQuestion[];
 }
