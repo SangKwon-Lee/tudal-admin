@@ -93,12 +93,12 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
                 autoHighlight
                 options={users}
                 onChange={(e, options, reason, item) => {
-                  if (!item) {
+                  if (!item.option) {
                     return;
                   }
                   dispatch({
                     type: CpMasterCreateActionKind.GET_USER,
-                    payload: item,
+                    payload: item.option,
                   });
                 }}
                 getOptionLabel={(users) => users.username}
