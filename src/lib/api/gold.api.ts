@@ -19,11 +19,11 @@ export async function getLegderList(params: IGoldListQuery) {
   }>(`/golds/history?${query}`);
 }
 
-export async function getUserLedger(userId: number) {
+export async function getUserLedger(userId: number, page: number) {
   return await apiServer.get<{
     count: number;
     histories: IGoldLedger[];
-  }>(`/golds/history?searchWord=${userId}`);
+  }>(`/golds/history?searchWord=${userId}&page=${page}&limit=5`);
 }
 
 export async function getUserWallet(userId: number) {

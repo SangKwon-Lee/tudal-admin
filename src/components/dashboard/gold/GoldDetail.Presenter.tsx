@@ -31,14 +31,17 @@ import {
   IGoldDetailState,
 } from './GoldDetail.Container';
 import { IGoldLedger, IGoldWallet } from 'src/types/gold';
-import { applyPagination } from 'src/utils/pagination';
+
 import { getStatusLabel } from './GoldList.Presenter';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 
-const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
-  const { ledger } = props;
-  const [page, setPage] = useState<number>(1);
-  const paginatedLedger = applyPagination(ledger, page - 1, 5);
+const LedgerTable: FC<{
+  ledger: IGoldLedger[];
+  page: number;
+  limit: number;
+  handlePage: (page) => void;
+}> = (props) => {
+  const { ledger, page, limit, handlePage } = props;
 
   return (
     <Card>
@@ -58,7 +61,7 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedLedger.map((item) => (
+              {ledger.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{getStatusLabel(item.type)}</TableCell>
                   <TableCell>{item.category}</TableCell>
@@ -77,9 +80,9 @@ const LedgerTable: FC<{ ledger: IGoldLedger[] }> = (props) => {
         </Box>
       </Scrollbar>
       <Pagination
-        count={Math.ceil(ledger.length / 5)}
+        count={Math.ceil(limit / 5)}
         onChange={(e, page): void => {
-          setPage(page);
+          handlePage(page);
         }}
         page={page}
         variant="outlined"
@@ -200,6 +203,8 @@ const WalletTable: FC<{
 interface IGoldDetailPresenter {
   userId: number;
   state: IGoldDetailState;
+  page: number;
+  limit: number;
   postGold: () => void;
   handleUser: (userId: number) => void;
   dispatch: (params: IGoldDetailAction) => void;
@@ -212,7 +217,8 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
   state,
   dispatch,
 }) => {
-  const { ledger, wallet, totalByHand } = state;
+  const { ledger, wallet, totalByHand, page, limit } = state;
+  console.log('up', ledger);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const userIdRef = useRef<HTMLInputElement>(null);
   const _handleUser = () => {
@@ -264,6 +270,13 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
     handleCloseConfirm();
   };
 
+  const handlePage = (page) => {
+    dispatch({
+      type: GoldDetailActionKind.CHANGE_PAGE,
+      payload: page,
+    });
+  };
+
   return (
     <Box sx={{ mt: 5, pr: 10 }}>
       <Box
@@ -299,7 +312,12 @@ const GoldDetailPresenter: FC<IGoldDetailPresenter> = ({
             />
           </Box>
           <Box minWidth="70%" maxWidth="70%">
-            <LedgerTable ledger={ledger} />
+            <LedgerTable
+              ledger={ledger}
+              page={page}
+              limit={limit}
+              handlePage={handlePage}
+            />
           </Box>
         </Box>
       )}

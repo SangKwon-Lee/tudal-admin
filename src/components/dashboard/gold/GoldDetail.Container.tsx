@@ -30,6 +30,8 @@ export enum GoldDetailActionKind {
   CALCULATE_BY_HAND = 'CALCULATE_BY_HAND',
 
   // change form
+  CHANGE_PAGE = 'CHANGE_PAGE',
+  CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_USERID = 'CHANGE_USERID',
   CHANGE_AMOUNT = 'CHANGE_AMOUNT',
   CHANGE_BONUSAMOUNT = 'CHANGE_BONUSAMOUNT',
@@ -56,11 +58,15 @@ export interface IGoldDetailState {
   loading: boolean;
   openGoldAddDialog: boolean;
   postForm: IGoldPostForm;
+  page: number;
+  limit: number;
 }
 
 const initialState: IGoldDetailState = {
   ledger: [],
   loading: true,
+  page: 1,
+  limit: null,
   wallet: null,
   totalByHand: 0,
   openGoldAddDialog: false,
@@ -151,6 +157,16 @@ const goldDetailReducer = (
           code: payload,
         },
       };
+    case GoldDetailActionKind.CHANGE_PAGE:
+      return {
+        ...state,
+        page: payload,
+      };
+    case GoldDetailActionKind.CHANGE_LIMIT:
+      return {
+        ...state,
+        limit: payload,
+      };
     case GoldDetailActionKind.CHANGE_ISEXIRED:
       return {
         ...state,
@@ -179,21 +195,28 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
     initialState,
   );
 
-  const { ledger, postForm } = goldDetailState;
+  const { ledger, postForm, page, limit } = goldDetailState;
   const getLedger = useCallback(async () => {
     try {
       dispatch({ type: GoldDetailActionKind.LOADING });
-      const { data, status } = await APIGold.getUserLedger(userId);
+      const { data, status } = await APIGold.getUserLedger(
+        userId,
+        page - 1,
+      );
       if (status === 200) {
         dispatch({
           type: GoldDetailActionKind.LOAD_LEDGER,
-          payload: data.histories.filter((el) => !el.isExpired),
+          payload: data.histories,
+        });
+        dispatch({
+          type: GoldDetailActionKind.CHANGE_LIMIT,
+          payload: data.count,
         });
       }
     } catch (error) {
       console.log(error);
     }
-  }, [userId]);
+  }, [userId, page]);
 
   const getWallet = useCallback(async () => {
     try {
@@ -271,6 +294,8 @@ const GoldDetailContainer: React.FC<IGoldDetailContainerProps> = ({
       postGold={postGold}
       state={goldDetailState}
       dispatch={dispatch}
+      page={page}
+      limit={limit}
     />
   );
 };
