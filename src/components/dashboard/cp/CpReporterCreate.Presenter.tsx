@@ -21,7 +21,6 @@ import ImageCropper from 'src/components/common/ImageCropper';
 
 const schema = yup
   .object({
-    user: yup.string().required(),
     nickname: yup.string().required(),
     catchphrase: yup.string().required(),
     intro: yup.string().required(),
@@ -57,12 +56,12 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
 ) => {
   const { cpCreateState, dispatch, mode, createCpReporter } = props;
   const { newCpReporter, users } = cpCreateState;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<CP_Hidden_Reporter>({
     defaultValues: newCpReporter,
     resolver: yupResolver(schema),
@@ -103,23 +102,38 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               유저 선택
             </Typography>
-            <Autocomplete
-              {...register('user')}
-              fullWidth
-              disabled={newCpReporter.id ? true : false}
-              autoHighlight
-              options={users}
-              onChange={(e, options, reason, item) => {
-                if (!item) {
-                  return;
+
+            {mode === 'create' ? (
+              <Autocomplete
+                fullWidth
+                disabled={
+                  cpCreateState.newCpReporter.id ? true : false
                 }
-                setValue('user', item.option.id);
-              }}
-              getOptionLabel={(users) => users.username}
-              renderInput={(params) => (
-                <TextField {...params} fullWidth variant="outlined" />
-              )}
-            />
+                autoHighlight
+                options={users}
+                onChange={(e, options, reason, item) => {
+                  if (!item) {
+                    return;
+                  }
+                }}
+                getOptionLabel={(users) => users.username}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    variant="outlined"
+                  />
+                )}
+              />
+            ) : (
+              cpCreateState.newReporterUser && (
+                <TextField
+                  fullWidth
+                  disabled
+                  value={cpCreateState.newReporterUser?.nickname}
+                />
+              )
+            )}
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>

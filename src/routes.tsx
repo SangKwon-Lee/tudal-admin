@@ -594,7 +594,7 @@ const routes: PartialRouteObject[] = [
             element: <CpReporterCreatePage />,
           },
           {
-            path: '/reporter/signup/:reporterId',
+            path: '/reporter/signup/:userId',
             element: <CpReporterCreatePage />,
           },
           {
