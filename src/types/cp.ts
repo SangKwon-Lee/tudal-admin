@@ -8,7 +8,7 @@ export interface CP_Master {
   subscription_days: number;
   intro: string;
   keyword: string;
-  user: any;
+  user?: any;
   created_at?: string;
   type: 'free' | 'paid';
 }

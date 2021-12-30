@@ -42,7 +42,6 @@ const initialState: CpReporterCreateState = {
     catchphrase: '',
   },
   newReporterUser: null,
-
   users: [],
   cropImg: '',
   saveCropImg: '',
@@ -116,7 +115,6 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
 
   //* 기존 리포터 데이터 불러오기
   const getCpReporter = useCallback(async () => {
-    console.log('cp reporter!!');
     dispatch({
       type: CpReporterCreateActionKind.LOADING,
       payload: true,
@@ -195,6 +193,8 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
         user: newReporterUser.id,
         imageUrl: imgUrl,
       };
+
+      console.log('hello', reporter);
 
       if (mode === 'edit') {
         const { status } = await APICp.putReporter(

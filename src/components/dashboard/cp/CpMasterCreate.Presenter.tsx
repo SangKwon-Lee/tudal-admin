@@ -21,7 +21,6 @@ import ImageCropper from 'src/components/common/ImageCropper';
 
 const schema = yup
   .object({
-    user: yup.string().required(),
     nickname: yup.string().required(),
     price_gold: yup.number().positive().required(),
     subscription_days: yup.number().positive().required(),
@@ -42,13 +41,12 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
   props,
 ) => {
   const { cpCreateState, dispatch, mode, createCpMaster } = props;
-  const { newCpMaster, users } = cpCreateState;
+  const { newCpMaster, users, newMasterUser } = cpCreateState;
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<CP_Master>({
     defaultValues: newCpMaster,
     resolver: yupResolver(schema),
@@ -89,23 +87,39 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               유저 선택
             </Typography>
-            <Autocomplete
-              {...register('user')}
-              fullWidth
-              disabled={newCpMaster.id ? true : false}
-              autoHighlight
-              options={users}
-              onChange={(e, options, reason, item) => {
-                if (!item) {
-                  return;
-                }
-                setValue('user', item.option.id);
-              }}
-              getOptionLabel={(users) => users.username}
-              renderInput={(params) => (
-                <TextField {...params} fullWidth variant="outlined" />
-              )}
-            />
+            {mode === 'create' ? (
+              <Autocomplete
+                fullWidth
+                autoHighlight
+                options={users}
+                onChange={(e, options, reason, item) => {
+                  if (!item) {
+                    return;
+                  }
+                  dispatch({
+                    type: CpMasterCreateActionKind.GET_USER,
+                    payload: item,
+                  });
+                }}
+                getOptionLabel={(users) => users.username}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    variant="outlined"
+                  />
+                )}
+              />
+            ) : (
+              newMasterUser && (
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  disabled={true}
+                  value={newMasterUser.nickname}
+                />
+              )
+            )}
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>
