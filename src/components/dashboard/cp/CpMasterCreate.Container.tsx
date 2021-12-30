@@ -11,7 +11,7 @@ export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
   GET_MASTER = 'GET_MASTER',
-  GET_USER_ID = 'GET_USER_ID',
+  GET_USER = 'GET_USER',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
   PRE_CROP_IMAGE = 'PRE_CROP_IMAGE',
   SAVE_CROP_IMAGE = 'SAVE_CROP_IMAGE',
@@ -25,8 +25,8 @@ export interface CpMasterCreateAction {
 export interface CpMasterCreateState {
   loading: boolean;
   newCpMaster: CP_Master;
+  newMasterUser: IUser;
   users: IUser[];
-  userId: number;
   cropImg: string;
   saveCropImg: string;
 }
@@ -39,12 +39,11 @@ const initialState: CpMasterCreateState = {
     price_gold: null,
     intro: '',
     keyword: '',
-    user: null,
     profile_image_url: '',
     type: 'free',
   },
+  newMasterUser: null,
   users: [],
-  userId: 0,
   cropImg: '',
   saveCropImg: '',
 };
@@ -81,10 +80,10 @@ const CpMasterCreateReducer = (
         newCpMaster: payload,
         loading: false,
       };
-    case CpMasterCreateActionKind.GET_USER_ID:
+    case CpMasterCreateActionKind.GET_USER:
       return {
         ...state,
-        userId: payload,
+        newMasterUser: payload,
       };
     case CpMasterCreateActionKind.PRE_CROP_IMAGE:
       return {
@@ -105,7 +104,7 @@ interface ICpMasterCreateProps {
 const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   props,
 ) => {
-  const { masterId } = useParams();
+  const { masterId, userId } = useParams();
 
   const mode = props.mode || 'create';
   const navigate = useNavigate();
@@ -120,40 +119,29 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       type: CpMasterCreateActionKind.LOADING,
       payload: true,
     });
-    if (mode === 'create') {
+    if (mode === 'selectAndCreate') {
       try {
-        const { data } = await APICp.getUser(masterId);
-        let newData = {
-          ...cpCreateState.newCpMaster,
-          user: data.username,
-          id: data.id,
-        };
+        const { data } = await APICp.getUser(userId);
         dispatch({
-          type: CpMasterCreateActionKind.GET_MASTER,
-          payload: newData,
+          type: CpMasterCreateActionKind.GET_USER,
+          payload: data,
         });
-        dispatch({
-          type: CpMasterCreateActionKind.GET_USER_ID,
-          payload: masterId,
-        });
+        console.log('123123', data);
       } catch (error) {
         console.log(error);
       }
     } else {
       try {
         const { data, status } = await APICp.getMaster(masterId);
-        let newData = {
-          ...data,
-          user: data.user.username,
-        };
+
         if (status === 200) {
           dispatch({
             type: CpMasterCreateActionKind.GET_MASTER,
-            payload: newData,
+            payload: data,
           });
           dispatch({
-            type: CpMasterCreateActionKind.GET_USER_ID,
-            payload: data.user.id,
+            type: CpMasterCreateActionKind.GET_USER,
+            payload: data.user,
           });
         }
       } catch (error) {
@@ -194,73 +182,48 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 
   //* cp 등록
   const createCpMaster = async (data: CP_Master) => {
-    let newInput = {
-      ...data,
-    };
+    const imgUrl = await registerImage(
+      cpCreateState.saveCropImg,
+      IBuckets.CP_PHOTO,
+    );
 
-    if (mode === 'create') {
-      if (cpCreateState.userId) {
-        newInput = {
-          ...newInput,
-          keyword: data.keyword.trim(),
-          user: cpCreateState.userId,
-        };
-      } else {
-        newInput = {
-          ...newInput,
-          keyword: data.keyword.trim(),
-        };
-      }
-      try {
-        const imgUrl = await registerImage(
-          cpCreateState.saveCropImg,
-          IBuckets.CP_PHOTO,
-        );
-        newInput = {
-          ...newInput,
-          profile_image_url: imgUrl,
-        };
-        const { status } = await APICp.postMaster(newInput);
-        if (status === 200) {
-          toast.success('새로운 달인이 만들어졌습니다.');
-          navigate('/dashboard/cp');
-        }
-      } catch (error) {
-        toast.error('오류가 발생했습니다.');
-        console.log(error);
-      }
-    } else {
-      try {
-        const imgUrl = await registerImage(
-          cpCreateState.saveCropImg,
-          IBuckets.CP_PHOTO,
-        );
-        const newInput = {
-          ...data,
-          keyword: data.keyword.trim(),
-          profile_image_url: imgUrl,
-          user: cpCreateState.userId,
-        };
-        const { status } = await APICp.putMaster(masterId, newInput);
+    let master: CP_Master = {
+      ...data,
+      keyword: data.keyword.trim(),
+      user: cpCreateState.newMasterUser.id,
+      profile_image_url: imgUrl,
+    };
+    console.log('hello', master);
+    console.log('hello', cpCreateState);
+
+    console.log(master);
+    try {
+      if (mode === 'edit') {
+        const { status } = await APICp.putMaster(masterId, master);
         if (status === 200) {
           navigate('/dashboard/cp');
           toast.success('달인이 수정됐습니다.');
         }
-      } catch (error) {
-        toast.error('오류가 발생했습니다.');
-        console.log(error);
+      } else {
+        const { status } = await APICp.postMaster(master);
+        if (status === 200) {
+          toast.success('새로운 달인이 만들어졌습니다.');
+          navigate('/dashboard/cp');
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    if (!masterId) {
+    if (mode === 'create') {
       getUsers();
+      return;
     }
-    if (masterId) {
-      getCpMaster();
-    }
-  }, [getCpMaster, getUsers, masterId]);
+
+    getCpMaster();
+  }, [getCpMaster, getUsers, mode]);
   return (
     <CpMasterCreatePresenter
       dispatch={dispatch}

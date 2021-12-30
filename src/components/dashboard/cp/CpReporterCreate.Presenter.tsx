@@ -115,6 +115,10 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
                   if (!item) {
                     return;
                   }
+                  dispatch({
+                    type: CpReporterCreateActionKind.GET_USER,
+                    payload: item.option,
+                  });
                 }}
                 getOptionLabel={(users) => users.username}
                 renderInput={(params) => (

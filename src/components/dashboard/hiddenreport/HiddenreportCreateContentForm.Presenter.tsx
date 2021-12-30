@@ -94,20 +94,13 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
   const {
     register,
     handleSubmit,
-    reset,
+
     formState: { errors },
   } = useForm<IHiddenReportForm>({
     defaultValues: reportCreateState.newReport,
     resolver: yupResolver(schema),
   });
   const { newReport } = reportCreateState;
-
-  useEffect(() => {
-    reportCreateState.newReport.contents &&
-      reset(reportCreateState.newReport);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reportCreateState.newReport]);
 
   return (
     <Box

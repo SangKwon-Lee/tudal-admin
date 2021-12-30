@@ -245,9 +245,9 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
         </Box>
 
         {/* 댓글 */}
-        {!isCreating && 'hidden_report_comments' in state && (
+        {/* {!isCreating && 'hidden_report_comments' in state && (
           <SocialPostCommentAdd handleWriteComment={writeComment} />
-        )}
+        )} */}
         {!isCreating &&
           'hidden_report_comments' in state &&
           state.hidden_report_comments.map((comment) => (
