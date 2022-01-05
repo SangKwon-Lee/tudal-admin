@@ -194,8 +194,6 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
         imageUrl: imgUrl,
       };
 
-      console.log('hello', reporter);
-
       if (mode === 'edit') {
         const { status } = await APICp.putReporter(
           reporterId,
