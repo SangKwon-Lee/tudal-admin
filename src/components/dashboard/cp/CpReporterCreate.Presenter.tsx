@@ -18,12 +18,13 @@ import * as yup from 'yup';
 import { useEffect } from 'react';
 import { CP_Hidden_Reporter } from 'src/types/cp';
 import ImageCropper from 'src/components/common/ImageCropper';
-
+import { IUser } from 'src/types/user';
+import WebEditor from 'src/components/common/WebEditor';
+import { IBuckets } from 'src/components/common/conf/aws';
 const schema = yup
   .object({
     nickname: yup.string().required(),
     catchphrase: yup.string().required(),
-    intro: yup.string().required(),
     tudalRecommendScore: yup.number().required(),
   })
   .required();
@@ -44,18 +45,27 @@ const tudalRecommendScoreOption = [
 ];
 
 interface CpReporterCreateProps {
-  dispatch: (params: CpReporterCreateAction) => void;
+  user: IUser;
   cpCreateState: CpReporterCreateState;
   mode: string;
+  editorRef: React.RefObject<HTMLDivElement>;
+  dispatch: (params: CpReporterCreateAction) => void;
   createCpReporter: (data: CP_Hidden_Reporter) => Promise<void>;
-  // onChangeImgae: (event: any) => Promise<boolean>;
 }
 
 const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
   props,
 ) => {
-  const { cpCreateState, dispatch, mode, createCpReporter } = props;
+  const {
+    cpCreateState,
+    dispatch,
+    mode,
+    createCpReporter,
+    user,
+    editorRef,
+  } = props;
   const { newCpReporter, users } = cpCreateState;
+  const isAdmin: boolean = user.type === 'admin';
 
   const {
     register,
@@ -168,35 +178,36 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               소개글
             </Typography>
-            <TextField
-              {...register('intro')}
-              fullWidth
-              multiline
-              variant="outlined"
-              error={Boolean(errors?.intro)}
-              helperText="줄 바꾸기 enter (필수 사항)"
-            />
+            {newCpReporter.intro && (
+              <WebEditor
+                editorRef={editorRef}
+                contents={newCpReporter?.intro}
+                bucket_name={IBuckets.CP_PHOTO}
+              />
+            )}
           </Box>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" sx={{ my: 1 }}>
-              추천 순위
-            </Typography>
-            <TextField
-              {...register('tudalRecommendScore')}
-              fullWidth
-              select
-              SelectProps={{ native: true }}
-              variant="outlined"
-              error={Boolean(errors?.tudalRecommendScore)}
-              helperText="1단계가 가장 높은 우선순위입니다."
-            >
-              {tudalRecommendScoreOption.map((data) => (
-                <option key={data.value} value={data.value}>
-                  {data.title}
-                </option>
-              ))}
-            </TextField>
-          </Box>
+          {isAdmin && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" sx={{ my: 1 }}>
+                추천 순위
+              </Typography>
+              <TextField
+                {...register('tudalRecommendScore')}
+                fullWidth
+                select
+                SelectProps={{ native: true }}
+                variant="outlined"
+                error={Boolean(errors?.tudalRecommendScore)}
+                helperText="1단계가 가장 높은 우선순위입니다."
+              >
+                {tudalRecommendScoreOption.map((data) => (
+                  <option key={data.value} value={data.value}>
+                    {data.title}
+                  </option>
+                ))}
+              </TextField>
+            </Box>
+          )}
           <Box sx={{ mt: 2 }}>
             <Typography sx={{ my: 2 }}>프로필 이미지 등록</Typography>
             <TextField

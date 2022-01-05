@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
@@ -7,6 +7,7 @@ import { IUser } from 'src/types/user';
 import CpReporterCreatePresenter from './CpReporterCreate.Presenter';
 import { IBuckets } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
+import useAuth from 'src/hooks/useAuth';
 
 export enum CpReporterCreateActionKind {
   LOADING = 'LOADING',
@@ -103,8 +104,10 @@ interface ICpReporterCreateProps {
 const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   props,
 ) => {
-  const { userId, reporterId } = useParams();
   const mode = props.mode || 'create';
+  const editorRef = useRef(null);
+  const { userId, reporterId } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
     CpReporterCreateReducer,
@@ -172,6 +175,13 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     }
   }, []);
 
+  // 리포터 소개글 (웹에디터)
+  const log = () => {
+    if (editorRef.current) {
+      return editorRef.current.getContent();
+    }
+  };
+
   //* 리포터 등록
   const createCpReporter = async (data: CP_Hidden_Reporter) => {
     let reporter: CP_Hidden_Reporter = { ...data };
@@ -192,9 +202,8 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
         tudalRecommendScore: Number(data.tudalRecommendScore),
         user: newReporterUser.id,
         imageUrl: imgUrl,
+        intro: log(),
       };
-
-      console.log('hello', reporter);
 
       if (mode === 'edit') {
         const { status } = await APICp.putReporter(
@@ -228,10 +237,12 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
 
   return (
     <CpReporterCreatePresenter
-      dispatch={dispatch}
+      editorRef={editorRef}
       cpCreateState={cpCreateState}
+      user={user}
       mode={mode}
       createCpReporter={createCpReporter}
+      dispatch={dispatch}
     />
   );
 };

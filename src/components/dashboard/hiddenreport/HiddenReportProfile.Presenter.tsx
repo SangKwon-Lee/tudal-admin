@@ -8,10 +8,13 @@ import {
   TableCell,
   Typography,
   TextField,
+  Box,
+  Button,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { IUser } from 'src/types/user';
 import { HrProfileState } from './HiddenReportProfile.Container';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface IHrProfileProps {
   user: IUser;
@@ -23,6 +26,21 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
 }) => {
   return (
     <>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'end',
+        }}
+      >
+        <Button
+          variant="outlined"
+          sx={{ mx: 10 }}
+          component={RouterLink}
+          to={`/dashboard/cp/${user?.hidden_reporter?.id}/edit/reporter`}
+        >
+          내용 수정
+        </Button>
+      </Box>
       <Card sx={{ mx: 10, my: 4 }}>
         <CardHeader title="히든 리포터 프로필" />
         <Divider />
