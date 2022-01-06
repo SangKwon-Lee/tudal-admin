@@ -24,8 +24,6 @@ import { IBuckets } from 'src/components/common/conf/aws';
 const schema = yup
   .object({
     nickname: yup.string().required(),
-    catchphrase: yup.string().required(),
-    tudalRecommendScore: yup.number().required(),
   })
   .required();
 
@@ -178,13 +176,12 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               소개글
             </Typography>
-            {newCpReporter.intro && (
-              <WebEditor
-                editorRef={editorRef}
-                contents={newCpReporter?.intro}
-                bucket_name={IBuckets.CP_PHOTO}
-              />
-            )}
+
+            <WebEditor
+              editorRef={editorRef}
+              contents={newCpReporter?.intro}
+              bucket_name={IBuckets.CP_PHOTO}
+            />
           </Box>
           {isAdmin && (
             <Box sx={{ mt: 2 }}>

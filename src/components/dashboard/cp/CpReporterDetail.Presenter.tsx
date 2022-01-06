@@ -10,11 +10,11 @@ import {
   LinearProgress,
   Box,
   Button,
-  TextField,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { CpReporterDetailState } from './CpReporterDetail.Container';
 import { Link as RouterLink } from 'react-router-dom';
+import { Viewer } from '@toast-ui/react-editor';
 interface CpReporterDetailProps {
   cpReporterDetailState: CpReporterDetailState;
 }
@@ -88,26 +88,7 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
                 </Typography>
               </TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  소개
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  disabled
-                  multiline
-                  variant="standard"
-                  InputProps={{ disableUnderline: true }}
-                  value={
-                    reporter?.intro
-                      ? reporter.intro
-                      : '소개 글이 없습니다.'
-                  }
-                ></TextField>
-              </TableCell>
-            </TableRow>
+
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
@@ -162,6 +143,18 @@ const CpReporterDetailPresenter: React.FC<CpReporterDetailProps> = (
                     'YYYY년 M월 D일 HH:mm',
                   )}`}
                 </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  소개
+                </Typography>
+              </TableCell>
+              <TableCell>
+                {reporter.intro && (
+                  <Viewer initialValue={reporter.intro} />
+                )}
               </TableCell>
             </TableRow>
           </TableBody>

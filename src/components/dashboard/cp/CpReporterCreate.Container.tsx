@@ -105,8 +105,9 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   props,
 ) => {
   const mode = props.mode || 'create';
+  const params = useParams();
+  const { userId, reporterId } = params;
   const editorRef = useRef(null);
-  const { userId, reporterId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
@@ -212,7 +213,9 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
         );
         if (status === 200) {
           toast.success('히든 리포터가 수정됐습니다.');
-          navigate('/dashboard/cp');
+          user.type === 'admin'
+            ? navigate('/dashboard/cp')
+            : navigate('/dashboard/hiddenreports/profile?edit=true');
         }
       } else {
         const { status } = await APICp.postReporter(reporter);
