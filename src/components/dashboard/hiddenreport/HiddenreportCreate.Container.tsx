@@ -343,6 +343,7 @@ const HiddenReportCreateContainer: FC<
         stocks: reportCreateState.newReport.stocks,
         tags: reportCreateState.newReport.tags,
         pdfUrl: reportCreateState.newReport.pdfUrl,
+        expirationDate: reportCreateState.newReport.expirationDate,
       };
       dispatch({
         type: HiddenReportCreateActionKind.GET_REPORT,
@@ -547,7 +548,6 @@ const HiddenReportCreateContainer: FC<
       navigate('/dashboard');
     }
   }, [user, navigate]);
-
   switch (step) {
     case 1:
       return (
