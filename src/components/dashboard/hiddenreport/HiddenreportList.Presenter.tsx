@@ -29,6 +29,7 @@ import dayjs from 'dayjs';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import PencilAlt from 'src/icons/PencilAlt';
 
 interface HRListPresenterProps {
   state: IHRListState;
@@ -164,6 +165,15 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                           to={`/dashboard/hiddenreports/${report.id}`}
                         >
                           <ArrowRightIcon fontSize="small" />
+                        </Link>
+                      </IconButton>
+                      <IconButton>
+                        <Link
+                          color="textPrimary"
+                          component={RouterLink}
+                          to={`/dashboard/hiddenreports/${report.id}/edit`}
+                        >
+                          <PencilAlt fontSize="small" />
                         </Link>
                       </IconButton>
                       <IconButton
