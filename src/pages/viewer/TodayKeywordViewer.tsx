@@ -23,7 +23,7 @@ const colorsets = [
 
 const TodayKeywordViewer: FC = () => {
   const [showKeyword, setShowKeyword] = useState(false);
-  const [list, setList] = useState<Stock[]>([]);
+  const [list] = useState<Stock[]>([]);
   const tagData = useRef({});
   const [tagArray, setTagArray] = useState<TagData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,6 +48,7 @@ const TodayKeywordViewer: FC = () => {
         );
         if (status === 200) {
           let tempArray = [];
+          // eslint-disable-next-line array-callback-return
           data.keywords.map((keyword, i) => {
             tempArray.push({
               label: keyword.keyword,

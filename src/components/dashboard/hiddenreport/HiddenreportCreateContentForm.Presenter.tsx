@@ -95,12 +95,20 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
     register,
     handleSubmit,
 
+    reset,
     formState: { errors },
   } = useForm<IHiddenReportForm>({
     defaultValues: reportCreateState.newReport,
     resolver: yupResolver(schema),
   });
   const { newReport } = reportCreateState;
+
+  useEffect(() => {
+    if (mode === 'edit') {
+      reset(newReport);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newReport.id, mode]);
 
   return (
     <Box
@@ -129,6 +137,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 {...register('title')}
                 error={Boolean(errors?.title)}
                 helperText={'3글자 이상 입력하세요'}
+                defaultValue={'asd'}
               />
             </Grid>
             <Grid item xs={12}>

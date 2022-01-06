@@ -1,11 +1,14 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
+import { APICp } from 'src/lib/api';
+import { CP_Hidden_Reporter } from 'src/types/cp';
 import { IUser } from 'src/types/user';
 import HiddenReportProfilePresenter from './HiddenReportProfile.Presenter';
 
 export enum HrProfileActionKind {
   LOADING = 'LOADING',
+  GET_REPORTER = 'GET_REPORTER',
 }
 
 export interface HrProfileAction {
@@ -15,6 +18,7 @@ export interface HrProfileAction {
 
 export interface HrProfileState {
   loading: boolean;
+  reporter: CP_Hidden_Reporter;
 }
 
 const HrProfileReducer = (
@@ -28,11 +32,17 @@ const HrProfileReducer = (
         ...state,
         loading: payload,
       };
+    case HrProfileActionKind.GET_REPORTER:
+      return {
+        ...state,
+        reporter: payload,
+      };
   }
 };
 
 const initialState: HrProfileState = {
   loading: false,
+  reporter: null,
 };
 
 interface IHrProfileProps {
@@ -44,20 +54,46 @@ const HiddenReportProfileContainer: React.FC<IHrProfileProps> = (
 ) => {
   const { user } = props;
   const navigate = useNavigate();
-  const [hrProfileState] = useReducer(HrProfileReducer, initialState);
+  const [hrProfileState, dispatch] = useReducer(
+    HrProfileReducer,
+    initialState,
+  );
+
+  const { reporter } = hrProfileState;
+  const getReporter = useCallback(async () => {
+    try {
+      const { data, status } = await APICp.getReporter(
+        user.hidden_reporter.id,
+      );
+      if (status === 200) {
+        dispatch({
+          type: HrProfileActionKind.GET_REPORTER,
+          payload: data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user && !user.hidden_reporter?.id) {
       navigate('/dashboard');
       toast.error('리포터를 먼저 생성해주세요');
+      return;
     }
-  }, [user, navigate]);
+    getReporter();
+  }, [user, navigate, getReporter]);
 
   return (
-    <HiddenReportProfilePresenter
-      user={user}
-      hrProfileState={hrProfileState}
-    />
+    <>
+      {reporter?.id && (
+        <HiddenReportProfilePresenter
+          reporter={hrProfileState.reporter}
+          hrProfileState={hrProfileState}
+        />
+      )}
+    </>
   );
 };
 

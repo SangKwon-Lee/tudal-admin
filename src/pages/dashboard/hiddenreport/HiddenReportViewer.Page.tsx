@@ -32,6 +32,7 @@ const HiddenReportViewerPage: FC = () => {
         `/viewer/hiddenreport/${report.id}?key=${randomString}`,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [report]);
 
   if (!report) {

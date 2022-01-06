@@ -7,26 +7,44 @@ import {
   TableRow,
   TableCell,
   Typography,
-  TextField,
+  Box,
+  Button,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
-import { IUser } from 'src/types/user';
 import { HrProfileState } from './HiddenReportProfile.Container';
+import { Link as RouterLink } from 'react-router-dom';
+import { CP_Hidden_Reporter } from 'src/types/cp';
+import { Viewer } from '@toast-ui/react-editor';
 
 interface IHrProfileProps {
-  user: IUser;
+  reporter: CP_Hidden_Reporter;
   hrProfileState: HrProfileState;
 }
 
 const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
-  user,
+  reporter,
 }) => {
   return (
     <>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'end',
+        }}
+      >
+        <Button
+          variant="outlined"
+          sx={{ mx: 10 }}
+          component={RouterLink}
+          to={`/dashboard/cp/${reporter.id}/edit/reporter`}
+        >
+          내용 수정
+        </Button>
+      </Box>
       <Card sx={{ mx: 10, my: 4 }}>
         <CardHeader title="히든 리포터 프로필" />
         <Divider />
-        {user?.hidden_reporter ? (
+        {reporter ? (
           <Table>
             <TableBody>
               <TableRow>
@@ -37,26 +55,11 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {user?.hidden_reporter?.nickname}
+                    {reporter.nickname}
                   </Typography>
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Typography color="textPrimary" variant="subtitle2">
-                    소개 글
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    InputProps={{ disableUnderline: true }}
-                    multiline
-                    disabled
-                    variant="standard"
-                    value={user?.hidden_reporter?.intro}
-                  ></TextField>
-                </TableCell>
-              </TableRow>
+
               <TableRow>
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
@@ -65,7 +68,7 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {user?.hidden_reporter?.catchphrase}
+                    {reporter.catchphrase}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -77,9 +80,9 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {`${dayjs(
-                      user?.hidden_reporter?.created_at,
-                    ).format('YYYY년 M월 D일 HH:mm')}`}
+                    {`${dayjs(reporter.created_at).format(
+                      'YYYY년 M월 D일 HH:mm',
+                    )}`}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -92,9 +95,26 @@ const HiddenReportProfilePresenter: React.FC<IHrProfileProps> = ({
                 <TableCell>
                   <img
                     style={{ borderRadius: '50%', width: '100px' }}
-                    src={user?.hidden_reporter?.imageUrl}
+                    src={reporter.imageUrl}
                     alt={''}
                   ></img>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography color="textPrimary" variant="subtitle2">
+                    소개 글
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Viewer initialValue={reporter.intro} />
+                  {/* <TextField
+                    InputProps={{ disableUnderline: true }}
+                    multiline
+                    disabled
+                    variant="standard"
+                    value={reporter.intro}
+                  ></TextField> */}
                 </TableCell>
               </TableRow>
             </TableBody>

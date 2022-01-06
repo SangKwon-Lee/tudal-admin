@@ -193,8 +193,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       user: cpCreateState.newMasterUser.id,
       profile_image_url: imgUrl,
     };
-    console.log('hello', master);
-    console.log('hello', cpCreateState);
 
     console.log(master);
     try {
