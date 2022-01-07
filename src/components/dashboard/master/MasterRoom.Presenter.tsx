@@ -234,7 +234,6 @@ const MasterRoomPresenter: FC<IMasterRoomProps> = (props) => {
               </div>
             </Box>
           </Card>
-          <Card sx={{ p: 3, my: 4, width: '100%' }}></Card>
         </>
       ) : (
         <Typography variant="subtitle2" fontSize="20px" sx={{ m: 4 }}>

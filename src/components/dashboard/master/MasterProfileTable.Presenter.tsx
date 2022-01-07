@@ -2,26 +2,43 @@ import React from 'react';
 import {
   Card,
   CardHeader,
+  Box,
   Divider,
   Table,
   TableBody,
   TableRow,
   TableCell,
   Typography,
-  TextField,
+  Button,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
-import { CP_Master } from 'src/types/cp';
-
+import { Link as RouterLink } from 'react-router-dom';
+import { IMaster } from 'src/types/master';
+import { Viewer } from '@toast-ui/react-editor';
 interface IMasterProfileProps {
-  master: CP_Master;
+  master: IMaster;
 }
 const MasterProfileTable: React.FC<IMasterProfileProps> = ({
   master,
 }) => {
   return (
-    <>
-      <Card sx={{ my: 4, mx: 10 }}>
+    <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <Button
+          variant="outlined"
+          sx={{ mx: 10, justifySelf: 'flex-end' }}
+          component={RouterLink}
+          to={`/dashboard/cp/master/${master.id}/edit`}
+        >
+          내용 수정
+        </Button>
+      </Box>
+      <Card sx={{ my: 2, mx: 10 }}>
         <CardHeader sx={{ m: 1 }} title="달인 프로필" />
         <Divider />
         <Table>
@@ -38,22 +55,7 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
                 </Typography>
               </TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  소개 글
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  InputProps={{ disableUnderline: true }}
-                  multiline
-                  disabled
-                  variant="standard"
-                  value={master?.intro}
-                ></TextField>
-              </TableCell>
-            </TableRow>
+
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
@@ -125,10 +127,20 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
                 ></img>
               </TableCell>
             </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  소개 글
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Viewer initialValue={master.intro}></Viewer>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </Card>
-    </>
+    </Box>
   );
 };
 

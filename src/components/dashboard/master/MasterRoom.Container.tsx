@@ -161,6 +161,10 @@ const MasterRoomContainer = () => {
   //* 방 생성
   const createRoom = async () => {
     try {
+      if (!MasterRoomState.title) {
+        toast.error('방 이름을 입력해주세요');
+        return;
+      }
       const { status } = await cmsServer.post(`/master-rooms`, {
         title: MasterRoomState.title,
         master: MasterRoomState.selectMaster,
