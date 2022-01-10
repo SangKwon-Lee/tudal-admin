@@ -150,22 +150,19 @@ const DraggableCard: React.FC<CardProps> = ({
   const opacity = isDragging ? 0 : 1;
 
   drag(drop(ref));
-
   return (
-    <div
-      ref={ref}
-      style={{
-        opacity,
-        width: '200px',
-        height: '250px',
-        border: orderEdit ? '2px solid #5664d2' : 'none',
-        backgroundImage: `url(${image})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-      }}
-      data-handler-id={handlerId}
-    ></div>
+    <div ref={ref} data-handler-id={handlerId}>
+      <img
+        src={image}
+        alt="이미지"
+        style={{
+          opacity,
+          width: '196px',
+          height: '196px',
+          border: orderEdit ? '2px solid #5664d2' : 'none',
+        }}
+      />
+    </div>
   );
 };
 

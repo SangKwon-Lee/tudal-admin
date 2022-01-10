@@ -9,4 +9,5 @@ export interface IPopUp {
   link: string;
   linkDescription: string;
   image: string;
+  type: string;
 }

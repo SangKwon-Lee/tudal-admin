@@ -118,6 +118,30 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
                   variant="outlined"
                 />
               </Box>
+              <Box sx={{ mt: 2 }}>
+                <TextField
+                  fullWidth
+                  select
+                  helperText={'팝업의 타입을 골라주세요.'}
+                  // error={submitError ? true : false}
+                  label="타입"
+                  SelectProps={{ native: true }}
+                  name="type"
+                  variant="outlined"
+                  // onBlur={handleSubmitError}
+                  onChange={(event) => {
+                    dispatch({
+                      type: PopUpCreateActionKind.CHANGE_INPUT,
+                      payload: event,
+                    });
+                  }}
+                  value={createInput?.type || ''}
+                >
+                  <option value="premium">프리미엄</option>
+                  <option value="master">달인</option>
+                  <option value="hiddenReport">히든리포트</option>
+                </TextField>
+              </Box>
               <Box sx={{ mt: 2, display: 'flex' }}>
                 <DateTimePicker
                   renderInput={(props) => <TextField {...props} />}
@@ -220,8 +244,6 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
                   color="primary"
                   variant="contained"
                   onClick={createNewPopUp}
-                  component={RouterLink}
-                  to={`/dashboard/popup`}
                 >
                   {mode === 'edit' ? '팝업수정' : '팝업 생성'}
                 </Button>

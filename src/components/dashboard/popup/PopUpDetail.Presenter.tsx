@@ -9,17 +9,27 @@ import {
   CardHeader,
   Typography,
   Box,
+  Button,
+  Dialog,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import Label from 'src/components/widgets/Label';
-import { PopUpDetailState } from './PopUpDetail.Container';
+import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
+import {
+  PopUpDetailAction,
+  PopUpDetailActionKind,
+  PopUpDetailState,
+} from './PopUpDetail.Container';
 
 interface PopUpDetailProps {
   PopUpDetailState: PopUpDetailState;
+  handleDeletePopUp: () => Promise<void>;
+  dispatch: (params: PopUpDetailAction) => void;
 }
 const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
-  const { PopUpDetailState, ...other } = props;
-  const { loading, popUp } = PopUpDetailState;
+  const { PopUpDetailState, handleDeletePopUp, dispatch, ...other } =
+    props;
+  const { loading, popUp, openModal } = PopUpDetailState;
   return (
     <>
       <Card {...other}>
@@ -169,6 +179,49 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
               src={popUp.image ? popUp.image : ''}
             ></img>
           </Box>
+        </Box>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'end',
+            padding: '15px',
+          }}
+        >
+          <Dialog
+            aria-labelledby="ConfirmModal"
+            open={openModal}
+            onClose={() => {
+              dispatch({
+                type: PopUpDetailActionKind.MODAL_CLOSE,
+              });
+            }}
+          >
+            <ConfirmModal
+              title={'팝업을 삭제 하시겠습니까?'}
+              content={''}
+              type={'ERROR'}
+              confirmTitle={'삭제'}
+              handleOnClick={handleDeletePopUp}
+              handleOnCancel={() => {
+                dispatch({
+                  type: PopUpDetailActionKind.MODAL_CLOSE,
+                });
+              }}
+            />
+          </Dialog>
+          <Button
+            sx={{ justifySelf: 'end' }}
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              dispatch({
+                type: PopUpDetailActionKind.MODAL_OPEN,
+              });
+            }}
+          >
+            삭제하기
+          </Button>
         </Box>
       </Card>
     </>

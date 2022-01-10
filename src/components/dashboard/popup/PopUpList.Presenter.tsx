@@ -114,20 +114,21 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
           justifyContent: 'space-between',
         }}
       >
-        {openList.length &&
-          openList.map((popup, i) => {
-            return (
-              <DraggableCard
-                key={i}
-                id={popup.id}
-                title={popup.title}
-                image={popup.image}
-                index={i}
-                orderEdit={isEditOrder}
-                moveCard={moveCard}
-              />
-            );
-          })}
+        {openList.length
+          ? openList.map((popup, i) => {
+              return (
+                <DraggableCard
+                  key={i}
+                  id={popup.id}
+                  title={popup.title}
+                  image={popup.image}
+                  index={i}
+                  orderEdit={isEditOrder}
+                  moveCard={moveCard}
+                />
+              );
+            })
+          : '등록된 팝업이 없습니다.'}
       </div>
       <Card>
         <Box

@@ -1,25 +1,18 @@
 import dayjs from 'dayjs';
 import { FC, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { APIPopUp } from 'src/lib/api';
 import PopUpCreatePresenter from './PopUpCreate.Presenter';
-const AWS = require('aws-sdk');
-const region = 'ap-northeast-2';
-
-const S3 = new AWS.S3({
-  region,
-  credentials: {
-    accessKeyId: process.env.ACCESS_KET,
-    secretAccessKey: process.env.SECRET_KEY,
-  },
-});
-
-const bucket_name = 'tudal-popup-photo';
+import { IBuckets } from 'src/components/common/conf/aws';
+import { registerImage } from 'src/utils/registerImage';
+import { isUseDay } from 'src/utils/isUseDay';
 
 export enum PopUpCreateActionKind {
   LOADING = 'LOADING',
+  GET_ID = 'GET_ID',
   GET_POPUP = 'GET_POPUP',
+  GET_POPUP_LENGTH = 'GET_POPUP_LENGTH',
   CHANGE_INPUT = 'CHANGE_INPUT',
   CHANGE_OPENTIME = 'CHANGE_OPENTIME',
   CHANGE_CLOSETIME = 'CHANGE_CLOSETIME',
@@ -33,6 +26,7 @@ export interface PopUpCreateAction {
 
 export interface PopUpCreateState {
   loading: boolean;
+  id: number;
   createInput: {
     title: string;
     description: string;
@@ -43,7 +37,9 @@ export interface PopUpCreateState {
     link: string;
     linkDescription: string;
     image: string;
+    type: string;
   };
+  popupLength: number;
 }
 
 let newOpenDate = dayjs();
@@ -58,17 +54,20 @@ newCloseDate = newCloseDate.set('minute', 59);
 
 const initialState: PopUpCreateState = {
   loading: false,
+  id: 0,
   createInput: {
     title: '',
     description: '',
     order: null,
-    isOpen: false,
+    isOpen: isUseDay(newCloseDate.format()),
     openTime: newOpenDate.format(),
     closeTime: newCloseDate.format(),
     link: '',
     linkDescription: '',
     image: '',
+    type: 'premium',
   },
+  popupLength: 0,
 };
 
 const PopUpCreateReducer = (
@@ -128,7 +127,18 @@ const PopUpCreateReducer = (
           link: payload.link,
           linkDescription: payload.linkDescription,
           image: payload.image,
+          type: payload.type,
         },
+      };
+    case PopUpCreateActionKind.GET_POPUP_LENGTH:
+      return {
+        ...state,
+        popupLength: payload,
+      };
+    case PopUpCreateActionKind.GET_ID:
+      return {
+        ...state,
+        id: payload,
       };
   }
 };
@@ -140,30 +150,86 @@ interface PopUpCreateProps {
 const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
   const mode = props.mode || 'create';
   const { popupId } = useParams();
-
+  const navigate = useNavigate();
   const [PopUpCreateState, dispatch] = useReducer(
     PopUpCreateReducer,
     initialState,
   );
 
-  //* 새로운 팝업 생성
-  const createNewPopUp = async () => {
+  //* 기존 팝업 길이
+  const getPopupLength = async () => {
     dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
     try {
-      const newPopUp = {
-        ...PopUpCreateState.createInput,
-      };
-      const { status } = await APIPopUp.createPopUp(newPopUp);
-      if (status === 200) {
-        toast.success('팝업이 생성됐습니다.');
-        dispatch({
-          type: PopUpCreateActionKind.LOADING,
-          payload: false,
-        });
+      const { data } = await APIPopUp.getCount();
+      dispatch({
+        type: PopUpCreateActionKind.GET_POPUP_LENGTH,
+        payload: data,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  console.log(isUseDay(PopUpCreateState.createInput.closeTime));
+  //* 팝업 생성 및 수정
+  const createNewPopUp = async () => {
+    dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
+
+    let newPopUp = {
+      ...PopUpCreateState.createInput,
+    };
+    if (mode !== 'edit') {
+      //* 공개 시간이면 자동으로 order 설정
+      if (isUseDay(PopUpCreateState.createInput.closeTime)) {
+        newPopUp = {
+          ...newPopUp,
+          order: PopUpCreateState.popupLength + 1,
+          isOpen: true,
+        };
       }
-    } catch (error) {
-      toast.error('오류가 생겼습니다.');
-      console.log(error);
+      try {
+        const { status } = await APIPopUp.createPopUp(newPopUp);
+        if (status === 200) {
+          toast.success('팝업이 생성됐습니다.');
+          dispatch({
+            type: PopUpCreateActionKind.LOADING,
+            payload: false,
+          });
+          navigate(`/dashboard/popup`);
+        }
+      } catch (error) {
+        toast.error('오류가 생겼습니다.');
+        console.log(error);
+      }
+    } else {
+      if (isUseDay(PopUpCreateState.createInput.closeTime)) {
+        newPopUp = {
+          ...newPopUp,
+          isOpen: true,
+        };
+      } else {
+        newPopUp = {
+          ...newPopUp,
+          order: null,
+          isOpen: false,
+        };
+      }
+      try {
+        const { status } = await APIPopUp.editPopup(
+          PopUpCreateState.id,
+          newPopUp,
+        );
+        if (status === 200) {
+          toast.success('팝업이 수정됐습니다.');
+          dispatch({
+            type: PopUpCreateActionKind.LOADING,
+            payload: false,
+          });
+        }
+        navigate(`/dashboard/popup`);
+      } catch (error) {
+        toast.error('오류가 생겼습니다.');
+        console.log(error);
+      }
     }
   };
 
@@ -173,14 +239,10 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
     dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
     try {
       // Koscom Cloud에 업로드하기!
-      await S3.putObject({
-        Bucket: bucket_name,
-        Key: file[0].name,
-        ACL: 'public-read',
-        // ACL을 지우면 전체공개가 되지 않습니다.
-        Body: file[0],
-      }).promise();
-      const imageUrl = `https://hiddenbox-photo.s3.ap-northeast-2.amazonaws.com/${file[0].name}`;
+      const imageUrl = await registerImage(
+        file,
+        IBuckets.HIDDENREPORT_IMAGE,
+      );
       dispatch({
         type: PopUpCreateActionKind.CHANGE_IMAGE,
         payload: imageUrl,
@@ -205,6 +267,10 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
           payload: data,
         });
         dispatch({
+          type: PopUpCreateActionKind.GET_ID,
+          payload: data.id,
+        });
+        dispatch({
           type: PopUpCreateActionKind.LOADING,
           payload: false,
         });
@@ -218,6 +284,7 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
     if (mode === 'edit') {
       getPopUp();
     }
+    getPopupLength();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

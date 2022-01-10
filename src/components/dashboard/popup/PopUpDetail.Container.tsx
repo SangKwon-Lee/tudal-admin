@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { APIPopUp } from 'src/lib/api';
 import { IPopUp } from 'src/types/popup';
 import PopUpDetailPresenter from './PopUpDetail.Presenter';
@@ -7,6 +7,8 @@ import PopUpDetailPresenter from './PopUpDetail.Presenter';
 export enum PopUpDetailActionKind {
   LOADING = 'LOADING',
   GET_POPUP = 'GET_POPUP',
+  MODAL_OPEN = 'MODAL_OPEN',
+  MODAL_CLOSE = 'MODAL_CLOSE',
 }
 
 export interface PopUpDetailAction {
@@ -17,6 +19,7 @@ export interface PopUpDetailAction {
 export interface PopUpDetailState {
   loading: boolean;
   popUp: IPopUp;
+  openModal: boolean;
 }
 
 const initialState: PopUpDetailState = {
@@ -32,7 +35,9 @@ const initialState: PopUpDetailState = {
     link: '',
     linkDescription: '',
     image: '',
+    type: '',
   },
+  openModal: false,
 };
 
 const PopUpDetailReducer = (
@@ -51,6 +56,16 @@ const PopUpDetailReducer = (
         ...state,
         popUp: payload,
       };
+    case PopUpDetailActionKind.MODAL_OPEN:
+      return {
+        ...state,
+        openModal: true,
+      };
+    case PopUpDetailActionKind.MODAL_CLOSE:
+      return {
+        ...state,
+        openModal: false,
+      };
   }
 };
 
@@ -60,7 +75,7 @@ const PopUpDetailContainer = () => {
     initialState,
   );
   const { popupId } = useParams();
-
+  const navigate = useNavigate();
   const getPopUpDetail = async () => {
     dispatch({ type: PopUpDetailActionKind.LOADING, payload: true });
     try {
@@ -80,12 +95,31 @@ const PopUpDetailContainer = () => {
     }
   };
 
+  const handleDeletePopUp = async () => {
+    try {
+      const { status } = await APIPopUp.deletePopup(
+        PopUpDetailState.popUp.id,
+      );
+      if (status === 200) {
+        navigate('/dashboard/popup');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     getPopUpDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [popupId]);
 
-  return <PopUpDetailPresenter PopUpDetailState={PopUpDetailState} />;
+  return (
+    <PopUpDetailPresenter
+      PopUpDetailState={PopUpDetailState}
+      handleDeletePopUp={handleDeletePopUp}
+      dispatch={dispatch}
+    />
+  );
 };
 
 export default PopUpDetailContainer;

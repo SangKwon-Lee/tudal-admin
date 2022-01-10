@@ -14,10 +14,13 @@ export async function getOpenList() {
   );
 }
 
-export async function getCount(params) {
+export async function getCount(params?) {
   let query = qs.stringify(removeEmpty(params));
-  return await axios.get<IPopUp[]>(`/popups/count?${query}`);
+  return await axios.get<IPopUp[]>(
+    `/popups/count?${query}&isOpen=true`,
+  );
 }
+
 export async function createPopUp(popup) {
   return axios.post(`/popups`, popup);
 }
@@ -28,4 +31,8 @@ export async function getPopUp(id) {
 
 export async function editPopup(id, body) {
   return axios.put(`/popups/${id}`, body);
+}
+
+export async function deletePopup(id) {
+  return axios.delete(`/popups/${id}`);
 }
