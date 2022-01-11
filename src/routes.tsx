@@ -598,7 +598,7 @@ const routes: PartialRouteObject[] = [
             element: <CpReporterCreatePage />,
           },
           {
-            path: ':masterId/edit/master',
+            path: 'master/:masterId/edit',
             element: <CpMasterCreatePage />,
           },
           {

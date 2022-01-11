@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
-import { APIMaster } from 'src/lib/api';
-import { IMasterFeed } from 'src/types/master';
+import { APICp } from 'src/lib/api';
+import { IMaster } from 'src/types/master';
 import { IUser } from 'src/types/user';
 import MasterProfilePresenter from './MasterProfile.Presenter';
 
 export enum MasterProfileActionKind {
   LOADING = 'LOADING',
-  GET_MASTER_FEEDS = 'GET_MASTER_FEEDS',
+  GET_MASTER = 'GET_MASTER',
 }
 
 export interface MasterProfileAction {
@@ -18,7 +18,7 @@ export interface MasterProfileAction {
 
 export interface MasterProfileState {
   loading: boolean;
-  feeds: IMasterFeed[];
+  masters: IMaster[];
 }
 
 const MasterProfileReducer = (
@@ -32,17 +32,17 @@ const MasterProfileReducer = (
         ...state,
         loading: payload,
       };
-    case MasterProfileActionKind.GET_MASTER_FEEDS:
+    case MasterProfileActionKind.GET_MASTER:
       return {
         ...state,
-        feeds: payload,
+        masters: payload,
       };
   }
 };
 
 const initialState: MasterProfileState = {
   loading: false,
-  feeds: [],
+  masters: [],
 };
 interface IMasterProfileProps {
   user: IUser;
@@ -58,20 +58,19 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
     initialState,
   );
 
-  const getMasterFeed = useCallback(async () => {
+  const { masters } = masterProfileState;
+  const getMasters = useCallback(async () => {
     dispatch({
       type: MasterProfileActionKind.LOADING,
       payload: true,
     });
     try {
-      const { data, status } = await APIMaster.getFeeds(
-        '',
-        user.master.id,
-      );
+      const { data, status } = await APICp.getUser(user.id);
+
       if (status === 200) {
         dispatch({
-          type: MasterProfileActionKind.GET_MASTER_FEEDS,
-          payload: data.slice(0, 3),
+          type: MasterProfileActionKind.GET_MASTER,
+          payload: data.masters,
         });
       }
     } catch (error) {
@@ -81,22 +80,27 @@ const MasterProfileContainer: React.FC<IMasterProfileProps> = (
 
   useEffect(() => {
     if (user?.master?.id) {
-      getMasterFeed();
+      getMasters();
     }
-  }, [getMasterFeed, user]);
+  }, [getMasters, user]);
 
   useEffect(() => {
     if (user && !user.masters[0]?.id) {
       navigate('/dashboard');
       toast.error('달인을 먼저 생성해주세요');
     }
-  }, [user, navigate]);
+    getMasters();
+  }, [user, navigate, getMasters]);
 
   return (
-    <MasterProfilePresenter
-      user={props.user}
-      masterProfileState={masterProfileState}
-    />
+    <>
+      {masters.length && (
+        <MasterProfilePresenter
+          masters={masters}
+          masterProfileState={masterProfileState}
+        />
+      )}
+    </>
   );
 };
 

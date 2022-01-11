@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
@@ -7,6 +7,7 @@ import { IUser } from 'src/types/user';
 import CpMasterCreatePresenter from './CpMasterCreate.Presenter';
 import { IBuckets } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
+import useAuth from 'src/hooks/useAuth';
 export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
@@ -105,7 +106,8 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   props,
 ) => {
   const { masterId, userId } = useParams();
-
+  const { user } = useAuth();
+  const editorRef = useRef(null);
   const mode = props.mode || 'create';
   const navigate = useNavigate();
   const [cpCreateState, dispatch] = useReducer(
@@ -126,7 +128,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
           type: CpMasterCreateActionKind.GET_USER,
           payload: data,
         });
-        console.log('123123', data);
       } catch (error) {
         console.log(error);
       }
@@ -180,6 +181,12 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     }
   }, [mode]);
 
+  const log = () => {
+    if (editorRef.current) {
+      return editorRef.current.getContent();
+    }
+  };
+
   //* cp 등록
   const createCpMaster = async (data: CP_Master) => {
     const imgUrl = await registerImage(
@@ -187,26 +194,28 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       IBuckets.CP_PHOTO,
     );
 
+    const intro = log();
+
     let master: CP_Master = {
       ...data,
+      intro,
       keyword: data.keyword.trim(),
       user: cpCreateState.newMasterUser.id,
       profile_image_url: imgUrl,
     };
 
-    console.log(master);
     try {
       if (mode === 'edit') {
         const { status } = await APICp.putMaster(masterId, master);
         if (status === 200) {
-          navigate('/dashboard/cp');
           toast.success('달인이 수정됐습니다.');
+          navigate('/dashboard');
         }
       } else {
         const { status } = await APICp.postMaster(master);
         if (status === 200) {
           toast.success('새로운 달인이 만들어졌습니다.');
-          navigate('/dashboard/cp');
+          navigate('/dashboard');
         }
       }
     } catch (error) {
@@ -222,12 +231,15 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 
     getCpMaster();
   }, [getCpMaster, getUsers, mode]);
+
   return (
     <CpMasterCreatePresenter
       dispatch={dispatch}
       cpCreateState={cpCreateState}
       mode={mode}
       createCpMaster={createCpMaster}
+      user={user}
+      editorRef={editorRef}
     />
   );
 };

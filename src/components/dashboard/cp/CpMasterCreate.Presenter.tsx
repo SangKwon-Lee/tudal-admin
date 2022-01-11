@@ -18,29 +18,40 @@ import * as yup from 'yup';
 import { useEffect } from 'react';
 import { CP_Master } from 'src/types/cp';
 import ImageCropper from 'src/components/common/ImageCropper';
+import { IUser, IUserType } from 'src/types/user';
+import WebEditor from 'src/components/common/WebEditor';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 const schema = yup
   .object({
     nickname: yup.string().required(),
     price_gold: yup.number().positive().required(),
     subscription_days: yup.number().positive().required(),
-    intro: yup.string().required(),
     keyword: yup.string().required(),
     type: yup.string().required(),
   })
   .required();
 
 interface CpMasterCreateProps {
-  dispatch: (params: CpMasterCreateAction) => void;
   cpCreateState: CpMasterCreateState;
   mode: string;
+  user: IUser;
+  editorRef: React.RefObject<HTMLDivElement>;
+  dispatch: (params: CpMasterCreateAction) => void;
   createCpMaster: (data: CP_Master) => Promise<void>;
 }
 
 const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
   props,
 ) => {
-  const { cpCreateState, dispatch, mode, createCpMaster } = props;
+  const {
+    cpCreateState,
+    dispatch,
+    mode,
+    createCpMaster,
+    user,
+    editorRef,
+  } = props;
   const { newCpMaster, users, newMasterUser } = cpCreateState;
   const {
     register,
@@ -78,6 +89,8 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
       reader.readAsDataURL(event.target.files[0]);
     }
   };
+
+  const isOnlyAdminAvailable = user.type === IUserType.ADMIN;
 
   return (
     <>
@@ -133,19 +146,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               helperText={'닉네임 (채널 이름) 은 필수입니다.'}
             />
           </Box>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" sx={{ my: 1 }}>
-              소개 글
-            </Typography>
-            <TextField
-              fullWidth
-              {...register('intro')}
-              multiline
-              variant="outlined"
-              helperText="줄 바꾸기 enter. (필수 항목)"
-              error={Boolean(errors?.intro)}
-            />
-          </Box>
+
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               키워드
@@ -167,6 +168,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               {...register('price_gold')}
               variant="outlined"
               error={Boolean(errors?.price_gold)}
+              disabled={!isOnlyAdminAvailable}
               helperText={'구독료 입력은 필수입니다.'}
             ></TextField>
           </Box>
@@ -178,6 +180,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               fullWidth
               {...register('subscription_days')}
               variant="outlined"
+              disabled={!isOnlyAdminAvailable}
               error={Boolean(errors?.subscription_days)}
               helperText={'구독기간 입력은 필수입니다. '}
             ></TextField>
@@ -195,6 +198,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               SelectProps={{ native: true }}
               variant="outlined"
               sx={{ mx: 1 }}
+              disabled={!isOnlyAdminAvailable}
             >
               <option value="free">무료</option>
               <option value="paid">유료</option>
@@ -273,6 +277,16 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
                 )}
               </div>
             </Box>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
+              소개 글
+            </Typography>
+            <WebEditor
+              editorRef={editorRef}
+              contents={newCpMaster.intro}
+              bucket_name={IBuckets.CP_PHOTO}
+            />
           </Box>
         </Card>
         <Box

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
 import { APIMaster } from 'src/lib/api';
-import { CP_Master } from 'src/types/cp';
+import { IMaster } from 'src/types/master';
 import CpMasterDetailPresenter from './CpMasterDetail.Presenter';
 export enum CpMasterDetailActionKind {
   LOADING = 'LOADING',
@@ -13,7 +13,7 @@ export interface CpMasterDetailAction {
 }
 export interface CpMasterDetailState {
   loading: boolean;
-  masters: CP_Master[];
+  masters: IMaster[];
 }
 
 const initialState: CpMasterDetailState = {

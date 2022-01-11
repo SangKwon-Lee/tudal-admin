@@ -1,19 +1,19 @@
-import { IUser } from 'src/types/user';
+import { IMaster } from 'src/types/master';
 import { MasterProfileState } from './MasterProfile.Container';
 import MasterProfileTable from './MasterProfileTable.Presenter';
 
 interface IMasterProfileProps {
-  user: IUser;
+  masters: IMaster[];
   masterProfileState: MasterProfileState;
 }
 
 const MasterProfilePresenter: React.FC<IMasterProfileProps> = ({
-  user,
+  masters,
   masterProfileState,
 }) => {
   return (
     <>
-      {user.masters.map((master, i) => (
+      {masters.map((master, i) => (
         <MasterProfileTable key={i} master={master} />
       ))}
     </>

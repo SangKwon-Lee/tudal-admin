@@ -81,6 +81,10 @@ export interface IMaster {
   created_at: Date;
   updated_at: Date;
   master_rooms?: IMasterRoom[];
+  price_gold: number;
+
+  subscription_days: number;
+  type: 'free' | 'paid';
 }
 
 export interface IMasterFeedImage {
