@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { APIPopUp } from 'src/lib/api';
+import { APICp, APIHR, APIPopUp } from 'src/lib/api';
 import { IPopUp } from 'src/types/popup';
 import PopUpDetailPresenter from './PopUpDetail.Presenter';
 
@@ -9,6 +9,7 @@ export enum PopUpDetailActionKind {
   GET_POPUP = 'GET_POPUP',
   MODAL_OPEN = 'MODAL_OPEN',
   MODAL_CLOSE = 'MODAL_CLOSE',
+  GET_TARGET_DETAIL = 'GET_TARGET_DETAIL',
 }
 
 export interface PopUpDetailAction {
@@ -20,6 +21,7 @@ export interface PopUpDetailState {
   loading: boolean;
   popUp: IPopUp;
   openModal: boolean;
+  targetDetail: any;
 }
 
 const initialState: PopUpDetailState = {
@@ -29,14 +31,13 @@ const initialState: PopUpDetailState = {
     title: '',
     description: '',
     order: null,
-    isOpen: false,
     openTime: '',
     closeTime: '',
-    link: '',
-    linkDescription: '',
     image: '',
-    type: '',
+    target: '',
+    target_id: null,
   },
+  targetDetail: {},
   openModal: false,
 };
 
@@ -66,10 +67,16 @@ const PopUpDetailReducer = (
         ...state,
         openModal: false,
       };
+    case PopUpDetailActionKind.GET_TARGET_DETAIL:
+      return {
+        ...state,
+        targetDetail: payload,
+      };
   }
 };
 
 const PopUpDetailContainer = () => {
+  console.log('rendering');
   const [PopUpDetailState, dispatch] = useReducer(
     PopUpDetailReducer,
     initialState,
@@ -85,11 +92,48 @@ const PopUpDetailContainer = () => {
           type: PopUpDetailActionKind.GET_POPUP,
           payload: data,
         });
-        dispatch({
-          type: PopUpDetailActionKind.LOADING,
-          payload: false,
-        });
       }
+
+      const { target, target_id } = data;
+      let targetDetail;
+
+      switch (target) {
+        case 'master':
+          const { data: master } = await APICp.getMaster(target_id);
+          targetDetail = {
+            id: master.id,
+            value: master.nickname,
+            subValue: master.user?.username || '',
+          };
+          break;
+        case 'hidden_report':
+          const { data: report } = await APIHR.get(target_id);
+          targetDetail = {
+            id: report.id,
+            value: report.title,
+            subValue: report.hidden_reporter?.nickname || '',
+          };
+
+          break;
+        case 'hidden_reporter':
+          const { data: reporter } = await APICp.getReporter(
+            target_id,
+          );
+          targetDetail = {
+            id: reporter.id,
+            value: reporter.nickname,
+            subValue: reporter.user?.username || '',
+          };
+          break;
+      }
+      dispatch({
+        type: PopUpDetailActionKind.GET_TARGET_DETAIL,
+        payload: targetDetail,
+      });
+      dispatch({
+        type: PopUpDetailActionKind.LOADING,
+        payload: false,
+      });
     } catch (error) {
       console.log(error);
     }

@@ -31,6 +31,7 @@ import {
 
 import dayjs from 'dayjs';
 import DraggableCard from './PopupListDnD.Container';
+import toast from 'react-hot-toast';
 
 const getOrderLabel = (order) => {
   return !order ? (
@@ -61,6 +62,10 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
   const { list, openList, page, isEditOrder } = state;
 
   const handleEdit = async () => {
+    if (openList.length < 1) {
+      toast.error('등록된 팝업이 없습니다.');
+      return;
+    }
     if (isEditOrder) {
       await postChangeOrder();
     }
@@ -75,7 +80,7 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography sx={{ my: 2 }}>
-          방 순서는 Drag & Drop으로 변경 가능합니다.
+          팝업 순서는 드래그 앤 드롭으로 변경이 가능합니다.
         </Typography>
         <Button
           color="primary"

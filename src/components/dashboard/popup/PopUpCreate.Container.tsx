@@ -47,17 +47,17 @@ export interface PopUpCreateState {
   targetCandidate: {
     search: string;
     selected: any;
-    masters: Array<IMaster>;
-    hidden_reports: Array<IHR>;
-    hidden_reporters: Array<CP_Hidden_Reporter>;
+    master: Array<IMaster>;
+    hidden_report: Array<IHR>;
+    hidden_reporter: Array<CP_Hidden_Reporter>;
   };
 }
 
 export const POPUP_TARGET = [
   { key: 'premium', name: '프리미엄' },
-  { key: 'masters', name: '달인' },
-  { key: 'hidden_reports', name: '히든리포트' },
-  { key: 'hidden_reporters', name: '히든리포터' },
+  { key: 'master', name: '달인' },
+  { key: 'hidden_report', name: '히든리포트' },
+  { key: 'hidden_reporter', name: '히든리포터' },
 ];
 
 let newOpenDate = dayjs();
@@ -86,9 +86,9 @@ const initialState: PopUpCreateState = {
   targetCandidate: {
     search: '',
     selected: {},
-    masters: [],
-    hidden_reporters: [],
-    hidden_reports: [],
+    master: [],
+    hidden_reporter: [],
+    hidden_report: [],
   },
   popupLength: 0,
 };
@@ -171,9 +171,9 @@ const PopUpCreateReducer = (
         },
         targetCandidate: {
           ...state.targetCandidate,
-          hidden_reporters: [],
-          masters: [],
-          hidden_reports: [],
+          hidden_reporter: [],
+          master: [],
+          hidden_report: [],
           search: '',
         },
       };
@@ -192,6 +192,10 @@ const PopUpCreateReducer = (
           ...state.targetCandidate,
           selected: payload.list[0],
           [payload.target]: payload.list,
+        },
+        createInput: {
+          ...state.createInput,
+          target_id: Number(payload.list[0].id),
         },
       };
     case PopUpCreateActionKind.CHANGE_TARGET_ID:
@@ -288,9 +292,8 @@ const PopUpCreateContainer: FC = () => {
 
     let params = { _q: search };
     switch (target) {
-      case 'masters':
+      case 'master':
         list = await APICp.searchMasters(params);
-        console.log(list);
         list = list.data.map((master) => {
           return {
             id: master.id,
@@ -300,9 +303,8 @@ const PopUpCreateContainer: FC = () => {
         });
         break;
 
-      case 'hidden_reports':
+      case 'hidden_report':
         list = await APIHR.getList(params);
-        console.log(list);
         list = list.data.map((report) => {
           return {
             id: report.id,
@@ -313,7 +315,7 @@ const PopUpCreateContainer: FC = () => {
 
         break;
 
-      case 'hidden_reporters':
+      case 'hidden_reporter':
         list = await APICp.searchReporter(params);
         list = list.data.map((reporter) => {
           return {

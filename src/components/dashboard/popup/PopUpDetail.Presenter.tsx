@@ -29,7 +29,11 @@ interface PopUpDetailProps {
 const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
   const { PopUpDetailState, handleDeletePopUp, dispatch, ...other } =
     props;
-  const { loading, popUp, openModal } = PopUpDetailState;
+
+  console.log('here', props);
+  const { loading, popUp, openModal, targetDetail } =
+    PopUpDetailState;
+
   return (
     <>
       <Card {...other}>
@@ -87,45 +91,54 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
-                  공개 여부
+                  종류
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {popUp.isOpen ? (
-                    <Label color="success">공개</Label>
-                  ) : (
-                    <Label color="error">비공개</Label>
-                  )}
+                  {popUp.target}
                 </Typography>
               </TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  링크
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {popUp.link ? popUp.link : '링크가 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography color="textPrimary" variant="subtitle2">
-                  링크 설명
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography color="textSecondary" variant="body2">
-                  {popUp.linkDescription
-                    ? popUp.linkDescription
-                    : '링크 설명이 없습니다.'}
-                </Typography>
-              </TableCell>
-            </TableRow>
+            {popUp.target !== 'premium' && (
+              <>
+                <TableRow>
+                  <TableCell>
+                    <Typography
+                      color="textPrimary"
+                      variant="subtitle2"
+                    >
+                      정보
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="body2">
+                      {`${targetDetail.value} / ${targetDetail.subValue} `}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    <Typography
+                      color="textPrimary"
+                      variant="subtitle2"
+                    >
+                      순서
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="body2">
+                      {popUp.order ? (
+                        popUp.order
+                      ) : (
+                        <Label color="error">비공개</Label>
+                      )}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </>
+            )}
+
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
