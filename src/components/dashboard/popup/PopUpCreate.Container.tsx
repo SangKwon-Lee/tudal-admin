@@ -1,12 +1,14 @@
 import dayjs from 'dayjs';
-import { FC, useEffect, useReducer } from 'react';
+import { FC, useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router-dom';
-import { APIPopUp } from 'src/lib/api';
+import { useNavigate } from 'react-router-dom';
+import { APICp, APIHR, APIPopUp } from 'src/lib/api';
 import PopUpCreatePresenter from './PopUpCreate.Presenter';
 import { IBuckets } from 'src/components/common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
-import { isUseDay } from 'src/utils/isUseDay';
+import { IMaster } from 'src/types/master';
+import { IHR } from 'src/types/hiddenreport';
+import { CP_Hidden_Reporter } from 'src/types/cp';
 
 export enum PopUpCreateActionKind {
   LOADING = 'LOADING',
@@ -17,6 +19,10 @@ export enum PopUpCreateActionKind {
   CHANGE_OPENTIME = 'CHANGE_OPENTIME',
   CHANGE_CLOSETIME = 'CHANGE_CLOSETIME',
   CHANGE_IMAGE = 'CHANGE_IMAGE',
+  CHANGE_SEARCH_WORD = 'CHANGE_SEARCH_WORD',
+  CHANGE_CANDIDATES = 'CHANGE_CANDIDATES',
+  CHANGE_TARGET = 'CHANGE_TARGET',
+  CHANGE_TARGET_ID = 'CHANGE_TARGET_ID',
 }
 
 export interface PopUpCreateAction {
@@ -31,16 +37,28 @@ export interface PopUpCreateState {
     title: string;
     description: string;
     order: number;
-    isOpen: boolean;
     openTime: string;
     closeTime: string;
-    link: string;
-    linkDescription: string;
     image: string;
-    type: string;
+    target: string;
+    target_id: number;
   };
   popupLength: number;
+  targetCandidate: {
+    search: string;
+    selected: any;
+    masters: Array<IMaster>;
+    hidden_reports: Array<IHR>;
+    hidden_reporters: Array<CP_Hidden_Reporter>;
+  };
 }
+
+export const POPUP_TARGET = [
+  { key: 'premium', name: '프리미엄' },
+  { key: 'masters', name: '달인' },
+  { key: 'hidden_reports', name: '히든리포트' },
+  { key: 'hidden_reporters', name: '히든리포터' },
+];
 
 let newOpenDate = dayjs();
 newOpenDate = newOpenDate.add(1, 'date');
@@ -59,13 +77,18 @@ const initialState: PopUpCreateState = {
     title: '',
     description: '',
     order: null,
-    isOpen: isUseDay(newCloseDate.format()),
     openTime: newOpenDate.format(),
     closeTime: newCloseDate.format(),
-    link: '',
-    linkDescription: '',
     image: '',
-    type: 'premium',
+    target: POPUP_TARGET[0].key,
+    target_id: null,
+  },
+  targetCandidate: {
+    search: '',
+    selected: {},
+    masters: [],
+    hidden_reporters: [],
+    hidden_reports: [],
   },
   popupLength: 0,
 };
@@ -121,13 +144,11 @@ const PopUpCreateReducer = (
           title: payload.title,
           description: payload.description,
           order: payload.order,
-          isOpen: payload.isOpen,
           openTime: payload.openTime,
           closeTime: payload.closeTime,
-          link: payload.link,
-          linkDescription: payload.linkDescription,
           image: payload.image,
-          type: payload.type,
+          target: payload.target,
+          target_id: payload.target_id,
         },
       };
     case PopUpCreateActionKind.GET_POPUP_LENGTH:
@@ -140,25 +161,65 @@ const PopUpCreateReducer = (
         ...state,
         id: payload,
       };
+
+    case PopUpCreateActionKind.CHANGE_TARGET:
+      return {
+        ...state,
+        createInput: {
+          ...state.createInput,
+          target: payload,
+        },
+        targetCandidate: {
+          ...state.targetCandidate,
+          hidden_reporters: [],
+          masters: [],
+          hidden_reports: [],
+          search: '',
+        },
+      };
+    case PopUpCreateActionKind.CHANGE_SEARCH_WORD:
+      return {
+        ...state,
+        targetCandidate: {
+          ...state.targetCandidate,
+          search: payload,
+        },
+      };
+    case PopUpCreateActionKind.CHANGE_CANDIDATES:
+      return {
+        ...state,
+        targetCandidate: {
+          ...state.targetCandidate,
+          selected: payload.list[0],
+          [payload.target]: payload.list,
+        },
+      };
+    case PopUpCreateActionKind.CHANGE_TARGET_ID:
+      return {
+        ...state,
+        targetCandidate: {
+          ...state.targetCandidate,
+          selected: payload,
+        },
+        createInput: {
+          ...state.createInput,
+          target_id: Number(payload.id),
+        },
+      };
   }
 };
 
-interface PopUpCreateProps {
-  mode?: string;
-}
-
-const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
-  const mode = props.mode || 'create';
-  const { popupId } = useParams();
+const PopUpCreateContainer: FC = () => {
   const navigate = useNavigate();
   const [PopUpCreateState, dispatch] = useReducer(
     PopUpCreateReducer,
     initialState,
   );
 
+  const { target } = PopUpCreateState.createInput;
+  const { search } = PopUpCreateState.targetCandidate;
   //* 기존 팝업 길이
   const getPopupLength = async () => {
-    dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
     try {
       const { data } = await APIPopUp.getCount();
       dispatch({
@@ -169,67 +230,32 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
       console.log(e);
     }
   };
-  console.log(isUseDay(PopUpCreateState.createInput.closeTime));
+
   //* 팝업 생성 및 수정
   const createNewPopUp = async () => {
+    if (!PopUpCreateState.createInput.image) {
+      toast.error('이미지를 등록해주세요');
+      return;
+    }
     dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
-
     let newPopUp = {
       ...PopUpCreateState.createInput,
+      order: PopUpCreateState.popupLength + 1,
     };
-    if (mode !== 'edit') {
-      //* 공개 시간이면 자동으로 order 설정
-      if (isUseDay(PopUpCreateState.createInput.closeTime)) {
-        newPopUp = {
-          ...newPopUp,
-          order: PopUpCreateState.popupLength + 1,
-          isOpen: true,
-        };
-      }
-      try {
-        const { status } = await APIPopUp.createPopUp(newPopUp);
-        if (status === 200) {
-          toast.success('팝업이 생성됐습니다.');
-          dispatch({
-            type: PopUpCreateActionKind.LOADING,
-            payload: false,
-          });
-          navigate(`/dashboard/popup`);
-        }
-      } catch (error) {
-        toast.error('오류가 생겼습니다.');
-        console.log(error);
-      }
-    } else {
-      if (isUseDay(PopUpCreateState.createInput.closeTime)) {
-        newPopUp = {
-          ...newPopUp,
-          isOpen: true,
-        };
-      } else {
-        newPopUp = {
-          ...newPopUp,
-          order: null,
-          isOpen: false,
-        };
-      }
-      try {
-        const { status } = await APIPopUp.editPopup(
-          PopUpCreateState.id,
-          newPopUp,
-        );
-        if (status === 200) {
-          toast.success('팝업이 수정됐습니다.');
-          dispatch({
-            type: PopUpCreateActionKind.LOADING,
-            payload: false,
-          });
-        }
+
+    try {
+      const { status } = await APIPopUp.createPopUp(newPopUp);
+      if (status === 200) {
+        toast.success('팝업이 생성됐습니다.');
+        dispatch({
+          type: PopUpCreateActionKind.LOADING,
+          payload: false,
+        });
         navigate(`/dashboard/popup`);
-      } catch (error) {
-        toast.error('오류가 생겼습니다.');
-        console.log(error);
       }
+    } catch (error) {
+      toast.error('오류가 생겼습니다.');
+      console.log(error);
     }
   };
 
@@ -257,36 +283,63 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
     }
   };
 
-  const getPopUp = async () => {
-    dispatch({ type: PopUpCreateActionKind.LOADING, payload: true });
-    try {
-      const { data, status } = await APIPopUp.getPopUp(popupId);
-      if (status === 200) {
-        dispatch({
-          type: PopUpCreateActionKind.GET_POPUP,
-          payload: data,
+  const getTargetCandidate = useCallback(async () => {
+    let list;
+
+    let params = { _q: search };
+    switch (target) {
+      case 'masters':
+        list = await APICp.searchMasters(params);
+        console.log(list);
+        list = list.data.map((master) => {
+          return {
+            id: master.id,
+            value: master.nickname,
+            subValue: master.user?.username || '',
+          };
         });
-        dispatch({
-          type: PopUpCreateActionKind.GET_ID,
-          payload: data.id,
+        break;
+
+      case 'hidden_reports':
+        list = await APIHR.getList(params);
+        console.log(list);
+        list = list.data.map((report) => {
+          return {
+            id: report.id,
+            value: report.title,
+            subValue: report.hidden_reporter?.nickname || '',
+          };
         });
-        dispatch({
-          type: PopUpCreateActionKind.LOADING,
-          payload: false,
+
+        break;
+
+      case 'hidden_reporters':
+        list = await APICp.searchReporter(params);
+        list = list.data.map((reporter) => {
+          return {
+            id: reporter.id,
+            value: reporter.nickname,
+            subValue: reporter.user?.username || '',
+          };
         });
-      }
-    } catch (error) {
-      console.log(error);
+
+        break;
     }
-  };
+
+    list?.length &&
+      dispatch({
+        type: PopUpCreateActionKind.CHANGE_CANDIDATES,
+        payload: { target, list },
+      });
+  }, [target, search]);
 
   useEffect(() => {
-    if (mode === 'edit') {
-      getPopUp();
-    }
     getPopupLength();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getTargetCandidate();
+  }, [getTargetCandidate]);
 
   return (
     <PopUpCreatePresenter
@@ -294,7 +347,6 @@ const PopUpCreateContainer: FC<PopUpCreateProps> = (props) => {
       PopUpCreateState={PopUpCreateState}
       createNewPopUp={createNewPopUp}
       onChangeImgae={onChangeImgae}
-      mode={mode}
     />
   );
 };

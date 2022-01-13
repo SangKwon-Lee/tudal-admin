@@ -120,3 +120,7 @@ export async function getThisMonth(masterId) {
 export async function getMasters(userId) {
   return await axios.get<IMaster[]>(`/masters?user=${userId}`);
 }
+
+export async function getMasterList() {
+  return await axios.get<IMaster[]>(`/masters`);
+}
