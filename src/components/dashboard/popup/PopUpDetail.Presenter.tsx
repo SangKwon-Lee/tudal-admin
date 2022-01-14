@@ -29,8 +29,6 @@ interface PopUpDetailProps {
 const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
   const { PopUpDetailState, handleDeletePopUp, dispatch, ...other } =
     props;
-
-  console.log('here', props);
   const { loading, popUp, openModal, targetDetail } =
     PopUpDetailState;
 
