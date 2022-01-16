@@ -22,7 +22,6 @@ import Scrollbar from '../../layout/Scrollbar';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import ImageIcon from 'src/icons/Image';
 import PlusIcon from 'src/icons/Plus';
-import PencilAltIcon from 'src/icons/PencilAlt';
 import SearchIcon from 'src/icons/Search';
 import {
   IPopupListState,
@@ -32,6 +31,7 @@ import {
 
 import dayjs from 'dayjs';
 import DraggableCard from './PopupListDnD.Container';
+import toast from 'react-hot-toast';
 
 const getOrderLabel = (order) => {
   return !order ? (
@@ -39,22 +39,6 @@ const getOrderLabel = (order) => {
   ) : (
     <Label color={'success'}>{order}</Label>
   );
-};
-const getOpenTypeLabel = (inventoryType) => {
-  const map = {
-    true: {
-      text: '공개',
-      color: 'success',
-    },
-    false: {
-      text: '비공개',
-      color: 'warning',
-    },
-  };
-
-  const { text, color } = map[inventoryType];
-
-  return <Label color={color}>{text}</Label>;
 };
 
 interface PopUpListPresenterProps {
@@ -78,6 +62,10 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
   const { list, openList, page, isEditOrder } = state;
 
   const handleEdit = async () => {
+    if (openList.length < 1) {
+      toast.error('등록된 팝업이 없습니다.');
+      return;
+    }
     if (isEditOrder) {
       await postChangeOrder();
     }
@@ -92,7 +80,7 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography sx={{ my: 2 }}>
-          방 순서는 Drag & Drop으로 변경 가능합니다.
+          팝업 순서는 드래그 앤 드롭으로 변경이 가능합니다.
         </Typography>
         <Button
           color="primary"
@@ -114,20 +102,21 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
           justifyContent: 'space-between',
         }}
       >
-        {openList.length &&
-          openList.map((popup, i) => {
-            return (
-              <DraggableCard
-                key={i}
-                id={popup.id}
-                title={popup.title}
-                image={popup.image}
-                index={i}
-                orderEdit={isEditOrder}
-                moveCard={moveCard}
-              />
-            );
-          })}
+        {openList.length
+          ? openList.map((popup, i) => {
+              return (
+                <DraggableCard
+                  key={i}
+                  id={popup.id}
+                  title={popup.title}
+                  image={popup.image}
+                  index={i}
+                  orderEdit={isEditOrder}
+                  moveCard={moveCard}
+                />
+              );
+            })
+          : '등록된 팝업이 없습니다.'}
       </div>
       <Card>
         <Box
@@ -208,9 +197,7 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
                   <TableCell>이미지</TableCell>
                   <TableCell>제목</TableCell>
                   <TableCell>설명</TableCell>
-                  <TableCell>상태</TableCell>
                   <TableCell>순서</TableCell>
-                  <TableCell>링크</TableCell>
                   <TableCell>날짜</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
@@ -279,15 +266,10 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
                       </Link>
                     </TableCell>
                     <TableCell>{popup.description}</TableCell>
+
                     <TableCell>
-                      {getOpenTypeLabel(popup.isOpen)}
+                      {getOrderLabel(popup.order)}
                     </TableCell>
-                    <TableCell>
-                      {popup.isOpen
-                        ? getOrderLabel(popup.order)
-                        : getOrderLabel(false)}
-                    </TableCell>
-                    <TableCell>{popup.linkDescription}</TableCell>
 
                     <TableCell>
                       {`${formatDate(popup.openTime)} ~ ${formatDate(
@@ -295,12 +277,6 @@ const PopUpListPresenter: React.FC<PopUpListPresenterProps> = ({
                       )}`}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton
-                        component={RouterLink}
-                        to={`/dashboard/popup/${popup.id}/edit`}
-                      >
-                        <PencilAltIcon fontSize="small" />
-                      </IconButton>
                       <IconButton
                         component={RouterLink}
                         to={`/dashboard/popup/${popup.id}`}

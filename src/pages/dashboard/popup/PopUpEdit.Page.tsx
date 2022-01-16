@@ -58,7 +58,7 @@ const PopUpCreatePage: FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
-            <PopUpCreateContainer mode={'edit'} />
+            <PopUpCreateContainer />
           </Box>
         </Container>
       </Box>

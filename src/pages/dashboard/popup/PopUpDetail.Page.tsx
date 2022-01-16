@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Box,
   Breadcrumbs,
-  Button,
   Container,
   Divider,
   Grid,
@@ -15,7 +14,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import ChevronRightIcon from '../../../icons/ChevronRight';
-import PencilAltIcon from '../../../icons/PencilAlt';
 import useSettings from '../../../hooks/useSettings';
 import PopUpDetailContainer from 'src/components/dashboard/popup/PopUpDetail.Container';
 
@@ -24,7 +22,6 @@ const tabs = [{ label: '팝업내용', value: 'details' }];
 const PopUpDetailsPage: FC = () => {
   const { settings } = useSettings();
   const [currentTab, setCurrentTab] = useState<string>('details');
-  const { popupId } = useParams();
 
   useEffect(() => {
     setCurrentTab('details');
@@ -66,20 +63,6 @@ const PopUpDetailsPage: FC = () => {
                   팝업 상세보기
                 </Typography>
               </Breadcrumbs>
-            </Grid>
-            <Grid item>
-              <Box sx={{ m: -1 }}>
-                <Button
-                  color="primary"
-                  component={RouterLink}
-                  startIcon={<PencilAltIcon fontSize="small" />}
-                  sx={{ m: 1 }}
-                  to={`/dashboard/popup/${popupId}/edit`}
-                  variant="contained"
-                >
-                  편집
-                </Button>
-              </Box>
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>

@@ -141,6 +141,7 @@ const PopupListContainer: FC<PopUpCreateProps> = (props) => {
     try {
       const { data } = await APIPopUp.getList(query);
       const { data: count } = await APIPopUp.getCount(query);
+      console.log(data);
 
       dispatch({
         type: PopUpListActionKind.LOAD_LIST,

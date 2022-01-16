@@ -5,6 +5,7 @@ import {
   TextField,
   Typography,
   LinearProgress,
+  Autocomplete,
 } from '@material-ui/core';
 import { Formik } from 'formik';
 import { Link as RouterLink } from 'react-router-dom';
@@ -13,15 +14,15 @@ import {
   PopUpCreateAction,
   PopUpCreateActionKind,
   PopUpCreateState,
+  POPUP_TARGET,
 } from './PopUpCreate.Container';
 import { FC } from 'react';
 
 interface PopUpCreateProps {
-  dispatch: (params: PopUpCreateAction) => void;
   PopUpCreateState: PopUpCreateState;
+  dispatch: (params: PopUpCreateAction) => void;
   createNewPopUp: () => void;
   onChangeImgae: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mode: string;
 }
 
 const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
@@ -30,10 +31,9 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
     dispatch,
     createNewPopUp,
     onChangeImgae,
-    mode,
   } = props;
 
-  const { createInput, loading } = PopUpCreateState;
+  const { createInput, loading, targetCandidate } = PopUpCreateState;
   return (
     <>
       <Formik
@@ -83,41 +83,70 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
               <Box sx={{ mt: 2 }}>
                 <TextField
                   fullWidth
-                  helperText={
-                    '해당 팝업을 클릭시 이동할 링크를 입력해주세요.'
-                  }
-                  // error={submitError ? true : false}
-                  label="링크"
-                  name="link"
-                  // onBlur={handleSubmitError}
+                  select
+                  helperText={'팝업의 타입을 골라주세요.'}
+                  label="타입"
+                  SelectProps={{ native: true }}
+                  name="target"
+                  value={createInput.target}
+                  variant="outlined"
                   onChange={(event) => {
                     dispatch({
                       type: PopUpCreateActionKind.CHANGE_INPUT,
                       payload: event,
                     });
                   }}
-                  value={createInput?.link || ''}
-                  variant="outlined"
-                />
+                >
+                  {POPUP_TARGET.map((el, i) => (
+                    <option key={i} value={el.key}>
+                      {el.name}
+                    </option>
+                  ))}
+                </TextField>
               </Box>
+
               <Box sx={{ mt: 2 }}>
-                <TextField
-                  fullWidth
-                  helperText={'링크에 대한 설명을 적어주세요.'}
-                  // error={submitError ? true : false}
-                  label="링크"
-                  name="linkDescription"
-                  // onBlur={handleSubmitError}
-                  onChange={(event) => {
-                    dispatch({
-                      type: PopUpCreateActionKind.CHANGE_INPUT,
-                      payload: event,
-                    });
-                  }}
-                  value={createInput?.linkDescription || ''}
-                  variant="outlined"
-                />
+                {createInput.target !== 'premium' && (
+                  <Autocomplete
+                    fullWidth
+                    autoHighlight
+                    value={targetCandidate.selected}
+                    options={targetCandidate[createInput.target]}
+                    onChange={(e, value) => {
+                      if (typeof value !== 'string') {
+                        dispatch({
+                          type: PopUpCreateActionKind.CHANGE_TARGET_ID,
+                          payload: value,
+                        });
+                      }
+                    }}
+                    getOptionLabel={(option: {
+                      id: number;
+                      value: string;
+                      subValue: string;
+                    }) =>
+                      `${option.value} / ${option.subValue} / ${option.id}`
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label={'닉네임/제목'}
+                        name="stocks"
+                        variant="outlined"
+                        onChange={(e) => {
+                          console.log('change');
+                          dispatch({
+                            type: PopUpCreateActionKind.CHANGE_SEARCH_WORD,
+                            payload: e.target.value,
+                          });
+                        }}
+                      />
+                    )}
+                  />
+                )}
               </Box>
+
               <Box sx={{ mt: 2, display: 'flex' }}>
                 <DateTimePicker
                   renderInput={(props) => <TextField {...props} />}
@@ -220,10 +249,8 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
                   color="primary"
                   variant="contained"
                   onClick={createNewPopUp}
-                  component={RouterLink}
-                  to={`/dashboard/popup`}
                 >
-                  {mode === 'edit' ? '팝업수정' : '팝업 생성'}
+                  팝업 생성
                 </Button>
               </Box>
             </Card>
