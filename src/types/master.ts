@@ -82,6 +82,7 @@ export interface IMaster {
   updated_at: Date;
   master_rooms?: IMasterRoom[];
   price_gold: number;
+  catchphrase: string;
 
   subscription_days: number;
   type: 'free' | 'paid';

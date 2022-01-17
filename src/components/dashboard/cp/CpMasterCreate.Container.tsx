@@ -39,6 +39,7 @@ const initialState: CpMasterCreateState = {
     subscription_days: null,
     price_gold: null,
     intro: '',
+    catchphrase: '',
     keyword: '',
     profile_image_url: '',
     type: 'free',
