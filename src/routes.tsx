@@ -188,7 +188,13 @@ const HiddenboxViewer = Loadable(
 const TodayKeywordViewer = Loadable(
   lazy(() => import('./pages/viewer/TodayKeywordViewer')),
 );
+const MasterIntroViewer = Loadable(
+  lazy(() => import('./pages/viewer/MasterViewer')),
+);
 
+const ReporterIntroViewer = Loadable(
+  lazy(() => import('./pages/viewer/ReporterViewer')),
+);
 const NewsPage = Loadable(
   lazy(() => import('./pages/dashboard/news/News.Page')),
 );
@@ -317,6 +323,14 @@ const routes: PartialRouteObject[] = [
       {
         path: 'hiddenreport/:id',
         element: <HiddenReportViewer />,
+      },
+      {
+        path: 'master/intro/:id',
+        element: <MasterIntroViewer />,
+      },
+      {
+        path: 'reporter/intro/:id',
+        element: <ReporterIntroViewer />,
       },
     ],
   },
