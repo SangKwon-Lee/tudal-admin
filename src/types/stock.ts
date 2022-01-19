@@ -2,6 +2,17 @@ import { INews } from './news';
 import { Tag } from './schedule';
 import { IUser } from './user';
 
+export interface IStockTags {
+  id: number;
+  stock_id: number;
+  tag_id: number;
+  value: number;
+  created_at: Date;
+  updated_at: Date;
+  stock: IStockDetails;
+  tag: Tag;
+}
+
 export interface IStockComment {
   id: number;
   message: string;

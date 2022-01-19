@@ -5,8 +5,8 @@ export interface Tag {
   name: string;
   summary: string;
   description: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   alias?: ITagAlias[];
   isDeleted: boolean;
 
