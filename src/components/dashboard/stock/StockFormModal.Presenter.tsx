@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   IStockComment,
   IStockDetailsWithTagCommentNews,
@@ -58,14 +58,15 @@ import { INews } from 'src/types/news';
 const tagFilter = createFilterOptions<any>();
 
 interface StockFormProps {
-  dispatch: (params: StockFormAction) => void;
-  stockFormState: StockFormState;
   isOpen: boolean;
-  setClose: () => void;
+  tagInput: React.RefObject<HTMLDivElement>;
+  stockFormState: StockFormState;
   stock: IStockDetailsWithTagCommentNews;
   tagLoading: boolean;
   tagList: Tag[];
   handleTagChange: _.DebouncedFunc<() => void>;
+  dispatch: (params: StockFormAction) => void;
+  setClose: () => void;
   createOrUpdateTag: (stock: any, tag: any) => Promise<void>;
   createOrUpdateTagList: (stock: any, tags: Tag[]) => Promise<void>;
   createOrSelectByUrl: () => Promise<void>;
@@ -105,6 +106,7 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
     setClose,
     stock,
     tagList,
+    tagInput,
     tagLoading,
     handleTagChange,
     createOrUpdateTag,
@@ -130,7 +132,6 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
     comment,
     isUpdating,
   } = stockFormState;
-  const tagInput = useRef(null);
   const classes = useStyles();
 
   return (

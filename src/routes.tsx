@@ -68,6 +68,9 @@ const ScheduleList = Loadable(
 const StockList = Loadable(
   lazy(() => import('./pages/dashboard/stock/Stock.Page')),
 );
+const StockTagList = Loadable(
+  lazy(() => import('./pages/dashboard/stock/StockTag.Page')),
+);
 
 //* Keyword
 const Keyword = Loadable(
@@ -461,6 +464,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <StockList />,
+          },
+        ],
+      },
+      {
+        path: 'stock-tag',
+        children: [
+          {
+            path: '/',
+            element: <StockTagList />,
           },
         ],
       },

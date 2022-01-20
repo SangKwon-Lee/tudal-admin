@@ -428,6 +428,7 @@ const StockFormContainer: React.FC<StockFormProps> = (props) => {
   return (
     <StockFormPresenter
       dispatch={dispatch}
+      tagInput={tagInput}
       stockFormState={stockFormState}
       isOpen={isOpen}
       setClose={setClose}

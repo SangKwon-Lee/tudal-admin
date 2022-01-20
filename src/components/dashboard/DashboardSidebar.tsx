@@ -197,8 +197,17 @@ const sections = [
       },
       {
         title: '종목',
-        path: '/dashboard/stocks',
         icon: <ChartSquareBarIcon fontSize="small" />,
+        children: [
+          {
+            title: '종목',
+            path: '/dashboard/stocks',
+          },
+          {
+            title: '종목 태그',
+            path: '/dashboard/stock-tag',
+          },
+        ],
       },
       {
         title: '뉴스',
