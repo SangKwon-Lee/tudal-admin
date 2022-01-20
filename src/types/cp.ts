@@ -10,6 +10,7 @@ export interface CP_Master {
   keyword: string;
   user?: any;
   created_at?: string;
+  catchphrase: string;
   type: 'free' | 'paid';
 }
 

@@ -29,6 +29,7 @@ const schema = yup
     subscription_days: yup.number().positive().required(),
     keyword: yup.string().required(),
     type: yup.string().required(),
+    catchphrase: yup.string().required(),
   })
   .required();
 
@@ -157,6 +158,18 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               variant="outlined"
               helperText="쉼표(,)로 구분해주세요. (필수 항목)"
               error={Boolean(errors?.keyword)}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
+              캐치프레이즈
+            </Typography>
+            <TextField
+              fullWidth
+              {...register('catchphrase')}
+              variant="outlined"
+              helperText="짧은 소개글을 입력해주세요."
+              error={Boolean(errors?.catchphrase)}
             />
           </Box>
           <Box sx={{ mt: 2 }}>

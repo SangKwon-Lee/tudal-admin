@@ -77,6 +77,18 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
+                  캐치프 레이즈
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.catchphrase}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
                   구독료 (GOLD)
                 </Typography>
               </TableCell>
