@@ -36,7 +36,7 @@ const MasterViewer: FC = () => {
   return (
     <>
       <Helmet>
-        <title>{master && `${master.nickname}의 프로필`}</title>
+        <title>{`${master.nickname}의 프로필`}</title>
       </Helmet>
       <Box
         sx={{
