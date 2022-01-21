@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container } from '@material-ui/core';
 import useSettings from '../../hooks/useSettings';
-import { APICp } from 'src/lib/api';
 import { CP_Hidden_Reporter } from 'src/types/cp';
 import ReporterIntroView from 'src/components/viewer/ReporterIntroViewer';
+import { cmsServer, CMS_TOKEN } from 'src/lib/axios';
 
 const ReporterViewer: FC = () => {
   const { settings } = useSettings();
@@ -15,9 +15,11 @@ const ReporterViewer: FC = () => {
   );
   const { id } = useParams();
 
-  const getHiddenbox = async () => {
+  const getReporter = async () => {
     try {
-      const response = await APICp.getReporter(id);
+      const response = await cmsServer.get<CP_Hidden_Reporter>(
+        `/masters/${id}?token=${CMS_TOKEN}`,
+      );
       setReporter(response.data);
     } catch (err) {
       console.error(err);
@@ -25,7 +27,7 @@ const ReporterViewer: FC = () => {
   };
 
   useEffect(() => {
-    getHiddenbox();
+    getReporter();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -36,7 +38,7 @@ const ReporterViewer: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Viewer | TUDAL Admin</title>
+        <title>{`${reporter.nickname}의 프로필`}</title>
       </Helmet>
       <Box
         sx={{
