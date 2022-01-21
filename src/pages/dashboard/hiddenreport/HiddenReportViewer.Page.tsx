@@ -42,7 +42,7 @@ const HiddenReportViewerPage: FC = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard: Hiddenbox Viewer | TUDAL Admin</title>
+        <title>{report?.title}</title>
       </Helmet>
       <HiddenreportViewerPresenter
         title={report.title}
