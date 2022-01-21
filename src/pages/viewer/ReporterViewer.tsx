@@ -18,7 +18,7 @@ const ReporterViewer: FC = () => {
   const getReporter = async () => {
     try {
       const response = await cmsServer.get<CP_Hidden_Reporter>(
-        `/masters/${id}?token=${CMS_TOKEN}`,
+        `/hidden-reporters/${id}?token=${CMS_TOKEN}`,
       );
       setReporter(response.data);
     } catch (err) {
