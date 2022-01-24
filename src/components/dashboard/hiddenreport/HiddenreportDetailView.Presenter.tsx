@@ -211,7 +211,10 @@ const HiddenReportDetailViewPresenter: React.FC<
               미리보기
             </Button>
           </Typography>
-          <Box sx={{ py: 3 }}>
+          <Box
+            sx={{ py: 3, width: '100%;' }}
+            style={{ backgroundColor: 'background.default' }}
+          >
             <Container maxWidth="md">
               <Viewer initialValue={state.contents} />
             </Container>
