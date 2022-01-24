@@ -198,6 +198,9 @@ const MasterIntroViewer = Loadable(
 const ReporterIntroViewer = Loadable(
   lazy(() => import('./pages/viewer/ReporterViewer')),
 );
+const MasterFeedViewer = Loadable(
+  lazy(() => import('./pages/viewer/MasterFeedViewer')),
+);
 const NewsPage = Loadable(
   lazy(() => import('./pages/dashboard/news/News.Page')),
 );
@@ -334,6 +337,10 @@ const routes: PartialRouteObject[] = [
       {
         path: 'reporter/intro/:id',
         element: <ReporterIntroViewer />,
+      },
+      {
+        path: 'master-feeds/:id',
+        element: <MasterFeedViewer />,
       },
     ],
   },

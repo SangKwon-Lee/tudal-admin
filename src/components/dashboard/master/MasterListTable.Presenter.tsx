@@ -22,12 +22,14 @@ import {
 } from '@material-ui/core';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import PencilAltIcon from 'src/icons/PencilAlt';
+import TrashIcon from 'src/icons/Trash';
 import SearchIcon from 'src/icons/Search';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
 import {
   IMasterListState,
   MasterListTableAction,
   MasterListTableActionKind,
+  sortOptions,
 } from './MasterListTable.Container';
 import Scrollbar from 'src/components/layout/Scrollbar';
 
@@ -137,48 +139,43 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               )}
             </TextField>
           </Box>
-        </Box>
-        {masterListState.selected && (
-          <Box sx={{ position: 'relative' }}>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                px: '4px',
-                width: '100%',
-                zIndex: 2,
+          <Box
+            sx={{
+              m: 1,
+              maxWidth: '100%',
+              width: 240,
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Sort By"
+              name="sort"
+              select
+              SelectProps={{ native: true }}
+              variant="outlined"
+              onChange={(e) => {
+                dispatch({
+                  type: MasterListTableActionKind.CHANGE_SORT,
+                  payload: e.target.value,
+                });
               }}
             >
-              <Button
-                color="primary"
-                sx={{ ml: 2 }}
-                variant="outlined"
-                onClick={() => {
-                  dispatch({
-                    type: MasterListTableActionKind.OPEN_DELETE_DIALOG,
-                  });
-                }}
-              >
-                삭제
-              </Button>
-              <Button
-                color="primary"
-                sx={{ ml: 2 }}
-                variant="outlined"
-                component={RouterLink}
-                to={`/dashboard/master/${masterListState.selected}/edit`}
-              >
-                수정
-              </Button>
-            </Box>
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
           </Box>
-        )}
+        </Box>
+
         <Scrollbar>
           <Box sx={{ minWidth: 700 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox"></TableCell>
                   <TableCell>제목</TableCell>
+                  <TableCell>타입</TableCell>
                   <TableCell>등록일</TableCell>
                   <TableCell>수정일</TableCell>
                   <TableCell>방 이름</TableCell>
@@ -190,24 +187,8 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
               <TableBody>
                 {!masterListState.loading &&
                   masterListState.list.feed.map((feed) => {
-                    const isMasterSelected =
-                      masterListState.selected === feed.id;
-
                     return (
                       <TableRow hover key={feed.id}>
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            value={isMasterSelected}
-                            checked={isMasterSelected}
-                            color="primary"
-                            onChange={(event) => {
-                              dispatch({
-                                type: MasterListTableActionKind.SELECT_FEED,
-                                payload: feed.id,
-                              });
-                            }}
-                          />
-                        </TableCell>
                         <TableCell>
                           <Box
                             sx={{
@@ -238,13 +219,18 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                             </Box>
                           </Box>
                         </TableCell>
+                        <TableCell>
+                          {feed.source === 'web'
+                            ? '웹 에디터'
+                            : '텔레그램'}
+                        </TableCell>
                         <TableCell
                           style={{
                             maxWidth: '180px',
                             minWidth: '180px',
                           }}
                         >
-                          {`${dayjs(feed.created_at).format(
+                          {`${dayjs(feed.datetime).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
@@ -261,17 +247,33 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                         </TableCell>
                         <TableCell>{feed.viewCount}</TableCell>
                         <TableCell align="right">
-                          <IconButton
-                            component={RouterLink}
-                            to={`/dashboard/master/${feed.id}/edit`}
-                          >
-                            <PencilAltIcon fontSize="small" />
-                          </IconButton>
+                          {feed.source === 'web' && (
+                            <IconButton
+                              component={RouterLink}
+                              to={`/dashboard/master/${feed.id}/edit`}
+                            >
+                              <PencilAltIcon fontSize="small" />
+                            </IconButton>
+                          )}
                           <IconButton
                             component={RouterLink}
                             to={`/dashboard/master/${feed.id}`}
                           >
                             <ArrowRightIcon fontSize="small" />
+                          </IconButton>
+
+                          <IconButton
+                            onClick={() => {
+                              dispatch({
+                                type: MasterListTableActionKind.SELECT_FEED,
+                                payload: feed.id,
+                              });
+                              dispatch({
+                                type: MasterListTableActionKind.OPEN_DELETE_DIALOG,
+                              });
+                            }}
+                          >
+                            <TrashIcon fontSize="small" />
                           </IconButton>
                         </TableCell>
                       </TableRow>

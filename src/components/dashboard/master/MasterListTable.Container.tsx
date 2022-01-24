@@ -38,6 +38,24 @@ export interface MasterListTableAction {
   payload?: any;
 }
 
+type Sort = 'datetime:desc' | 'datetime:asc';
+
+interface SortOption {
+  value: Sort;
+  label: string;
+}
+
+export const sortOptions: SortOption[] = [
+  {
+    label: '등록순 (최신)',
+    value: 'datetime:desc',
+  },
+  {
+    label: '등록순 (오래된)',
+    value: 'datetime:asc',
+  },
+];
+
 export interface IMasterListState {
   loading: boolean;
   channelLoading: boolean;
@@ -63,6 +81,7 @@ export interface IMasterListState {
     master: number;
     'master_room.id': number;
     'master_room.master_channel.id': number;
+    _sort: string;
   };
 }
 
@@ -85,6 +104,7 @@ const initialState: IMasterListState = {
     master: null,
     'master_room.id': null,
     'master_room.master_channel.id': null,
+    _sort: sortOptions[0].value,
   },
 };
 
@@ -184,6 +204,15 @@ const MasterListTableReducer = (
         query: {
           ...state.query,
           'master_room.id': payload,
+        },
+      };
+    }
+    case MasterListTableActionKind.CHANGE_SORT: {
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          _sort: payload,
         },
       };
     }
