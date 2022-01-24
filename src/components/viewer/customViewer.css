@@ -1,8 +1,19 @@
- @charset "utf-8";
- .tui-editor-contents {
-   margin: 0;
-   padding: 0;
-   font-size: 15px;
-   font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', '나눔바른고딕',
-     'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic', sans-serif;
- }
+@charset "utf-8";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: black;
+}
+.tui-editor-contents {
+  color: black;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial',
+    '나눔바른고딕', 'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic',
+    sans-serif;
+}

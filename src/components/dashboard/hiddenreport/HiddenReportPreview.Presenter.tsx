@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
 import { Box, Container, Typography } from '@material-ui/core';
-import { Helmet } from 'react-helmet-async';
-import './HiddenReportViewer.css';
+
+import { Viewer } from '@toast-ui/react-editor';
 
 interface IProps {
   title: string;
@@ -16,13 +16,10 @@ const HiddenreportPreviewPresenter: FC<IProps> = ({
 }) => {
   return (
     <>
-      <Helmet>
-        <title>Dashboard: Hiddenbox Viewer | TUDAL Admin</title>
-      </Helmet>
       <Box
         sx={{
           py: 3,
-          backgroundColor: 'white',
+          backgroundColor: 'background.default',
           width: '500px',
           height: '3200px',
         }}
@@ -33,12 +30,7 @@ const HiddenreportPreviewPresenter: FC<IProps> = ({
             {nickname}
           </Typography>
 
-          {contents && (
-            <div
-              className="viewer"
-              dangerouslySetInnerHTML={{ __html: contents }}
-            />
-          )}
+          {contents && <Viewer initialValue={contents} />}
         </Container>
       </Box>
     </>

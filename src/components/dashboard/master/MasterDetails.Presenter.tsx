@@ -173,7 +173,10 @@ const MasterDetailsPresenter: FC<IMasterDetailsProps> = (props) => {
           <Typography color="textPrimary" variant="subtitle2">
             내용
           </Typography>
-          <Box sx={{ py: 3 }}>
+          <Box
+            sx={{ py: 3, width: '100%;' }}
+            style={{ backgroundColor: '#ffffff' }}
+          >
             <Container maxWidth="md">
               {master?.description && (
                 <Viewer initialValue={master.description} />
