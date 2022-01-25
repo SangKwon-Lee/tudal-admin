@@ -274,7 +274,9 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                                     : 'NA'}
                                 </TableCell>
                                 <TableCell>
-                                  {item.updated_at}
+                                  {dayjs(item.created_at).format(
+                                    'YYYY-MM-DD HH:mm:ss',
+                                  )}
                                 </TableCell>
                               </TableRow>
                             ))
@@ -368,7 +370,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              {dayjs(item.updated_at).format(
+                              {dayjs(item.publishDate).format(
                                 'YYYY-MM-DD HH:mm',
                               )}
                             </TableCell>
