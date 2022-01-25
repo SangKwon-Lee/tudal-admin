@@ -15,7 +15,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CP_Master } from 'src/types/cp';
 import ImageCropper from 'src/components/common/ImageCropper';
 import { IUser, IUserType } from 'src/types/user';
@@ -53,6 +53,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     user,
     editorRef,
   } = props;
+  const [_type, setType] = useState<string>('free');
   const { newCpMaster, users, newMasterUser } = cpCreateState;
   const {
     register,
@@ -63,6 +64,8 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     defaultValues: newCpMaster,
     resolver: yupResolver(schema),
   });
+
+  console.log('1231', _type);
 
   useEffect(() => {
     reset(newCpMaster);
@@ -174,32 +177,6 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>
-              구독료 (Gold)
-            </Typography>
-            <TextField
-              fullWidth
-              {...register('price_gold')}
-              variant="outlined"
-              error={Boolean(errors?.price_gold)}
-              disabled={!isOnlyAdminAvailable}
-              helperText={'구독료 입력은 필수입니다.'}
-            ></TextField>
-          </Box>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" sx={{ my: 1 }}>
-              기본 구독 기간 (일)
-            </Typography>
-            <TextField
-              fullWidth
-              {...register('subscription_days')}
-              variant="outlined"
-              disabled={!isOnlyAdminAvailable}
-              error={Boolean(errors?.subscription_days)}
-              helperText={'구독기간 입력은 필수입니다. '}
-            ></TextField>
-          </Box>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" sx={{ my: 1 }}>
               타입
             </Typography>
             <TextField
@@ -211,6 +188,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               SelectProps={{ native: true }}
               variant="outlined"
               sx={{ mx: 1 }}
+              onChange={(e) => setType(e.target.value)}
               disabled={!isOnlyAdminAvailable}
             >
               <option value="free">무료</option>
@@ -219,6 +197,37 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
               <option value="hidden">숨김</option>
             </TextField>
           </Box>
+
+          {_type === 'paid' && (
+            <>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                  구독료 (Gold)
+                </Typography>
+                <TextField
+                  fullWidth
+                  {...register('price_gold')}
+                  variant="outlined"
+                  error={Boolean(errors?.price_gold)}
+                  disabled={!isOnlyAdminAvailable}
+                  helperText={'구독료 입력은 필수입니다.'}
+                ></TextField>
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                  기본 구독 기간 (일)
+                </Typography>
+                <TextField
+                  fullWidth
+                  {...register('subscription_days')}
+                  variant="outlined"
+                  disabled={!isOnlyAdminAvailable}
+                  error={Boolean(errors?.subscription_days)}
+                  helperText={'구독기간 입력은 필수입니다. '}
+                ></TextField>
+              </Box>
+            </>
+          )}
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 2 }}>
               프로필 이미지 등록
