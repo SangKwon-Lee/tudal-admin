@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { Box } from '@material-ui/core';
-import Logo from '../common/Logo';
 
 const SlashScreen: FC = () => (
   <Box
@@ -18,9 +17,7 @@ const SlashScreen: FC = () => (
       width: '100%',
       zIndex: 2000,
     }}
-  >
-    <Logo />
-  </Box>
+  ></Box>
 );
 
 export default SlashScreen;
