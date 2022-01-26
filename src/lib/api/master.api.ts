@@ -38,7 +38,7 @@ export async function getRoomsByMaster(masterId) {
 }
 
 export async function deleteFeed(id) {
-  return axios.put(`/master-feeds/${id}`, { isDeleted: true });
+  return axios.delete(`/master-feeds/${id}`);
 }
 
 export async function getDetailFeed(feedId) {

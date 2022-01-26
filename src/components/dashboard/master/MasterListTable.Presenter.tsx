@@ -175,7 +175,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                   <TableCell>제목</TableCell>
                   <TableCell>타입</TableCell>
                   <TableCell>등록일</TableCell>
-                  <TableCell>수정일</TableCell>
                   <TableCell>방 이름</TableCell>
                   <TableCell>좋아요</TableCell>
                   <TableCell>조회수</TableCell>
@@ -231,11 +230,6 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                           {`${dayjs(feed.datetime).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
-                        </TableCell>
-                        <TableCell>
-                          {dayjs(feed.updated_at).format(
-                            'YYYY년 M월 D일 HH:mm',
-                          )}
                         </TableCell>
                         <TableCell>
                           {feed.master_room?.title}
