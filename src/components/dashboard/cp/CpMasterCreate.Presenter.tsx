@@ -16,11 +16,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useEffect, useState } from 'react';
-import { CP_Master } from 'src/types/cp';
 import ImageCropper from 'src/components/common/ImageCropper';
 import { IUser, IUserType } from 'src/types/user';
 import WebEditor from 'src/components/common/WebEditor';
 import { IBuckets } from 'src/components/common/conf/aws';
+import { IMasterCreateForm } from 'src/types/master';
 
 const schema = yup
   .object({
@@ -39,7 +39,7 @@ interface CpMasterCreateProps {
   user: IUser;
   editorRef: React.RefObject<HTMLDivElement>;
   dispatch: (params: CpMasterCreateAction) => void;
-  createCpMaster: (data: CP_Master) => Promise<void>;
+  createCpMaster: (data: IMasterCreateForm) => Promise<void>;
 }
 
 const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
@@ -60,7 +60,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CP_Master>({
+  } = useForm<IMasterCreateForm>({
     defaultValues: newCpMaster,
     resolver: yupResolver(schema),
   });

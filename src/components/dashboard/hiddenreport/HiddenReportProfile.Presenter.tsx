@@ -13,11 +13,11 @@ import {
 import dayjs from 'dayjs';
 import { HrProfileState } from './HiddenReportProfile.Container';
 import { Link as RouterLink } from 'react-router-dom';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import { Viewer } from '@toast-ui/react-editor';
 
 interface IHrProfileProps {
-  reporter: CP_Hidden_Reporter;
+  reporter: IHiddenReporter;
   hrProfileState: HrProfileState;
 }
 

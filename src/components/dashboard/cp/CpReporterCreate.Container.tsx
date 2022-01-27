@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import { IUser } from 'src/types/user';
 import CpReporterCreatePresenter from './CpReporterCreate.Presenter';
 import { IBuckets } from '../../common/conf/aws';
@@ -26,7 +26,7 @@ export interface CpReporterCreateAction {
 
 export interface CpReporterCreateState {
   loading: boolean;
-  newCpReporter: CP_Hidden_Reporter;
+  newCpReporter: IHiddenReporter;
   newReporterUser: IUser;
   users: IUser[];
   cropImg: string;
@@ -184,8 +184,8 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
   };
 
   //* 리포터 등록
-  const createCpReporter = async (data: CP_Hidden_Reporter) => {
-    let reporter: CP_Hidden_Reporter = { ...data };
+  const createCpReporter = async (data: IHiddenReporter) => {
+    let reporter: IHiddenReporter = { ...data };
 
     const { cropImg, saveCropImg } = cpCreateState;
     if (cropImg && !saveCropImg) {

@@ -16,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useEffect } from 'react';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import ImageCropper from 'src/components/common/ImageCropper';
 import { IUser } from 'src/types/user';
 import WebEditor from 'src/components/common/WebEditor';
@@ -48,7 +48,7 @@ interface CpReporterCreateProps {
   mode: string;
   editorRef: React.RefObject<HTMLDivElement>;
   dispatch: (params: CpReporterCreateAction) => void;
-  createCpReporter: (data: CP_Hidden_Reporter) => Promise<void>;
+  createCpReporter: (data: IHiddenReporter) => Promise<void>;
 }
 
 const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
@@ -70,7 +70,7 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CP_Hidden_Reporter>({
+  } = useForm<IHiddenReporter>({
     defaultValues: newCpReporter,
     resolver: yupResolver(schema),
   });

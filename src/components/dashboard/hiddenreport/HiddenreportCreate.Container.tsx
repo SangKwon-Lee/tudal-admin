@@ -22,7 +22,7 @@ import HiddenReportCreateImageForm from './HiddenreportCreateImageForm.Presenter
 import HiddenReportDetailViewPresenter from './HiddenreportDetailView.Presenter';
 import { registerImage } from 'src/utils/registerImage';
 import useUserVerification from 'src/hooks/useUserVerification';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import useAuth from 'src/hooks/useAuth';
 import { IBuckets } from 'src/components/common/conf/aws';
 export const HIDDENREPORT_CATEGORIES = {
@@ -93,7 +93,7 @@ export interface IHiddenReportForm {
   stocks: Stock[];
   tags: Tag[];
 
-  hidden_reporter?: CP_Hidden_Reporter;
+  hidden_reporter?: IHiddenReporter;
 }
 
 export interface HiddenReportCreateState {

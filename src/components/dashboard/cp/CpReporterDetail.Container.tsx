@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
 import { APICp } from 'src/lib/api';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import CpReporterDetailPresenter from './CpReporterDetail.Presenter';
 export enum CpReporterDetailActionKind {
   LOADING = 'LOADING',
@@ -13,7 +13,7 @@ export interface CpReporterDetailAction {
 }
 export interface CpReporterDetailState {
   loading: boolean;
-  reporter: CP_Hidden_Reporter;
+  reporter: IHiddenReporter;
 }
 
 const initialState: CpReporterDetailState = {

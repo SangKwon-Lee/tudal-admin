@@ -8,7 +8,7 @@ import { IBuckets } from 'src/components/common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
 import { IMaster } from 'src/types/master';
 import { IHR } from 'src/types/hiddenreport';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 
 export enum PopUpCreateActionKind {
   LOADING = 'LOADING',
@@ -49,7 +49,7 @@ export interface PopUpCreateState {
     selected: any;
     master: Array<IMaster>;
     hidden_report: Array<IHR>;
-    hidden_reporter: Array<CP_Hidden_Reporter>;
+    hidden_reporter: Array<IHiddenReporter>;
   };
 }
 

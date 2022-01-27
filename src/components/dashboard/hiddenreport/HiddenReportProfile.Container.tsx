@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 import { APICp } from 'src/lib/api';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import { IUser } from 'src/types/user';
 import HiddenReportProfilePresenter from './HiddenReportProfile.Presenter';
 
@@ -18,7 +18,7 @@ export interface HrProfileAction {
 
 export interface HrProfileState {
   loading: boolean;
-  reporter: CP_Hidden_Reporter;
+  reporter: IHiddenReporter;
 }
 
 const HrProfileReducer = (
