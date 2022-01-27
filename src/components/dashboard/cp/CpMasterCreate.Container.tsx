@@ -2,12 +2,13 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { APICp } from 'src/lib/api';
-import { CP_Master } from 'src/types/cp';
 import { IUser } from 'src/types/user';
 import CpMasterCreatePresenter from './CpMasterCreate.Presenter';
 import { IBuckets } from '../../common/conf/aws';
 import { registerImage } from 'src/utils/registerImage';
 import useAuth from 'src/hooks/useAuth';
+import { IMasterCreateForm } from 'src/types/master';
+
 export enum CpMasterCreateActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
@@ -25,7 +26,7 @@ export interface CpMasterCreateAction {
 
 export interface CpMasterCreateState {
   loading: boolean;
-  newCpMaster: CP_Master;
+  newCpMaster: IMasterCreateForm;
   newMasterUser: IUser;
   users: IUser[];
   cropImg: string;
@@ -189,7 +190,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
   };
 
   //* cp 등록
-  const createCpMaster = async (data: CP_Master) => {
+  const createCpMaster = async (data: IMasterCreateForm) => {
     const imgUrl = await registerImage(
       cpCreateState.saveCropImg,
       IBuckets.CP_PHOTO,
@@ -197,7 +198,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
 
     const intro = log();
 
-    let master: CP_Master = {
+    let master: IMasterCreateForm = {
       ...data,
       intro,
       keyword: data.keyword.trim(),

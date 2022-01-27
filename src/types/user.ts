@@ -1,5 +1,6 @@
-import { CP_Master, CP_Hidden_Reporter } from './cp';
+import { IHiddenReporter } from './hiddenreport';
 import { Hiddenbox } from './hiddenbox';
+import { IMaster } from './master';
 import { Schedule } from './schedule';
 
 interface Avatar {
@@ -39,11 +40,11 @@ export interface IUser {
   role: IRole;
   schedules: Schedule[];
   [key: string]: any;
-  masters: CP_Master[];
-  hidden_reporter: CP_Hidden_Reporter;
+  masters: IMaster[];
+  hidden_reporter: IHiddenReporter;
   phone_number: string;
   contact_email: string;
-  type: IUserType
+  type: IUserType;
 }
 
 export interface UserInput {

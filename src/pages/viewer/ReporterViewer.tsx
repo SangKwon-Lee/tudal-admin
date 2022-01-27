@@ -4,20 +4,20 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Box, Container } from '@material-ui/core';
 import useSettings from '../../hooks/useSettings';
-import { CP_Hidden_Reporter } from 'src/types/cp';
+import { IHiddenReporter } from 'src/types/hiddenreport';
 import ReporterIntroView from 'src/components/viewer/ReporterIntroViewer';
 import { cmsServer, CMS_TOKEN } from 'src/lib/axios';
 
 const ReporterViewer: FC = () => {
   const { settings } = useSettings();
-  const [reporter, setReporter] = useState<CP_Hidden_Reporter | null>(
+  const [reporter, setReporter] = useState<IHiddenReporter | null>(
     null,
   );
   const { id } = useParams();
 
   const getReporter = async () => {
     try {
-      const response = await cmsServer.get<CP_Hidden_Reporter>(
+      const response = await cmsServer.get<IHiddenReporter>(
         `/hidden-reporters/${id}?token=${CMS_TOKEN}`,
       );
       setReporter(response.data);

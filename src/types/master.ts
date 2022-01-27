@@ -1,6 +1,6 @@
 import { IStockDetails } from './stock';
 import { Tag } from './schedule';
-import { IUser } from './user';
+
 export interface Expert {
   id?: number;
   title?: string;
@@ -78,13 +78,26 @@ export interface IMaster {
   nickname: string;
   profile_image_url: string;
   user: number;
-  created_at: Date;
-  updated_at: Date;
   master_rooms?: IMasterRoom[];
   price_gold: number;
   catchphrase: string;
-
   subscription_days: number;
+  type: 'free' | 'paid';
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface IMasterCreateForm {
+  id?: number | string;
+  nickname: string;
+  profile_image_url: string;
+  price_gold: number;
+  subscription_days: number;
+  intro: string;
+  keyword: string;
+  user?: any;
+  created_at?: string;
+  catchphrase: string;
   type: 'free' | 'paid';
 }
 

@@ -1,4 +1,3 @@
-import { CP_Hidden_Reporter } from './cp';
 import { Stock, Tag } from './schedule';
 
 export interface IHR {
@@ -24,10 +23,21 @@ export interface IHR {
   hidden_report_orders: [];
   hidden_report_likes: [];
   hidden_report_comments: IHRComment[];
-  hidden_reporter: CP_Hidden_Reporter;
+  hidden_reporter: IHiddenReporter;
   numOfLikes: number;
   numOfOrders: number;
   numOfViews: number;
+}
+
+export interface IHiddenReporter {
+  id?: number | string;
+  nickname: string;
+  intro: string;
+  imageUrl: string;
+  tudalRecommendScore?: number;
+  catchphrase: string;
+  user?: any;
+  created_at?: string;
 }
 
 export interface IHRImage {
@@ -48,13 +58,12 @@ export interface IHROrders {
   updated_at: Date;
 }
 
-
 export interface IHRComment {
   id: number;
   hidden_report: number;
-  userId: string,
-  comment: string,
-  parentId: string,
-  created_at: string,
-  updated_at: string
+  userId: string;
+  comment: string;
+  parentId: string;
+  created_at: string;
+  updated_at: string;
 }
