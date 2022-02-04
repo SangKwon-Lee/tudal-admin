@@ -60,7 +60,6 @@ export async function deleteComment(id) {
 }
 
 /** 종목 태그 */
-
 export async function getStockTags(page = 0, limit = 50) {
   return await cmsServer.get(
     `/stock-tags/latest?page=${page}&limit=${limit}`,
@@ -83,4 +82,16 @@ export async function updateTag(stockcode, tagName) {
 
 export async function deleteTag(code: string, tagId: number) {
   return await cmsServer.delete(`/stocks/code/${code}/tag/${tagId}`);
+}
+
+//** 종목 코멘트 */
+
+export async function getStockComment(start = 0, limit = 50) {
+  return await cmsServer.get(
+    `/stock-comments?_start=${start}&_limit=${limit}&_sort=created_at:DESC`,
+  );
+}
+
+export async function getStockCommentLength(start = 0, limit = 50) {
+  return await cmsServer.get(`/stock-comments/count`);
 }
