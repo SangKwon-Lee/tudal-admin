@@ -32,7 +32,6 @@ interface IProps {
 dayjs.extend(utc);
 
 const StockCommentListPresenter: FC<IProps> = (props) => {
-  console.log(props.page);
   const {
     stockComments,
     page,
