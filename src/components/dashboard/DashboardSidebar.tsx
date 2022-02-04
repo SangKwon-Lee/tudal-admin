@@ -207,6 +207,10 @@ const sections = [
             title: '종목 태그',
             path: '/dashboard/stock-tag',
           },
+          {
+            title: '종목 코멘트',
+            path: '/dashboard/stock-comment',
+          },
         ],
       },
       {

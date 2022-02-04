@@ -71,6 +71,9 @@ const StockList = Loadable(
 const StockTagList = Loadable(
   lazy(() => import('./pages/dashboard/stock/StockTag.Page')),
 );
+const StockCommentList = Loadable(
+  lazy(() => import('./pages/dashboard/stock/StockComment.Page')),
+);
 
 //* Keyword
 const Keyword = Loadable(
@@ -480,6 +483,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <StockTagList />,
+          },
+        ],
+      },
+      {
+        path: 'stock-comment',
+        children: [
+          {
+            path: '/',
+            element: <StockCommentList />,
           },
         ],
       },
