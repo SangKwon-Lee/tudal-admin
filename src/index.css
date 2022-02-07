@@ -1,0 +1,16 @@
+.toastui-editor-contents {
+  width: 100%;
+  padding: 10px 10px;
+}
+
+.toastui-editor-contents img {
+  height: inherit;
+  width: 100%;
+  color: black;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial',
+    '나눔바른고딕', 'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic',
+    sans-serif;
+}

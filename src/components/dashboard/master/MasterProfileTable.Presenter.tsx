@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -10,17 +10,21 @@ import {
   TableCell,
   Typography,
   Button,
+  Dialog,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { Link as RouterLink } from 'react-router-dom';
 import { IMaster } from 'src/types/master';
 import { Viewer } from '@toast-ui/react-editor';
+import MasterProfilePresenter from './MasterProfile.Presenter';
 interface IMasterProfileProps {
   master: IMaster;
 }
 const MasterProfileTable: React.FC<IMasterProfileProps> = ({
   master,
 }) => {
+  const [isOpenProfileModal, setOpenProfileModal] =
+    useState<boolean>(false);
   return (
     <Box>
       <Box
@@ -146,12 +150,25 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
                 </Typography>
               </TableCell>
               <TableCell>
-                <Viewer initialValue={master.intro}></Viewer>
+                <button
+                  onClick={() => setOpenProfileModal(true)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  프로필 보기
+                </button>
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </Card>
+      <Dialog
+        open={isOpenProfileModal}
+        onClose={() => setOpenProfileModal(false)}
+      >
+        <Box>
+          <Viewer initialValue={master.intro}></Viewer>
+        </Box>
+      </Dialog>
     </Box>
   );
 };
