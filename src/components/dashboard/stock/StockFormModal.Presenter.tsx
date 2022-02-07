@@ -54,6 +54,7 @@ import {
   StockFormActionKind,
 } from './StockFormModal.Container';
 import { INews } from 'src/types/news';
+import { getUniqueListBy } from 'src/utils/helper';
 
 const tagFilter = createFilterOptions<any>();
 
@@ -134,6 +135,11 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
   } = stockFormState;
   const classes = useStyles();
 
+  const stockTags = getUniqueListBy(
+    stock.tags.filter((el) => el.name),
+    'tag_id',
+  );
+
   return (
     <Dialog
       open={isOpen}
@@ -202,8 +208,8 @@ const StockFormPresenter: React.FC<StockFormProps> = (props) => {
             >
               <Divider sx={{ mb: 2 }} />
 
-              {stock.tags &&
-                stock.tags.map((tag, i) => {
+              {stockTags &&
+                stockTags.map((tag, i) => {
                   return (
                     <Chip
                       key={i}

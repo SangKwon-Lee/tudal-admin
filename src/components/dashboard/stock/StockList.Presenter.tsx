@@ -34,6 +34,7 @@ import {
   StockListState,
 } from './StockList.Container';
 import StockFormContainer from './StockFormModal.Container';
+import { getUniqueListBy } from 'src/utils/helper';
 
 const useStyles = makeStyles({
   text: {
@@ -76,6 +77,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
   } = stockState;
 
   const classes = useStyles();
+
   return (
     <Box
       sx={{
@@ -155,6 +157,11 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
           newsPage,
           3,
         );
+
+        const stockTags = getUniqueListBy(
+          stock.tags.slice(0, 20).filter((tag) => tag.name),
+          'tag_id',
+        );
         return (
           <Box
             display="flex"
@@ -176,7 +183,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                     </Box>
                   ) : (
                     <>
-                      {stock.tags.slice(0, 20).map((tag, i) => {
+                      {stockTags.map((tag, i) => {
                         return (
                           <Chip
                             key={i}
@@ -195,7 +202,7 @@ const StockListPresenter: React.FC<StockListProps> = (props) => {
                         );
                       })}
                       <Typography variant="body1" fontSize={12}>
-                        상위 30개의 항목만 보여지고 있습니다.
+                        상위 20개의 항목만 보여지고 있습니다.
                       </Typography>
                     </>
                   )}
