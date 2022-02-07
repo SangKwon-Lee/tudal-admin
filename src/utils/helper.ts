@@ -42,8 +42,22 @@ export function swapItems(array, a, b) {
   return newArray;
 }
 
-
-export function generateHashCode (s) {
-  return s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
+export function generateHashCode(s) {
+  return s.split('').reduce((a, b) => {
+    a = (a << 5) - a + b.charCodeAt(0);
+    return a & a;
+  }, 0);
 }
-  
+
+export function getUniqueListBy(arr, key) {
+  const resArr = [];
+  const _arr = [...arr];
+  _arr.forEach(function (item) {
+    var i = resArr.findIndex((x) => x[key] === item[key]);
+    if (i <= -1) {
+      resArr.push(item);
+    }
+  });
+
+  return resArr;
+}
