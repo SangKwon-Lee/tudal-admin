@@ -287,6 +287,11 @@ const MasterContentFormContainer: FC<MasterFormProps> = (props) => {
       toast.error('내용을 다시 확인해주세요');
       return;
     }
+
+    if (!masterContentFormState.newFeed.title) {
+      toast.error('제목을 입력해주세요');
+      return;
+    }
     try {
       setIsSubmitting(true);
       if (editorRef.current) {
