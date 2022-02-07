@@ -1,0 +1,9 @@
+.toastui-editor-contents {
+  width: 100%;
+  padding: 10px 10px;
+}
+
+.toastui-editor-contents img {
+  height: inherit;
+  width: 100%;
+}
