@@ -80,9 +80,9 @@ const StockCommentListPresenter: FC<IProps> = (props) => {
                         <TableCell>{row.message}</TableCell>
 
                         <TableCell>
-                          {dayjs(row.updated_at)
-                            .subtract(9, 'hour')
-                            .format('YYYY-MM-DD HH:mm')}
+                          {dayjs(row.updated_at).format(
+                            'YYYY-MM-DD HH:mm',
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
