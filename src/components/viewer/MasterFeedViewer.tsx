@@ -2,7 +2,6 @@ import type { FC } from 'react';
 import { Box, Container, Typography } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import './customViewer.css';
 import { IMasterFeed } from 'src/types/master';
 
 interface Props {
