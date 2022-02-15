@@ -25,8 +25,6 @@ import { IMasterCreateForm } from 'src/types/master';
 const schema = yup
   .object({
     nickname: yup.string().required(),
-    price_gold: yup.number().positive().required(),
-    subscription_days: yup.number().positive().required(),
     keyword: yup.string().required(),
     type: yup.string().required(),
     catchphrase: yup.string().required(),
