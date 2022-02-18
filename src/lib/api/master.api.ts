@@ -124,3 +124,10 @@ export async function getMasters(userId) {
 export async function getMasterList() {
   return await axios.get<IMaster[]>(`/masters`);
 }
+
+// 정산
+export async function getMasterPayments(masterId, query?) {
+  return await axios.get(
+    `/master-payments/calculation/${masterId}&startDate=${query.startDate}&endDate=${query.endDate}`,
+  );
+}
