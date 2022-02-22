@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
@@ -8,10 +9,15 @@ import HiddenReportStatPresenter from './HiddenreportStat.Presenter';
 
 export enum HRStatActionKind {
   LOADING = 'LOADING',
+  GET_PAYMENTS = 'GET_PAYMENTS',
   LOAD_ORDERS = 'LOAD_ORDERS',
   LOAD_REPORT_MAP = 'LOAD_REPORT_MAP',
+  CHANGE_PAGE = 'CHANGE_PAGE',
+  CHANGE_FREE_PAGE = 'CHANGE_FREE_PAGE',
   CHANGE_ORDER_PAGE = 'CHANGE_ORDER_PAGE',
   CHANGE_REPORT_PAGE = 'CHANGE_REPORT_PAGE',
+  CHANGE_STARTDATE = 'CHANGE_STARTDATE',
+  CHANGE_ENDDATE = 'CHANGE_ENDDATE',
 }
 
 export interface HRStatAction {
@@ -31,6 +37,24 @@ export interface IHRStatState {
   orderLimit: number;
   reportPage: number;
   reportLimit: number;
+  page: number;
+  query: {
+    _start: number;
+    _limit: number;
+    startDate: string;
+    endDate: string;
+  };
+  payments: {
+    freeReports: [];
+    paidReports: [];
+    totalIncome: number;
+    totalSellCount: number;
+  };
+  freeReportsPage: {
+    page: number;
+    _start: number;
+    _limit: number;
+  };
 }
 
 const HRStatReducer = (
@@ -49,6 +73,11 @@ const HRStatReducer = (
         ...state,
         orders: payload,
       };
+    case HRStatActionKind.GET_PAYMENTS:
+      return {
+        ...state,
+        payments: payload,
+      };
     case HRStatActionKind.LOAD_REPORT_MAP:
       return {
         ...state,
@@ -65,6 +94,46 @@ const HRStatReducer = (
         ...state,
         orderPage: payload,
       };
+    case HRStatActionKind.CHANGE_STARTDATE: {
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          startDate: payload,
+        },
+      };
+    }
+    case HRStatActionKind.CHANGE_ENDDATE: {
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          endDate: payload,
+        },
+      };
+    }
+    case HRStatActionKind.CHANGE_PAGE: {
+      return {
+        ...state,
+        page: payload,
+        query: {
+          ...state.query,
+          _start: (payload - 1) * state.query._limit,
+          _limit: payload * 20,
+        },
+      };
+    }
+    case HRStatActionKind.CHANGE_FREE_PAGE: {
+      return {
+        ...state,
+        freeReportsPage: {
+          ...state.freeReportsPage,
+          page: payload,
+          _start: (payload - 1) * state.query._limit,
+          _limit: payload * 20,
+        },
+      };
+    }
   }
 };
 
@@ -76,27 +145,28 @@ const initialState: IHRStatState = {
   orderLimit: 10,
   reportPage: 0,
   reportLimit: 3,
-};
-
-const orderListToMap = (orders: IHROrders[]) => {
-  const map: { [key: number]: IReportMap } = {};
-
-  orders.forEach(({ hidden_report }) => {
-    if (!map[hidden_report.id]) {
-      map[hidden_report.id] = {
-        count: 0,
-        hidden_report: hidden_report,
-      };
-    } else {
-      map[hidden_report.id].count++;
-    }
-  });
-  return map;
+  page: 0,
+  query: {
+    _start: 0,
+    _limit: 20,
+    startDate: dayjs('2020-01-01').format('YYYY-MM-DD'),
+    endDate: dayjs(new Date()).add(1, 'day').format('YYYY-MM-DD'),
+  },
+  payments: {
+    freeReports: [],
+    paidReports: [],
+    totalIncome: 0,
+    totalSellCount: 0,
+  },
+  freeReportsPage: {
+    page: 0,
+    _start: 0,
+    _limit: 20,
+  },
 };
 
 const HiddenReportStatContainer: React.FC = (props) => {
   const { user } = useAuth();
-  const { hidden_reporter } = user;
   const navigate = useNavigate();
 
   const [HRStatState, dispatch] = useReducer(
@@ -104,29 +174,29 @@ const HiddenReportStatContainer: React.FC = (props) => {
     initialState,
   );
 
-  const getOrders = useCallback(async () => {
+  const getReportOrders = useCallback(async () => {
     try {
-      const { data, status } = await APIHR.getOrders(
-        hidden_reporter.id,
+      const { data } = await APIHR.getHiddenReportOrders(
+        user?.hidden_reporter?.id,
+        HRStatState.query,
       );
-      if (status === 200) {
-        dispatch({
-          type: HRStatActionKind.LOAD_ORDERS,
-          payload: data,
-        });
-        dispatch({
-          type: HRStatActionKind.LOAD_REPORT_MAP,
-          payload: orderListToMap(data),
-        });
-      }
-    } catch (error) {
-      console.log(error);
+      dispatch({
+        type: HRStatActionKind.GET_PAYMENTS,
+        payload: data,
+      });
+      console.log(data);
+      dispatch({
+        type: HRStatActionKind.LOADING,
+        payload: false,
+      });
+    } catch (e) {
+      console.log(e);
     }
-  }, [hidden_reporter]);
+  }, [HRStatState.query, user?.hidden_reporter?.id]);
 
   useEffect(() => {
-    getOrders();
-  }, [getOrders]);
+    getReportOrders();
+  }, [getReportOrders]);
 
   useEffect(() => {
     if (user && !user.hidden_reporter?.id) {

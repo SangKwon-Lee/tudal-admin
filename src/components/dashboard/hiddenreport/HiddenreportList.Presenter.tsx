@@ -24,6 +24,7 @@ import {
   IHRListAction,
   IHRListState,
   sortOptions,
+  priceOptions,
 } from './HiddenreportList.Container';
 import dayjs from 'dayjs';
 
@@ -91,11 +92,11 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
             sx={{
               m: 1,
               maxWidth: '100%',
-              width: 240,
+              width: 140,
             }}
           >
             <TextField
-              label="Sort By"
+              label="정렬"
               name="_sort"
               select
               SelectProps={{ native: true }}
@@ -109,6 +110,42 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </Box>
+          <Box
+            sx={{
+              m: 1,
+              maxWidth: '100%',
+              width: 240,
+            }}
+          >
+            <TextField
+              label="무료/유료"
+              name="_price"
+              select
+              SelectProps={{ native: true }}
+              variant="outlined"
+              onChange={(e) => {
+                dispatch({
+                  type: HRListActionKind.CHANGE_PRICE,
+                  payload: {
+                    value: e.target.value,
+                    name: 'price',
+                  },
+                });
+              }}
+            >
+              {priceOptions.map((option, index) => (
+                <option
+                  key={index}
+                  value={[
+                    String(option.price_gt),
+                    String(option.price_lt),
+                  ]}
+                >
                   {option.label}
                 </option>
               ))}

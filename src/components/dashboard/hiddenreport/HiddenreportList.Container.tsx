@@ -16,6 +16,7 @@ export enum HRListActionKind {
   // QUERY/
   CHANGE_QUERY = 'CHANG_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
+  CHANGE_PRICE = 'CHANGE_PRICE',
 }
 
 type Sort =
@@ -28,6 +29,7 @@ interface SortOption {
   value: Sort;
   label: string;
 }
+
 export const sortOptions: SortOption[] = [
   {
     label: '등록순 (최신)',
@@ -44,6 +46,24 @@ export const sortOptions: SortOption[] = [
   {
     label: '만료일 (오래된)',
     value: 'expirationDate:asc',
+  },
+];
+
+export const priceOptions = [
+  {
+    label: '전체',
+    price_gt: 0,
+    price_lt: 0,
+  },
+  {
+    label: '무료',
+    price_gt: 0,
+    price_lt: 1,
+  },
+  {
+    label: '유료',
+    price_gt: 1,
+    price_lt: 0,
   },
 ];
 
@@ -64,6 +84,8 @@ export interface IHRListState {
     _start: number;
     _limit: number;
     _sort: string;
+    price_gt?: number;
+    price_lt?: number;
   };
 }
 
@@ -79,6 +101,8 @@ const initialState: IHRListState = {
     _start: 0,
     _limit: 20,
     _sort: sortOptions[0].value,
+    price_gt: 0,
+    price_lt: 0,
   },
 };
 
@@ -130,6 +154,15 @@ const HRListReducer = (
         query: {
           ...state.query,
           _start: (payload - 1) * state.query._limit,
+        },
+      };
+    case HRListActionKind.CHANGE_PRICE:
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          price_gt: Number(payload.value.slice(0, 1)),
+          price_lt: Number(payload.value.slice(2, 3)),
         },
       };
   }

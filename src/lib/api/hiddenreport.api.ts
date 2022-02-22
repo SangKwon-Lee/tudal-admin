@@ -1,4 +1,4 @@
-import axios, {apiServer} from 'src/lib/axios';
+import axios, { apiServer } from 'src/lib/axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
 import { IHR, IHRImage } from 'src/types/hiddenreport';
@@ -27,7 +27,6 @@ export async function update(body) {
 export async function remove(id) {
   return await axios.delete(`/hidden-reports/${id}`);
 }
-
 
 export async function getOrders(reporterId) {
   return await axios.get(
@@ -67,5 +66,13 @@ export async function editImage(id, image) {
 }
 
 export async function postReportComment(body) {
-  return await apiServer.post('/hiddenReport/report/comments', body)
+  return await apiServer.post('/hiddenReport/report/comments', body);
+}
+
+// 히든 리포트 정산
+export async function getHiddenReportOrders(id, param) {
+  const query = qs.stringify(removeEmpty(param));
+  return await axios.get(
+    `/hidden-report-orders/reporter/${id}?${query}`,
+  );
 }
