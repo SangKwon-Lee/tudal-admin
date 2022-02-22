@@ -111,7 +111,7 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary" variant="body2">
-                      {`${targetDetail.value} / ${targetDetail.subValue} `}
+                      {`${targetDetail?.value} / ${targetDetail?.subValue} `}
                     </Typography>
                   </TableCell>
                 </TableRow>
