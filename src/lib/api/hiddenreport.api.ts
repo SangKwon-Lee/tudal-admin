@@ -70,8 +70,9 @@ export async function postReportComment(body) {
 }
 
 // 히든 리포트 정산
-export async function getHiddenReportOrders(id, query) {
+export async function getHiddenReportOrders(id, param) {
+  const query = qs.stringify(removeEmpty(param));
   return await axios.get(
-    `/hidden-report-orders/reporter/${id}?${query}&startDate=${query.startDate}&endDate=${query.endDate}`,
+    `/hidden-report-orders/reporter/${id}?${query}`,
   );
 }
