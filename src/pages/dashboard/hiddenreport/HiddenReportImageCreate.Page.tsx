@@ -10,8 +10,8 @@ const HiddenReportImageCreatePage: React.FC = () => {
   return (
     <PageLayout
       dashboard="히든 리포트"
-      mainTopic={'히든리포트 이미지'}
-      pageTitle={'히든리포트 이미지 생성'}
+      mainTopic={'히든 리포트 이미지'}
+      pageTitle={'히든 리포트 이미지 생성'}
       pageTopRef={pageTopRef}
       hasCreateButton={false}
     >

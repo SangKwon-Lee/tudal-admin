@@ -6,8 +6,8 @@ const HiddenReportImageListPage: React.FC = () => {
 
   return (
     <PageLayout
-      mainTopic={'히든리포트 이미지'}
-      pageTitle={'히든리포트 이미지 리스트'}
+      mainTopic={'히든 리포트 이미지'}
+      pageTitle={'히든 리포트 이미지 리스트'}
       pageTopRef={pageTopRef}
       hasCreateButton={true}
       buttonName={'이미지 생성'}

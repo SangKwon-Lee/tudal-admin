@@ -146,7 +146,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                도입배경
+                리포트 작성 배경 및 계기 (타이틀, 구매 후 노출)
               </Typography>
               <TextField
                 fullWidth
@@ -164,7 +164,23 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                요점
+                리포트 작성 배경 요약 설명 (구매 후 노출)
+              </Typography>
+              <TextField
+                fullWidth
+                error={Boolean(errors?.reason)}
+                helperText={'근거를 적어주세요.'}
+                multiline
+                {...register('reason')}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                리포트 요약문 (구매 전 노출)
               </Typography>
               <TextField
                 fullWidth
@@ -174,22 +190,6 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 helperText={'요약문 세가지를 적어주세요.'}
                 placeholder={'-\n-\n-\n'}
                 {...register('summary')}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                color="textPrimary"
-                sx={{ mb: 1 }}
-                variant="subtitle2"
-              >
-                근거
-              </Typography>
-              <TextField
-                fullWidth
-                error={Boolean(errors?.reason)}
-                helperText={'근거를 적어주세요.'}
-                multiline
-                {...register('reason')}
               />
             </Grid>
             <Grid item xs={12} lg={6}>
