@@ -21,7 +21,7 @@ export async function getFeeds(params, masterId) {
 
 export async function getFeedLength(masterId, roomId) {
   return await axios.get(
-    `/master-feeds/count?master.id=${masterId}&isDeleted=0&master_room.id=${roomId}`,
+    `/master-feeds/count?master.id=${masterId}&master_room.id=${roomId}`,
   );
 }
 
