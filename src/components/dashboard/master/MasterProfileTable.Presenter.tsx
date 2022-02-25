@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import { Link as RouterLink } from 'react-router-dom';
 import { IMaster } from 'src/types/master';
 import { Viewer } from '@toast-ui/react-editor';
-import MasterProfilePresenter from './MasterProfile.Presenter';
+
 interface IMasterProfileProps {
   master: IMaster;
 }

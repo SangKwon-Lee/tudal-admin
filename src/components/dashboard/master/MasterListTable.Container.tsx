@@ -77,7 +77,6 @@ export interface IMasterListState {
     _start: number;
     _limit: number;
     _q: string;
-    isDeleted: boolean;
     master: number;
     'master_room.id': number;
     'master_room.master_channel.id': number;
@@ -100,7 +99,6 @@ const initialState: IMasterListState = {
     _q: '',
     _start: 0,
     _limit: 20,
-    isDeleted: false,
     master: null,
     'master_room.id': null,
     'master_room.master_channel.id': null,
