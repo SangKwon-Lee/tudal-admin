@@ -122,7 +122,7 @@ const sections = [
             path: '/dashboard/banner',
           },
           {
-            title: '히든리포트 이미지 관리',
+            title: '히든 리포트 이미지 관리',
             path: '/dashboard/hiddenreports/images',
           },
         ],
