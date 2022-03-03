@@ -176,13 +176,6 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
     }
   }, []);
 
-  // 리포터 소개글 (웹에디터)
-  const log = () => {
-    if (editorRef.current) {
-      return editorRef.current.getContent();
-    }
-  };
-
   //* 리포터 등록
   const createCpReporter = async (data: IHiddenReporter) => {
     let reporter: IHiddenReporter = { ...data };
@@ -203,7 +196,7 @@ const CpReporterCreateContainer: React.FC<ICpReporterCreateProps> = (
         tudalRecommendScore: Number(data.tudalRecommendScore),
         user: newReporterUser.id,
         imageUrl: imgUrl,
-        intro: log(),
+        intro: data.intro,
       };
 
       if (mode === 'edit') {
