@@ -176,11 +176,13 @@ const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               소개글
             </Typography>
-
-            <WebEditor
-              editorRef={editorRef}
-              contents={newCpReporter?.intro}
-              bucket_name={IBuckets.CP_PHOTO}
+            <TextField
+              {...register('intro')}
+              fullWidth
+              multiline
+              variant="outlined"
+              error={Boolean(errors?.intro)}
+              helperText={'소개글 작성은 필수입니다.'}
             />
           </Box>
           {isAdmin && (
