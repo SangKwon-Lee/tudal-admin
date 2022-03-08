@@ -131,3 +131,32 @@ export async function getMasterPayments(masterId, query?) {
     `/master-payments/calculation/${masterId}&startDate=${query.startDate}&endDate=${query.endDate}`,
   );
 }
+
+// 공지사항
+export async function getMasterNotice(noticeId, userId) {
+  return await axios.get(
+    `/master-notices/${noticeId}?master.user=${userId}`,
+  );
+}
+
+export async function postMasterNotice(notice) {
+  return await axios.post(`/master-notices`, notice);
+}
+
+export async function editMasterNotice(noticeId, notice) {
+  return await axios.put(`/master-notices/${noticeId}`, notice);
+}
+
+export async function getMasterNoticeList(masterId) {
+  return await axios.get(`/master-notices?master.id=${masterId}`);
+}
+
+export async function deleteMasterNotice(noticeId) {
+  return await axios.delete(`/master-notices/${noticeId}`);
+}
+
+export async function getMasterMoticeListLength(masterId) {
+  return await axios.get(
+    `/master-notices/count?master.id=${masterId}`,
+  );
+}

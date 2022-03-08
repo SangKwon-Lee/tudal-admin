@@ -71,8 +71,9 @@ const StockTagListPresenter: FC<IProps> = (props) => {
                           </Typography>
                         </TableCell>
                         <TableCell>{`${row.stock?.name}(${row.stock?.code})`}</TableCell>
-                        <TableCell>{row.tag.name}</TableCell>
-
+                        <TableCell>
+                          {row.tag?.name && row.tag.name}
+                        </TableCell>
                         <TableCell>
                           {dayjs(row.updated_at)
                             .subtract(9, 'hour')

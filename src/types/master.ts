@@ -105,3 +105,11 @@ export interface IMasterFeedImage {
   image_url: string;
   master_feed: IMasterFeed;
 }
+
+export interface IMasterNotice {
+  title: string;
+  id: number;
+  contents: string;
+  master: any;
+  created_at?: string;
+}
