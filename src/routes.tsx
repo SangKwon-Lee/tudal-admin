@@ -107,6 +107,21 @@ const MasterSubscribePage = Loadable(
 const MasterProfilePage = Loadable(
   lazy(() => import('./pages/dashboard/master/MasterProfile.Page')),
 );
+const MasterNoticeCreatePage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/master/MasterNoticeCreate.Page'),
+  ),
+);
+const MasterNoticeEditPage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/master/MasterNoticeEdit.Page'),
+  ),
+);
+const MasterNoticeListPage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/master/MasterNoticeList.Page'),
+  ),
+);
 
 //* gold
 const GoldList = Loadable(
@@ -569,6 +584,18 @@ const routes: PartialRouteObject[] = [
           {
             path: '/profile',
             element: <MasterProfilePage />,
+          },
+          {
+            path: '/notice/create',
+            element: <MasterNoticeCreatePage />,
+          },
+          {
+            path: '/notice/:noticeId/edit',
+            element: <MasterNoticeEditPage />,
+          },
+          {
+            path: '/notice',
+            element: <MasterNoticeListPage />,
           },
         ],
       },

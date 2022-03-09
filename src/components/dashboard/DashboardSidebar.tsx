@@ -178,6 +178,10 @@ const sections = [
             title: '방 관리',
             path: '/dashboard/master/room',
           },
+          {
+            title: '공지사항',
+            path: '/dashboard/master/notice',
+          },
           // {
           //   title: '구독현황',
           //   path: '/dashboard/master/subscribe',
