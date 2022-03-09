@@ -111,7 +111,7 @@ const MasterNoticeListPresenter: React.FC<IMasterNoticeProps> = ({
                                 <Link
                                   color="inherit"
                                   component={RouterLink}
-                                  to={`/dashboard/master/${notice.id}`}
+                                  to={`/dashboard/master/notice/${notice.id}/edit`}
                                   variant="subtitle2"
                                 >
                                   {notice.title
