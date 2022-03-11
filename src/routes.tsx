@@ -212,6 +212,9 @@ const TodayKeywordViewer = Loadable(
 const MasterIntroViewer = Loadable(
   lazy(() => import('./pages/viewer/MasterViewer')),
 );
+const MasterNoticeViewr = Loadable(
+  lazy(() => import('./pages/viewer/MasterNoticeViewer')),
+);
 
 const ReporterIntroViewer = Loadable(
   lazy(() => import('./pages/viewer/ReporterViewer')),
@@ -359,6 +362,10 @@ const routes: PartialRouteObject[] = [
       {
         path: 'master-feeds/:id',
         element: <MasterFeedViewer />,
+      },
+      {
+        path: 'master-notice/:noticeId',
+        element: <MasterNoticeViewr />,
       },
     ],
   },
