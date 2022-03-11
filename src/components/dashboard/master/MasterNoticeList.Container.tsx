@@ -5,9 +5,11 @@ import { IMasterNotice } from 'src/types/master';
 import MasterNoticeListPresenter from './MasterNoticeList.Presenter';
 import toast from 'react-hot-toast';
 import '@toast-ui/editor/dist/toastui-editor.css';
+import { useNavigate } from 'react-router';
+
 const MasterNoticeListContainer = () => {
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   //* 공지 리스트
   const [noticeList, setNoticeList] = useState<IMasterNotice[]>([
     {
@@ -105,6 +107,13 @@ const MasterNoticeListContainer = () => {
   const handleSaveNoticeId = (noticeId: number) => {
     setNoticeId(noticeId);
   };
+
+  useEffect(() => {
+    if (user && !user.masters[0]?.id) {
+      navigate('/dashboard');
+      toast.error('달인을 먼저 생성해주세요');
+    }
+  }, [user, navigate]);
 
   return (
     <MasterNoticeListPresenter
