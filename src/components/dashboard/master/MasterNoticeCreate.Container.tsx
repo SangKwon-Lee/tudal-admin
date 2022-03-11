@@ -35,7 +35,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       const newData = {
         title: masterNoticeInput.title,
         contents,
-        masterId: user.master,
+        master: user.master,
       };
 
       const editData = {
@@ -100,6 +100,13 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
         [e.target.name]: e.target.value,
       });
     };
+
+    useEffect(() => {
+      if (user && !user.masters[0]?.id) {
+        navigate('/dashboard');
+        toast.error('달인을 먼저 생성해주세요');
+      }
+    }, [user, navigate]);
 
     return (
       <MasterNoticeCreatePresenter
