@@ -146,7 +146,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                리포트 작성 배경 및 계기 (타이틀, 구매 후 노출)
+                작성 이유 (타이틀, 구매 후 노출)
               </Typography>
               <TextField
                 fullWidth
@@ -164,7 +164,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                리포트 작성 배경 요약 설명 (구매 후 노출)
+                주장 근거 (구매 후 노출)
               </Typography>
               <TextField
                 fullWidth
@@ -180,7 +180,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                리포트 요약문 (구매 전 노출)
+                리포트 요약 (구매 전 노출)
               </Typography>
               <TextField
                 fullWidth
