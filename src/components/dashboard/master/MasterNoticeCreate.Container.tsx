@@ -85,8 +85,6 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       if (mode === 'edit') {
         handleGetNotice();
       }
-      setTitle('ASD');
-      setContents('ASD');
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode, noticeId]);
 
