@@ -146,7 +146,7 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 sx={{ mb: 1 }}
                 variant="subtitle2"
               >
-                작성 이유 (타이틀, 구매 후 노출)
+                작성 이유 (구매 후 노출)
               </Typography>
               <TextField
                 fullWidth
