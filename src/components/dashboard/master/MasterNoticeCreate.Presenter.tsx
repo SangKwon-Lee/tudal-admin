@@ -6,21 +6,23 @@ interface CpMasterNoticeCreateProps {
   mode: string;
   // user: IUser;
   editorRef: React.RefObject<HTMLDivElement>;
-  masterNoticeInput: {
-    title: string;
-    contents: string;
-  };
-  handleNoticeInput: (e: any) => void;
+
+  title: string;
+  contents: string;
+  handleNoticeInputTitle: (e: any) => void;
   handleCreateNotice: () => Promise<void>;
+  handleNoticeInputContents: (e: any) => void;
 }
 
 const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
   ({
     editorRef,
     mode,
-    masterNoticeInput,
+    title,
+    contents,
     handleCreateNotice,
-    handleNoticeInput,
+    handleNoticeInputTitle,
+    handleNoticeInputContents,
   }) => {
     return (
       <>
@@ -31,32 +33,20 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
               justifyContent: 'space-between',
             }}
           >
-            {masterNoticeInput.title && (
-              <TextField
-                fullWidth
-                label="제목"
-                name="title"
-                variant="outlined"
-                helperText="제목을 입력해주세요"
-                onChange={handleNoticeInput}
-                defaultValue={masterNoticeInput.title}
-              />
-            )}
-            {!masterNoticeInput.title && (
-              <TextField
-                fullWidth
-                name="title"
-                label="제목"
-                variant="outlined"
-                helperText="제목을 입력해주세요"
-                onChange={handleNoticeInput}
-              />
-            )}
+            <TextField
+              fullWidth
+              label="제목"
+              name="title"
+              variant="outlined"
+              helperText="제목을 입력해주세요"
+              onChange={handleNoticeInputTitle}
+              value={title}
+            />
           </Box>
           <Box sx={{ mt: 5 }}>
             <WebEditor
               editorRef={editorRef}
-              contents={masterNoticeInput.contents}
+              contents={contents}
               bucket_name={IBuckets.MASTER_FEED}
             />
           </Box>

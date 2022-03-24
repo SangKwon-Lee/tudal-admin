@@ -16,11 +16,8 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const mode = props.mode || 'create';
     const editorRef = useRef(null);
     const navigate = useNavigate();
-
-    const [masterNoticeInput, setMasterNoticeInput] = useState({
-      title: '',
-      contents: '',
-    });
+    const [contents, setContents] = useState('');
+    const [title, setTitle] = useState('');
 
     // * WebEditor 변환
     const log = () => {
@@ -33,13 +30,13 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const handleCreateNotice = async () => {
       const contents = log();
       const newData = {
-        title: masterNoticeInput.title,
+        title,
         contents,
         master: user.master,
       };
 
       const editData = {
-        title: masterNoticeInput.title,
+        title,
         contents,
       };
       try {
@@ -75,11 +72,8 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
           user.id,
         );
         if (status === 200) {
-          setMasterNoticeInput({
-            ...masterNoticeInput,
-            title: data.title,
-            contents: data.contents,
-          });
+          setTitle(data.title);
+          setContents(data.contents);
         }
       } catch (e) {
         console.log(e);
@@ -91,16 +85,18 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       if (mode === 'edit') {
         handleGetNotice();
       }
+      setTitle('ASD');
+      setContents('ASD');
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode, noticeId]);
 
-    const handleNoticeInput = (e: any) => {
-      setMasterNoticeInput({
-        ...masterNoticeInput,
-        [e.target.name]: e.target.value,
-      });
+    const handleNoticeInputTitle = (e: any) => {
+      setTitle(e.target.value);
     };
 
+    const handleNoticeInputContents = (e: any) => {
+      setContents(e.target.value);
+    };
     useEffect(() => {
       if (user && !user.masters[0]?.id) {
         navigate('/dashboard');
@@ -112,8 +108,10 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       <MasterNoticeCreatePresenter
         editorRef={editorRef}
         mode={mode}
-        handleNoticeInput={handleNoticeInput}
-        masterNoticeInput={masterNoticeInput}
+        title={title}
+        contents={contents}
+        handleNoticeInputTitle={handleNoticeInputTitle}
+        handleNoticeInputContents={handleNoticeInputContents}
         handleCreateNotice={handleCreateNotice}
       />
     );
