@@ -20,6 +20,7 @@ const MasterNoticeListContainer = () => {
       master: {},
     },
   ]);
+
   // * 리스트 길이
   const [noticeLength, setNoticeLength] = useState(0);
   // * Notice ID 저장

@@ -25,7 +25,6 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
         return editorRef.current.getContent();
       }
     };
-
     //* 공지사항 등록
     const handleCreateNotice = async () => {
       const contents = log();
