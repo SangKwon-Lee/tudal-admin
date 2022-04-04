@@ -51,6 +51,7 @@ const WebEditor: React.FC<IWebEditorProps> = (props) => {
         autosave_restore_when_empty: false,
         autosave_retention: '2m',
         image_advtab: true,
+        fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
         link_list: [
           { title: 'My page 1', value: 'https://www.tiny.cloud' },
           { title: 'My page 2', value: 'http://www.moxiecode.com' },
