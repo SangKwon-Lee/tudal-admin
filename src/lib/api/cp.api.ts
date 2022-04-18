@@ -19,14 +19,14 @@ export const getUsersNoReporter = () => {
   return axios.get(`/users?hidden_reporter_null=true`);
 };
 
-export const getCpUsers = (params, filter) => {
+export const getCpUsers = (params) => {
   let query = qs.stringify(removeEmpty(params));
-  return axios.get(`/users?${query}&${filter}`);
+  return axios.get(`/users?${query}`);
 };
 
-export const getCpUsersLegnth = (params, filter) => {
+export const getCpUsersLegnth = (params) => {
   let query = qs.stringify(removeEmpty(params));
-  return axios.get(`/users/count?${query}&${filter}`);
+  return axios.get(`/users/count?${query}`);
 };
 
 //* 달인

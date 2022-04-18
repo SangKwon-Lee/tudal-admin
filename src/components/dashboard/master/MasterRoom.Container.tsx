@@ -168,7 +168,7 @@ const MasterRoomContainer = () => {
       const { status } = await cmsServer.post(`/master-rooms`, {
         title: MasterRoomState.title,
         master: MasterRoomState.selectMaster,
-        order: MasterRoomState.selectMaster.master_rooms.length + 1,
+        order: MasterRoomState.selectMaster.master_rooms.length,
         type: MasterRoomState.type,
       });
       if (status === 200) {

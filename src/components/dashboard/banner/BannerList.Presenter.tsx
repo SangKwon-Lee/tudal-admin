@@ -241,7 +241,7 @@ const BannerListPresenter: React.FC<IBannerListProps> = (props) => {
                       />
                     </TableCell>
                     <TableCell>
-                      {report.hidden_report_likes.length}
+                      {report?.hidden_report_likes?.length}
                     </TableCell>
                     <TableCell>
                       {report.hidden_report_orders.length}

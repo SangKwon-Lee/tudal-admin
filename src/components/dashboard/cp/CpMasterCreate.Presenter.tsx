@@ -28,6 +28,7 @@ const schema = yup
     keyword: yup.string().required(),
     type: yup.string().required(),
     catchphrase: yup.string().required(),
+    group: yup.string().required(),
   })
   .required();
 
@@ -175,6 +176,18 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
           </Box>
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ my: 1 }}>
+              그룹
+            </Typography>
+            <TextField
+              fullWidth
+              {...register('group')}
+              variant="outlined"
+              helperText="소속을 입력해주세요. ex) 이노핀, 카카오"
+              error={Boolean(errors?.group)}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ my: 1 }}>
               타입
             </Typography>
             <TextField
@@ -304,7 +317,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             </Typography>
             <WebEditor
               editorRef={editorRef}
-              contents={newCpMaster.intro}
+              contents={newCpMaster.profile}
               bucket_name={IBuckets.CP_PHOTO}
             />
           </Box>

@@ -39,11 +39,12 @@ const initialState: CpMasterCreateState = {
     nickname: '',
     subscription_days: null,
     price_gold: null,
-    intro: '',
+    profile: '',
     catchphrase: '',
     keyword: '',
     profile_image_url: '',
     type: 'free',
+    group: '',
   },
   newMasterUser: null,
   users: [],
@@ -136,7 +137,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     } else {
       try {
         const { data, status } = await APICp.getMaster(masterId);
-
         if (status === 200) {
           dispatch({
             type: CpMasterCreateActionKind.GET_MASTER,
@@ -196,11 +196,11 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       IBuckets.CP_PHOTO,
     );
 
-    const intro = log();
+    const profile = log();
 
     let master: IMasterCreateForm = {
       ...data,
-      intro,
+      profile,
       keyword: data.keyword.trim(),
       user: cpCreateState.newMasterUser.id,
       profile_image_url: imgUrl,

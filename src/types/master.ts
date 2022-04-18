@@ -82,8 +82,9 @@ export interface IMaster {
   price_gold: number;
   catchphrase: string;
   subscription_days: number;
-  type: 'free' | 'paid';
+  type: string;
   created_at: Date;
+  group: string;
   updated_at: Date;
 }
 
@@ -93,12 +94,13 @@ export interface IMasterCreateForm {
   profile_image_url: string;
   price_gold: number;
   subscription_days: number;
-  intro: string;
+  profile: string;
   keyword: string;
   user?: any;
   created_at?: string;
   catchphrase: string;
   type: 'free' | 'paid';
+  group: string;
 }
 
 export interface IMasterFeedImage {

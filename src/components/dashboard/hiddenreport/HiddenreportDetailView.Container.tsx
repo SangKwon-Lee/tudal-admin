@@ -14,7 +14,7 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
   ({ reportId }) => {
     const { user } = useAuth();
     const [report, setReport] = useState<IHR>(null);
-    useUserVerification(report?.hidden_reporter.id, 'hiddenReporter');
+    useUserVerification(user?.masters[0].id, 'master');
 
     useEffect(() => {
       async function getReport() {

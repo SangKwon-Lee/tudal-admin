@@ -20,7 +20,6 @@ const useUserVerification = (
   const isVerified = useRef<boolean>(true);
 
   const _id = typeof id === 'string' ? Number(id) : id;
-
   useEffect(() => {
     // 초기 렌더시 id 값이 호출한 컴포넌트에서 넘어오지 않는 경우 PASS
     if (isNull(id) || isUndefined(id)) {
@@ -36,7 +35,7 @@ const useUserVerification = (
           break;
 
         case 'master':
-          isVerified.current = user.master.id === _id;
+          isVerified.current = user?.masters[0].id === _id;
           break;
       }
     }

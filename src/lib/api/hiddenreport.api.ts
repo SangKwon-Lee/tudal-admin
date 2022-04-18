@@ -5,27 +5,28 @@ import { IHR, IHRImage } from 'src/types/hiddenreport';
 
 /** 히든 리포트 */
 export async function get(id) {
-  return await axios.get<IHR>(`/hidden-reports/${id}`);
+  return await axios.get<IHR>(`/master-reports/${id}`);
 }
+
 export async function getList(param) {
   const query = qs.stringify(removeEmpty(param));
-  return await axios.get<IHR[]>(`/hidden-reports?${query}`);
+  return await axios.get<IHR[]>(`/master-reports?${query}`);
 }
 export async function getListLength(param) {
   const query = qs.stringify(removeEmpty(param));
-  return await axios.get<number>(`/hidden-reports/count?${query}`);
+  return await axios.get<number>(`/master-reports/count?${query}`);
 }
 
 export async function create(body) {
-  return await axios.post(`/hidden-reports`, body);
+  return await axios.post(`/master-reports`, body);
 }
 
 export async function update(body) {
-  return await axios.put(`/hidden-reports/${body.id}`, body);
+  return await axios.put(`/master-reports/${body.id}`, body);
 }
 
 export async function remove(id) {
-  return await axios.delete(`/hidden-reports/${id}`);
+  return await axios.delete(`/master-reports/${id}`);
 }
 
 export async function getOrders(reporterId) {
@@ -36,7 +37,8 @@ export async function getOrders(reporterId) {
 
 export async function getOrdersByReport(reportId) {
   return await axios.get(
-    `/hidden-report-orders?hidden_report=${reportId}&_limit=-1&_sort=created_at:DESC`,
+    // `/hidden-report-orders`,
+    `/hidden-report-orders?master_report=${reportId}&_limit=-1&_sort=created_at:DESC`,
   );
 }
 

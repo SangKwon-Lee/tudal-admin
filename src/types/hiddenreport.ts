@@ -1,6 +1,8 @@
+import { IMaster } from './master';
 import { Stock, Tag } from './schedule';
 
 export interface IHR {
+  readingTime: number;
   id: number;
   title: string;
   price: number;
@@ -24,6 +26,7 @@ export interface IHR {
   hidden_report_likes: [];
   hidden_report_comments: IHRComment[];
   hidden_reporter: IHiddenReporter;
+  master_id?: IMaster;
   numOfLikes: number;
   numOfOrders: number;
   numOfViews: number;

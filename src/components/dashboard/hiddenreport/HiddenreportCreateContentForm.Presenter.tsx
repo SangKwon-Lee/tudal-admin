@@ -15,17 +15,13 @@ import {
   MenuItem,
   InputAdornment,
 } from '@material-ui/core';
-
 import '../../../lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
-
 import { Stock, Tag } from 'src/types/schedule';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import * as yup from 'yup';
-
 import {
   IHiddenReportForm,
   HiddenReportCreateAction,
@@ -69,6 +65,7 @@ const schema = yup
     catchphrase: yup.string().required(),
     summary: yup.string().required(),
     reason: yup.string().required(),
+    readingTime: yup.number().required(),
   })
   .required();
 
@@ -94,7 +91,6 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
   const {
     register,
     handleSubmit,
-
     reset,
     formState: { errors },
   } = useForm<IHiddenReportForm>({
@@ -397,6 +393,26 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
                 multiline
                 error={Boolean(errors?.catchphrase)}
                 {...register('catchphrase')}
+              />
+            </Grid>
+            <Grid item xs={12} lg={2}>
+              <Typography
+                color="textPrimary"
+                sx={{ mb: 1 }}
+                variant="subtitle2"
+              >
+                분량
+              </Typography>
+              <TextField
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">분</InputAdornment>
+                  ),
+                }}
+                helperText={'분량을 적어주세요. 분 단위 입니다.'}
+                error={Boolean(errors?.readingTime)}
+                {...register('readingTime')}
               />
             </Grid>
             <Grid item xs={12} lg={2}>

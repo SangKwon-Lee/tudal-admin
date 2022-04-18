@@ -6,10 +6,10 @@ import PropTypes from 'prop-types';
 import { Box, Drawer } from '@material-ui/core';
 import type { Theme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ChartPieIcon from '../../icons/ChartPie';
+// import ChartPieIcon from '../../icons/ChartPie';
 import ChartSquareBarIcon from '../../icons/ChartSquareBar';
 import CalendarIcon from '../../icons/Calendar';
-import StarIcon from '../../icons/Star';
+// import StarIcon from '../../icons/Star';
 import DeviceTabletIcon from '../../icons/DeviceTablet';
 import NavSection from '../layout/NavSection';
 import Scrollbar from '../layout/Scrollbar';
@@ -60,10 +60,6 @@ const sections = [
           {
             title: '달인 생성',
             path: '/dashboard/cp/master/signup',
-          },
-          {
-            title: '히든 리포터 생성',
-            path: '/dashboard/cp/reporter/signup',
           },
         ],
       },
@@ -129,38 +125,38 @@ const sections = [
       },
     ],
   },
-  {
-    title: 'Hiddenbox',
-    items: [
-      {
-        title: '히든박스',
-        path: '/dashboard/hiddenboxes',
-        icon: <StarIcon fontSize="small" />,
-      },
-    ],
-  },
+  // {
+  //   title: 'Hiddenbox',
+  //   items: [
+  //     {
+  //       title: '히든박스',
+  //       path: '/dashboard/hiddenboxes',
+  //       icon: <StarIcon fontSize="small" />,
+  //     },
+  //   ],
+  // },
   {
     title: 'Contents',
     items: [
-      {
-        title: '히든리포트',
-        path: '/dashboard/hiddenreports',
-        icon: <StarIcon fontSize="small" />,
-        children: [
-          {
-            title: '프로필',
-            path: '/dashboard/hiddenreports/profile',
-          },
-          {
-            title: '리스트',
-            path: '/dashboard/hiddenreports',
-          },
-          {
-            title: '판매내역',
-            path: '/dashboard/hiddenreports/history',
-          },
-        ],
-      },
+      // {
+      //   title: '히든리포트',
+      //   path: '/dashboard/hiddenreports',
+      //   icon: <StarIcon fontSize="small" />,
+      //   children: [
+      //     {
+      //       title: '프로필',
+      //       path: '/dashboard/hiddenreports/profile',
+      //     },
+      //     {
+      //       title: '리스트',
+      //       path: '/dashboard/hiddenreports',
+      //     },
+      //     {
+      //       title: '판매내역',
+      //       path: '/dashboard/hiddenreports/history',
+      //     },
+      //   ],
+      // },
       {
         title: '달인',
         path: '/dashboard/master',
@@ -171,12 +167,16 @@ const sections = [
             path: '/dashboard/master/profile',
           },
           {
-            title: '리스트',
+            title: '피드 리스트',
             path: '/dashboard/master',
           },
           {
-            title: '방 관리',
+            title: '피드 방 관리',
             path: '/dashboard/master/room',
+          },
+          {
+            title: '히든리포트 리스트',
+            path: '/dashboard/hiddenreports',
           },
           {
             title: '공지사항',
@@ -239,16 +239,16 @@ const sections = [
       },
     ],
   },
-  {
-    title: 'Generator',
-    items: [
-      {
-        title: '리포트',
-        path: '/dashboard/report',
-        icon: <ChartPieIcon fontSize="small" />,
-      },
-    ],
-  },
+  // {
+  //   title: 'Generator',
+  //   items: [
+  //     {
+  //       title: '리포트',
+  //       path: '/dashboard/report',
+  //       icon: <ChartPieIcon fontSize="small" />,
+  //     },
+  //   ],
+  // },
 ];
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
