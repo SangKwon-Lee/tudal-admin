@@ -8,7 +8,6 @@ export enum CpListActionKind {
   GET_USERS = 'GET_USERS',
   GET_LIST_LENGTH = 'GET_LIST_LENGTH',
   CHANGE_QUERY = 'CHANGE_QUERY',
-  CHANGE_FILTER = 'CHANGE_FILTER',
   CHANGE_PAGE = 'CHANGE_PAGE',
 }
 
@@ -28,7 +27,6 @@ export interface CpListState {
     _q: string;
     _sort: string;
   };
-  cpFilter: string;
 }
 
 const initialState: CpListState = {
@@ -42,7 +40,6 @@ const initialState: CpListState = {
     _limit: 50,
     _sort: 'created_at:DESC',
   },
-  cpFilter: '',
 };
 
 const CpListReducer = (
@@ -86,11 +83,6 @@ const CpListReducer = (
           _start: (payload - 1) * 50,
         },
       };
-    case CpListActionKind.CHANGE_FILTER:
-      return {
-        ...state,
-        cpFilter: payload,
-      };
   }
 };
 
@@ -106,11 +98,9 @@ const CpListContainer = () => {
     try {
       const { status, data } = await APICp.getCpUsers(
         cpListState.query,
-        cpListState.cpFilter,
       );
       const { data: dataLength } = await APICp.getCpUsersLegnth(
         cpListState.query,
-        cpListState.cpFilter,
       );
       if (status === 200) {
         dispatch({
@@ -125,11 +115,11 @@ const CpListContainer = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [cpListState.cpFilter, cpListState.query]);
+  }, [cpListState.query]);
 
   useEffect(() => {
     getUsers();
-  }, [getUsers, cpListState.query, cpListState.cpFilter]);
+  }, [getUsers, cpListState.query]);
 
   return (
     <CpListPresenter cpListState={cpListState} dispatch={dispatch} />

@@ -59,7 +59,6 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
                 </Typography>
               </TableCell>
             </TableRow>
-
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
@@ -93,12 +92,38 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">
+                  소속
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.group}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
+                  타입
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="body2">
+                  {master?.type}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography color="textPrimary" variant="subtitle2">
                   구독료 (GOLD)
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.price_gold}
+                  {master.price_gold
+                    ? master.price_gold
+                    : '유료방이 없습니다'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -110,11 +135,12 @@ const MasterProfileTable: React.FC<IMasterProfileProps> = ({
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="body2">
-                  {master.subscription_days}
+                  {master.subscription_days
+                    ? master.subscription_days
+                    : '유료방이 없습니다'}
                 </Typography>
               </TableCell>
             </TableRow>
-
             <TableRow>
               <TableCell>
                 <Typography color="textPrimary" variant="subtitle2">

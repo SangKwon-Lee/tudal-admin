@@ -29,11 +29,6 @@ interface CpListProps {
   dispatch: (params: CpListAction) => void;
   cpListState: CpListState;
 }
-const sortOption = [
-  { title: '전체', value: '' },
-  { title: '달인', value: 'master_null=false' },
-  { title: '히든 리포터', value: 'hidden_reporter_null=false' },
-];
 
 const CpListPresenter: React.FC<CpListProps> = (props) => {
   const { cpListState, dispatch } = props;
@@ -78,27 +73,6 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
               variant="outlined"
             />
           </Box>
-          <Box>
-            <TextField
-              select
-              sx={{ mx: 2 }}
-              defaultValue="전체"
-              SelectProps={{ native: true }}
-              variant="outlined"
-              onChange={(event) => {
-                dispatch({
-                  type: CpListActionKind.CHANGE_FILTER,
-                  payload: event.target.value,
-                });
-              }}
-            >
-              {sortOption.map((date: any, i) => (
-                <option key={i} value={date.value}>
-                  {date.title}
-                </option>
-              ))}
-            </TextField>
-          </Box>
         </Box>
         <Divider />
         <Scrollbar>
@@ -129,14 +103,6 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                       sx={{ pl: 2.3, fontWeight: 'bold' }}
                     >
                       달인
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ pl: 1, fontWeight: 'bold' }}
-                    >
-                      히든 리포터
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -198,26 +164,6 @@ const CpListPresenter: React.FC<CpListProps> = (props) => {
                               color="inherit"
                               component={RouterLink}
                               to={`/dashboard/cp/master/signup/${cp.id}`}
-                            >
-                              생성
-                            </Button>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {cp.hidden_reporter?.id ? (
-                            <Button
-                              variant="contained"
-                              component={RouterLink}
-                              to={`/dashboard/cp/${cp.hidden_reporter.id}/reporter`}
-                            >
-                              히든 리포터
-                            </Button>
-                          ) : (
-                            <Button
-                              color="inherit"
-                              variant="outlined"
-                              component={RouterLink}
-                              to={`/dashboard/cp/reporter/signup/${cp.id}`}
                             >
                               생성
                             </Button>

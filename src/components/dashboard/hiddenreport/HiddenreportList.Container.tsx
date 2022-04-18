@@ -182,9 +182,10 @@ const HiddenReportListContainer: React.FC = (props) => {
     try {
       const _query = {
         ...query,
-        hidden_reporter: user.hidden_reporter.id,
+        master_id: user.masters[0].id,
       };
       const { data, status } = await APIHR.getList(_query);
+      console.log(data);
       if (status === 200) {
         const { data: count } = await APIHR.getListLength(_query);
         dispatch({
@@ -195,7 +196,7 @@ const HiddenReportListContainer: React.FC = (props) => {
     } catch (error) {
       console.log(error);
     }
-  }, [query, user?.hidden_reporter?.id]);
+  }, [query, user.masters]);
 
   const deleteReport = useCallback(
     async (id) => {

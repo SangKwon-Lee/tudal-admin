@@ -37,6 +37,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       const editData = {
         title,
         contents,
+        master: user.master,
       };
       try {
         if (mode === 'edit') {
