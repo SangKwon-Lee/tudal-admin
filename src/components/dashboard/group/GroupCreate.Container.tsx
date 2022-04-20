@@ -37,7 +37,7 @@ const initialState: GroupCreateState = {
     name: '',
     description: '',
     premium: false,
-    show: false,
+    show: true,
     id: 0,
   },
   stocks: [],
