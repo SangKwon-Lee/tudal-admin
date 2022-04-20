@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 import useAsync from 'src/hooks/useAsync';
 import { APIGroup, APIStock } from 'src/lib/api';
 import { IGropuInput } from 'src/types/group';
@@ -86,7 +88,7 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
     GroupCreateReducer,
     initialState,
   );
-
+  const navigate = useNavigate();
   const stockInput = useRef(null);
   const { stocks } = groupCreateState;
 
@@ -146,6 +148,8 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
             return await APIGroup.postFavorites(newFavorites);
           }),
         );
+        toast.success('데일리가 생성됐습니다.');
+        navigate(`/dashboard/groups`);
       } else {
         const { data } = await APIGroup.putGroup(newGroup, groupId);
         const { data: Favorites } = await APIGroup.getFavorites(
@@ -169,6 +173,8 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
             return await APIGroup.postFavorites(newFavorites);
           }),
         );
+        toast.success('데일리가 수정됐습니다.');
+        navigate(`/dashboard/groups`);
       }
     } catch (e) {
       console.log(e);
