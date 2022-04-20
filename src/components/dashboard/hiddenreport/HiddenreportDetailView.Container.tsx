@@ -22,6 +22,7 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
           const { data, status } = await APIHR.get(reportId);
           if (status === 200) {
             setReport(data);
+            console.log(data);
           }
         } catch (error) {
           console.log(error);

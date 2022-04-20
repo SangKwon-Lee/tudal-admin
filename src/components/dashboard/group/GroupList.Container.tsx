@@ -2,6 +2,8 @@ import { useCallback, useEffect, useReducer } from 'react';
 import { APIGroup } from 'src/lib/api';
 import GroupListPresenter from './GroupList.Presenter';
 import { IGroup } from 'src/types/group';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 export enum GroupListTableActionKind {
   //loading
   LOADING = 'LOADING',
@@ -145,10 +147,11 @@ const CouponListTableContainer = () => {
     CouponListTableReducer,
     initialState,
   );
+  const navigate = useNavigate();
 
   const { query } = groupListTableState;
 
-  //* 쿠폰 리스트 불러오기
+  //* 데일리 리스트 불러오기
   const getGroupList = useCallback(async () => {
     dispatch({ type: GroupListTableActionKind.LOADING });
 
@@ -181,7 +184,11 @@ const CouponListTableContainer = () => {
         type: GroupListTableActionKind.CLOSE_DELETE_DIALOG,
       });
       getGroupList();
+      toast.success('데일리가 삭제됐습니다.');
+      navigate(`/dashboard/groups`);
     } catch (e) {
+      toast.error('오류가 생겼습니다.');
+      navigate(`/dashboard/groups`);
       console.log(e);
     }
   };
