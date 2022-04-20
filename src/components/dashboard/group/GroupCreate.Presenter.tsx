@@ -123,7 +123,7 @@ const GroupCreatePresenter: React.FC<GroupCreateProps> = ({
                   onChange={handleStockChange}
                   inputRef={stockInput}
                   helperText={
-                    '종목은 최대 10개까지 등록이 가능합니다.'
+                    '종목은 수정시에 다시 입력해주셔야 합니다.'
                   }
                   name="stocks"
                   variant="outlined"
