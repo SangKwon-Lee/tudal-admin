@@ -11,3 +11,12 @@ export interface IGroup {
   premium: string;
   thumbnail: string;
 }
+
+export interface IGropuInput {
+  id?: number;
+  name: string;
+  show: boolean;
+  premium: boolean;
+  description: string;
+  // stocks: Stock[];
+}

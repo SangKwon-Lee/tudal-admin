@@ -365,10 +365,17 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
         stocks: stocks.map((data) => data.id) || [],
         master_id: user.masters[0].id,
       };
+      const newReport2 = {
+        ...reportCreateState.newReport,
+        tags: tags.map((data) => data.id) || [],
+        stocks: stocks.map((data) => data.id) || [],
+        hidden_reporter: user.hidden_reporter.id,
+      };
 
       try {
         if (mode === 'create') {
           response = await APIHR.create(newReport);
+          response = await APIHR.createHidden(newReport2);
         } else {
           response = await APIHR.update(newReport);
         }

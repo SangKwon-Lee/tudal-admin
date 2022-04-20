@@ -233,7 +233,7 @@ const sections = [
         icon: <CategoryIcon fontSize="small" />,
       },
       {
-        title: '그룹 코멘트',
+        title: '데일리 리스트',
         path: '/dashboard/groups',
         icon: <ChatAltIcon fontSize="small" />,
       },

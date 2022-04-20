@@ -10,6 +10,7 @@ import {
   CardHeader,
   Box,
   Container,
+  Button,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 import { Viewer } from '@toast-ui/react-editor';
@@ -78,7 +79,7 @@ const GroupCommentCreatePresente: React.FC<IGroupCommentCreateProps> =
               <TableRow>
                 <TableCell>
                   <Typography color="textPrimary" variant="subtitle2">
-                    종목 번호
+                    종목 수
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -197,6 +198,10 @@ const GroupCommentCreatePresente: React.FC<IGroupCommentCreateProps> =
             />
           </Box>
         </Card>
+        <Box></Box>
+        <Button variant="contained" color="secondary">
+          수정
+        </Button>
       </>
     );
   };

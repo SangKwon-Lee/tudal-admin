@@ -21,6 +21,10 @@ export async function create(body) {
   return await axios.post(`/master-reports`, body);
 }
 
+export async function createHidden(body) {
+  return await axios.post(`/hidden-reports`, body);
+}
+
 export async function update(body) {
   return await axios.put(`/master-reports/${body.id}`, body);
 }
@@ -37,8 +41,7 @@ export async function getOrders(reporterId) {
 
 export async function getOrdersByReport(reportId) {
   return await axios.get(
-    // `/hidden-report-orders`,
-    `/hidden-report-orders?master_report=${reportId}&_limit=-1&_sort=created_at:DESC`,
+    `/hidden-report-orders?hidden_report=${reportId}&_limit=-1&_sort=created_at:DESC`,
   );
 }
 
