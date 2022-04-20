@@ -16,7 +16,6 @@ const GroupCommentCreatePage: FC = () => {
         mainTopic={'그룹 코멘트 관리'}
         pageTitle={'그룹 코멘트 관리'}
         pageTopRef={pageTopRef}
-        hasCreateButton={false}
       >
         <GroupCommentCreateCotainer />
       </PageLayout>

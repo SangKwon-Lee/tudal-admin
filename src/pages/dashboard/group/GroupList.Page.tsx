@@ -10,7 +10,9 @@ const NewsPage: React.FC = () => {
       mainTopic={'그룹 리스트'}
       pageTitle={'그룹 리스트'}
       pageTopRef={pageTopRef}
-      hasCreateButton={false}
+      hasCreateButton={true}
+      buttonName={'데일리 생성'}
+      buttonClickLink={'/dashboard/groups/create'}
     >
       <GroupListContainer />
     </PageLayout>

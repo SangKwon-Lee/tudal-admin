@@ -19,6 +19,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const [contents, setContents] = useState('');
     const [title, setTitle] = useState('');
 
+    console.log(user);
     // * WebEditor 변환
     const log = () => {
       if (editorRef.current) {
@@ -31,13 +32,12 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       const newData = {
         title,
         contents,
-        master: user.master,
+        master: user.masters[0].id,
       };
-
       const editData = {
         title,
         contents,
-        master: user.master,
+        master: user.masters[0].id,
       };
       try {
         if (mode === 'edit') {

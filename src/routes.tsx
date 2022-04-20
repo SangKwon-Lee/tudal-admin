@@ -170,6 +170,10 @@ const GroupListPage = Loadable(
   lazy(() => import('./pages/dashboard/group/GroupList.Page')),
 );
 
+const GroupCretaePage = Loadable(
+  lazy(() => import('./pages/dashboard/group/GroupCreate.Page')),
+);
+
 //* CP 관리
 const CpCreatePage = Loadable(
   lazy(() => import('./pages/dashboard/cp/CpCreate.Page')),
@@ -650,6 +654,14 @@ const routes: PartialRouteObject[] = [
           {
             path: '/comments/:groupCommentId',
             element: <GroupCommentCreatePage />,
+          },
+          {
+            path: '/create',
+            element: <GroupCretaePage />,
+          },
+          {
+            path: '/:groupId/edit',
+            element: <GroupCretaePage />,
           },
         ],
       },

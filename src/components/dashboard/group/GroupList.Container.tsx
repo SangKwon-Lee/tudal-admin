@@ -16,6 +16,11 @@ export enum GroupListTableActionKind {
   CHANGE_LIMIT = 'CHANGE_LIMIT',
   CHANGE_ISUSED = 'CHANGE_ISUSED',
   CHANGE_SORT = 'CHANGE_SORT',
+
+  // delete & update
+  SELECT_FEED = 'SELECT_FEED',
+  OPEN_DELETE_DIALOG = 'OPEN_DELETE_DIALOG',
+  CLOSE_DELETE_DIALOG = 'CLOSE_DELETE_DIALOG',
 }
 
 export interface GroupListTableAction {
@@ -110,6 +115,28 @@ const CouponListTableReducer = (
         ...state,
         query: { ...state.query, _sort: payload },
       };
+    case GroupListTableActionKind.OPEN_DELETE_DIALOG:
+      return {
+        ...state,
+        delete: {
+          isDeleting: true,
+          target: payload,
+        },
+      };
+    case GroupListTableActionKind.CLOSE_DELETE_DIALOG:
+      return {
+        ...state,
+        delete: {
+          isDeleting: false,
+          target: null,
+        },
+      };
+    case GroupListTableActionKind.SELECT_FEED: {
+      return {
+        ...state,
+        selected: payload,
+      };
+    }
   }
 };
 
@@ -139,6 +166,26 @@ const CouponListTableContainer = () => {
     }
   }, [query]);
 
+  const handleDelete = async () => {
+    try {
+      const { data: Favorites } = await APIGroup.getFavorites(
+        groupListTableState.selected,
+      );
+      await Promise.all(
+        Favorites.map(async (favorites) => {
+          return await APIGroup.deleteFavorites(favorites.id);
+        }),
+      );
+      await APIGroup.deleteGroup(groupListTableState.selected);
+      dispatch({
+        type: GroupListTableActionKind.CLOSE_DELETE_DIALOG,
+      });
+      getGroupList();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     getGroupList();
   }, [getGroupList]);
@@ -147,6 +194,7 @@ const CouponListTableContainer = () => {
     <GroupListPresenter
       groupListTableState={groupListTableState}
       dispatch={dispatch}
+      handleDelete={handleDelete}
       getGroupList={getGroupList}
     />
   );

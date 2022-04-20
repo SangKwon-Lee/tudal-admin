@@ -114,6 +114,13 @@ const HRContentForm: FC<IHRContentFormProps> = (props) => {
         p: 6,
       }}
     >
+      {mode === 'edit' && (
+        <Typography color="textPrimary" sx={{ mb: 1 }} variant="h4">
+          현재 DB 개편 작업으로 인해 등록은 가능하나, 수정이 어려울 수
+          있습니다. 수정시 문의 바랍니다.
+        </Typography>
+      )}
+
       <Card sx={{ p: 3 }}>
         <form
           onSubmit={handleSubmit((d, e) => onSubmitContentForm(d, e))}
