@@ -85,7 +85,8 @@ export interface IHiddenReportForm {
   summary: string;
   reason: string;
   contents: string;
-  pdfUrl: string;
+  pdfUrl?: string;
+  pdfURL?: string;
   subject: string; // 대상 (카테고리)
   type: string; // 유형 (카테고리)
   counter: string; // 대응 전략 (카테고리)
@@ -128,6 +129,7 @@ export const initialState: HiddenReportCreateState = {
     reason: '',
     contents: '',
     pdfUrl: '',
+    pdfURL: '',
     stocks: [],
     tags: [],
     expirationDate: monthLater,
@@ -182,6 +184,7 @@ const HiddenReportCreateReducer = (
         newReport: {
           ...state.newReport,
           pdfUrl: payload,
+          pdfURL: payload,
         },
       };
     case HiddenReportCreateActionKind.CHANGE_STOCKS:
@@ -305,6 +308,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
             reason: data.reason,
             contents: data.contents,
             pdfUrl: data.pdfUrl,
+            pdfURL: data.pdfUrl,
             stocks: data.stocks,
             tags: data.tags,
             hidden_report_image: data.hidden_report_image,
@@ -342,6 +346,7 @@ const HiddenReportCreateContainer: FC<HiddenReportCreateContainerProps> =
           stocks: reportCreateState.newReport.stocks,
           tags: reportCreateState.newReport.tags,
           pdfUrl: reportCreateState.newReport.pdfUrl,
+          pdfURL: reportCreateState.newReport.pdfUrl,
           expirationDate: reportCreateState.newReport.expirationDate,
         };
         dispatch({
