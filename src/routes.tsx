@@ -159,6 +159,18 @@ const PopUpDetailPage = Loadable(
 const BannerListPage = Loadable(
   lazy(() => import('./pages/dashboard/banner/BannerList.Page')),
 );
+//* 사이드 배너
+const SideBannerCreatePage = Loadable(
+  lazy(
+    () =>
+      import('./pages/dashboard/sideBanner/SideBannerCreate.Page'),
+  ),
+);
+const SideBannerListPage = Loadable(
+  lazy(
+    () => import('./pages/dashboard/sideBanner/SideBannerList.page'),
+  ),
+);
 
 //* 투달 그룹
 const GroupCommentCreatePage = Loadable(
@@ -716,6 +728,23 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <BannerListPage />,
+          },
+        ],
+      },
+      {
+        path: 'sidebanner',
+        children: [
+          {
+            path: '/list',
+            element: <SideBannerListPage />,
+          },
+          {
+            path: '/create',
+            element: <SideBannerCreatePage />,
+          },
+          {
+            path: '/:bannerId/edit',
+            element: <SideBannerCreatePage />,
           },
         ],
       },
