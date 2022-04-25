@@ -185,10 +185,8 @@ const CouponListTableContainer = () => {
       });
       getGroupList();
       toast.success('데일리가 삭제됐습니다.');
-      navigate(`/dashboard/groups`);
     } catch (e) {
       toast.error('오류가 생겼습니다.');
-      navigate(`/dashboard/groups`);
       console.log(e);
     }
   };

@@ -13,3 +13,4 @@ export * as APIGroupComment from './groupComment.api';
 export * as APICp from './cp.api';
 export * as APIHR from './hiddenreport.api';
 export * as APIBanner from './banner.api';
+export * as APISideBanner from './sideBanner.api';

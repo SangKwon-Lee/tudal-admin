@@ -123,6 +123,11 @@ const sections = [
           },
         ],
       },
+      {
+        title: '사이드 배너',
+        path: '/dashboard/sidebanner/list',
+        icon: <PaletteIcon fontSize="small" />,
+      },
     ],
   },
   // {
