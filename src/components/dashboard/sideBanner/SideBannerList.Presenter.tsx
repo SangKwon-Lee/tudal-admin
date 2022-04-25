@@ -39,8 +39,7 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
   getSideBannerList,
   sideBannerListState,
 }) => {
-  const { loading, query, selected, list, listLength } =
-    sideBannerListState;
+  const { loading, query, list, listLength } = sideBannerListState;
 
   return (
     <>
