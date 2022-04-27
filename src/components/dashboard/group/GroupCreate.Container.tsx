@@ -128,7 +128,7 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
       description: data.description,
       premium: data.premium,
       show: data.show,
-      order: groupCreateState.groupLength,
+      order: 0,
       user_id: '29020',
       numStocks: stocks.length,
     };
