@@ -37,7 +37,7 @@ export const HIDDENREPORT_CATEGORIES = {
   type: [
     '업종/테마',
     '배당/리츠',
-    '공무주/비상장',
+    '공모주/비상장',
     '트레이딩',
     '기타',
   ],
