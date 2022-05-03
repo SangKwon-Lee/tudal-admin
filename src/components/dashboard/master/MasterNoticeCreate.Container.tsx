@@ -18,26 +18,41 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const navigate = useNavigate();
     const [contents, setContents] = useState('');
     const [title, setTitle] = useState('');
+    const [masterList, setMasterList] = useState([]);
+    const [masterId, setMasterId] = useState(1);
 
-    console.log(user);
     // * WebEditor 변환
     const log = () => {
       if (editorRef.current) {
         return editorRef.current.getContent();
       }
     };
+
+    //* 마스터 정보 불러오기
+    const getMasters = async () => {
+      try {
+        const { data, status } = await APIMaster.getMasterList();
+        if (status === 200 && data.length > 0) {
+          setMasterList(data);
+          console.log(data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     //* 공지사항 등록
     const handleCreateNotice = async () => {
       const contents = log();
       const newData = {
         title,
         contents,
-        master: user.masters[0].id,
+        master: masterId,
       };
       const editData = {
         title,
         contents,
-        master: user.masters[0].id,
+        master: masterId,
       };
       try {
         if (mode === 'edit') {
@@ -72,6 +87,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
           user.id,
         );
         if (status === 200) {
+          setMasterId(data.master.id);
           setTitle(data.title);
           setContents(data.contents);
         }
@@ -95,6 +111,11 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const handleNoticeInputContents = (e: any) => {
       setContents(e.target.value);
     };
+
+    const handleMasterId = (e: any) => {
+      setMasterId(e.target.value);
+    };
+
     useEffect(() => {
       if (user && !user.masters[0]?.id) {
         navigate('/dashboard');
@@ -102,15 +123,24 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       }
     }, [user, navigate]);
 
+    // * 달인 리스트 불러오기
+    useEffect(() => {
+      getMasters();
+    }, []);
+
+    console.log(masterId);
     return (
       <MasterNoticeCreatePresenter
         editorRef={editorRef}
         mode={mode}
         title={title}
         contents={contents}
+        masterList={masterList}
         handleNoticeInputTitle={handleNoticeInputTitle}
         handleNoticeInputContents={handleNoticeInputContents}
         handleCreateNotice={handleCreateNotice}
+        handleMasterId={handleMasterId}
+        masterId={masterId}
       />
     );
   };

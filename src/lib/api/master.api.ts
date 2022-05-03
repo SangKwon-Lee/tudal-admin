@@ -147,16 +147,15 @@ export async function editMasterNotice(noticeId, notice) {
   return await axios.put(`/master-notices/${noticeId}`, notice);
 }
 
-export async function getMasterNoticeList(masterId) {
-  return await axios.get(`/master-notices?master.id=${masterId}`);
+export async function getMasterNoticeList(param) {
+  let query = qs.stringify(removeEmpty(param));
+  return await axios.get(`/master-notices?${query}`);
 }
 
 export async function deleteMasterNotice(noticeId) {
   return await axios.delete(`/master-notices/${noticeId}`);
 }
 
-export async function getMasterMoticeListLength(masterId) {
-  return await axios.get(
-    `/master-notices/count?master.id=${masterId}`,
-  );
+export async function getMasterMoticeListLength() {
+  return await axios.get(`/master-notices/count`);
 }

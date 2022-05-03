@@ -6,12 +6,14 @@ interface CpMasterNoticeCreateProps {
   mode: string;
   // user: IUser;
   editorRef: React.RefObject<HTMLDivElement>;
-
+  masterList: any;
   title: string;
   contents: string;
+  masterId: number;
   handleNoticeInputTitle: (e: any) => void;
   handleCreateNotice: () => Promise<void>;
   handleNoticeInputContents: (e: any) => void;
+  handleMasterId: (e: any) => void;
 }
 
 const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
@@ -23,10 +25,33 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
     handleCreateNotice,
     handleNoticeInputTitle,
     handleNoticeInputContents,
+    masterList,
+    handleMasterId,
+    masterId,
   }) => {
     return (
       <>
         <Card sx={{ p: 3, mt: 3 }}>
+          <Box sx={{ my: 2 }}>
+            {masterList.length > 0 && (
+              <TextField
+                select
+                fullWidth
+                label={'달인 선택'}
+                name="master"
+                SelectProps={{ native: true }}
+                variant="outlined"
+                onChange={handleMasterId}
+                value={masterId}
+              >
+                {masterList.map((data: any, i) => (
+                  <option key={i} value={data.id}>
+                    {data.nickname}
+                  </option>
+                ))}
+              </TextField>
+            )}
+          </Box>
           <Box
             sx={{
               display: 'flex',
