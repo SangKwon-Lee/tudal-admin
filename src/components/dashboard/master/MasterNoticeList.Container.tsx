@@ -91,6 +91,7 @@ const MasterNoticeListContainer = () => {
     setPage(1);
   };
 
+  console.log(noticeList);
   // *페이지 변경 함수
   const handleChangePage = (page: number) => {
     setPage(page);

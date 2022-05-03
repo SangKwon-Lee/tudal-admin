@@ -91,6 +91,7 @@ const MasterNoticeListPresenter: React.FC<IMasterNoticeProps> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell>제목</TableCell>
+                    <TableCell>달인</TableCell>
                     <TableCell>작성일</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
@@ -120,6 +121,14 @@ const MasterNoticeListPresenter: React.FC<IMasterNoticeProps> = ({
                                 </Link>
                               </Box>
                             </Box>
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              maxWidth: '180px',
+                              minWidth: '180px',
+                            }}
+                          >
+                            {`${notice.master?.nickname}`}
                           </TableCell>
                           <TableCell
                             style={{
