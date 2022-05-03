@@ -34,6 +34,7 @@ const MasterNoticeListContainer = () => {
     _q: '',
     _start: 0,
     _limit: 20,
+    _sort: 'created_at:desc',
   });
   // *모달
   const [modalOpen, setModalOpen] = useState(false);
@@ -43,11 +44,10 @@ const MasterNoticeListContainer = () => {
     setLoading(true);
     try {
       const { data, status } = await APIMaster.getMasterNoticeList(
-        user.master,
+        query,
       );
       const { data: List } =
-        await APIMaster.getMasterMoticeListLength(user.master);
-
+        await APIMaster.getMasterMoticeListLength();
       if (status === 200) {
         setNoticeList(data);
         setLoading(false);
@@ -56,7 +56,7 @@ const MasterNoticeListContainer = () => {
     } catch (e) {
       console.log(e);
     }
-  }, [user.master]);
+  }, [query]);
 
   // * 공지 삭제 함수
   const handleDeleteNotice = async () => {

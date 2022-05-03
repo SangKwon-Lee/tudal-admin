@@ -183,10 +183,6 @@ const sections = [
             title: '히든리포트 리스트',
             path: '/dashboard/hiddenreports',
           },
-          {
-            title: '공지사항',
-            path: '/dashboard/master/notice',
-          },
           // {
           //   title: '구독현황',
           //   path: '/dashboard/master/subscribe',
@@ -241,6 +237,11 @@ const sections = [
         title: '데일리 리스트',
         path: '/dashboard/groups',
         icon: <ChatAltIcon fontSize="small" />,
+      },
+      {
+        title: '공지사항',
+        path: '/dashboard/master/notice',
+        icon: <PencilIcon fontSize="small" />,
       },
     ],
   },
