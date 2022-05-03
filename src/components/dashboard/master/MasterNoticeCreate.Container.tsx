@@ -34,7 +34,6 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
         const { data, status } = await APIMaster.getMasterList();
         if (status === 200 && data.length > 0) {
           setMasterList(data);
-          console.log(data);
         }
       } catch (err) {
         console.log(err);
@@ -128,7 +127,6 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       getMasters();
     }, []);
 
-    console.log(masterId);
     return (
       <MasterNoticeCreatePresenter
         editorRef={editorRef}
