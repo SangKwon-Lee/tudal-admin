@@ -19,6 +19,10 @@ export async function getSimpleList() {
   return await cmsServer.get<Stock[]>('/stocks?relations=&_limit=-1');
 }
 
+export async function getStock(stockcode) {
+  return await cmsServer.get<Stock[]>(`/stocks?code=${stockcode}`);
+}
+
 /** 종목 디테일 */
 export async function getDetail(stockcode: string) {
   return await cmsServer.get(`/stocks/detail/${stockcode}`);
