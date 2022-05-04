@@ -91,7 +91,6 @@ const MasterNoticeListContainer = () => {
     setPage(1);
   };
 
-  console.log(noticeList);
   // *페이지 변경 함수
   const handleChangePage = (page: number) => {
     setPage(page);
@@ -109,13 +108,6 @@ const MasterNoticeListContainer = () => {
   const handleSaveNoticeId = (noticeId: number) => {
     setNoticeId(noticeId);
   };
-
-  useEffect(() => {
-    if (user && !user.masters[0]?.id) {
-      navigate('/dashboard');
-      toast.error('달인을 먼저 생성해주세요');
-    }
-  }, [user, navigate]);
 
   return (
     <MasterNoticeListPresenter

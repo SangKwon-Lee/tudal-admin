@@ -115,12 +115,18 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
           type: GroupCreateActionKind.GET_GROUP,
           payload: data,
         });
+
+        const { data: Favorites } = await APIGroup.getFavorites(
+          groupId,
+        );
+        console.log(Favorites);
       } catch (e) {
         console.log(e);
       }
     }
   }, [mode, groupId]);
 
+  console.log(groupCreateState.stocks);
   // * 새로운 그룹 생성
   const groupCreate = async (data: IGropuInput) => {
     const newGroup = {
