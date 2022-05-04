@@ -76,10 +76,8 @@ const MasterNoticeListContainer = () => {
 
   // *리스트 불러오는 useEffect
   useEffect(() => {
-    if (user.master) {
-      getMasterNotice();
-    }
-  }, [getMasterNotice, user.master]);
+    getMasterNotice();
+  }, [getMasterNotice]);
 
   // * query 변경 함수
   const handleChangeQuery = (e: any) => {
