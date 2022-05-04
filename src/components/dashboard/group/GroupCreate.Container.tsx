@@ -115,11 +115,19 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
           type: GroupCreateActionKind.GET_GROUP,
           payload: data,
         });
-
         const { data: Favorites } = await APIGroup.getFavorites(
           groupId,
         );
-        console.log(Favorites);
+
+        const result = await Promise.all(
+          Favorites.map(async (data) => {
+            return await APIStock.getStock(data.stockcode);
+          }),
+        );
+        dispatch({
+          type: GroupCreateActionKind.CHANGE_STOCKS,
+          payload: result.map((data: any) => data.data[0]),
+        });
       } catch (e) {
         console.log(e);
       }
