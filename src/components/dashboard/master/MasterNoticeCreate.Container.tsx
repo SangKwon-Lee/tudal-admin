@@ -115,13 +115,6 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
       setMasterId(e.target.value);
     };
 
-    useEffect(() => {
-      if (user && !user.masters[0]?.id) {
-        navigate('/dashboard');
-        toast.error('달인을 먼저 생성해주세요');
-      }
-    }, [user, navigate]);
-
     // * 달인 리스트 불러오기
     useEffect(() => {
       getMasters();
