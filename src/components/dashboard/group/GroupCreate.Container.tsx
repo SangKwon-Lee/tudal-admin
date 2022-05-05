@@ -134,7 +134,6 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
     }
   }, [mode, groupId]);
 
-  console.log(groupCreateState.stocks);
   // * 새로운 그룹 생성
   const groupCreate = async (data: IGropuInput) => {
     const newGroup = {

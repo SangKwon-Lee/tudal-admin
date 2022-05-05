@@ -122,9 +122,7 @@ const GroupCreatePresenter: React.FC<GroupCreateProps> = ({
                   fullWidth
                   onChange={handleStockChange}
                   inputRef={stockInput}
-                  helperText={
-                    '종목은 수정시에 다시 입력해주셔야 합니다.'
-                  }
+                  helperText={'종목을 선택해주세요.'}
                   name="stocks"
                   variant="outlined"
                   InputProps={{
