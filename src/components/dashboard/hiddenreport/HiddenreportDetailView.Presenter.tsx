@@ -26,10 +26,18 @@ interface HiddenReportDetailViewPresenterProps {
   onSubmit?: () => Promise<void>;
   writeComment?: (comment) => Promise<void>;
   setStep?: (prev) => void;
+  reportUsers?: any;
 }
 
 const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterProps> =
-  ({ state, onSubmit, setStep, isCreating, writeComment }) => {
+  ({
+    state,
+    onSubmit,
+    setStep,
+    isCreating,
+    writeComment,
+    reportUsers,
+  }) => {
     const [isOpenPreview, setOpenPreview] = useState<boolean>(false);
     return (
       <Box sx={{ p: 10, pt: 2 }}>
@@ -109,6 +117,45 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
                     {state.price} GOLD
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography color="textPrimary" variant="subtitle2">
+                    좋아요
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography color="textSecondary" variant="body2">
+                    {reportUsers.filter((data) => data.isLike).length}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography color="textPrimary" variant="subtitle2">
+                    판매량
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography color="textSecondary" variant="body2">
+                    {
+                      reportUsers.filter((data) => data.isOrder)
+                        .length
+                    }
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography color="textPrimary" variant="subtitle2">
+                    조회수
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography color="textSecondary" variant="body2">
+                    {reportUsers.filter((data) => data.isView).length}
                   </Typography>
                 </TableCell>
               </TableRow>

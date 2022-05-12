@@ -81,3 +81,8 @@ export async function getHiddenReportOrders(id, param) {
     `/hidden-report-orders/reporter/${id}?${query}`,
   );
 }
+
+// 히든 리포트 좋아요 조회수 등등
+export async function getHiddenReportUsers(id) {
+  return await axios.get(`/master-report-users/?master_report=${id}`);
+}
