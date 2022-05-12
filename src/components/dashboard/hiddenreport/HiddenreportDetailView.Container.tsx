@@ -14,8 +14,18 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
   ({ reportId }) => {
     const { user } = useAuth();
     const [report, setReport] = useState<IHR>(null);
+    const [reportUsers, setReportUsers] = useState([]);
     useUserVerification(user?.masters[0].id, 'master');
 
+    const getHiddenReportUsers = async () => {
+      try {
+        const { data } = await APIHR.getHiddenReportUsers(reportId);
+        setReportUsers(data);
+        console.log(data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
     useEffect(() => {
       async function getReport() {
         try {
@@ -28,8 +38,9 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
           console.log(error);
         }
       }
-
+      getHiddenReportUsers();
       getReport();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reportId]);
 
     const writeComment = async (comment) => {
@@ -52,6 +63,7 @@ const HiddenReportDetailViewContainer: React.FC<HiddenReportDetailViewContainerP
         <HiddenReportDetailViewPresenter
           state={report}
           writeComment={writeComment}
+          reportUsers={reportUsers}
         />
       )
     );

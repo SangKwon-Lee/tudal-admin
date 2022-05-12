@@ -16,7 +16,7 @@ const HiddenReportViewerPage: FC = () => {
   useEffect(() => {
     const getReport = async () => {
       const { data } = await cmsServer.get<IHR>(
-        `/master-reports/${id}?token=${CMS_TOKEN}`,
+        `/hidden-reports/${id}?token=${CMS_TOKEN}`,
       );
       setReport(data);
     };

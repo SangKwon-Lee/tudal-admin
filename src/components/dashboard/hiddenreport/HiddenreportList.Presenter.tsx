@@ -160,8 +160,6 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                   <TableCell>No</TableCell>
                   <TableCell>제목</TableCell>
                   <TableCell>가격 (Gold)</TableCell>
-                  <TableCell>좋아요</TableCell>
-                  <TableCell>판매량</TableCell>
                   <TableCell>등록일</TableCell>
                   <TableCell>만료일</TableCell>
                   <TableCell>더보기 / 삭제</TableCell>
@@ -183,8 +181,6 @@ const HiddenreportListPresenter: FC<HRListPresenterProps> = ({
                       </Link>
                     </TableCell>
                     <TableCell>{report.price}</TableCell>
-                    <TableCell>{report.numOfLikes}</TableCell>
-                    <TableCell>{report.numOfOrders}</TableCell>
                     <TableCell>
                       {dayjs(report.created_at).format('YYYY-MM-DD')}
                     </TableCell>
