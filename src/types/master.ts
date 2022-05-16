@@ -101,6 +101,7 @@ export interface IMasterCreateForm {
   catchphrase: string;
   type: 'free' | 'paid';
   group: string;
+  intro: any;
 }
 
 export interface IMasterFeedImage {

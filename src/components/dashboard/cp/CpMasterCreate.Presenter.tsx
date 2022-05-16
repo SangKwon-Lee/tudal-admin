@@ -64,8 +64,6 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
     resolver: yupResolver(schema),
   });
 
-  console.log('1231', _type);
-
   useEffect(() => {
     reset(newCpMaster);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -317,7 +315,7 @@ const CpMasterCreatePresenter: React.FC<CpMasterCreateProps> = (
             </Typography>
             <WebEditor
               editorRef={editorRef}
-              contents={newCpMaster.profile}
+              contents={newCpMaster.intro}
               bucket_name={IBuckets.CP_PHOTO}
             />
           </Box>
