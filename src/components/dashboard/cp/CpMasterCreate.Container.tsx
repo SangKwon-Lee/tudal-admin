@@ -45,6 +45,7 @@ const initialState: CpMasterCreateState = {
     profile_image_url: '',
     type: 'free',
     group: '',
+    intro: '',
   },
   newMasterUser: null,
   users: [],
@@ -147,6 +148,7 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
             payload: data.user,
           });
         }
+        console.log(data);
       } catch (error) {
         console.log(error);
       }
@@ -188,7 +190,6 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
       return editorRef.current.getContent();
     }
   };
-
   //* cp 등록
   const createCpMaster = async (data: IMasterCreateForm) => {
     const imgUrl = await registerImage(
@@ -197,18 +198,19 @@ const CpMasterCreateContainer: React.FC<ICpMasterCreateProps> = (
     );
 
     const profile = log();
-
     let master: IMasterCreateForm = {
       ...data,
-      profile,
+      intro: profile,
       keyword: data.keyword.trim(),
       user: cpCreateState.newMasterUser.id,
       profile_image_url: imgUrl,
     };
+    console.log(data.group);
 
     try {
       if (mode === 'edit') {
         const { status } = await APICp.putMaster(masterId, master);
+        console.log(master);
         if (status === 200) {
           toast.success('달인이 수정됐습니다.');
           navigate('/dashboard');

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer } from 'react';
 import { APICp } from 'src/lib/api';
 import { IUser } from 'src/types/user';
 import CpListPresenter from './CpList.Presenter';
-
+import crypto from 'crypto';
 export enum CpListActionKind {
   LOADING = 'LOADING',
   GET_USERS = 'GET_USERS',
@@ -41,7 +41,8 @@ const initialState: CpListState = {
     _sort: 'created_at:DESC',
   },
 };
-
+const randomString = crypto.randomBytes(20).toString('hex');
+console.log(randomString);
 const CpListReducer = (
   state: CpListState,
   action: CpListAction,
