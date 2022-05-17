@@ -128,7 +128,10 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {reportUsers.filter((data) => data.isLike).length}
+                    {
+                      reportUsers?.filter((data) => data.isLike)
+                        .length
+                    }
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -141,7 +144,7 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
                     {
-                      reportUsers.filter((data) => data.isOrder)
+                      reportUsers?.filter((data) => data.isOrder)
                         .length
                     }
                   </Typography>
@@ -155,7 +158,10 @@ const HiddenReportDetailViewPresenter: React.FC<HiddenReportDetailViewPresenterP
                 </TableCell>
                 <TableCell>
                   <Typography color="textSecondary" variant="body2">
-                    {reportUsers.filter((data) => data.isView).length}
+                    {
+                      reportUsers?.filter((data) => data.isView)
+                        .length
+                    }
                   </Typography>
                 </TableCell>
               </TableRow>
