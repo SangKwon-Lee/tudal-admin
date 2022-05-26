@@ -91,6 +91,7 @@ const MasterNoticeListPresenter: React.FC<IMasterNoticeProps> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell>제목</TableCell>
+                    <TableCell>타입</TableCell>
                     <TableCell>달인</TableCell>
                     <TableCell>작성일</TableCell>
                     <TableCell align="right">Actions</TableCell>
@@ -128,7 +129,27 @@ const MasterNoticeListPresenter: React.FC<IMasterNoticeProps> = ({
                               minWidth: '180px',
                             }}
                           >
-                            {`${notice.master?.nickname}`}
+                            {`${
+                              notice?.type === 'feed'
+                                ? '피드'
+                                : notice?.type === 'hiddenreport'
+                                ? '히든리포트'
+                                : notice?.type === 'daily'
+                                ? '데일리'
+                                : '투달 공지'
+                            }`}
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              maxWidth: '180px',
+                              minWidth: '180px',
+                            }}
+                          >
+                            {`${
+                              notice.master?.nickname
+                                ? notice.master?.nickname
+                                : '없음'
+                            }`}
                           </TableCell>
                           <TableCell
                             style={{

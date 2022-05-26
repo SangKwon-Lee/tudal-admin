@@ -3,9 +3,11 @@ import qs from 'qs';
 import { IGroup } from 'src/types/group';
 import { removeEmpty } from 'src/utils/helper';
 
-export async function getGroups(param) {
+export async function getGroups(param?) {
   const query = qs.stringify(removeEmpty(param));
-  return await axios.get<IGroup[]>(`/tudal-groups?${query}`);
+  return await axios.get<IGroup[]>(
+    `/tudal-groups?${query}&_sort=created_at:DESC`,
+  );
 }
 
 export async function getGroupLength(param?) {
