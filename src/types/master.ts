@@ -115,4 +115,6 @@ export interface IMasterNotice {
   contents: string;
   master: any;
   created_at?: string;
+  summary: string;
+  type: string;
 }

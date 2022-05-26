@@ -5,7 +5,12 @@ import { IHR, IHRImage } from 'src/types/hiddenreport';
 
 /** 히든 리포트 */
 export async function get(id) {
-  return await axios.get<IHR>(`/master-reports/${id}`);
+  return await axios.get<any>(`/master-reports/${id}`);
+}
+
+/** 히든 리포트 */
+export async function getMasterReport(id) {
+  return await axios.get<any>(`/master-reports?master_id=${id}`);
 }
 
 export async function getList(param) {

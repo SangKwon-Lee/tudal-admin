@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useState } from 'react';
-import useAuth from 'src/hooks/useAuth';
+// import useAuth from 'src/hooks/useAuth';
 import { APIMaster } from 'src/lib/api';
 import { IMasterNotice } from 'src/types/master';
 import MasterNoticeListPresenter from './MasterNoticeList.Presenter';
 import toast from 'react-hot-toast';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 
 const MasterNoticeListContainer = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  // const { user } = useAuth();
+  // const navigate = useNavigate();
   //* 공지 리스트
   const [noticeList, setNoticeList] = useState<IMasterNotice[]>([
     {
       title: '',
       contents: '',
       created_at: '',
+      summary: '',
+      type: '',
       id: 0,
       master: {},
     },

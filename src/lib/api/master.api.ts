@@ -12,7 +12,7 @@ import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
 //   return expertFeeds;
 // }
 
-export async function getFeeds(params, masterId) {
+export async function getFeeds(params?, masterId?) {
   let query = qs.stringify(removeEmpty(params));
   return await axios.get<IMasterFeed[]>(
     `/master-feeds?master.id=${masterId}&${query}`,
