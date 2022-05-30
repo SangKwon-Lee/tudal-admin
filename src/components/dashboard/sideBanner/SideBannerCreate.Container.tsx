@@ -158,7 +158,6 @@ const SideBannerCreateContainer: React.FC<SideBannerCreateProps> = ({
   };
 
   // * 수정시 데이터 가져오기
-
   const getSideBanner = async () => {
     try {
       const { data, status } = await APISideBanner.getSideBanner(

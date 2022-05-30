@@ -1,54 +1,48 @@
 import {
-  Box,
   Card,
-  Dialog,
   Divider,
-  IconButton,
+  Box,
+  TextField,
   InputAdornment,
-  LinearProgress,
-  Link,
-  Pagination,
   Table,
-  TableBody,
-  TableCell,
   TableHead,
   TableRow,
-  TextField,
+  TableCell,
+  TableBody,
+  IconButton,
+  Pagination,
+  Dialog,
+  Link,
 } from '@material-ui/core';
-import {
-  SideBannerListAction,
-  SideBannerListActionKind,
-  SideBannerListState,
-} from './SideBannerList.Container';
-import SearchIcon from 'src/icons/Search';
 import dayjs from 'dayjs';
 import Scrollbar from 'src/components/layout/Scrollbar';
 import ConfirmModal from 'src/components/widgets/modals/ConfirmModal';
-import { Link as RouterLink } from 'react-router-dom';
 import ArrowRightIcon from 'src/icons/ArrowRight';
 import TrashIcon from 'src/icons/Trash';
-interface SideBannerListProps {
-  sideBannerListState: SideBannerListState;
-  dispatch: (params: SideBannerListAction) => void;
-  getSideBannerList: () => void;
+import SearchIcon from 'src/icons/Search';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  YoutubeListAction,
+  YoutubeListActionKind,
+  YoutubeListState,
+} from './YoutubeList.Container';
+
+interface YoutubeListProps {
+  youtubeListState: YoutubeListState;
+  dispatch: (params: YoutubeListAction) => void;
   handleDelete: () => Promise<void>;
 }
-const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
+
+const YoutubeListPresenter: React.FC<YoutubeListProps> = ({
   dispatch,
   handleDelete,
-  getSideBannerList,
-  sideBannerListState,
+  youtubeListState,
 }) => {
-  const { loading, query, list, listLength } = sideBannerListState;
+  const { loading, query, list, listLength } = youtubeListState;
+
   return (
     <>
-      <Box sx={{ mb: 3 }}></Box>
-      <Card>
-        {loading && (
-          <div data-testid="group-list-loading">
-            <LinearProgress />
-          </div>
-        )}
+      <Card sx={{ my: 3 }}>
         <Divider />
         <Box
           sx={{
@@ -80,11 +74,11 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
               }}
               onChange={(event) => {
                 dispatch({
-                  type: SideBannerListActionKind.CHANGE_QUERY,
+                  type: YoutubeListActionKind.CHANGE_QUERY,
                   payload: event.target.value,
                 });
               }}
-              placeholder="그룹 이름 검색"
+              placeholder="검색"
               value={query._q}
               variant="outlined"
             />
@@ -96,7 +90,8 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
               <TableHead>
                 <TableRow>
                   <TableCell></TableCell>
-                  <TableCell>이름</TableCell>
+                  <TableCell>제목</TableCell>
+                  <TableCell>링크</TableCell>
                   <TableCell>등록일</TableCell>
                   {/* <TableCell>최종수정일</TableCell> */}
                 </TableRow>
@@ -116,13 +111,16 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
                           <Link
                             color="inherit"
                             component={RouterLink}
-                            to={`/dashboard/sidebanner/${list.id}/edit`}
+                            to={`/dashboard/youtube/${list.id}/edit`}
                             variant="subtitle2"
                           >
                             {list.title
                               ? list.title
                               : '제목이 없습니다.'}
                           </Link>
+                        </TableCell>
+                        <TableCell>
+                          {list.link ? list.link : '링크가 없습니다.'}
                         </TableCell>
                         <TableCell>
                           {dayjs(list.created_at).format(
@@ -133,18 +131,18 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
                         <TableCell>
                           <IconButton
                             component={RouterLink}
-                            to={`/dashboard/sidebanner/${list.id}/edit`}
+                            to={`/dashboard/youtube/${list.id}/edit`}
                           >
                             <ArrowRightIcon fontSize="small" />
                           </IconButton>
                           <IconButton
                             onClick={() => {
                               dispatch({
-                                type: SideBannerListActionKind.SELECT_FEED,
+                                type: YoutubeListActionKind.SELECT_FEED,
                                 payload: list.id,
                               });
                               dispatch({
-                                type: SideBannerListActionKind.OPEN_DELETE_DIALOG,
+                                type: YoutubeListActionKind.OPEN_DELETE_DIALOG,
                               });
                             }}
                           >
@@ -163,7 +161,7 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
           variant="outlined"
           onChange={(event, page) => {
             dispatch({
-              type: SideBannerListActionKind.CHANGE_PAGE,
+              type: YoutubeListActionKind.CHANGE_PAGE,
               payload: page,
             });
           }}
@@ -171,10 +169,10 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
       </Card>
       <Dialog
         aria-labelledby="ConfirmModal"
-        open={sideBannerListState.delete.isDeleting}
+        open={youtubeListState.delete.isDeleting}
         onClose={() =>
           dispatch({
-            type: SideBannerListActionKind.CLOSE_DELETE_DIALOG,
+            type: YoutubeListActionKind.CLOSE_DELETE_DIALOG,
           })
         }
       >
@@ -185,7 +183,7 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
           handleOnClick={handleDelete}
           handleOnCancel={() => {
             dispatch({
-              type: SideBannerListActionKind.CLOSE_DELETE_DIALOG,
+              type: YoutubeListActionKind.CLOSE_DELETE_DIALOG,
             });
           }}
         />
@@ -193,5 +191,4 @@ const SideBannerListPresenter: React.FC<SideBannerListProps> = ({
     </>
   );
 };
-
-export default SideBannerListPresenter;
+export default YoutubeListPresenter;

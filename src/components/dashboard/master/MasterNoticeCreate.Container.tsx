@@ -53,7 +53,13 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     //* 데일리 정보 불러오기
     const getDailyList = async () => {
       try {
-        const { data, status } = await APIGroup.getGroups();
+        const query = {
+          _q: '',
+          _start: 0,
+          _limit: 30,
+          _sort: 'created_at:DESC',
+        };
+        const { data, status } = await APIGroup.getGroups(query);
         if (status === 200 && data.length > 0) {
           setDailyList(data);
         }

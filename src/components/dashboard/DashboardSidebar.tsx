@@ -23,6 +23,7 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import SpellcheckIcon from '@material-ui/icons/Spellcheck';
 import CategoryIcon from '@material-ui/icons/Category';
 import PaletteIcon from '@material-ui/icons/Palette';
+import { Dock } from '@material-ui/icons';
 
 interface DashboardSidebarProps {
   onMobileClose: () => void;
@@ -242,6 +243,11 @@ const sections = [
         title: '공지사항',
         path: '/dashboard/master/notice',
         icon: <PencilIcon fontSize="small" />,
+      },
+      {
+        title: '유튜브',
+        path: '/dashboard/youtube/list',
+        icon: <Dock fontSize="small" />,
       },
     ],
   },
