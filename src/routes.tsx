@@ -85,6 +85,14 @@ const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/category/Category.Page')),
 );
 
+// * youtube
+const YoutubeCreate = Loadable(
+  lazy(() => import('./pages/dashboard/youtube/YoutubeCreate.Page')),
+);
+const YoutubeList = Loadable(
+  lazy(() => import('./pages/dashboard/youtube/YoutubeList.page')),
+);
+
 //* master
 const MastersListPage = Loadable(
   lazy(() => import('./pages/dashboard/master/MastersList.Page')),
@@ -728,6 +736,23 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <BannerListPage />,
+          },
+        ],
+      },
+      {
+        path: 'youtube',
+        children: [
+          {
+            path: '/create',
+            element: <YoutubeCreate />,
+          },
+          {
+            path: '/:youtubeId/edit',
+            element: <YoutubeCreate />,
+          },
+          {
+            path: '/list',
+            element: <YoutubeList />,
           },
         ],
       },

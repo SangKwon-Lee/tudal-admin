@@ -5,9 +5,7 @@ import { removeEmpty } from 'src/utils/helper';
 
 export async function getGroups(param?) {
   const query = qs.stringify(removeEmpty(param));
-  return await axios.get<IGroup[]>(
-    `/tudal-groups?${query}&_sort=created_at:DESC`,
-  );
+  return await axios.get<IGroup[]>(`/tudal-groups?${query}`);
 }
 
 export async function getGroupLength(param?) {
