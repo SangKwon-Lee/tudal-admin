@@ -239,6 +239,9 @@ const MasterIntroViewer = Loadable(
 const MasterNoticeViewr = Loadable(
   lazy(() => import('./pages/viewer/MasterNoticeViewer')),
 );
+const TudalNoticeViewr = Loadable(
+  lazy(() => import('./pages/viewer/TudalNoticeViewer')),
+);
 
 const ReporterIntroViewer = Loadable(
   lazy(() => import('./pages/viewer/ReporterViewer')),
@@ -390,6 +393,10 @@ const routes: PartialRouteObject[] = [
       {
         path: 'master-notice/:noticeId',
         element: <MasterNoticeViewr />,
+      },
+      {
+        path: 'tudal-notice/:noticeId',
+        element: <TudalNoticeViewr />,
       },
     ],
   },
