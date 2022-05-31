@@ -29,7 +29,7 @@ const typeArr = [
   { name: '피드', value: 'feed' },
   { name: '데일리', value: 'daily' },
   { name: '히든리포트', value: 'hiddenreport' },
-  { name: '투달 공지사항', value: 'tudal' },
+  { name: '투달 공지사항', value: 'notice' },
 ];
 const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
   ({
