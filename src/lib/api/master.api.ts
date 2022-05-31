@@ -135,27 +135,27 @@ export async function getMasterPayments(masterId, query?) {
 // 공지사항
 export async function getMasterNotice(noticeId, userId) {
   return await axios.get(
-    `/master-notices/${noticeId}?master.user=${userId}`,
+    `/tudal-notices/${noticeId}?master.user=${userId}`,
   );
 }
 
 export async function postMasterNotice(notice) {
-  return await axios.post(`/master-notices`, notice);
+  return await axios.post(`/tudal-notices`, notice);
 }
 
 export async function editMasterNotice(noticeId, notice) {
-  return await axios.put(`/master-notices/${noticeId}`, notice);
+  return await axios.put(`/tudal-notices/${noticeId}`, notice);
 }
 
 export async function getMasterNoticeList(param) {
   let query = qs.stringify(removeEmpty(param));
-  return await axios.get(`/master-notices?${query}`);
+  return await axios.get(`/tudal-notices?${query}`);
 }
 
 export async function deleteMasterNotice(noticeId) {
-  return await axios.delete(`/master-notices/${noticeId}`);
+  return await axios.delete(`/tudal-notices/${noticeId}`);
 }
 
 export async function getMasterMoticeListLength() {
-  return await axios.get(`/master-notices/count`);
+  return await axios.get(`/tudal-notices/count`);
 }

@@ -203,13 +203,18 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
               value={summary}
             />
           </Box>
-          <Box sx={{ mt: 5 }}>
-            <WebEditor
-              editorRef={editorRef}
-              contents={contents}
-              bucket_name={IBuckets.MASTER_FEED}
-            />
-          </Box>
+          {type === 'daily' || type === 'notice' ? (
+            <Box sx={{ mt: 5 }}>
+              <WebEditor
+                editorRef={editorRef}
+                contents={contents}
+                bucket_name={IBuckets.MASTER_FEED}
+              />
+            </Box>
+          ) : (
+            <></>
+          )}
+
           <Box
             sx={{
               mt: 3,
