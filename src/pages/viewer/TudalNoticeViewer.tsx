@@ -1,4 +1,4 @@
-import { Box, Container } from '@material-ui/core';
+import { Box, Container, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
@@ -50,9 +50,10 @@ const TudalNoticeViewer: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
+          <Typography variant="h3">{masterNotice.title}</Typography>
           <Viewer
-            initialValue={masterNotice}
-            //plugins={[colorSyntax]}
+            initialValue={masterNotice.contents}
+            // plugins={[colorSyntax]}
           />
           {/* <MasterNoticeViewerPresenter masterNotice={masterNotice} /> */}
         </Container>
