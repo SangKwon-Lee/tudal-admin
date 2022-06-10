@@ -7,6 +7,7 @@ import useSettings from 'src/hooks/useSettings';
 import { cmsServer, CMS_TOKEN } from 'src/lib/axios';
 import gtm from 'src/lib/gtm';
 import type { FC } from 'react';
+import { Viewer } from '@toast-ui/react-editor';
 
 const TudalNoticeViewer: FC = () => {
   const { settings } = useSettings();
@@ -49,7 +50,11 @@ const TudalNoticeViewer: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <MasterNoticeViewerPresenter masterNotice={masterNotice} />
+          <Viewer
+            initialValue={masterNotice}
+            //plugins={[colorSyntax]}
+          />
+          {/* <MasterNoticeViewerPresenter masterNotice={masterNotice} /> */}
         </Container>
       </Box>
     </>
