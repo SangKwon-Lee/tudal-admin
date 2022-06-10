@@ -50,12 +50,12 @@ const TudalNoticeViewer: FC = () => {
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Typography variant="h3">{masterNotice.title}</Typography>
-          <Viewer
+          {/* <Typography variant="h3">{masterNotice.title}</Typography> */}
+          {/* <Viewer
             initialValue={masterNotice.contents}
             // plugins={[colorSyntax]}
-          />
-          {/* <MasterNoticeViewerPresenter masterNotice={masterNotice} /> */}
+          /> */}
+          <MasterNoticeViewerPresenter masterNotice={masterNotice} />
         </Container>
       </Box>
     </>

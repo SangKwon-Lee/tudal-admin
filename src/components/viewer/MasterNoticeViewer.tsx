@@ -14,13 +14,14 @@ const MasterNoticeViewerPresenter: FC<Props> = (props) => {
     <Box sx={{ py: 3, backgroundColor: 'white' }}>
       <Container maxWidth="md">
         <Typography variant="h3">{masterNotice.title}</Typography>
-        {/* <Typography variant="h6" style={{ textAlign: 'right' }}>
+        <Typography variant="h6" style={{ textAlign: 'right' }}>
           {masterNotice.title}
-        </Typography> */}
+        </Typography>
         <Viewer
           initialValue={masterNotice.contents}
-          //plugins={[colorSyntax]}
+          // plugins={[colorSyntax]}
         />
+        ..
       </Container>
     </Box>
   );
