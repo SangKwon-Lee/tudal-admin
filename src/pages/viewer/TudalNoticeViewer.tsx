@@ -44,17 +44,12 @@ const TudalNoticeViewer: FC = () => {
       </Helmet>
       <Box
         sx={{
-          backgroundColor: 'white',
+          // backgroundColor: 'white',
           minHeight: '100%',
           py: 3,
         }}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          {/* <Typography variant="h3">{masterNotice.title}</Typography> */}
-          {/* <Viewer
-            initialValue={masterNotice.contents}
-            // plugins={[colorSyntax]}
-          /> */}
           <MasterNoticeViewerPresenter masterNotice={masterNotice} />
         </Container>
       </Box>

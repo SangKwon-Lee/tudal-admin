@@ -1,7 +1,6 @@
 import { Card, Box, TextField, Button } from '@material-ui/core';
 import WebEditor from 'src/components/common/WebEditor';
 import { IBuckets } from 'src/components/common/conf/aws';
-
 interface CpMasterNoticeCreateProps {
   mode: string;
   type: string;
@@ -53,6 +52,7 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
     handleNoticeInputTitle,
     handleNoticeInputContents,
   }) => {
+    //@ts-ignore
     return (
       <>
         <Card sx={{ p: 3, mt: 3 }}>

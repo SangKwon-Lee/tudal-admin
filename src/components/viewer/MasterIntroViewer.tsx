@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
-import '@toast-ui/editor/dist/toastui-editor.css';
 import { IMaster } from 'src/types/master';
+import '@toast-ui/editor/dist/toastui-editor.css';
 
 interface Props {
   master: IMaster;
