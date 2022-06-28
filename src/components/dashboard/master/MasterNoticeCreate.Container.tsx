@@ -30,7 +30,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     // * WebEditor 변환
     const log = () => {
       if (editorRef.current) {
-        return editorRef.current.getContent({ format: 'text' });
+        return editorRef.current.getContent();
       }
     };
 
@@ -107,6 +107,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     const handleCreateNotice = async () => {
       const contents = log();
       let newData = {};
+      console.log(contents);
       if (type === 'feed' || type === 'hiddenreport') {
         newData = {
           title,

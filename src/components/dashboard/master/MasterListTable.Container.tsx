@@ -5,6 +5,7 @@ import useAuth from 'src/hooks/useAuth';
 import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
 import { useNavigate } from 'react-router';
 import toast from 'react-hot-toast';
+import { Feed } from '@material-ui/icons';
 
 export enum MasterListTableActionKind {
   // loading
@@ -41,14 +42,14 @@ export interface MasterListTableAction {
 type Sort = 'datetime:desc' | 'datetime:asc';
 
 interface SortOption {
-  value: Sort;
+  value: any;
   label: string;
 }
 
 export const sortOptions: SortOption[] = [
   {
     label: '등록순 (최신)',
-    value: 'datetime:desc',
+    value: 'created_at:desc',
   },
   {
     label: '등록순 (오래된)',

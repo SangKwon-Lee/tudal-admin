@@ -227,7 +227,7 @@ const MasterListTablePresenter: React.FC<IMasterListTableProps> = (
                             minWidth: '180px',
                           }}
                         >
-                          {`${dayjs(feed.datetime).format(
+                          {`${dayjs(feed.created_at).format(
                             'YYYY년 M월 D일 HH:mm',
                           )}`}
                         </TableCell>
