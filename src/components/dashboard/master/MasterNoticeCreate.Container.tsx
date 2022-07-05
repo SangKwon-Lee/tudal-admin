@@ -30,7 +30,7 @@ const MasterNoticeCreateContainer: React.FC<IMasterNoticeCreateProps> =
     // * WebEditor 변환
     const log = () => {
       if (editorRef.current) {
-        return editorRef.current.getContent({ format: 'text' });
+        return editorRef.current.getContent();
       }
     };
 
