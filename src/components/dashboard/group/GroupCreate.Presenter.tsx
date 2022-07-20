@@ -15,11 +15,14 @@ import { IGropuInput } from 'src/types/group';
 import { Stock } from 'src/types/schedule';
 import { GroupCreateState } from './GroupCreate.Container';
 import { useEffect } from 'react';
+import WebEditor from 'src/components/common/WebEditor';
+import { IBuckets } from 'src/components/common/conf/aws';
 
 const schema = yup
   .object({
     name: yup.string().required(),
     show: yup.boolean().required(),
+    subTitle: yup.string().required(),
     description: yup.string().required(),
     premium: yup.boolean().required(),
   })
@@ -28,23 +31,25 @@ const schema = yup
 interface GroupCreateProps {
   mode: string;
   stockList: Stock[];
-  stockInput: React.MutableRefObject<any>;
   stockLoading: boolean;
   groupCreateState: GroupCreateState;
+  editorRef: React.MutableRefObject<any>;
+  stockInput: React.MutableRefObject<any>;
   handleStockChange: _.DebouncedFunc<() => void>;
   groupCreate: (data: IGropuInput) => Promise<void>;
   onStockChange: (event, stock: Stock[], reason, item) => void;
 }
 
 const GroupCreatePresenter: React.FC<GroupCreateProps> = ({
-  groupCreate,
   mode,
-  handleStockChange,
+  editorRef,
   stockList,
   stockInput,
-  onStockChange,
+  groupCreate,
   stockLoading,
+  onStockChange,
   groupCreateState,
+  handleStockChange,
 }) => {
   const {
     register,
@@ -78,6 +83,21 @@ const GroupCreatePresenter: React.FC<GroupCreateProps> = ({
               fullWidth
               error={Boolean(errors?.name)}
               helperText={'제목은 필수입니다.'}
+            />
+          </Box>
+          <Box sx={{ my: 2 }}>
+            <Typography
+              color="textPrimary"
+              sx={{ mb: 1 }}
+              variant="subtitle2"
+            >
+              부제목
+            </Typography>
+            <TextField
+              {...register('subTitle')}
+              fullWidth
+              error={Boolean(errors?.subTitle)}
+              helperText={'부제목은 필수입니다.'}
             />
           </Box>
           <Box sx={{ my: 2 }}>
@@ -184,6 +204,32 @@ const GroupCreatePresenter: React.FC<GroupCreateProps> = ({
               <option value="false">공개</option>
               <option value="true">프리미엄</option>
             </TextField>
+          </Box>
+          <Box sx={{ my: 2 }}>
+            <Typography
+              color="textPrimary"
+              sx={{ mb: 1 }}
+              variant="subtitle2"
+            >
+              내용
+            </Typography>
+            {mode === 'edit' &&
+              (groupCreateState.newGroup.contents ? (
+                <WebEditor
+                  editorRef={editorRef}
+                  contents={groupCreateState.newGroup.contents}
+                  bucket_name={IBuckets.HIDDENREPORT}
+                ></WebEditor>
+              ) : (
+                ''
+              ))}
+            {mode !== 'edit' && (
+              <WebEditor
+                editorRef={editorRef}
+                contents={groupCreateState.newGroup.contents}
+                bucket_name={IBuckets.HIDDENREPORT}
+              ></WebEditor>
+            )}
           </Box>
           <Box
             sx={{

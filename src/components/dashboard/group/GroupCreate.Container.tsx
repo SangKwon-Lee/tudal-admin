@@ -41,6 +41,8 @@ const initialState: GroupCreateState = {
     premium: false,
     show: true,
     id: 0,
+    subTitle: '',
+    contents: '',
   },
   stocks: [],
   groupLength: 0,
@@ -92,6 +94,14 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
   const stockInput = useRef(null);
   const { stocks } = groupCreateState;
 
+  //* 웹 에디터에 전달되는 Props
+  const editorRef = useRef(null);
+  const log = () => {
+    if (editorRef.current) {
+      return editorRef.current.getContent();
+    }
+  };
+
   // * 그룹 길이
   const groupLength = async () => {
     try {
@@ -136,11 +146,14 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
 
   // * 새로운 그룹 생성
   const groupCreate = async (data: IGropuInput) => {
+    const contents = log();
     const newGroup = {
       name: data.name,
       description: data.description,
       premium: data.premium,
       show: data.show,
+      subTitle: data.subTitle,
+      contents,
       order: 0,
       user_id: '29020',
       numStocks: stocks.length,
@@ -242,11 +255,12 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
   }, [mode]);
   return (
     <GroupCreatePresenter
-      groupCreate={groupCreate}
       mode={mode}
+      editorRef={editorRef}
       stockList={stockList}
-      stockLoading={stockLoading}
       stockInput={stockInput}
+      groupCreate={groupCreate}
+      stockLoading={stockLoading}
       onStockChange={onStockChange}
       handleStockChange={handleStockChange}
       groupCreateState={groupCreateState}

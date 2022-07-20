@@ -18,5 +18,7 @@ export interface IGropuInput {
   show: boolean;
   premium: boolean;
   description: string;
+  subTitle: string;
+  contents: string;
   // stocks: Stock[];
 }
