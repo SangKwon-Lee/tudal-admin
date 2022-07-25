@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Box, Container, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -16,9 +16,9 @@ const MasterNoticeViewerPresenter: FC<Props> = (props) => {
   return (
     <Box>
       {/* <Container maxWidth="md"> */}
-      <Typography variant="h4" sx={{ color: 'white' }}>
+      {/* <Typography variant="h4" sx={{ color: 'white' }}>
         {masterNotice.title}
-      </Typography>
+      </Typography> */}
       {/* <Typography variant="h6" style={{ textAlign: 'right' }}>
           {masterNotice.title}
         </Typography> */}
