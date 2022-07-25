@@ -11,17 +11,17 @@ const MasterNoticeViewerPresenter: FC<Props> = (props) => {
   const { masterNotice } = props;
 
   return (
-    <Box sx={{ py: 3, backgroundColor: 'white' }}>
-      <Container maxWidth="md">
-        <Typography variant="h3">{masterNotice.title}</Typography>
-        {/* <Typography variant="h6" style={{ textAlign: 'right' }}>
+    <Box sx={{ backgroundColor: 'white' }}>
+      {/* <Container maxWidth="md"> */}
+      <Typography variant="h3">{masterNotice.title}</Typography>
+      {/* <Typography variant="h6" style={{ textAlign: 'right' }}>
           {masterNotice.title}
         </Typography> */}
-        <Viewer
-          initialValue={masterNotice.contents}
-          // plugins={[colorSyntax]}
-        />
-      </Container>
+      <Viewer
+        initialValue={masterNotice.contents}
+        // plugins={[colorSyntax]}
+      />
+      {/* </Container> */}
     </Box>
   );
 };

@@ -61,7 +61,6 @@ const PopUpCreateReducer = (
           [payload.target.name]: payload.target.value,
         },
       };
-
     case HRImageCreateActionKind.CHANGE_THUMBNAIL_IMAGE:
       return {
         ...state,
