@@ -35,7 +35,7 @@ const sections = [
     title: 'Home',
     items: [
       {
-        title: '홈',
+        title: '대시보드',
         path: '/dashboard',
         icon: <HomeIcon fontSize="small" />,
       },

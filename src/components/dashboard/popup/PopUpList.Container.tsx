@@ -1,11 +1,12 @@
 import { FC, useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { APIPopUp } from 'src/lib/api';
+import { APIOverview, APIPopUp } from 'src/lib/api';
 import { DndProvider } from 'react-dnd';
 import { IPopUp } from 'src/types/popup';
 import PopUpListPresenter from './PopUpList.Presenter';
 import { swapItems } from 'src/utils/helper';
+import { IMaster } from 'src/types/master';
 
 export enum PopUpListActionKind {
   LOADING = 'LOADING',
@@ -14,6 +15,7 @@ export enum PopUpListActionKind {
   CHANGE_EDIT_MODE = 'CHANGE_EDIT_MODE',
   CHANGE_QUERY = 'CHANGE_QUERY',
   CHANGE_PAGE = 'CHANGE_PAGE',
+  GET_DARIN = 'GET_DARIN',
 }
 
 export interface PopUpCreateAction {

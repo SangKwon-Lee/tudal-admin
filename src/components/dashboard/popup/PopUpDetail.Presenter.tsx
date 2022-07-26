@@ -20,6 +20,7 @@ import {
   PopUpDetailActionKind,
   PopUpDetailState,
 } from './PopUpDetail.Container';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface PopUpDetailProps {
   PopUpDetailState: PopUpDetailState;
@@ -197,6 +198,7 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
             display: 'flex',
             justifyContent: 'end',
             padding: '15px',
+            gap: 2,
           }}
         >
           <Dialog
@@ -221,6 +223,15 @@ const PopUpDetailPresenter: React.FC<PopUpDetailProps> = (props) => {
               }}
             />
           </Dialog>
+          <Button
+            sx={{ justifySelf: 'end' }}
+            color="primary"
+            variant="contained"
+            component={RouterLink}
+            to={`/dashboard/popup/${popUp.id}/edit`}
+          >
+            수정하기
+          </Button>
           <Button
             sx={{ justifySelf: 'end' }}
             color="secondary"

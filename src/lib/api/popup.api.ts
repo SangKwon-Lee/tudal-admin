@@ -25,6 +25,10 @@ export async function getPopUp(id) {
   return axios.get(`/popups/${id}`);
 }
 
+export async function getDarins() {
+  return axios.get(`/masters`);
+}
+
 export async function editPopup(id, body) {
   return axios.put(`/popups/${id}`, body);
 }

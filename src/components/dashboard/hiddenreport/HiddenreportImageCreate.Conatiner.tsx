@@ -6,6 +6,7 @@ import { registerImage } from 'src/utils/registerImage';
 import HiddenreportImageCreatePresenter from './HiddenreportImageCreate.Presenter';
 import { useNavigate } from 'react-router-dom';
 import { IBuckets } from 'src/components/common/conf/aws';
+import { IHRNewImage } from 'src/types/hiddenreport';
 
 export enum HRImageCreateActionKind {
   LOADING = 'LOADING',
@@ -14,7 +15,11 @@ export enum HRImageCreateActionKind {
   CHANGE_OPENTIME = 'CHANGE_OPENTIME',
   CHANGE_CLOSETIME = 'CHANGE_CLOSETIME',
   CHANGE_THUMBNAIL_IMAGE = 'CHANGE_THUMBNAIL_IMAGE',
+  CHANGE_LIST = 'CHANGE_LIST',
   CHANGE_SQUARE_IMAGE = 'CHANGE_SQUARE_IMAGE',
+  ADD_INDEX = 'ADD_INDEX',
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
 }
 
 export interface HRImageCreateAction {
@@ -30,6 +35,8 @@ export interface HRImageCreateState {
     thumbnailImageUrl: string;
     squareImageUrl: string;
   };
+  imageList: IHRNewImage[];
+  index: number;
 }
 
 const initialState: HRImageCreateState = {
@@ -40,6 +47,15 @@ const initialState: HRImageCreateState = {
     thumbnailImageUrl: '',
     squareImageUrl: '',
   },
+  imageList: [
+    {
+      name: '',
+      keyword: '',
+      thumbnailImageUrl: '',
+      squareImageUrl: '',
+    },
+  ],
+  index: 0,
 };
 
 const PopUpCreateReducer = (
@@ -47,6 +63,7 @@ const PopUpCreateReducer = (
   action: HRImageCreateAction,
 ): HRImageCreateState => {
   const { type, payload } = action;
+  const { index } = state;
   switch (type) {
     case HRImageCreateActionKind.LOADING:
       return {
@@ -69,6 +86,11 @@ const PopUpCreateReducer = (
           thumbnailImageUrl: payload,
         },
       };
+    case HRImageCreateActionKind.CHANGE_LIST:
+      return {
+        ...state,
+        imageList: payload,
+      };
     case HRImageCreateActionKind.CHANGE_SQUARE_IMAGE:
       return {
         ...state,
@@ -87,6 +109,21 @@ const PopUpCreateReducer = (
           thumbnailImageUrl: payload.thumbnailImageUrl,
           squareImageUrl: payload.squareImageUrl,
         },
+      };
+    case HRImageCreateActionKind.ADD_INDEX:
+      return {
+        ...state,
+        index: index + 1,
+      };
+    case HRImageCreateActionKind.ADD:
+      return {
+        ...state,
+        imageList: payload,
+      };
+    case HRImageCreateActionKind.REMOVE:
+      return {
+        ...state,
+        imageList: payload,
       };
   }
 };
@@ -107,29 +144,29 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     PopUpCreateReducer,
     initialState,
   );
-
+  console.log(mode);
   //* 새로운 이미지 생성
+  // * 7.22 생성 모드일 때에는 forEach로 createInput에 있는 각 객체마다 createImage 실행
   const createNewHRimage = async () => {
     try {
       dispatch({
         type: HRImageCreateActionKind.LOADING,
         payload: true,
       });
-      const newImage = {
-        ...HRImageCreateState.createInput,
-      };
       if (mode === 'edit') {
+        const newImage = { ...HRImageCreateState.createInput };
         const { status } = await APIHR.editImage(id, newImage);
         if (status === 200) {
           toast.success('이미지가 수정되었습니다.');
           navigate('/dashboard/hiddenreports/images');
         }
       } else {
-        const { status } = await APIHR.createImage(newImage);
-        if (status === 200) {
-          toast.success('이미지가 생성되었습니다.');
-          navigate('/dashboard/hiddenreports/images');
-        }
+        await Promise.all(
+          HRImageCreateState.imageList.map(async (item) => {
+            return await APIHR.createImage(item);
+          }),
+        );
+        toast.success('이미지가 업로드 되었습니다.');
       }
     } catch (error) {
       toast.error('오류가 생겼습니다.');
@@ -139,12 +176,13 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
         type: HRImageCreateActionKind.LOADING,
         payload: false,
       });
+      navigate('/dashboard/hiddenreports/images');
     }
   };
 
   //* 이미지 등록
   const onChangeImage = async (event, type) => {
-    var file = event.target.files;
+    var files = event.target.files;
     dispatch({
       type: HRImageCreateActionKind.LOADING,
       payload: true,
@@ -152,15 +190,13 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     try {
       // Koscom Cloud에 업로드하기!
       const imageUrl = await registerImage(
-        file,
+        files,
         IBuckets.HIDDENREPORT_IMAGE,
       );
-
       dispatch({
         type,
         payload: imageUrl,
       });
-
       dispatch({
         type: HRImageCreateActionKind.LOADING,
         payload: false,
@@ -169,6 +205,36 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
       console.log(error);
       return false;
     }
+  };
+
+  const onChangeImageList = async (event, type, index) => {
+    let newData = [...HRImageCreateState.imageList];
+    console.log(newData);
+    var files = event.target.files;
+
+    if (files) {
+      try {
+        const imageUrl = await registerImage(
+          files,
+          IBuckets.HIDDENREPORT_IMAGE,
+        );
+        newData[index] = {
+          ...newData[index],
+          [event.target.name]: imageUrl,
+        };
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      newData[index] = {
+        ...newData[index],
+        [event.target.name]: event.target.value,
+      };
+    }
+    dispatch({
+      type,
+      payload: newData,
+    });
   };
 
   const getImage = async () => {
@@ -194,6 +260,28 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
     }
   };
 
+  const addComponent = () => {
+    let Compo = [...HRImageCreateState.imageList];
+    Compo.push({
+      name: '',
+      keyword: '',
+      thumbnailImageUrl: '',
+      squareImageUrl: '',
+    });
+    dispatch({
+      type: HRImageCreateActionKind.ADD,
+      payload: Compo,
+    });
+  };
+
+  const removeComponent = () => {
+    let Compo = [...HRImageCreateState.imageList];
+    Compo.pop();
+    dispatch({
+      type: HRImageCreateActionKind.REMOVE,
+      payload: Compo,
+    });
+  };
   useEffect(() => {
     if (mode === 'edit') {
       getImage();
@@ -207,7 +295,10 @@ const HiddenreportCreateContainer: FC<HRimageCreateProps> = (
       dispatch={dispatch}
       createNewHRimage={createNewHRimage}
       onChangeImage={onChangeImage}
+      onChangeImageList={onChangeImageList}
       mode={mode}
+      addComponent={addComponent}
+      removeComponent={removeComponent}
     />
   );
 };

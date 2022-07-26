@@ -1,4 +1,4 @@
-import { IMaster } from './master';
+import { IMaster, IMasterReporter } from './master';
 import { Stock, Tag } from './schedule';
 
 export interface IHR {
@@ -49,8 +49,15 @@ export interface IHRImage {
   thumbnailImageUrl: string;
   squareImageUrl: string;
   keyword: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
+}
+
+export interface IHRNewImage {
+  name: string;
+  keyword: string;
+  thumbnailImageUrl: string;
+  squareImageUrl: string;
 }
 
 export interface IHROrders {
@@ -59,6 +66,7 @@ export interface IHROrders {
   userId: string;
   created_at: Date;
   updated_at: Date;
+  master_report: IMasterReporter;
 }
 
 export interface IHRComment {
