@@ -93,6 +93,14 @@ const YoutubeList = Loadable(
   lazy(() => import('./pages/dashboard/youtube/YoutubeList.page')),
 );
 
+// * test (처음 빌드 해보는 용도)
+const TestCreate = Loadable(
+  lazy(() => import('./pages/dashboard/test/TestCreate.Page')),
+);
+const TestList = Loadable(
+  lazy(() => import('./pages/dashboard/test/TestList.Page')),
+);
+
 //* master
 const MastersListPage = Loadable(
   lazy(() => import('./pages/dashboard/master/MastersList.Page')),
@@ -760,6 +768,24 @@ const routes: PartialRouteObject[] = [
           {
             path: '/list',
             element: <YoutubeList />,
+          },
+        ],
+      },
+      {
+        path: 'test',
+        children: [
+          {
+            path: '/create',
+            element: <TestCreate />,
+          },
+          {
+            path: '/:TestId/edit',
+            element: <TestCreate />,
+          },
+          // * List 기능은 Create 기능을 완성하고 만들기
+          {
+            path: '/list',
+            element: <TestList />,
           },
         ],
       },

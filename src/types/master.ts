@@ -1,3 +1,4 @@
+import { expirationDate } from 'src/utils/expirationDate';
 import { IStockDetails } from './stock';
 import { Tag } from './schedule';
 
@@ -65,10 +66,18 @@ export interface IMasterFeedLikes {
 }
 
 export interface IMasterSubscription {
+  // * 22-07-04 debugging CSubnumchart Logic. Currently showing -1 index.
+  id: number;
   userId?: number;
   masterId?: number;
   startDate?: Date;
   endData?: string;
+  created_by?: number;
+  updated_by?: number;
+  created_at?: string;
+  updated_at?: string;
+  master: IMaster;
+  isSub: number;
 }
 
 export interface IMaster {
@@ -117,4 +126,40 @@ export interface IMasterNotice {
   created_at?: string;
   summary: string;
   type: string;
+}
+
+export interface IMasterPayment {
+  id: number;
+  master?: number;
+  userId: number;
+  startDate: string;
+  endDate: string;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface IMasterReporter {
+  id: string;
+  title: string;
+  price: number;
+  pdfURL?: string;
+  contents?: string;
+  expirationDate: string;
+  readingTime: number;
+  reason: string;
+  intro: string;
+  subject: string;
+  type: string;
+  master_id: number;
+  hidden_report_image: number;
+  summary: string;
+  catchphrase?: string;
+  counter: string;
+  strategy?: string;
+  created_by?: number;
+  updated_by?: number;
+  created_at: string;
+  updated_at: string;
 }

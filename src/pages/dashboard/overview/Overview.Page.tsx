@@ -1,27 +1,20 @@
 import type { FC } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Box, Container } from '@material-ui/core';
 import OverviewContainer from 'src/components/overview/Overview.Container';
-import useSettings from 'src/hooks/useSettings';
+import React from 'react';
+import PageLayout from 'src/components/layout/ListPageLayout';
 
 const Overview: FC = () => {
-  const { settings } = useSettings();
+  const pageTopRef = React.useRef<HTMLDivElement>(null);
   return (
     <>
-      <Helmet>
-        <title>Dashboard: Overview</title>
-      </Helmet>
-      <Box
-        sx={{
-          backgroundColor: 'background.default',
-          minHeight: '100%',
-          py: 8,
-        }}
+      <PageLayout
+        dashboard={'대시보드'}
+        mainTopic={'대시보드'}
+        pageTitle={'대시보드'}
+        pageTopRef={pageTopRef}
       >
-        <Container maxWidth={settings.compact ? 'xl' : false}>
-          <OverviewContainer />
-        </Container>
-      </Box>
+        <OverviewContainer />
+      </PageLayout>
     </>
   );
 };

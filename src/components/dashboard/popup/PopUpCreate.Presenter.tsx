@@ -113,7 +113,12 @@ const PopUpCreatePresenter: FC<PopUpCreateProps> = (props) => {
                     value={targetCandidate.selected}
                     options={targetCandidate[createInput.target]}
                     onChange={(e, value) => {
+                      console.log('switched');
                       if (typeof value !== 'string') {
+                        console.log(
+                          'targetCandidate',
+                          targetCandidate.selected,
+                        );
                         dispatch({
                           type: PopUpCreateActionKind.CHANGE_TARGET_ID,
                           payload: value,

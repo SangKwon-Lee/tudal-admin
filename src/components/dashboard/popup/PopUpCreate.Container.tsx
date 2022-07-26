@@ -85,6 +85,7 @@ const initialState: PopUpCreateState = {
   },
   targetCandidate: {
     search: '',
+    // * 타입이 Object인 것으로 달인 객체가 payload로 들어가는 구조라고 유추
     selected: {},
     master: [],
     hidden_reporter: [],
@@ -222,6 +223,7 @@ const PopUpCreateContainer: FC = () => {
 
   const { target } = PopUpCreateState.createInput;
   const { search } = PopUpCreateState.targetCandidate;
+  console.log(PopUpCreateState);
   //* 기존 팝업 길이
   const getPopupLength = async () => {
     try {
