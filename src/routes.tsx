@@ -53,6 +53,9 @@ const HiddenboxEdit = Loadable(
 const Overview = Loadable(
   lazy(() => import('./pages/dashboard/overview/Overview.Page')),
 );
+const Homescreen = Loadable(
+  lazy(() => import('./pages/dashboard/overview/Homescreen.Page')),
+);
 
 //* 리포트
 const ReportMaker = Loadable(
@@ -91,14 +94,6 @@ const YoutubeCreate = Loadable(
 );
 const YoutubeList = Loadable(
   lazy(() => import('./pages/dashboard/youtube/YoutubeList.page')),
-);
-
-// * test (처음 빌드 해보는 용도)
-const TestCreate = Loadable(
-  lazy(() => import('./pages/dashboard/test/TestCreate.Page')),
-);
-const TestList = Loadable(
-  lazy(() => import('./pages/dashboard/test/TestList.Page')),
 );
 
 //* master
@@ -405,6 +400,20 @@ const routes: PartialRouteObject[] = [
       {
         path: 'tudal-notice/:noticeId',
         element: <TudalNoticeViewr />,
+      },
+    ],
+  },
+  {
+    path: 'homescreen',
+    element: (
+      <AuthGuard>
+        <DashboardLayout />
+      </AuthGuard>
+    ),
+    children: [
+      {
+        path: '/',
+        element: <Homescreen />,
       },
     ],
   },
@@ -772,24 +781,6 @@ const routes: PartialRouteObject[] = [
         ],
       },
       {
-        path: 'test',
-        children: [
-          {
-            path: '/create',
-            element: <TestCreate />,
-          },
-          {
-            path: '/:TestId/edit',
-            element: <TestCreate />,
-          },
-          // * List 기능은 Create 기능을 완성하고 만들기
-          {
-            path: '/list',
-            element: <TestList />,
-          },
-        ],
-      },
-      {
         path: 'sidebanner',
         children: [
           {
@@ -815,7 +806,7 @@ const routes: PartialRouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Navigate to="/dashboard" replace />,
+        element: <Navigate to="/homescreen" replace />,
       },
       {
         path: '401',
