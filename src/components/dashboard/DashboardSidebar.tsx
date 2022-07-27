@@ -23,6 +23,7 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import SpellcheckIcon from '@material-ui/icons/Spellcheck';
 import CategoryIcon from '@material-ui/icons/Category';
 import PaletteIcon from '@material-ui/icons/Palette';
+import Moon from 'src/icons/Moon';
 import { Dock } from '@material-ui/icons';
 
 interface DashboardSidebarProps {
@@ -38,6 +39,11 @@ const sections = [
         title: '대시보드',
         path: '/dashboard',
         icon: <HomeIcon fontSize="small" />,
+      },
+      {
+        title: '투달러스 대시보드',
+        path: '/dashboard/tudalus',
+        icon: <Moon fontSize="small" />,
       },
       {
         title: '문의사항',
@@ -287,15 +293,13 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
 
     if (user.type === 'cp') {
       const section = sections.filter((data) => {
-        return data.title === 'Contents' || data.title === 'Home';
+        return data.title === 'Contents';
       });
       setFilterSection(section);
     }
 
     if (user.type === 'cms') {
-      const section = sections.filter(
-        (data) => data.title === 'Home' || data.title === 'CMS',
-      );
+      const section = sections.filter((data) => data.title === 'CMS');
       setFilterSection(section);
     }
   };

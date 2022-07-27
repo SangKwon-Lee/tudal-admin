@@ -16,3 +16,4 @@ export * as APIBanner from './banner.api';
 export * as APISideBanner from './sideBanner.api';
 export * as APIYoutube from './youtube.api';
 export * as APITest from './test.api';
+export * as APITudalus from './tudalus.api';
