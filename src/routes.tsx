@@ -314,6 +314,11 @@ const HiddenReportViewer = Loadable(
   ),
 );
 
+// * 투달러스
+const TudalusDashboard = Loadable(
+  lazy(() => import('./pages/dashboard/tudalus/Tudalus.Page')),
+);
+
 // Error pages
 
 const AuthorizationRequired = Loadable(
@@ -796,6 +801,10 @@ const routes: PartialRouteObject[] = [
             element: <SideBannerCreatePage />,
           },
         ],
+      },
+      {
+        path: 'tudalus',
+        element: <TudalusDashboard />,
       },
     ],
   },
