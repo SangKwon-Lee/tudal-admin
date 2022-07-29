@@ -158,11 +158,13 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
       user_id: '29020',
       numStocks: stocks.length,
     };
+    let newStocks = _.uniqBy(stocks, 'id');
+
     try {
       if (mode === 'create') {
         const { data } = await APIGroup.postGroup(newGroup);
         await Promise.all(
-          stocks.map(async (stock) => {
+          newStocks.map(async (stock) => {
             let newFavorites = {
               stockcode: '',
               stockname: '',
@@ -187,7 +189,7 @@ const GroupCreateContainer: React.FC<GroupCreateContainerProps> = ({
           }),
         );
         await Promise.all(
-          stocks.map(async (stock) => {
+          newStocks.map(async (stock) => {
             let newFavorites = {
               stockcode: '',
               stockname: '',

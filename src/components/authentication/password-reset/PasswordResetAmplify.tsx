@@ -21,6 +21,7 @@ interface LocationState {
 const PasswordResetAmplify: FC = () => {
   const mounted = useMounted();
   const { passwordReset } = useAuth() as any;
+  //@ts-ignore
   const location = useLocation() as Location<LocationState>;
   const navigate = useNavigate();
   const itemsRef = useRef([]);
