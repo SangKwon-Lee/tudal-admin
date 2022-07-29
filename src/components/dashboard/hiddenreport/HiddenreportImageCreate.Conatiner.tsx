@@ -17,7 +17,6 @@ export enum HRImageCreateActionKind {
   CHANGE_THUMBNAIL_IMAGE = 'CHANGE_THUMBNAIL_IMAGE',
   CHANGE_LIST = 'CHANGE_LIST',
   CHANGE_SQUARE_IMAGE = 'CHANGE_SQUARE_IMAGE',
-  ADD_INDEX = 'ADD_INDEX',
   ADD = 'ADD',
   REMOVE = 'REMOVE',
 }
@@ -109,11 +108,6 @@ const PopUpCreateReducer = (
           thumbnailImageUrl: payload.thumbnailImageUrl,
           squareImageUrl: payload.squareImageUrl,
         },
-      };
-    case HRImageCreateActionKind.ADD_INDEX:
-      return {
-        ...state,
-        index: index + 1,
       };
     case HRImageCreateActionKind.ADD:
       return {
