@@ -52,7 +52,6 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
     handleNoticeInputTitle,
     handleNoticeInputContents,
   }) => {
-    //@ts-ignore
     return (
       <>
         <Card sx={{ p: 3, mt: 3 }}>
@@ -203,14 +202,13 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
               value={summary}
             />
           </Box>
-          <Box sx={{ mt: 5 }}>
+          <Box sx={{ mt: 7 }}>
             <WebEditor
               editorRef={editorRef}
               contents={contents}
               bucket_name={IBuckets.MASTER_FEED}
             />
           </Box>
-
           <Box
             sx={{
               mt: 3,
