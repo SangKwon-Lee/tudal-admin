@@ -194,7 +194,7 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
           >
             <TextField
               fullWidth
-              label="요약"
+              label="요약문"
               name="summary"
               variant="outlined"
               helperText="요약문을 입력해주세요"
