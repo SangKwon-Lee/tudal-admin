@@ -14,7 +14,9 @@ const MasterNoticeViewerPresenter: FC<Props> = (props) => {
   const { masterNotice } = props;
   const theme = useTheme();
   return (
-    <Box sx={{ py: 3 }}>
+    <Box
+      sx={{ py: 3, backgroundColor: theme.palette.background.paper }}
+    >
       <Container maxWidth="md">
         <Viewer
           initialValue={masterNotice.contents}
