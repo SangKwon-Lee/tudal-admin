@@ -11,15 +11,11 @@ interface Props {
 const MasterIntroViewer: FC<Props> = (props) => {
   const { master } = props;
   const theme = useTheme();
+  console.log(theme.palette.mode);
   return (
-    <Box
-      sx={{ py: 3, backgroundColor: theme.palette.background.paper }}
-    >
+    <Box sx={{ py: 3, backgroundColor: '#171C24' }}>
       <Container maxWidth="md">
-        <Viewer
-          initialValue={master.intro}
-          theme={theme.palette.mode}
-        />
+        <Viewer initialValue={master.intro} theme={'dark'} />
       </Container>
     </Box>
   );
