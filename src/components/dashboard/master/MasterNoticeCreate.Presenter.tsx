@@ -180,7 +180,7 @@ const MasterNoticeCreatePresenter: React.FC<CpMasterNoticeCreateProps> =
               label="제목"
               name="title"
               variant="outlined"
-              helperText="제목을 입력해주세요"
+              helperText="제목을 입력해주세요."
               onChange={handleNoticeInputTitle}
               value={title}
             />

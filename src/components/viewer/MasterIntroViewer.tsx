@@ -15,7 +15,7 @@ const MasterIntroViewer: FC<Props> = (props) => {
   return (
     <Box sx={{ py: 3, backgroundColor: '#171C24' }}>
       <Container maxWidth="md">
-        <Viewer initialValue={master.intro} theme={'dark'} />
+        <Viewer initialValue={master.intro} />
       </Container>
     </Box>
   );
