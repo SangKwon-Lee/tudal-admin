@@ -126,7 +126,6 @@ const WebEditor: React.FC<IWebEditorProps> = (props) => {
         ) {
           try {
             const timestamp = +new Date(); // timestamp
-
             await S3.putObject({
               Bucket: bucket_name,
               Key: timestamp + blobInfo.filename(),
