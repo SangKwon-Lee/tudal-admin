@@ -257,6 +257,16 @@ const sections = [
       },
     ],
   },
+  {
+    title: '투달유에스',
+    items: [
+      {
+        title: '콘텐츠 생성',
+        path: '/dashboard/tudalus/contents/create',
+        icon: <CalendarIcon fontSize="small" />,
+      },
+    ],
+  },
   // {
   //   title: 'Generator',
   //   items: [
