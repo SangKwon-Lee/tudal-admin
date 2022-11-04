@@ -314,9 +314,12 @@ const HiddenReportViewer = Loadable(
   ),
 );
 
-// * 투달러스
-const TudalusDashboard = Loadable(
-  lazy(() => import('./pages/dashboard/tudalus/Tudalus.Page')),
+const TudalusContentsCreate = Loadable(
+  lazy(() => import('./pages/dashboard/tudalus/Tudalus.Create.Page')),
+);
+
+const TudalusContentsList = Loadable(
+  lazy(() => import('./pages/dashboard/tudalus/Tudalus.List.Page')),
 );
 
 // Error pages
@@ -804,7 +807,20 @@ const routes: PartialRouteObject[] = [
       },
       {
         path: 'tudalus',
-        element: <TudalusDashboard />,
+        children: [
+          {
+            path: '/contents/create',
+            element: <TudalusContentsCreate />,
+          },
+          {
+            path: '/contents/edit/:contentsId',
+            element: <TudalusContentsCreate />,
+          },
+          {
+            path: '/contents/list',
+            element: <TudalusContentsList />,
+          },
+        ],
       },
     ],
   },
