@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { IBuckets } from 'src/components/common/conf/aws';
 import { APITudalusContents } from 'src/lib/api';
+import { registerImage } from 'src/utils/registerImage';
 import TudalUsContentsCreatePresenter from './TudalUsContentsCreate.Presenter';
 
 interface TudalUsContentsCreateContainerProps {
@@ -11,8 +14,12 @@ const TudalUsContentsCreateContainer = ({
   mode,
   contentsId,
 }: TudalUsContentsCreateContainerProps) => {
-  const [title, setTitle] = useState('');
-  const [contents, setContents] = useState('');
+  const router = useNavigate();
+  const [input, setInput] = useState({
+    title: '',
+    thumbnail: '',
+    contents: '',
+  });
 
   // * 수정시 데이터 가져오기
   const handleGetContents = async () => {
@@ -20,8 +27,13 @@ const TudalUsContentsCreateContainer = ({
       const { data, status } =
         await APITudalusContents.getTudalusContents(contentsId);
       if (status === 200) {
-        setTitle(data.title);
-        setContents(data.contents);
+        const { contents, thumbnail, title } = data;
+        setInput({
+          ...input,
+          title,
+          contents,
+          thumbnail,
+        });
       }
     } catch (e) {
       console.log(e);
@@ -30,30 +42,58 @@ const TudalUsContentsCreateContainer = ({
 
   // * 생성 및 수정
   const handleCreateContents = async (data: any) => {
-    const text = log();
+    const contents = log();
+    console.log(data);
     try {
       if (mode === 'edit') {
         const { status } =
           await APITudalusContents.editTudalusContents(contentsId, {
             title: data.title,
-            contents: text,
+            contents,
+            thumbnail: data.thumbnail,
           });
         if (status === 200) {
           alert('콘텐츠가 수정되었습니다.');
+          router('/dashboard/tudalus/contents/list');
         }
       } else {
         const { status } =
           await APITudalusContents.createTudalusContents({
             title: data.title,
-            contents: text,
+            contents,
+            thumbnail: data.thumbnail,
           });
         if (status === 200) {
           alert('콘텐츠가 생성되었습니다.');
+          router('/dashboard/tudalus/contents/list');
         }
       }
     } catch (e) {
       console.log(e);
     }
+  };
+
+  //* 이미지 등록
+  const onChangeImage = async (event: any) => {
+    var file = event.target.files;
+    try {
+      // Koscom Cloud에 업로드하기!
+      const imageUrl = await registerImage(file, IBuckets.CP_PHOTO);
+      setInput({
+        ...input,
+        thumbnail: imageUrl,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // * 이미지 삭제
+  const deleteImage = () => {
+    setInput({
+      ...input,
+      thumbnail: '',
+    });
   };
 
   //* 웹 에디터에 전달되는 Props
@@ -74,9 +114,10 @@ const TudalUsContentsCreateContainer = ({
   return (
     <TudalUsContentsCreatePresenter
       mode={mode}
-      title={title}
-      contents={contents}
+      input={input}
       editorRef={editorRef}
+      deleteImage={deleteImage}
+      onChangeImage={onChangeImage}
       handleCreateContents={handleCreateContents}
     />
   );

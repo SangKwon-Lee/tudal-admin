@@ -76,8 +76,8 @@ const TudalUsContentsListPresenter = ({
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>번호</TableCell>
-                <TableCell>제목</TableCell>
+                <TableCell>섬네일</TableCell>
+                <TableCell sx={{ maxWidth: 500 }}>제목</TableCell>
                 <TableCell>등록일</TableCell>
                 <TableCell align="center">메인</TableCell>
                 <TableCell align="center">수정 & 삭제 </TableCell>
@@ -91,8 +91,14 @@ const TudalUsContentsListPresenter = ({
                 .map((list) => {
                   return (
                     <TableRow hover key={list.id}>
-                      <TableCell>{list.id}</TableCell>
                       <TableCell>
+                        <img
+                          src={list.thumbnail}
+                          alt=""
+                          style={{ width: '60px', height: '60px' }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 300 }}>
                         <Link
                           color="inherit"
                           component={RouterLink}

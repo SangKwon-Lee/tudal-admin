@@ -321,6 +321,11 @@ const TudalusContentsCreate = Loadable(
 const TudalusContentsList = Loadable(
   lazy(() => import('./pages/dashboard/tudalus/Tudalus.List.Page')),
 );
+const TudalusThemeList = Loadable(
+  lazy(
+    () => import('./pages/dashboard/tudalus/TudalusTheme.List.Page'),
+  ),
+);
 
 // Error pages
 
@@ -819,6 +824,10 @@ const routes: PartialRouteObject[] = [
           {
             path: '/contents/list',
             element: <TudalusContentsList />,
+          },
+          {
+            path: '/theme',
+            element: <TudalusThemeList />,
           },
         ],
       },

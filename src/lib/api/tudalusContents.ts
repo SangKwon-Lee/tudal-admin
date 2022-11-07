@@ -1,13 +1,16 @@
 import axios from 'src/lib/axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
+import { TudalUsContents } from 'src/types/tudalus';
 
 export const createTudalusContents = async (input) => {
   return await axios.post(`/tudal-us-contents`, input);
 };
 
 export const getTudalusContents = async (input) => {
-  return await axios.get(`/tudal-us-contents/${input}`);
+  return await axios.get<TudalUsContents>(
+    `/tudal-us-contents/${input}`,
+  );
 };
 
 export const editTudalusContents = async (id, input) => {
@@ -16,7 +19,9 @@ export const editTudalusContents = async (id, input) => {
 
 export const getTudalusContentsList = async (param) => {
   const query = qs.stringify(removeEmpty(param));
-  return await axios.get(`/tudal-us-contents?${query}`);
+  return await axios.get<TudalUsContents[]>(
+    `/tudal-us-contents?${query}`,
+  );
 };
 
 export const getTudalusContentsListCount = async (param) => {

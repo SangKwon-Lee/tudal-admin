@@ -12,6 +12,9 @@ const Overview: FC = () => {
         mainTopic={'투달유에스 콘텐츠 리스트'}
         pageTitle={'투달유에스 콘텐츠 리스트'}
         pageTopRef={pageTopRef}
+        hasCreateButton={true}
+        buttonClickLink={'/dashboard/tudalus/contents/create'}
+        buttonName="생성"
       >
         <TudalUsContentsListContainer />
       </PageLayout>
