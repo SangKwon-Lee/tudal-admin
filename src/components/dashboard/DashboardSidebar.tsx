@@ -261,22 +261,27 @@ const sections = [
     title: '투달유에스',
     items: [
       {
-        title: '콘텐츠 생성',
+        title: '콘텐츠',
         path: '/dashboard/tudalus/contents/create',
+        icon: <CalendarIcon fontSize="small" />,
+        children: [
+          {
+            title: '리스트',
+            path: '/dashboard/tudalus/contents/list',
+          },
+          {
+            title: '생성',
+            path: '/dashboard/tudalus/contents/create',
+          },
+        ],
+      },
+      {
+        title: '테마 리스트',
+        path: '/dashboard/tudalus/theme',
         icon: <CalendarIcon fontSize="small" />,
       },
     ],
   },
-  // {
-  //   title: 'Generator',
-  //   items: [
-  //     {
-  //       title: '리포트',
-  //       path: '/dashboard/report',
-  //       icon: <ChartPieIcon fontSize="small" />,
-  //     },
-  //   ],
-  // },
 ];
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {

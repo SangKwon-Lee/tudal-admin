@@ -5,7 +5,13 @@ import * as yup from 'yup';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import WebEditor from 'src/components/common/WebEditor';
 import '../../../lib/codemirror.css';
-import { Box, Button, Card, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import { IBuckets } from 'src/components/common/conf/aws';
 import { useEffect } from 'react';
 
@@ -17,34 +23,41 @@ const scheme = yup
 
 interface TudalUsContentsCreatePresenterProps {
   mode: string;
-  title: string;
-  contents: string;
+  input: {
+    title: string;
+    thumbnail: string;
+    contents: string;
+  };
+  deleteImage: () => void;
   editorRef: React.MutableRefObject<any>;
+  onChangeImage: (event: any) => Promise<void>;
   handleCreateContents: (data: any) => Promise<void>;
 }
 
 const TudalUsContentsCreatePresenter = ({
   mode,
-  title,
-  contents,
+  input,
   editorRef,
+  deleteImage,
+  onChangeImage,
   handleCreateContents,
 }: TudalUsContentsCreatePresenterProps) => {
+  const { contents, thumbnail, title } = input;
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm({
-    defaultValues: { title, contents },
+    defaultValues: { thumbnail, title },
     resolver: yupResolver(scheme),
   });
 
   useEffect(() => {
     if (reset) {
-      reset({ title, contents });
+      reset({ thumbnail, title });
     }
-  }, [reset, title, contents]);
+  }, [reset, thumbnail, title]);
   return (
     <>
       <form onSubmit={handleSubmit(handleCreateContents)}>
@@ -59,11 +72,59 @@ const TudalUsContentsCreatePresenter = ({
               helperText={'제목은 필수입니다.'}
             />
           </Box>
-          <WebEditor
-            editorRef={editorRef}
-            bucket_name={IBuckets.MASTER_FEED}
-            contents={contents}
-          />
+          <Typography sx={{ my: 2 }}>섬네일 이미지</Typography>
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <TextField
+              id="image"
+              name="thumbnail"
+              type="file"
+              helperText={'섬네일은 필수입니다.'}
+              onChange={onChangeImage}
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={deleteImage}
+              sx={{ ml: 3 }}
+            >
+              이미지 삭제
+            </Button>
+          </Box>
+          <Box>
+            <Typography
+              color="textSecondary"
+              variant="subtitle2"
+              sx={{ mt: 1 }}
+            >
+              파일 이름이 너무 길 경우 오류가 생길 수 있습니다. (15자
+              내외)
+            </Typography>
+            <Typography sx={{ my: 2 }}>이미지 미리보기</Typography>
+            <img
+              style={{ width: '100%', maxHeight: 400 }}
+              alt={''}
+              src={input.thumbnail}
+            />
+          </Box>
+          {mode === 'edit' && contents.length > 0 ? (
+            <WebEditor
+              editorRef={editorRef}
+              bucket_name={IBuckets.MASTER_FEED}
+              contents={contents}
+            />
+          ) : (
+            <WebEditor
+              editorRef={editorRef}
+              bucket_name={IBuckets.MASTER_FEED}
+              contents={''}
+            />
+          )}
+
           <Box
             sx={{
               display: 'flex',

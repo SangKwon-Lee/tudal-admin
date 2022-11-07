@@ -3,11 +3,12 @@ import { APITudalusContents } from 'src/lib/api';
 import TudalUsContentsListPresenter from './TudalUsContentsList.Presenter';
 
 export interface contentsList {
-  id: string;
+  id: number;
   title: string;
   contents: string;
   isMain: boolean;
   created_at: string;
+  thumbnail: string;
 }
 const TudalUsContentsListContainer = () => {
   const [contentsList, setContentsList] = useState<contentsList[]>(
@@ -68,7 +69,6 @@ const TudalUsContentsListContainer = () => {
     try {
       const { status } =
         await APITudalusContents.deleteTudalusContents(id);
-      console.log(status);
       if (status === 200) {
         alert('게시글이 삭제됐습니다.');
         getTudalUsContentsList();
