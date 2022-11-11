@@ -19,8 +19,6 @@ import { useEffect } from 'react';
 import { IHiddenReporter } from 'src/types/hiddenreport';
 import ImageCropper from 'src/components/common/ImageCropper';
 import { IUser } from 'src/types/user';
-import WebEditor from 'src/components/common/WebEditor';
-import { IBuckets } from 'src/components/common/conf/aws';
 const schema = yup
   .object({
     nickname: yup.string().required(),
@@ -54,14 +52,8 @@ interface CpReporterCreateProps {
 const CpReporterCreatePresenter: React.FC<CpReporterCreateProps> = (
   props,
 ) => {
-  const {
-    cpCreateState,
-    dispatch,
-    mode,
-    createCpReporter,
-    user,
-    editorRef,
-  } = props;
+  const { cpCreateState, dispatch, mode, createCpReporter, user } =
+    props;
   const { newCpReporter, users } = cpCreateState;
   const isAdmin: boolean = user.type === 'admin';
 

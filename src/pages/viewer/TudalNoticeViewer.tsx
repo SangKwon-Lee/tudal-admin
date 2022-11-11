@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@material-ui/core';
+import { Box, Container } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
@@ -7,7 +7,6 @@ import useSettings from 'src/hooks/useSettings';
 import { cmsServer, CMS_TOKEN } from 'src/lib/axios';
 import gtm from 'src/lib/gtm';
 import type { FC } from 'react';
-import { Viewer } from '@toast-ui/react-editor';
 
 const TudalNoticeViewer: FC = () => {
   const { settings } = useSettings();

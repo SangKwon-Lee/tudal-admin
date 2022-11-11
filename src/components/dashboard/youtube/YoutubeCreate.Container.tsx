@@ -28,7 +28,7 @@ const YoutubeCreateContainer: React.FC<YoutubeCreateProps> = ({
   const postYoutube = async () => {
     try {
       if (mode === 'create') {
-        const { data } = await APIYoutube.createYoutube(youtubeInput);
+        await APIYoutube.createYoutube(youtubeInput);
         toast.success('유튜브가 등록됐습니다.');
         navigate(`/dashboard/youtube/list`);
       } else {

@@ -1,12 +1,11 @@
 import { FC, useCallback, useEffect, useReducer } from 'react';
 import toast from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { APIOverview, APIPopUp } from 'src/lib/api';
+import { APIPopUp } from 'src/lib/api';
 import { DndProvider } from 'react-dnd';
 import { IPopUp } from 'src/types/popup';
 import PopUpListPresenter from './PopUpList.Presenter';
 import { swapItems } from 'src/utils/helper';
-import { IMaster } from 'src/types/master';
 
 export enum PopUpListActionKind {
   LOADING = 'LOADING',

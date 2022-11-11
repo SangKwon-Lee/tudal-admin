@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useReducer } from 'react';
 import OverviewPresenter from './Overview.Presenter';
 import dayjs from 'dayjs';
 import { APIOverview } from 'src/lib/api';
-import useAuth from 'src/hooks/useAuth';
+// import useAuth from 'src/hooks/useAuth';
 import { IMaster } from 'src/types/master';
 
 export enum OverviewActionKind {
@@ -284,7 +284,7 @@ interface IOverviewProps {
 }
 const OverviewContainer: React.FC<IOverviewProps> = (props) => {
   // * 어떻게 활용하는지 파악 필요.
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   const [overviewState, dispatch] = useReducer(
     OverviewReducer,

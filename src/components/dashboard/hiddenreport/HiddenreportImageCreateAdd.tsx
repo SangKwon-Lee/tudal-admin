@@ -5,9 +5,7 @@ import {
   Typography,
   Grid,
 } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
 import { FC } from 'react';
-import toast from 'react-hot-toast';
 import {
   HRImageCreateAction,
   HRImageCreateActionKind,
