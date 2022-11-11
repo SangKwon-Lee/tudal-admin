@@ -3,7 +3,6 @@ import { APIGroup } from 'src/lib/api';
 import GroupListPresenter from './GroupList.Presenter';
 import { IGroup } from 'src/types/group';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router';
 export enum GroupListTableActionKind {
   //loading
   LOADING = 'LOADING',
@@ -147,7 +146,6 @@ const CouponListTableContainer = () => {
     CouponListTableReducer,
     initialState,
   );
-  const navigate = useNavigate();
 
   const { query } = groupListTableState;
 

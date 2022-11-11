@@ -13,7 +13,6 @@ import {
 import { OverviewState, OverviewAction } from './Overview.Container';
 import { DashboardChart } from '../widgets/charts/DashboardChart';
 import { DashboardChart2 } from '../widgets/charts/DashboardChart2';
-import { borderRadius } from '@material-ui/system';
 import dayjs from 'dayjs';
 
 interface OverviewProps {

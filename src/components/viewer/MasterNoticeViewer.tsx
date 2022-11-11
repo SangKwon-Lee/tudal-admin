@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Box, Container, useTheme } from '@material-ui/core';
+import { Box, Container } from '@material-ui/core';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -12,7 +12,6 @@ interface Props {
 
 const MasterNoticeViewerPresenter: FC<Props> = (props) => {
   const { masterNotice } = props;
-  const theme = useTheme();
   return (
     <Box
       sx={{

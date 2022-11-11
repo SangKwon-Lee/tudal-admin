@@ -62,7 +62,6 @@ const PopUpCreateReducer = (
   action: HRImageCreateAction,
 ): HRImageCreateState => {
   const { type, payload } = action;
-  const { index } = state;
   switch (type) {
     case HRImageCreateActionKind.LOADING:
       return {

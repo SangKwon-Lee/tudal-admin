@@ -45,8 +45,7 @@ const GroupListTablePresenter: React.FC<IGroupListTableProps> = (
   props,
 ) => {
   const { groupListTableState, dispatch, handleDelete } = props;
-  const { loading, query, selected, list, listLength } =
-    groupListTableState;
+  const { loading, query, list, listLength } = groupListTableState;
 
   return (
     <>

@@ -5,7 +5,6 @@ import useAuth from 'src/hooks/useAuth';
 import { IMaster, IMasterFeed, IMasterRoom } from 'src/types/master';
 import { useNavigate } from 'react-router';
 import toast from 'react-hot-toast';
-import { Feed } from '@material-ui/icons';
 
 export enum MasterListTableActionKind {
   // loading
@@ -38,8 +37,6 @@ export interface MasterListTableAction {
   type: MasterListTableActionKind;
   payload?: any;
 }
-
-type Sort = 'datetime:desc' | 'datetime:asc';
 
 interface SortOption {
   value: any;

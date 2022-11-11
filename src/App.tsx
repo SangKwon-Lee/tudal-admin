@@ -14,7 +14,7 @@ import gtm from './lib/gtm';
 import routes from './routes';
 import { createCustomTheme } from './theme';
 import moment from 'moment';
-import SocketProvider from './contexts/SocketContext';
+// import SocketProvider from './contexts/SocketContext';
 import AdapterMoment from '@material-ui/lab/AdapterMoment';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
@@ -47,11 +47,11 @@ const App: FC = () => {
         locale="ko_Kr"
       >
         <RTL direction={settings.direction}>
-          <SocketProvider>
-            <CssBaseline />
-            <Toaster position="top-center" />
-            {auth.isInitialized ? content : <SplashScreen />}
-          </SocketProvider>
+          {/* <SocketProvider> */}
+          <CssBaseline />
+          <Toaster position="top-center" />
+          {auth.isInitialized ? content : <SplashScreen />}
+          {/* </SocketProvider> */}
         </RTL>
       </LocalizationProvider>
     </ThemeProvider>
