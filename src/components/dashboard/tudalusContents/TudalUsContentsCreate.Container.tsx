@@ -17,9 +17,9 @@ const TudalUsContentsCreateContainer = ({
   const router = useNavigate();
   const [input, setInput] = useState({
     title: '',
-    thumbnail: '',
     contents: '',
   });
+  const [thumbnail, setThumbnail] = useState('');
 
   // * 수정시 데이터 가져오기
   const handleGetContents = async () => {
@@ -32,8 +32,8 @@ const TudalUsContentsCreateContainer = ({
           ...input,
           title,
           contents,
-          thumbnail,
         });
+        setThumbnail(thumbnail);
       }
     } catch (e) {
       console.log(e);
@@ -43,14 +43,13 @@ const TudalUsContentsCreateContainer = ({
   // * 생성 및 수정
   const handleCreateContents = async (data: any) => {
     const contents = log();
-    console.log(data);
     try {
       if (mode === 'edit') {
         const { status } =
           await APITudalusContents.editTudalusContents(contentsId, {
             title: data.title,
             contents,
-            thumbnail: data.thumbnail,
+            thumbnail,
           });
         if (status === 200) {
           alert('콘텐츠가 수정되었습니다.');
@@ -61,7 +60,7 @@ const TudalUsContentsCreateContainer = ({
           await APITudalusContents.createTudalusContents({
             title: data.title,
             contents,
-            thumbnail: data.thumbnail,
+            thumbnail,
           });
         if (status === 200) {
           alert('콘텐츠가 생성되었습니다.');
@@ -79,10 +78,7 @@ const TudalUsContentsCreateContainer = ({
     try {
       // Koscom Cloud에 업로드하기!
       const imageUrl = await registerImage(file, IBuckets.CP_PHOTO);
-      setInput({
-        ...input,
-        thumbnail: imageUrl,
-      });
+      setThumbnail(imageUrl);
     } catch (error) {
       console.log(error);
     }
@@ -90,10 +86,7 @@ const TudalUsContentsCreateContainer = ({
 
   // * 이미지 삭제
   const deleteImage = () => {
-    setInput({
-      ...input,
-      thumbnail: '',
-    });
+    setThumbnail('');
   };
 
   //* 웹 에디터에 전달되는 Props
@@ -115,6 +108,7 @@ const TudalUsContentsCreateContainer = ({
     <TudalUsContentsCreatePresenter
       mode={mode}
       input={input}
+      thumbnail={thumbnail}
       editorRef={editorRef}
       deleteImage={deleteImage}
       onChangeImage={onChangeImage}
