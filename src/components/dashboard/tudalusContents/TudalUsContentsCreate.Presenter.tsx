@@ -25,9 +25,9 @@ interface TudalUsContentsCreatePresenterProps {
   mode: string;
   input: {
     title: string;
-    thumbnail: string;
     contents: string;
   };
+  thumbnail: string;
   deleteImage: () => void;
   editorRef: React.MutableRefObject<any>;
   onChangeImage: (event: any) => Promise<void>;
@@ -37,27 +37,28 @@ interface TudalUsContentsCreatePresenterProps {
 const TudalUsContentsCreatePresenter = ({
   mode,
   input,
+  thumbnail,
   editorRef,
   deleteImage,
   onChangeImage,
   handleCreateContents,
 }: TudalUsContentsCreatePresenterProps) => {
-  const { contents, thumbnail, title } = input;
+  const { contents, title } = input;
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm({
-    defaultValues: { thumbnail, title },
+    defaultValues: { title },
     resolver: yupResolver(scheme),
   });
 
   useEffect(() => {
     if (reset) {
-      reset({ thumbnail, title });
+      reset({ title });
     }
-  }, [reset, thumbnail, title]);
+  }, [reset, title]);
   return (
     <>
       <form onSubmit={handleSubmit(handleCreateContents)}>
@@ -108,16 +109,17 @@ const TudalUsContentsCreatePresenter = ({
             <img
               style={{ width: '100%', maxHeight: 400 }}
               alt={''}
-              src={input.thumbnail}
+              src={thumbnail}
             />
           </Box>
-          {mode === 'edit' && contents.length > 0 ? (
+          {mode === 'edit' && contents.length > 0 && (
             <WebEditor
               editorRef={editorRef}
               bucket_name={IBuckets.MASTER_FEED}
               contents={contents}
             />
-          ) : (
+          )}
+          {mode !== 'edit' && (
             <WebEditor
               editorRef={editorRef}
               bucket_name={IBuckets.MASTER_FEED}
