@@ -15,6 +15,15 @@ import {
 import { IBuckets } from 'src/components/common/conf/aws';
 import { useEffect } from 'react';
 
+const typeArr = [
+  '오늘의 이슈와 주식',
+  '모닝콜 인사이트',
+  '빅데이터 국내주식',
+  '미국 주식 분석',
+  '주말 트렌드',
+  '금일 AI 미국 주식',
+];
+
 const scheme = yup
   .object({
     title: yup.string().required(),
@@ -27,8 +36,10 @@ interface TudalUsContentsCreatePresenterProps {
     title: string;
     contents: string;
   };
+  type: string;
   thumbnail: string;
   deleteImage: () => void;
+  handleChangeType: (e: any) => void;
   editorRef: React.MutableRefObject<any>;
   onChangeImage: (event: any) => Promise<void>;
   handleCreateContents: (data: any) => Promise<void>;
@@ -36,11 +47,13 @@ interface TudalUsContentsCreatePresenterProps {
 
 const TudalUsContentsCreatePresenter = ({
   mode,
+  type,
   input,
   thumbnail,
   editorRef,
   deleteImage,
   onChangeImage,
+  handleChangeType,
   handleCreateContents,
 }: TudalUsContentsCreatePresenterProps) => {
   const { contents, title } = input;
@@ -72,6 +85,23 @@ const TudalUsContentsCreatePresenter = ({
               error={Boolean(errors?.title)}
               helperText={'제목은 필수입니다.'}
             />
+
+            <TextField
+              fullWidth
+              select
+              sx={{ mt: 3 }}
+              value={type}
+              label="타입"
+              onChange={handleChangeType}
+              SelectProps={{ native: true }}
+              variant="outlined"
+            >
+              {typeArr.map((data) => (
+                <option key={data} value={data}>
+                  {data}
+                </option>
+              ))}
+            </TextField>
           </Box>
           <Typography sx={{ my: 2 }}>섬네일 이미지</Typography>
           <Box
