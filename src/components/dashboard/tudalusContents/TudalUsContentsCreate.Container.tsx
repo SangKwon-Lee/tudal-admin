@@ -20,6 +20,7 @@ const TudalUsContentsCreateContainer = ({
     contents: '',
   });
   const [thumbnail, setThumbnail] = useState('');
+  const [type, setType] = useState('오늘의 이슈와 주식');
 
   // * 수정시 데이터 가져오기
   const handleGetContents = async () => {
@@ -89,6 +90,10 @@ const TudalUsContentsCreateContainer = ({
     setThumbnail('');
   };
 
+  const handleChangeType = (e) => {
+    setType(e.target.value);
+  };
+
   //* 웹 에디터에 전달되는 Props
   const editorRef = useRef(null);
   const log = () => {
@@ -103,15 +108,16 @@ const TudalUsContentsCreateContainer = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentsId]);
-
   return (
     <TudalUsContentsCreatePresenter
       mode={mode}
+      type={type}
       input={input}
       thumbnail={thumbnail}
       editorRef={editorRef}
       deleteImage={deleteImage}
       onChangeImage={onChangeImage}
+      handleChangeType={handleChangeType}
       handleCreateContents={handleCreateContents}
     />
   );
