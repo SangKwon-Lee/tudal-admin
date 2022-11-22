@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { IBuckets } from 'src/components/common/conf/aws';
@@ -57,13 +58,26 @@ const TudalUsContentsCreateContainer = ({
           router('/dashboard/tudalus/contents/list');
         }
       } else {
-        const { status } =
+        const { status, data: resultData } =
           await APITudalusContents.createTudalusContents({
             title: data.title,
             contents,
             thumbnail,
           });
         if (status === 200) {
+          console.log(resultData);
+          try {
+            const result = await axios.post(
+              `https://me0g47n7li.execute-api.ap-northeast-2.amazonaws.com/prod/stocks?`,
+              {
+                title: `New Issue ${type}!`,
+                link: resultData.id,
+              },
+            );
+            console.log(result);
+          } catch (e) {
+            console.log(e);
+          }
           alert('콘텐츠가 생성되었습니다.');
           router('/dashboard/tudalus/contents/list');
         }
