@@ -21,6 +21,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Do Something with env files
+      env:
+        ENV_FILE_TUDAL: ${{ secrets.ENV_FILE_TUDAL_ADMIN }}
+      run: |
+        echo $ENV_FILE_TUDAL_ADMIN | base64 --decode > .env    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
