@@ -1,10 +1,11 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
-const { REACT_APP_API_URL } = process.env;
+const { REACT_APP_CMS_TOKEN, REACT_APP_CMS_URL, REACT_APP_API_URL } =
+  process.env;
 
-export const CMSURL = 'https://cms.tudal.co.kr';
-export const CMS_TOKEN = 'xnwkdmlekfdlsuser@020';
+export const CMSURL = REACT_APP_CMS_URL;
+export const CMS_TOKEN = REACT_APP_CMS_TOKEN;
 export const APIURL = REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
