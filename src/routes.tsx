@@ -83,6 +83,11 @@ const Keyword = Loadable(
   lazy(() => import('./pages/dashboard/keyword/Keyword.Page')),
 );
 
+//* Keyword
+const MZKeyword = Loadable(
+  lazy(() => import('./pages/dashboard/keyword/MZKeyword.Page')),
+);
+
 //* category
 const CategoryList = Loadable(
   lazy(() => import('./pages/dashboard/category/Category.Page')),
@@ -584,6 +589,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/',
             element: <Keyword />,
+          },
+        ],
+      },
+      {
+        path: 'mzkeyword',
+        children: [
+          {
+            path: '/',
+            element: <MZKeyword />,
           },
         ],
       },

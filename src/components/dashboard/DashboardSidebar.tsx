@@ -282,6 +282,16 @@ const sections = [
       },
     ],
   },
+  {
+    title: 'MZ',
+    items: [
+      {
+        title: '키워드',
+        path: '/dashboard/mzkeyword',
+        icon: <PencilIcon fontSize="small" />,
+      },
+    ],
+  },
 ];
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
@@ -302,6 +312,10 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   }, [location.pathname]);
 
   const handleFilterSection = () => {
+    if (user.type === 'mz') {
+      const section = sections.filter((data) => data.title === 'MZ');
+      setFilterSection(section);
+    }
     if (user.type === 'admin') {
       setFilterSection(sections);
     }
