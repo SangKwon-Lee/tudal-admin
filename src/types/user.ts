@@ -16,6 +16,7 @@ export enum IUserType {
   ADMIN = 'admin',
   CMS = 'cms',
   CP = 'cp',
+  MZ = 'mz',
 }
 
 interface IRole {
