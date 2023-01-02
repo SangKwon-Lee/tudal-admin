@@ -16,20 +16,20 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Autocomplete,
+  // Autocomplete,
   TextField,
   Typography,
   Button,
-  CircularProgress,
-  FormControlLabel,
-  Switch,
+  // CircularProgress,
+  // FormControlLabel,
+  // Switch,
   Dialog,
   Pagination,
 } from '@material-ui/core';
 
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 import Scrollbar from 'src/components/layout/Scrollbar';
-import { createFilterOptions } from '@material-ui/core/Autocomplete';
+// import { createFilterOptions } from '@material-ui/core/Autocomplete';
 import * as _ from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -51,7 +51,7 @@ import {
 } from './KeywordList.Container';
 import KeywordMergeDialog from './KeywordMergeDialog';
 
-const customFilter = createFilterOptions<any>();
+// const customFilter = createFilterOptions<any>();
 interface ISortOption {
   label: string;
   value: string;
@@ -96,22 +96,22 @@ const KeywordListPresenter: React.FC<IKeywordListPresenterProps> = (
     state,
     dispatch,
     reload,
-    postMultiKeywords,
-    postKeyword,
-    multiTagInputRef,
-    tagAddInputRef,
-    keywordAutocomplete,
-    refetchKeywordAutocomplete,
+    // postMultiKeywords,
+    // postKeyword,
+    // multiTagInputRef,
+    // tagAddInputRef,
+    // keywordAutocomplete,
+    // refetchKeywordAutocomplete,
     createAlias,
     deleteAlias,
     updateKeyword,
     deleteKeyword,
   } = props;
 
-  const {
-    loading: keywordAutocompleteLoading,
-    data: keywordAutocompleteList,
-  } = keywordAutocomplete;
+  // const {
+  // loading: keywordAutocompleteLoading,
+  // data: keywordAutocompleteList,
+  // } = keywordAutocomplete;
 
   const { alias, update, summary, description } = state;
   return (
