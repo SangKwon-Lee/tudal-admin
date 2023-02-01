@@ -163,13 +163,6 @@ export default function HankyungListContainer() {
     });
   };
 
-  const handleInputDebounce = _.debounce((e) => {
-    setInput({
-      ...input,
-      [e.target.name]: e.target.value,
-    });
-  }, 500);
-
   //* API 검색
   const handleQuery = (e: any) => {
     setQuery({
@@ -505,6 +498,7 @@ export default function HankyungListContainer() {
         console.log(e);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [input, mode],
   );
 
