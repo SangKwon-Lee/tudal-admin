@@ -17,3 +17,4 @@ export * as APISideBanner from './sideBanner.api';
 export * as APIYoutube from './youtube.api';
 export * as APITudalus from './tudalus.api';
 export * as APITudalusContents from './tudalusContents';
+export * as APIHankyung from './hankyung';
