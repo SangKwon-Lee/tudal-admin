@@ -292,6 +292,16 @@ const sections = [
       },
     ],
   },
+  {
+    title: '한경',
+    items: [
+      {
+        title: '리스트',
+        path: '/dashboard/hankyung/list',
+        icon: <PencilIcon fontSize="small" />,
+      },
+    ],
+  },
 ];
 
 const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
@@ -300,7 +310,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
   const { user } = useAuth();
   const location = useLocation();
   const lgUp = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.up('lg'),
+    theme.breakpoints.up('xs'),
   );
 
   useEffect(() => {
@@ -332,18 +342,18 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
       setFilterSection(section);
     }
   };
-
   const content = (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        backgroundColor: '#101827',
-      }}
-    >
-      <Scrollbar options={{ suppressScrollX: true }}>
-        {/* <Box
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          backgroundColor: '#101827',
+        }}
+      >
+        <Scrollbar options={{ suppressScrollX: true }}>
+          {/* <Box
           sx={{
             display: {
               lg: 'none',
@@ -362,26 +372,27 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
             />
           </RouterLink>
         </Box> */}
-        <Box sx={{ p: 2, backgroundColor: '#101827' }}>
-          {filterSection &&
-            filterSection.map((section) => (
-              <NavSection
-                key={section.title}
-                pathname={location.pathname}
-                sx={{
-                  '& + &': {
-                    mt: 3,
-                  },
-                }}
-                {...section}
-              />
-            ))}
-        </Box>
-      </Scrollbar>
-    </Box>
+          <Box sx={{ p: 2, backgroundColor: '#101827' }}>
+            {filterSection &&
+              filterSection.map((section) => (
+                <NavSection
+                  key={section.title}
+                  pathname={location.pathname}
+                  sx={{
+                    '& + &': {
+                      mt: 3,
+                    },
+                  }}
+                  {...section}
+                />
+              ))}
+          </Box>
+        </Scrollbar>
+      </Box>
+    </>
   );
 
-  if (lgUp) {
+  if (!lgUp) {
     return (
       <Drawer
         anchor="left"

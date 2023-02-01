@@ -18,6 +18,10 @@ import moment from 'moment';
 import AdapterMoment from '@material-ui/lab/AdapterMoment';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { Provider } from 'react-redux';
+import store, { persistor } from './redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { PriceProvider } from './contexts/price';
 
 const koLocale = require('moment/locale/ko');
 moment.locale('ko', koLocale);
@@ -41,20 +45,26 @@ const App: FC = () => {
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider
-        dateAdapter={AdapterMoment}
-        locale="ko_Kr"
-      >
-        <RTL direction={settings.direction}>
-          {/* <SocketProvider> */}
-          <CssBaseline />
-          <Toaster position="top-center" />
-          {auth.isInitialized ? content : <SplashScreen />}
-          {/* </SocketProvider> */}
-        </RTL>
-      </LocalizationProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <PriceProvider>
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider
+              dateAdapter={AdapterMoment}
+              locale="ko_Kr"
+            >
+              <RTL direction={settings.direction}>
+                {/* <SocketProvider> */}
+                <CssBaseline />
+                <Toaster position="top-center" />
+                {auth.isInitialized ? content : <SplashScreen />}
+                {/* </SocketProvider> */}
+              </RTL>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </PriceProvider>
+      </PersistGate>
+    </Provider>
   );
 };
 

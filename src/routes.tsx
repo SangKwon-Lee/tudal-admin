@@ -332,6 +332,12 @@ const TudalusThemeList = Loadable(
   ),
 );
 
+//* 한경
+
+const HankyungList = Loadable(
+  lazy(() => import('./pages/dashboard/hankyung/HankyungList.Page')),
+);
+
 // Error pages
 
 const AuthorizationRequired = Loadable(
@@ -842,6 +848,15 @@ const routes: PartialRouteObject[] = [
           {
             path: '/theme',
             element: <TudalusThemeList />,
+          },
+        ],
+      },
+      {
+        path: 'hankyung',
+        children: [
+          {
+            path: '/list',
+            element: <HankyungList />,
           },
         ],
       },

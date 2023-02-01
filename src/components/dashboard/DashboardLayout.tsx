@@ -25,8 +25,9 @@ const DashboardLayoutWrapper = experimentalStyled('div')(
     flex: '1 1 auto',
     overflow: 'hidden',
     paddingTop: '64px',
+    paddingLeft: '0px',
     [theme.breakpoints.up('lg')]: {
-      paddingLeft: '280px',
+      paddingLeft: '0px',
     },
   }),
 );
