@@ -32,3 +32,7 @@ export const createStocks = async (input) => {
 export const editStocks = async (id, input) => {
   return await axios.put(`/hankyung-stocks/${id}`, input);
 };
+
+export const deleteStocks = async (id) => {
+  return await axios.put(`/hankyung-stocks/${id}`);
+};
