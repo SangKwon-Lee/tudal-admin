@@ -260,7 +260,6 @@ export default function HankyungListContainer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stocksInput, category, input, dndStocks]);
-  console.log(stocksInput, dndStocks);
   //*  매매 수정
   const editOpeningTrading = useCallback(async () => {
     try {
@@ -298,7 +297,20 @@ export default function HankyungListContainer() {
   }, [stocksInput, input, category, dndStocks]);
 
   const deleteTrading = async (id) => {
+    let newStocks = [];
+    if (category === '장중먹기') {
+      newStocks = [...dndStocks[0].flat(), ...dndStocks[1].flat()];
+    } else {
+      newStocks = [...stocksInput];
+    }
     try {
+      await Promise.all(
+        newStocks.map(async (data) => {
+          if (data.id) {
+            return await APIHankyung.deleteStocks(data.id);
+          }
+        }),
+      );
       const { status } = await APIHankyung.deleteTrading(id);
       if (status === 200) {
         toast.success('삭제 됐습니다.');
