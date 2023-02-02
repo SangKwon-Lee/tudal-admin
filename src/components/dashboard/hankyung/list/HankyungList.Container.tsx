@@ -142,7 +142,6 @@ export default function HankyungListContainer() {
   const [category, setCategory] = useState('시초먹기');
   const handleCategory = (e: any) => {
     setCategory(e.target.value);
-    handleReset();
   };
 
   //* sort
@@ -234,55 +233,26 @@ export default function HankyungListContainer() {
   //* 매매 등록
   const postOpeningTrading = useCallback(async () => {
     try {
+      let newStocks = [];
       if (category === '장중먹기') {
-        let newStocks = [
-          ...dndStocks[0].flat(),
-          ...dndStocks[1].flat(),
-        ];
-        const result = await Promise.all(
-          newStocks.map(async (data) => {
-            return await APIHankyung.createStocks(data);
-          }),
-        );
-        const { status } = await APIHankyung.createIntradayTrading({
-          title: input.title,
-          category,
-          comment: input.comment,
-          stocks: result.map((data) => data.data.id),
-        });
-        if (status === 200) {
-          toast.success('등록 됐습니다.');
-          router(0);
-        }
+        newStocks = [...dndStocks[0].flat(), ...dndStocks[1].flat()];
       } else {
-        const result = await Promise.all(
-          stocksInput.map(async (data) => {
-            return await APIHankyung.createStocks(data);
-          }),
-        );
-        if (category === '시초먹기') {
-          const { status } = await APIHankyung.createOpeningTrading({
-            title: input.title,
-            category,
-            comment: input.comment,
-            stocks: result.map((data) => data.data.id),
-          });
-          if (status === 200) {
-            toast.success('등록 됐습니다.');
-            router(0);
-          }
-        } else if (category === '내일먹기') {
-          const { status } = await APIHankyung.createClosingTrading({
-            title: input.title,
-            category,
-            comment: input.comment,
-            stocks: result.map((data) => data.data.id),
-          });
-          if (status === 200) {
-            toast.success('등록 됐습니다.');
-            router(0);
-          }
-        }
+        newStocks = [...stocksInput];
+      }
+      const result = await Promise.all(
+        newStocks.map(async (data) => {
+          return await APIHankyung.createStocks(data);
+        }),
+      );
+      const { status } = await APIHankyung.createTrading({
+        title: input.title,
+        category,
+        comment: input.comment,
+        stocks: result.map((data) => data.data.id),
+      });
+      if (status === 200) {
+        toast.success('등록 됐습니다.');
+        router(0);
       }
     } catch (e) {
       toast.error('에러 발생');
@@ -290,76 +260,35 @@ export default function HankyungListContainer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stocksInput, category, input, dndStocks]);
-
+  console.log(stocksInput, dndStocks);
   //*  매매 수정
   const editOpeningTrading = useCallback(async () => {
     try {
+      //* 장중먹기면 dndStocks 아니면 stocksInput
+      let newStocks = [];
       if (category === '장중먹기') {
-        let newStocks = [
-          ...dndStocks[0].flat(),
-          ...dndStocks[1].flat(),
-        ];
-        const result = await Promise.all(
-          newStocks.map(async (data) => {
-            if (data.id) {
-              return await APIHankyung.editStocks(data.id, data);
-            } else {
-              return await APIHankyung.createStocks(data);
-            }
-          }),
-        );
-        const { status } = await APIHankyung.editIntradayTrading(
-          input.id,
-          {
-            title: input.title,
-            category,
-            comment: input.comment,
-            stocks: result.map((data) => data.data.id),
-          },
-        );
-        if (status === 200) {
-          toast.success('수정 됐습니다.');
-          router(0);
-        }
+        newStocks = [...dndStocks[0].flat(), ...dndStocks[1].flat()];
       } else {
-        const result = await Promise.all(
-          stocksInput.map(async (data) => {
-            if (data.id) {
-              return await APIHankyung.editStocks(data.id, data);
-            } else {
-              return await APIHankyung.createStocks(data);
-            }
-          }),
-        );
-        if (category === '시초먹기') {
-          const { status } = await APIHankyung.editOpeningTrading(
-            input.id,
-            {
-              title: input.title,
-              category,
-              comment: input.comment,
-              stocks: result.map((data) => data.data.id),
-            },
-          );
-          if (status === 200) {
-            toast.success('수정 됐습니다.');
-            router(0);
+        newStocks = [...stocksInput];
+      }
+      const result = await Promise.all(
+        newStocks.map(async (data) => {
+          if (data.id) {
+            return await APIHankyung.editStocks(data.id, data);
+          } else {
+            return await APIHankyung.createStocks(data);
           }
-        } else if (category === '내일먹기') {
-          const { status } = await APIHankyung.editClosingTrading(
-            input.id,
-            {
-              title: input.title,
-              category,
-              comment: input.comment,
-              stocks: result.map((data) => data.data.id),
-            },
-          );
-          if (status === 200) {
-            toast.success('수정 됐습니다.');
-            router(0);
-          }
-        }
+        }),
+      );
+      const { status } = await APIHankyung.editTrading(input.id, {
+        title: input.title,
+        category,
+        comment: input.comment,
+        stocks: result.map((data) => data.data.id),
+      });
+      if (status === 200) {
+        toast.success('수정 됐습니다.');
+        router(0);
       }
     } catch (e) {
       toast.error('에러 발생');
@@ -370,26 +299,10 @@ export default function HankyungListContainer() {
 
   const deleteTrading = async (id) => {
     try {
-      if (category === '시초먹기') {
-        const { status } = await APIHankyung.deleteOpeningTrading(id);
-        if (status === 200) {
-          toast.success('삭제 됐습니다.');
-          router(0);
-        }
-      } else if (category === '내일먹기') {
-        const { status } = await APIHankyung.deleteClosingTrading(id);
-        if (status === 200) {
-          toast.success('삭제 됐습니다.');
-          router(0);
-        }
-      } else if (category === '장중먹기') {
-        const { status } = await APIHankyung.deleteIntradayTrading(
-          id,
-        );
-        if (status === 200) {
-          toast.success('삭제 됐습니다.');
-          router(0);
-        }
+      const { status } = await APIHankyung.deleteTrading(id);
+      if (status === 200) {
+        toast.success('삭제 됐습니다.');
+        router(0);
       }
     } catch (e) {
       toast.error('에러 발생');
@@ -414,21 +327,9 @@ export default function HankyungListContainer() {
   //* 게시글 가져오기
   const getList = useCallback(async () => {
     try {
-      const { data, status } = await APIHankyung.getOpeningTradings(
-        query,
-      );
-      const { data: closing } = await APIHankyung.getClosingTradings(
-        query,
-      );
-      const { data: intraday } =
-        await APIHankyung.getIntradayTradings(query);
+      const { data, status } = await APIHankyung.getTradings(query);
       if (status === 200) {
-        let newData = [...data, ...closing, ...intraday];
-        newData = newData.sort(
-          //@ts-ignore
-          (a, b) => new Date(b.created_at) - new Date(a.created_at),
-        );
-        setList(newData);
+        setList(data);
       }
     } catch (e) {
       toast.error('에러 발생');
@@ -438,24 +339,21 @@ export default function HankyungListContainer() {
 
   //* 클릭한 게시글 정보 가져오기
   const getListInfo = useCallback(
-    async (id, category) => {
+    async (id) => {
       setMode('edit');
       try {
-        const { data, status } = await APIHankyung.getListInfo(
-          id,
-          category,
-        );
-
+        const { data, status } = await APIHankyung.getTradingInfo(id);
         if (status === 200) {
+          setCategory(data.category);
+          setInput({
+            ...input,
+            id: data.id,
+            title: data.title,
+            comment: data.comment,
+          });
+          setStocksInput(data.stocks);
+          setMode('edit');
           if (data.category !== '장중먹기') {
-            setCategory(data.category);
-            setInput({
-              ...input,
-              id: data.id,
-              title: data.title,
-              comment: data.comment,
-            });
-            setStocksInput(data.stocks);
             let newStocks = [...data.stocks];
             newStocks = newStocks.map((data) => {
               data.code = data.stockCode;
@@ -465,16 +363,7 @@ export default function HankyungListContainer() {
               return data;
             });
             setStocks(newStocks);
-            setMode('edit');
           } else {
-            setCategory(data.category);
-            setInput({
-              ...input,
-              id: data.id,
-              title: data.title,
-              comment: data.comment,
-            });
-            setStocksInput(data.stocks);
             let newStocks = [...data.stocks];
             newStocks = newStocks
               .sort((a, b) => a.index - b.index)
@@ -490,7 +379,6 @@ export default function HankyungListContainer() {
               newStocks.slice(0, 5),
               newStocks.slice(5, 15),
             ]);
-            setMode('edit');
           }
         }
       } catch (e) {
@@ -666,7 +554,7 @@ export default function HankyungListContainer() {
       unregistRealtimePriceAll();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
+  }, []);
 
   return (
     <HankyungListPresenter
