@@ -230,7 +230,9 @@ export default function HankyungListPresenter(props: Props) {
                       }
                     >
                       <Box>
-                        <ListItemText primary={`${data.title}`} />
+                        <ListItemText
+                          primary={`[${data.category}] ${data.title}`}
+                        />
                         <ListItemText
                           secondary={`${dayjs(data.created_at).format(
                             'YYYY-MM-DD HH:mm:ss',
