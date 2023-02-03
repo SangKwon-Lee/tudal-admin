@@ -233,26 +233,40 @@ export default function HankyungListContainer() {
   //* 매매 등록
   const postOpeningTrading = useCallback(async () => {
     try {
-      let newStocks = [];
-      if (category === '장중먹기') {
-        newStocks = [...dndStocks[0].flat(), ...dndStocks[1].flat()];
+      const { data: todayData, status: todayStatus } =
+        await APIHankyung.getTradingTodayInfo(category);
+      if (
+        todayStatus === 200 &&
+        Array.isArray(todayData) &&
+        todayData.length === 0
+      ) {
+        let newStocks = [];
+        if (category === '장중먹기') {
+          newStocks = [
+            ...dndStocks[0].flat(),
+            ...dndStocks[1].flat(),
+          ];
+        } else {
+          newStocks = [...stocksInput];
+        }
+        const result = await Promise.all(
+          newStocks.map(async (data) => {
+            return await APIHankyung.createStocks(data);
+          }),
+        );
+        const { status } = await APIHankyung.createTrading({
+          title: input.title,
+          category,
+          comment: input.comment,
+          stocks: result.map((data) => data.data.id),
+        });
+        if (status === 200) {
+          toast.success('등록 됐습니다.');
+          router(0);
+        }
       } else {
-        newStocks = [...stocksInput];
-      }
-      const result = await Promise.all(
-        newStocks.map(async (data) => {
-          return await APIHankyung.createStocks(data);
-        }),
-      );
-      const { status } = await APIHankyung.createTrading({
-        title: input.title,
-        category,
-        comment: input.comment,
-        stocks: result.map((data) => data.data.id),
-      });
-      if (status === 200) {
-        toast.success('등록 됐습니다.');
-        router(0);
+        console.log(todayData);
+        toast.success('기존 게시글이 있습니다.');
       }
     } catch (e) {
       toast.error('에러 발생');
@@ -341,6 +355,7 @@ export default function HankyungListContainer() {
     try {
       const { data, status } = await APIHankyung.getTradings(query);
       if (status === 200) {
+        console.log(data);
         setList(data);
       }
     } catch (e) {

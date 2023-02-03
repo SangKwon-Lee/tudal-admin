@@ -1,6 +1,7 @@
 import axios from 'src/lib/axios';
 import qs from 'qs';
 import { removeEmpty } from 'src/utils/helper';
+import dayjs from 'dayjs';
 
 export const createTrading = async (input) => {
   return await axios.post(`/hankyung-tradings`, input);
@@ -23,6 +24,16 @@ export const deleteTrading = async (id) => {
 
 export const getTradingInfo = async (id) => {
   return await axios.get(`/hankyung-tradings/${id}`);
+};
+
+export const getTradingTodayInfo = async (cateogry) => {
+  return await axios.get(
+    `/hankyung-tradings?created_at_gte=${dayjs().format(
+      'YYYY-MM-DD',
+    )}&created_at_lt=${dayjs()
+      .add(1, 'day')
+      .format('YYYY-MM-DD')}&category=${cateogry}`,
+  );
 };
 
 export const createStocks = async (input) => {
