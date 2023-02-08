@@ -274,6 +274,9 @@ export default function HankyungListContainer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stocksInput, category, input, dndStocks]);
+  let a = [1, 2];
+  let b = [2, 3];
+  console.log(_.difference(a, b));
   //*  매매 수정
   const editOpeningTrading = useCallback(async () => {
     try {
@@ -284,6 +287,7 @@ export default function HankyungListContainer() {
       } else {
         newStocks = [...stocksInput];
       }
+      console.log(newStocks);
       const result = await Promise.all(
         newStocks.map(async (data) => {
           if (data.id) {
@@ -293,6 +297,16 @@ export default function HankyungListContainer() {
           }
         }),
       );
+      const { data, status: getStatus } =
+        await APIHankyung.getTradingInfo(input.id);
+      if (getStatus === 200) {
+        const initData = data.stocks.map((data) => data.id);
+        const addData = result.map((data) => data.data.id);
+        const delelteStocks = _.difference(initData, addData);
+        delelteStocks.map(async (data) => {
+          return await APIHankyung.deleteStocks(data);
+        });
+      }
       const { status } = await APIHankyung.editTrading(input.id, {
         title: input.title,
         category,
