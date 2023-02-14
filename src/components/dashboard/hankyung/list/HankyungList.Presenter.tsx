@@ -36,7 +36,6 @@ import {
   TripleA,
 } from 'src/types/hankyung';
 import { Stock } from 'src/types/schedule';
-import { priceToString } from 'src/utils/priceToString';
 import HankyungTripleAList from './HankyungTripleAList';
 interface Props {
   stocks: any;
@@ -70,7 +69,6 @@ interface Props {
   dndStocks: any;
   handleRemoveDndStocks: (e: any) => void;
   handleDndStockInput: (e: any, stockcode: string) => void;
-  realTiemStocks: any;
   sort: string;
   handleSort: (e: any) => void;
   deleteTrading: (id: any) => Promise<void>;
@@ -149,7 +147,6 @@ export default function HankyungListPresenter(props: Props) {
     dndStocks,
     handleRemoveDndStocks,
     handleDndStockInput,
-    realTiemStocks,
     sort,
     handleSort,
     deleteTrading,
@@ -351,40 +348,6 @@ export default function HankyungListPresenter(props: Props) {
                       [{data?.name}] ({data?.code})
                     </Typography>
                   </Box>
-                  <Box display="flex">
-                    <Typography mr={2}>
-                      {realTiemStocks[data.code] &&
-                        priceToString(
-                          realTiemStocks[data.code]?.price,
-                        )}
-                      원
-                    </Typography>
-                    <Typography
-                      mr={2}
-                      color={
-                        realTiemStocks[data.code]?.ratio > 0
-                          ? 'red'
-                          : 'blue'
-                      }
-                    >
-                      {realTiemStocks[data.code] &&
-                        realTiemStocks[data.code]?.ratio}
-                      %
-                    </Typography>
-                    <Typography
-                      color={
-                        realTiemStocks[data.code]?.diff > 0
-                          ? 'red'
-                          : 'blue'
-                      }
-                    >
-                      {realTiemStocks[data.code]?.diff > 0
-                        ? '▲ '
-                        : '▼ '}
-                      {realTiemStocks[data.code] &&
-                        realTiemStocks[data.code]?.diff}
-                    </Typography>
-                  </Box>
                 </Box>
                 <TextField
                   sx={{ flex: 1, mb: 1 }}
@@ -395,45 +358,8 @@ export default function HankyungListPresenter(props: Props) {
                   placeholder="투자 아이디어"
                   variant="outlined"
                 />
-
-                {/* <Box flex={1} sx={{ display: 'flex' }}>
-                  <CustomInput
-                    //@ts-ignore
-                    onWheel={(e) => e.target.blur()}
-                    sx={{ flex: 1, mb: 1, mr: 1 }}
-                    name="targetPrice"
-                    value={data?.targetPrice}
-                    type="number"
-                    placeholder="목표가"
-                    onChange={(e) => handleStocksInput(e, data.code)}
-                    variant="outlined"
-                  />
-                  <CustomInput
-                    //@ts-ignore
-                    onWheel={(e) => e.target.blur()}
-                    sx={{ flex: 1, mb: 1, mr: 1 }}
-                    name="stoplossPrice"
-                    type="number"
-                    value={data?.stoplossPrice}
-                    onChange={(e) => handleStocksInput(e, data.code)}
-                    placeholder="손절가"
-                    variant="outlined"
-                  />
-                  <CustomInput
-                    //@ts-ignore
-                    onWheel={(e) => e.target.blur()}
-                    sx={{ flex: 1, mb: 1 }}
-                    name="recoPrice"
-                    value={data?.recoPrice}
-                    type="number"
-                    onChange={(e) => handleStocksInput(e, data.code)}
-                    placeholder="추천가"
-                    variant="outlined"
-                  />
-                </Box> */}
               </Box>
             ))}
-
           {mode === 'edit' ? (
             <>
               <Box display={'flex'} justifyContent="end" my={2}>
@@ -628,46 +554,6 @@ export default function HankyungListPresenter(props: Props) {
                                     </Button>
                                   </Box>
                                 </Box>
-                                <Box display="flex">
-                                  <Typography mr={2}>
-                                    {realTiemStocks[item.stockCode] &&
-                                      priceToString(
-                                        realTiemStocks[item.stockCode]
-                                          ?.price,
-                                      )}
-                                    원
-                                  </Typography>
-                                  <Typography
-                                    mr={2}
-                                    color={
-                                      realTiemStocks[item.stockCode]
-                                        ?.ratio > 0
-                                        ? 'red'
-                                        : 'blue'
-                                    }
-                                  >
-                                    {realTiemStocks[item.stockCode] &&
-                                      realTiemStocks[item.stockCode]
-                                        ?.ratio}
-                                    %
-                                  </Typography>
-                                  <Typography
-                                    color={
-                                      realTiemStocks[item.stockCode]
-                                        ?.diff > 0
-                                        ? 'red'
-                                        : 'blue'
-                                    }
-                                  >
-                                    {realTiemStocks[item.stockCode]
-                                      ?.diff > 0
-                                      ? '▲ '
-                                      : '▼ '}
-                                    {realTiemStocks[item.stockCode] &&
-                                      realTiemStocks[item.stockCode]
-                                        ?.diff}
-                                  </Typography>
-                                </Box>
                                 <TextField
                                   sx={{ flex: 1, mb: 1 }}
                                   fullWidth
@@ -692,10 +578,12 @@ export default function HankyungListPresenter(props: Props) {
                                       //@ts-ignore
                                       e.target.blur()
                                     }
-                                    defaultValue={item.targetPrice}
+                                    // defaultValue={item.targetPrice}
                                     sx={{ flex: 1, mb: 1, mr: 1 }}
                                     type="number"
+                                    label="목표가(7%)"
                                     placeholder="목표가"
+                                    value={item.targetPrice}
                                     name="targetPrice"
                                     onChange={(e) =>
                                       handleDndStockInput(
@@ -710,9 +598,11 @@ export default function HankyungListPresenter(props: Props) {
                                       //@ts-ignore
                                       e.target.blur()
                                     }
-                                    defaultValue={item.stoplossPrice}
+                                    // defaultValue={item.stoplossPrice}
                                     sx={{ flex: 1, mb: 1, mr: 1 }}
                                     type="number"
+                                    label="손절가(4%)"
+                                    value={item.stoplossPrice}
                                     name="stoplossPrice"
                                     onChange={(e) =>
                                       handleDndStockInput(
@@ -730,7 +620,8 @@ export default function HankyungListPresenter(props: Props) {
                                     }
                                     sx={{ flex: 1, mb: 1 }}
                                     type="number"
-                                    defaultValue={item.recoPrice}
+                                    label="추천가(현재가)"
+                                    value={item.recoPrice}
                                     name="recoPrice"
                                     onChange={(e) =>
                                       handleDndStockInput(

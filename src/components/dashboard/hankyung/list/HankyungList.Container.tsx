@@ -1,11 +1,5 @@
 import _ from 'lodash';
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useAsync from 'src/hooks/useAsync';
 import { APIHankyung, APIStock } from 'src/lib/api';
 import HankyungListPresenter from './HankyungList.Presenter';
@@ -13,7 +7,6 @@ import { Stock } from 'src/types/schedule';
 import { apiServer } from 'src/lib/axios';
 import { HankyungList, TripleA } from 'src/types/hankyung';
 import toast from 'react-hot-toast';
-import PriceContext from 'src/contexts/price';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { fetchStockTodayPrice } from 'src/redux/stocks';
 import { useNavigate } from 'react-router';
@@ -45,13 +38,9 @@ const move = (
 };
 
 export default function HankyungListContainer() {
-  const { registRealtimePrice, unregistRealtimePriceAll } =
-    useContext(PriceContext);
   const router = useNavigate();
-
   const dispatch = useAppDispatch();
   const realTiemStocks = useAppSelector((state) => state.stocks);
-
   //* 수정인지 등록인지
   const [mode, setMode] = useState('create');
 
@@ -182,7 +171,6 @@ export default function HankyungListContainer() {
     });
     setDndStocks([[], []]);
     setMode('create');
-    unregistRealtimePriceAll();
   };
 
   //* 종목 정보 입력
@@ -219,7 +207,11 @@ export default function HankyungListContainer() {
         }
       }
     });
-    if (e.target.name === 'isBlur' || e.target.name === 'isReco') {
+    if (
+      e.target.name === 'isBlur' ||
+      e.target.name === 'isReco' ||
+      e.target.name !== 'idea'
+    ) {
       setDndStocks([newStocks.slice(0, 5), newStocks.slice(5, 10)]);
     } else {
       handleDndStockDebounce(newStocks);
@@ -274,9 +266,6 @@ export default function HankyungListContainer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stocksInput, category, input, dndStocks]);
-  let a = [1, 2];
-  let b = [2, 3];
-  console.log(_.difference(a, b));
   //*  매매 수정
   const editOpeningTrading = useCallback(async () => {
     try {
@@ -442,6 +431,9 @@ export default function HankyungListContainer() {
         newStocks.filter((data) => data.stockCode === e.stockCode)
           .length === 0
       ) {
+        dispatch(
+          fetchStockTodayPrice(e.stockCode.replaceAll('A', '')),
+        );
         newStocks = [
           ...newStocks,
           {
@@ -452,15 +444,43 @@ export default function HankyungListContainer() {
             targetPrice: 0,
             stoplossPrice: 0,
             isBlur: false,
-            isReco: false,
+            isReco: true,
             index: newStocks.length + 1,
           },
         ];
         setDndStocks([newStocks.slice(0, 5), newStocks.slice(5, 10)]);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dndStocks],
   );
+
+  useEffect(() => {
+    if (mode === 'create' && category === '장중먹기') {
+      let newStocks = [
+        ...dndStocks[0].flat(),
+        ...dndStocks[1].flat(),
+      ];
+      // eslint-disable-next-line array-callback-return
+      newStocks.map((data) => {
+        if (realTiemStocks[data.stockCode]) {
+          data.recoPrice =
+            realTiemStocks[data.stockCode]?.price.toFixed(0);
+          data.targetPrice = (
+            (realTiemStocks[data.stockCode]?.price / 100) * 7 +
+            realTiemStocks[data.stockCode]?.price
+          ).toFixed(0);
+          data.stoplossPrice = (
+            realTiemStocks[data.stockCode]?.price -
+            (realTiemStocks[data.stockCode]?.price / 100) * 4
+          ).toFixed(0);
+          return data;
+        }
+      });
+      setDndStocks([newStocks.slice(0, 5), newStocks.slice(5, 10)]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realTiemStocks]);
 
   //* dnd 종목 삭제
   const handleRemoveDndStocks = (e) => {
@@ -526,77 +546,6 @@ export default function HankyungListContainer() {
     getList();
   }, [getList]);
 
-  useEffect(() => {
-    if (Array.isArray(stocks) && stocks.length > 0) {
-      const fetchedStocks: string[] = [];
-      // eslint-disable-next-line array-callback-return
-      stocks.map((data) => {
-        if (
-          fetchedStocks.find(
-            (item) => item === data.code.replaceAll('A', ''),
-          ) ||
-          !data.code.replaceAll('A', '')
-        ) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          data.code.replaceAll('A', '') ? '' : null;
-          // eslint-disable-next-line array-callback-return
-          return;
-        }
-        dispatch(fetchStockTodayPrice(data.code.replaceAll('A', '')));
-        fetchedStocks.push(data.code.replaceAll('A', ''));
-      });
-      registRealtimePrice(fetchedStocks);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stocks]);
-
-  useEffect(() => {
-    if (mode === 'create') {
-      if (Array.isArray(dndStocks) && dndStocks.length > 0) {
-        const fetchedStocks: string[] = [];
-        // eslint-disable-next-line array-callback-return
-        if (
-          Array.isArray(dndStocks[0]) &&
-          Array.isArray(dndStocks[1])
-        ) {
-          let newStocks = [
-            ...dndStocks[0].flat(),
-            ...dndStocks[1].flat(),
-          ];
-          // eslint-disable-next-line array-callback-return
-          newStocks.map((data) => {
-            if (
-              fetchedStocks.find(
-                (item) => item === data.stockCode.replaceAll('A', ''),
-              ) ||
-              !data.stockCode.replaceAll('A', '')
-            ) {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              data.stockCode.replaceAll('A', '') ? '' : null;
-              // eslint-disable-next-line array-callback-return
-              return;
-            }
-            dispatch(
-              fetchStockTodayPrice(
-                data.stockCode.replaceAll('A', ''),
-              ),
-            );
-            fetchedStocks.push(data.stockCode.replaceAll('A', ''));
-          });
-          registRealtimePrice(fetchedStocks);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dndStocks]);
-
-  useEffect(() => {
-    return () => {
-      unregistRealtimePriceAll();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <HankyungListPresenter
       list={list}
@@ -628,7 +577,6 @@ export default function HankyungListContainer() {
       handleRemoveDndStocks={handleRemoveDndStocks}
       handleDndStockInput={handleDndStockInput}
       postOpeningTrading={postOpeningTrading}
-      realTiemStocks={realTiemStocks}
       deleteTrading={deleteTrading}
     ></HankyungListPresenter>
   );
