@@ -199,7 +199,20 @@ export default function NewKeywordPresenter(props: Props) {
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title={row?.summary}>
-                          {row?.summary.length === 0 ? (
+                          {row?.summary ? (
+                            <Button
+                              color="primary"
+                              // disabled
+                              sx={{
+                                ':disabled': {
+                                  color: theme.palette.primary.main,
+                                },
+                              }}
+                              onClick={() => {}}
+                            >
+                              작성완료
+                            </Button>
+                          ) : (
                             <Button
                               color="error"
                               onClick={() => {
@@ -209,7 +222,12 @@ export default function NewKeywordPresenter(props: Props) {
                             >
                               작성 필요
                             </Button>
-                          ) : (
+                          )}
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Tooltip title={row?.description}>
+                          {row?.description ? (
                             <Button
                               color="primary"
                               // disabled
@@ -222,12 +240,7 @@ export default function NewKeywordPresenter(props: Props) {
                             >
                               작성완료
                             </Button>
-                          )}
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title={row?.description}>
-                          {row?.description.length === 0 ? (
+                          ) : (
                             <Button
                               color="error"
                               onClick={() => {
@@ -236,19 +249,6 @@ export default function NewKeywordPresenter(props: Props) {
                               }}
                             >
                               작성 필요
-                            </Button>
-                          ) : (
-                            <Button
-                              color="primary"
-                              // disabled
-                              sx={{
-                                ':disabled': {
-                                  color: theme.palette.primary.main,
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              작성완료
                             </Button>
                           )}
                         </Tooltip>
