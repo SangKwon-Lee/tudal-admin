@@ -31,6 +31,7 @@ import SearchIcon from 'src/icons/Search';
 import { Container } from '@material-ui/core';
 import NewKeywordDrawer from './NewKeywordDrawer';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router';
 
 const CustomDrawer = styled(Drawer)`
   .MuiDrawer-paper {
@@ -61,6 +62,7 @@ interface Props {
 }
 export default function NewKeywordPresenter(props: Props) {
   const theme = useTheme();
+  const router = useNavigate();
   const {
     search,
     page,
@@ -320,7 +322,11 @@ export default function NewKeywordPresenter(props: Props) {
                                   .map((data) => (
                                     <Chip
                                       key={data.code}
-                                      onClick={() => {}}
+                                      onClick={() => {
+                                        router(
+                                          `/dashboard/stocks/${data.name}`,
+                                        );
+                                      }}
                                       variant="outlined"
                                       sx={{ mr: 1, mb: 1 }}
                                       label={data.name}

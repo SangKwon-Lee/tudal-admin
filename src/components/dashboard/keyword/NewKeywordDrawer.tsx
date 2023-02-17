@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   Dialog,
+  Divider,
   TextField,
   Typography,
 } from '@mui/material';
@@ -52,6 +53,9 @@ export default function NewKeywordDrawer(props: Props) {
     summary: '',
     updated_at: '',
   });
+  //* 최신성 누른 종목
+  const [updateStocks, setUpdateStocks] = useState([]);
+
   //* 기존 Stocks 삭제
   const handleDeleteStocks = (e) => {
     setInput({
@@ -90,7 +94,6 @@ export default function NewKeywordDrawer(props: Props) {
     newData = newData.filter((data) => data !== alias);
     setNewAliases(newData);
   };
-
   //* 키워드 최신성 유지
   const updateStockKeyword = async (stock) => {
     try {
@@ -98,6 +101,7 @@ export default function NewKeywordDrawer(props: Props) {
         stock.code,
         input.name,
       );
+      setUpdateStocks([...updateStocks, stock.code]);
       if (status === 200) {
         toast.success('업데이트 되었습니다.');
       }
@@ -342,7 +346,6 @@ export default function NewKeywordDrawer(props: Props) {
   const [{ data: tagList, loading: tagLoading }, refetchTag] =
     useAsync<Tag[]>(getTagList, [], []);
   const handleTagChange = _.debounce(refetchTag, 300);
-
   return (
     <Box sx={{ my: 2 }}>
       <Typography variant="h4">키워드 작성</Typography>
@@ -487,26 +490,25 @@ export default function NewKeywordDrawer(props: Props) {
               .map((data, i) => (
                 <Chip
                   key={i}
-                  color={'primary'}
+                  color={
+                    updateStocks.includes(data.code)
+                      ? 'warning'
+                      : 'primary'
+                  }
                   label={data.name}
                   onDelete={() => {
                     handleDeleteStocks(data);
                   }}
                   onClick={() => updateStockKeyword(data)}
                   sx={{
+                    mr: 1,
+                    mb: 1,
                     cursor: 'pointer',
-                    ':first-of-type': {
-                      mr: 1,
-                      mb: 1,
-                    },
-                    '& + &': {
-                      mr: 1,
-                      mb: 1,
-                    },
                   }}
                   variant="outlined"
                 />
               ))}
+          <Divider sx={{ my: 2 }} />
           <Typography
             sx={{ mb: 1 }}
             variant="subtitle1"
@@ -585,6 +587,7 @@ export default function NewKeywordDrawer(props: Props) {
                 />
               ))}
         </Box>
+        <Divider />
         <Box sx={{ my: 2 }}>
           <Typography
             sx={{ mb: 1 }}

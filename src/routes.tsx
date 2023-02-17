@@ -574,6 +574,10 @@ const routes: PartialRouteObject[] = [
             path: '/',
             element: <StockList />,
           },
+          {
+            path: ':stockName',
+            element: <StockList />,
+          },
         ],
       },
       {
