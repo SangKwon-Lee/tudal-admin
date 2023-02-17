@@ -32,7 +32,7 @@ const NewKeywordContainer = () => {
     _q: '',
     _sort: sortOptions[0].value,
     _start: 0,
-    _limit: 50,
+    _limit: 30,
     'stocks.name': '',
   });
 
