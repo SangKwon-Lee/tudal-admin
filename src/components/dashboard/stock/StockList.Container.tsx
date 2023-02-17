@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer } from 'react';
 import { IStockDetailsWithTagCommentNews } from 'src/types/stock';
 import StockListPresenter from './StockList.Presenter';
 import { APIStock } from 'src/lib/api';
+import { useParams } from 'react-router';
 
 export enum StockListActionKind {
   LOADING = 'LOADING',
@@ -147,6 +148,9 @@ const stockReducer = (
 };
 
 const StockListContainer = () => {
+  const router = useParams();
+  const { stockName } = router;
+  console.log(stockName);
   const [stockState, dispatch] = useReducer(
     stockReducer,
     initialState,
@@ -154,14 +158,32 @@ const StockListContainer = () => {
 
   const getStock = async () => {
     dispatch({ type: StockListActionKind.LOADING });
-    try {
-      const { data } = await APIStock.getDetailList(stockState.query);
-      dispatch({
-        type: StockListActionKind.GET_STOCK,
-        payload: data,
-      });
-    } catch (error) {
-      console.error(error);
+    if (stockName && !stockState.query._q) {
+      try {
+        const { data } = await APIStock.getDetailList({
+          _q: stockName,
+          _start: 0,
+          _limit: 30,
+        });
+        dispatch({
+          type: StockListActionKind.GET_STOCK,
+          payload: data,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        const { data } = await APIStock.getDetailList(
+          stockState.query,
+        );
+        dispatch({
+          type: StockListActionKind.GET_STOCK,
+          payload: data,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -229,6 +251,7 @@ const StockListContainer = () => {
     getStock();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <StockListPresenter
       stockState={stockState}
