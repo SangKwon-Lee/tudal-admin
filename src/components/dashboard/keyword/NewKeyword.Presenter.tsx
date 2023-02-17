@@ -162,210 +162,222 @@ export default function NewKeywordPresenter(props: Props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {keywordList.map((row: Tags, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    <TableRow
-                      sx={{
-                        '& > *': {
-                          borderBottom: 'none',
-                          border: 'none !important',
-                        },
-                      }}
-                    >
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        variant="head"
+              {keywordList
+                .sort(
+                  (a, b) =>
+                    new Date(b.updated_at).getTime() -
+                    new Date(a.updated_at).getTime(),
+                )
+                .map((row: Tags, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <TableRow
                         sx={{
-                          width: '200px',
-                          fontSize: 24,
-                          fontWeight: 700,
-                          color: theme.palette.primary.main,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          setKeywordId(row?.id);
-                          setOpen(true);
+                          '& > *': {
+                            borderBottom: 'none',
+                            border: 'none !important',
+                          },
                         }}
                       >
-                        <Link>{row?.name}</Link>
-                      </TableCell>
-                      <TableCell align="center">
-                        {dayjs(row?.created_at).format('YYYY-MM-DD')}
-                      </TableCell>
-                      <TableCell align="center">
-                        {dayjs(row?.updated_at).format('YYYY-MM-DD')}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title={row?.summary}>
-                          {row?.summary ? (
-                            <Button
-                              color="primary"
-                              // disabled
-                              sx={{
-                                ':disabled': {
-                                  color: theme.palette.primary.main,
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              작성완료
-                            </Button>
-                          ) : (
-                            <Button
-                              color="error"
-                              onClick={() => {
-                                setKeywordId(row?.id);
-                                setOpen(true);
-                              }}
-                            >
-                              작성 필요
-                            </Button>
-                          )}
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title={row?.description}>
-                          {row?.description ? (
-                            <Button
-                              color="primary"
-                              // disabled
-                              sx={{
-                                ':disabled': {
-                                  color: theme.palette.primary.main,
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              작성완료
-                            </Button>
-                          ) : (
-                            <Button
-                              color="error"
-                              onClick={() => {
-                                setKeywordId(row.id);
-                                setOpen(true);
-                              }}
-                            >
-                              작성 필요
-                            </Button>
-                          )}
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          variant="head"
+                          sx={{
+                            width: '200px',
+                            fontSize: 24,
+                            fontWeight: 700,
+                            color: theme.palette.primary.main,
+                            cursor: 'pointer',
+                          }}
                           onClick={() => {
-                            setKeywordId(row.id);
+                            setKeywordId(row?.id);
                             setOpen(true);
                           }}
                         >
-                          <BuildIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton>
-                          <Chip
-                            color={row?.isDeleted ? 'error' : 'info'}
-                            label={row?.isDeleted ? '삭제' : '정상'}
-                          />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow
-                      sx={{
-                        borderBottom: `1px solid ${theme.palette.grey[300]}`,
-                      }}
-                    >
-                      <TableCell
-                        style={{ paddingBottom: 0, paddingTop: 0 }}
-                        colSpan={6}
+                          <Link>{row?.name}</Link>
+                        </TableCell>
+                        <TableCell align="center">
+                          {dayjs(row?.created_at).format(
+                            'YYYY-MM-DD',
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {dayjs(row?.updated_at).format(
+                            'YYYY-MM-DD',
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Tooltip title={row?.summary}>
+                            {row?.summary ? (
+                              <Button
+                                color="primary"
+                                // disabled
+                                sx={{
+                                  ':disabled': {
+                                    color: theme.palette.primary.main,
+                                  },
+                                }}
+                                onClick={() => {}}
+                              >
+                                작성완료
+                              </Button>
+                            ) : (
+                              <Button
+                                color="error"
+                                onClick={() => {
+                                  setKeywordId(row?.id);
+                                  setOpen(true);
+                                }}
+                              >
+                                작성 필요
+                              </Button>
+                            )}
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Tooltip title={row?.description}>
+                            {row?.description ? (
+                              <Button
+                                color="primary"
+                                // disabled
+                                sx={{
+                                  ':disabled': {
+                                    color: theme.palette.primary.main,
+                                  },
+                                }}
+                                onClick={() => {}}
+                              >
+                                작성완료
+                              </Button>
+                            ) : (
+                              <Button
+                                color="error"
+                                onClick={() => {
+                                  setKeywordId(row.id);
+                                  setOpen(true);
+                                }}
+                              >
+                                작성 필요
+                              </Button>
+                            )}
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            onClick={() => {
+                              setKeywordId(row.id);
+                              setOpen(true);
+                            }}
+                          >
+                            <BuildIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton>
+                            <Chip
+                              color={
+                                row?.isDeleted ? 'error' : 'info'
+                              }
+                              label={row?.isDeleted ? '삭제' : '정상'}
+                            />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow
+                        sx={{
+                          borderBottom: `1px solid ${theme.palette.grey[300]}`,
+                        }}
                       >
-                        <Collapse
-                          in={true}
-                          timeout="auto"
-                          unmountOnExit
+                        <TableCell
+                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                          colSpan={6}
                         >
-                          <Box>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              sx={{ mb: 1 }}
-                            >
-                              종목
-                            </Typography>
-                            {Array.isArray(row?.stocks) &&
-                            row.stocks.length > 0 ? (
-                              row.stocks
-                                //@ts-ignore
-                                .sort((a, b) =>
-                                  a.name < b.name
-                                    ? -1
-                                    : a.name > b.name
-                                    ? 1
-                                    : 0,
-                                )
-                                .map((data) => (
-                                  <Chip
-                                    key={data.code}
-                                    onClick={() => {}}
-                                    variant="outlined"
-                                    sx={{ mr: 1, mb: 1 }}
-                                    label={data.name}
-                                    color="primary"
-                                  />
-                                ))
-                            ) : (
+                          <Collapse
+                            in={true}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Box>
                               <Typography
-                                color={theme.palette.primary.main}
+                                variant="subtitle1"
+                                fontWeight={700}
+                                sx={{ mb: 1 }}
                               >
-                                종목이 없습니다.
+                                종목
                               </Typography>
-                            )}
-                          </Box>
-                          <Box sx={{ my: 2 }}>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              sx={{ mb: 1 }}
-                            >
-                              Aliases
-                            </Typography>
+                              {Array.isArray(row?.stocks) &&
+                              row.stocks.length > 0 ? (
+                                row.stocks
+                                  //@ts-ignore
+                                  .sort((a, b) =>
+                                    a.name < b.name
+                                      ? -1
+                                      : a.name > b.name
+                                      ? 1
+                                      : 0,
+                                  )
+                                  .map((data) => (
+                                    <Chip
+                                      key={data.code}
+                                      onClick={() => {}}
+                                      variant="outlined"
+                                      sx={{ mr: 1, mb: 1 }}
+                                      label={data.name}
+                                      color="primary"
+                                    />
+                                  ))
+                              ) : (
+                                <Typography
+                                  color={theme.palette.primary.main}
+                                >
+                                  종목이 없습니다.
+                                </Typography>
+                              )}
+                            </Box>
+                            <Box sx={{ my: 2 }}>
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={700}
+                                sx={{ mb: 1 }}
+                              >
+                                Aliases
+                              </Typography>
 
-                            {Array.isArray(row?.tag_aliases) &&
-                            row.tag_aliases.length > 0 ? (
-                              row.tag_aliases
-                                .sort((a, b) =>
-                                  a.name < b.name
-                                    ? -1
-                                    : a.name > b.name
-                                    ? 1
-                                    : 0,
-                                )
-                                .map((data) => (
-                                  <Chip
-                                    sx={{ mr: 1, mb: 1 }}
-                                    color="success"
-                                    onClick={() => {}}
-                                    key={data.id}
-                                    label={data.name}
-                                    variant="outlined"
-                                  />
-                                ))
-                            ) : (
-                              <Typography
-                                color={theme.palette.success.main}
-                              >
-                                Aliases가 없습니다.
-                              </Typography>
-                            )}
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                );
-              })}
+                              {Array.isArray(row?.tag_aliases) &&
+                              row.tag_aliases.length > 0 ? (
+                                row.tag_aliases
+                                  .sort((a, b) =>
+                                    a.name < b.name
+                                      ? -1
+                                      : a.name > b.name
+                                      ? 1
+                                      : 0,
+                                  )
+                                  .map((data) => (
+                                    <Chip
+                                      sx={{ mr: 1, mb: 1 }}
+                                      color="success"
+                                      onClick={() => {}}
+                                      key={data.id}
+                                      label={data.name}
+                                      variant="outlined"
+                                    />
+                                  ))
+                              ) : (
+                                <Typography
+                                  color={theme.palette.success.main}
+                                >
+                                  Aliases가 없습니다.
+                                </Typography>
+                              )}
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
             </TableBody>
           </Table>
           <Pagination
