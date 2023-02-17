@@ -11,6 +11,28 @@ import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { fetchStockTodayPrice } from 'src/redux/stocks';
 import { useNavigate } from 'react-router';
 
+const priceCalc = (number, price) => {
+  let unit = 1;
+  let result = 0;
+  if (price < 2000) {
+    unit = 1;
+  } else if (price >= 2000 && price < 5000) {
+    unit = 5;
+  } else if (price >= 5000 && price < 20000) {
+    unit = 10;
+  } else if (price >= 20000 && price < 50000) {
+    unit = 50;
+  } else if (price >= 50000 && price < 200000) {
+    unit = 100;
+  } else if (price >= 200000 && price < 500000) {
+    unit = 500;
+  } else if (price >= 500000) {
+    unit = 1000;
+  }
+  result = Math.round(number / unit) * unit;
+
+  return result;
+};
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
@@ -466,14 +488,16 @@ export default function HankyungListContainer() {
         if (realTiemStocks[data.stockCode]) {
           data.recoPrice =
             realTiemStocks[data.stockCode]?.price.toFixed(0);
-          data.targetPrice = (
+          data.targetPrice = priceCalc(
             (realTiemStocks[data.stockCode]?.price / 100) * 7 +
-            realTiemStocks[data.stockCode]?.price
-          ).toFixed(0);
-          data.stoplossPrice = (
+              realTiemStocks[data.stockCode]?.price,
+            realTiemStocks[data.stockCode]?.price,
+          );
+          data.stoplossPrice = priceCalc(
             realTiemStocks[data.stockCode]?.price -
-            (realTiemStocks[data.stockCode]?.price / 100) * 4
-          ).toFixed(0);
+              (realTiemStocks[data.stockCode]?.price / 100) * 4,
+            realTiemStocks[data.stockCode]?.price,
+          );
           return data;
         }
       });
