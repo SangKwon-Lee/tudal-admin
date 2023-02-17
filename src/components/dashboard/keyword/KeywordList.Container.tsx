@@ -364,8 +364,6 @@ const KeywordListContainer: React.FC<IKeywordListContainerProps> = (
     initialState,
   );
 
-  console.log('hello');
-
   const getList = useCallback(
     async (scrollToTop = true) => {
       dispatch({ type: KeywordActionKind.LOADING });

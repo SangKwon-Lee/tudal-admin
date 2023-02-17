@@ -56,12 +56,12 @@ const PageLayout: React.FC<IPageLayoutProps> = (props) => {
         sx={{
           backgroundColor: 'background.default',
           minHeight: '100%',
-          py: 8,
+          py: 2,
         }}
         ref={pageTopRef}
       >
         <Container maxWidth={settings.compact ? 'xl' : false}>
-          <Grid container justifyContent="space-between" spacing={3}>
+          <Grid container justifyContent="space-between" spacing={2}>
             <Grid item>
               <Typography color="textPrimary" variant="h4">
                 {pageTitle}

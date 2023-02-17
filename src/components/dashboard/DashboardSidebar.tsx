@@ -236,6 +236,12 @@ const sections = [
         icon: <SpellcheckIcon fontSize="small" />,
       },
       {
+        title: 'New키워드',
+        path: '/dashboard/newkeywords',
+        icon: <SpellcheckIcon fontSize="small" />,
+      },
+
+      {
         title: '카테고리',
         path: '/dashboard/categories',
         icon: <CategoryIcon fontSize="small" />,
@@ -353,25 +359,6 @@ const DashboardSidebar: FC<DashboardSidebarProps> = (props) => {
         }}
       >
         <Scrollbar options={{ suppressScrollX: true }}>
-          {/* <Box
-          sx={{
-            display: {
-              lg: 'none',
-              xs: 'flex',
-            },
-            justifyContent: 'center',
-            p: 2,
-          }}
-        >
-          <RouterLink to="/">
-            <Logo
-              sx={{
-                height: 40,
-                width: 40,
-              }}
-            />
-          </RouterLink>
-        </Box> */}
           <Box sx={{ p: 2, backgroundColor: '#101827' }}>
             {filterSection &&
               filterSection.map((section) => (
