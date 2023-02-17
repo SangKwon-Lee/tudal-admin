@@ -45,6 +45,7 @@
     "@material-ui/icons": "5.0.0-alpha.34",
     "@material-ui/lab": "5.0.0-alpha.34",
     "@material-ui/system": "5.0.0-alpha.34",
+    "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.6",
     "@react-pdf/renderer": "^1.6.13",
     "@reduxjs/toolkit": "^1.5.0",

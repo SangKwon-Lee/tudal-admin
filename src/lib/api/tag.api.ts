@@ -10,6 +10,7 @@ export async function find(name) {
 
 export async function getList(params) {
   const query = qs.stringify(removeEmpty(params));
+
   return await axios.get<Tag[]>(`/tags-excluded?${query}`);
 }
 
@@ -87,4 +88,40 @@ export async function findRelations(tagIds: Number[]) {
 
 export async function merge(data) {
   return axios.post('/tags/merge', data);
+}
+
+// ** NewKeyword
+export async function getTagList(params) {
+  const query = qs.stringify(removeEmpty(params));
+  console.log(query);
+  return axios.get(`/tags?${query}`);
+}
+
+export async function getTagListCount(params) {
+  const query = qs.stringify(removeEmpty(params));
+  return await axios.get<Number>(`/tags/count?${query}`);
+}
+
+export async function getTagDetail(id) {
+  return await axios.get(`/tags/${id}`);
+}
+
+export async function updateTagDetail(id, input) {
+  return await axios.put(`/tags/${id}`, input);
+}
+
+export async function createTag(input) {
+  return await axios.post(`/tags`, input);
+}
+
+export async function createAlias(input) {
+  return await axios.post(`/tag-aliases`, input);
+}
+
+export async function deleteAlias(id) {
+  return await axios.delete(`/tag-aliases/${id}`);
+}
+
+export async function getAliasList() {
+  return await axios.get(`/tag-aliases`);
 }
