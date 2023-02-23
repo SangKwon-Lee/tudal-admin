@@ -78,7 +78,7 @@ const sortOptions: SortOption[] = [
 
 export interface IScheduleListStatus {
   _q: string;
-  _sort: Sort;
+  _sort: any;
   _page: number;
   _limit: number;
   _startDate: string;
