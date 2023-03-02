@@ -45,6 +45,7 @@ interface Props {
   handleCategory: (e: any) => void;
   handleTab: (e: any, c: any) => void;
   onStockChange: (event, stock: Stock[], reason, item) => void;
+  handleAddMoreStock: any;
   stockInput: React.MutableRefObject<any>;
   stockLoading: boolean;
   handleStockChange: _.DebouncedFunc<() => void>;
@@ -150,6 +151,7 @@ export default function HankyungListPresenter(props: Props) {
     sort,
     handleSort,
     deleteTrading,
+    handleAddMoreStock,
   } = props;
   const theme = useTheme();
 
@@ -434,6 +436,7 @@ export default function HankyungListPresenter(props: Props) {
                   ))}
                 </TextField>
               </Box>
+              <Typography variant="h6">트리플 A 리스트</Typography>
               <Box
                 sx={{
                   maxHeight: 600,
@@ -448,8 +451,43 @@ export default function HankyungListPresenter(props: Props) {
                   handleAddDndStocks={handleAddDndStocks}
                 />
               </Box>
+              <Typography variant="h6">추가 종목 검색</Typography>
+              <Autocomplete
+                multiple
+                sx={{ flex: 1 }}
+                autoHighlight
+                options={stockList}
+                value={stocks}
+                getOptionLabel={(option) =>
+                  option?.name + `(${option?.code})`
+                }
+                onChange={handleAddMoreStock}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    onChange={handleStockChange}
+                    inputRef={stockInput}
+                    name="stocks"
+                    variant="outlined"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {stockLoading && (
+                            <CircularProgress
+                              color="inherit"
+                              size={20}
+                            />
+                          )}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
             </Box>
-
             <Box flex={1} style={{ display: 'flex' }} mt={3}>
               <DragDropContext onDragEnd={onDragEnd}>
                 {dndStocks.map((el, ind) => (

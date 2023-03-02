@@ -153,6 +153,7 @@ export default function HankyungListContainer() {
   const [category, setCategory] = useState('시초먹기');
   const handleCategory = (e: any) => {
     setCategory(e.target.value);
+    setStocks([]);
   };
 
   //* sort
@@ -513,6 +514,68 @@ export default function HankyungListContainer() {
     setDndStocks([newStocks.slice(0, 5), newStocks.slice(5, 10)]);
   };
 
+  //* 종목 추가 선택
+  const handleAddMoreStock = (
+    event,
+    stock: Stock[],
+    reason,
+    item,
+  ) => {
+    switch (reason) {
+      case 'selectOption':
+        let newDndStocks = [
+          ...dndStocks[0].flat(),
+          ...dndStocks[1].flat(),
+        ];
+        if (
+          newDndStocks.filter(
+            (data) => data.stockCode === item.option.code,
+          ).length === 0
+        ) {
+          dispatch(
+            fetchStockTodayPrice(
+              item.option.code.replaceAll('A', ''),
+            ),
+          );
+          newDndStocks = [
+            ...newDndStocks,
+            {
+              dragId: `item-${String(new Date().getTime())}`,
+              stockCode: item.option.code,
+              stockName: item.option.name,
+              recoPrice: 0,
+              targetPrice: 0,
+              stoplossPrice: 0,
+              isBlur: false,
+              isReco: true,
+              index: newDndStocks.length + 1,
+            },
+          ];
+          setDndStocks([
+            newDndStocks.slice(0, 5),
+            newDndStocks.slice(5, 10),
+          ]);
+        }
+        break;
+      case 'removeOption':
+        let newDndStock = [
+          ...dndStocks[0].flat(),
+          ...dndStocks[1].flat(),
+        ];
+        newDndStock = newDndStock.filter(
+          (data) => data.stockCode !== item.option.code,
+        );
+        setDndStocks([
+          newDndStock.slice(0, 5),
+          newDndStock.slice(5, 10),
+        ]);
+        break;
+      case 'clear':
+        setStocks([]);
+        break;
+    }
+  };
+
   // *종목 변경
   const onStockChange = (event, stock: Stock[], reason, item) => {
     switch (reason) {
@@ -593,6 +656,7 @@ export default function HankyungListContainer() {
       handleInput={handleInput}
       stockLoading={stockLoading}
       onStockChange={onStockChange}
+      handleAddMoreStock={handleAddMoreStock}
       handleCategory={handleCategory}
       handleAddDndStocks={handleAddDndStocks}
       handleStocksInput={handleStocksInput}
