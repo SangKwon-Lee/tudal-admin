@@ -436,21 +436,6 @@ export default function HankyungListPresenter(props: Props) {
                   ))}
                 </TextField>
               </Box>
-              <Typography variant="h6">트리플 A 리스트</Typography>
-              <Box
-                sx={{
-                  maxHeight: 600,
-                  overflow: 'auto',
-                  mt: 1,
-                  border: `1px solid ${theme.palette.grey[300]}`,
-                }}
-              >
-                <HankyungTripleAList
-                  tripleA={tripleA}
-                  sort={sort}
-                  handleAddDndStocks={handleAddDndStocks}
-                />
-              </Box>
               <Typography variant="h6">추가 종목 검색</Typography>
               <Autocomplete
                 multiple
@@ -487,6 +472,21 @@ export default function HankyungListPresenter(props: Props) {
                   />
                 )}
               />
+              <Typography variant="h6">트리플 A 리스트</Typography>
+              <Box
+                sx={{
+                  maxHeight: 600,
+                  overflow: 'auto',
+                  mt: 1,
+                  border: `1px solid ${theme.palette.grey[300]}`,
+                }}
+              >
+                <HankyungTripleAList
+                  tripleA={tripleA}
+                  sort={sort}
+                  handleAddDndStocks={handleAddDndStocks}
+                />
+              </Box>
             </Box>
             <Box flex={1} style={{ display: 'flex' }} mt={3}>
               <DragDropContext onDragEnd={onDragEnd}>
