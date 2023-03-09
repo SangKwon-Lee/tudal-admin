@@ -274,6 +274,12 @@ export default function HankyungListContainer() {
           category,
           comment: input.comment,
           stocks: result.map((data) => data.data.id),
+          targetURL:
+            category === '시초먹기'
+              ? 'https://wow-oneshot.innofin.co.kr/?scrollTo=시초'
+              : category === '장중먹기'
+              ? 'https://wow-oneshot.innofin.co.kr/?scrollTo=장중'
+              : 'https://wow-oneshot.innofin.co.kr/?scrollTo=종가',
         });
         if (status === 200) {
           toast.success('등록 됐습니다.');
@@ -324,6 +330,12 @@ export default function HankyungListContainer() {
         category,
         comment: input.comment,
         stocks: result.map((data) => data.data.id),
+        targetURL:
+          category === '시초먹기'
+            ? 'https://wow-oneshot.innofin.co.kr/?scrollTo=시초'
+            : category === '장중먹기'
+            ? 'https://wow-oneshot.innofin.co.kr/?scrollTo=장중'
+            : 'https://wow-oneshot.innofin.co.kr/?scrollTo=종가',
       });
       if (status === 200) {
         toast.success('수정 됐습니다.');
