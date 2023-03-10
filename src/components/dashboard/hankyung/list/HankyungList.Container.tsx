@@ -508,7 +508,7 @@ export default function HankyungListContainer() {
           );
           data.stoplossPrice = priceCalc(
             realTiemStocks[data.stockCode]?.price -
-              (realTiemStocks[data.stockCode]?.price / 100) * 4,
+              (realTiemStocks[data.stockCode]?.price / 100) * 5,
             realTiemStocks[data.stockCode]?.price,
           );
           return data;
