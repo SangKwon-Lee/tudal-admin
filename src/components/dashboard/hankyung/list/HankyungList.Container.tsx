@@ -269,6 +269,7 @@ export default function HankyungListContainer() {
             return await APIHankyung.createStocks(data);
           }),
         );
+        console.log(newStocks);
         const { status } = await APIHankyung.createTrading({
           title: input.title,
           category,
@@ -276,10 +277,10 @@ export default function HankyungListContainer() {
           stocks: result.map((data) => data.data.id),
           targetURL:
             category === '시초먹기'
-              ? 'wow-oneshot.innofin.co.kr/?scrollTo=시초'
+              ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=시초`
               : category === '장중먹기'
-              ? 'wow-oneshot.innofin.co.kr/?scrollTo=장중'
-              : 'wow-oneshot.innofin.co.kr/?scrollTo=종가',
+              ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=장중`
+              : `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=종가`,
         });
         if (status === 200) {
           toast.success('등록 됐습니다.');
@@ -332,10 +333,10 @@ export default function HankyungListContainer() {
         stocks: result.map((data) => data.data.id),
         targetURL:
           category === '시초먹기'
-            ? 'wow-oneshot.innofin.co.kr/?scrollTo=시초'
+            ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=시초`
             : category === '장중먹기'
-            ? 'wow-oneshot.innofin.co.kr/?scrollTo=장중'
-            : 'wow-oneshot.innofin.co.kr/?scrollTo=종가',
+            ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=장중`
+            : `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=종가`,
       });
       if (status === 200) {
         toast.success('수정 됐습니다.');
