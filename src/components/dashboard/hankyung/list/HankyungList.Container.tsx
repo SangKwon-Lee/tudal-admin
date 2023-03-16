@@ -281,10 +281,11 @@ export default function HankyungListContainer() {
               : category === '장중먹기'
               ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=장중`
               : `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=종가`,
+          idea: newStocks[0]?.idea,
         });
         if (status === 200) {
           toast.success('등록 됐습니다.');
-          router(0);
+          // router(0);
         }
       } else {
         console.log(todayData);
@@ -337,6 +338,7 @@ export default function HankyungListContainer() {
             : category === '장중먹기'
             ? `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=장중`
             : `wow-oneshot.innofin.co.kr/?stockcode=${newStocks[0]?.stockCode}&scrollTo=종가`,
+        idea: newStocks[0]?.idea,
       });
       if (status === 200) {
         toast.success('수정 됐습니다.');
