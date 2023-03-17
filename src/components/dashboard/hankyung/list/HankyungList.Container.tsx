@@ -82,7 +82,7 @@ export default function HankyungListContainer() {
   //*  인풋
   const [input, setInput] = useState({
     id: 0,
-    title: '',
+    title: '[원샷서비스] 시초매매',
     comment: '',
   });
 
@@ -153,6 +153,13 @@ export default function HankyungListContainer() {
   const [category, setCategory] = useState('시초먹기');
   const handleCategory = (e: any) => {
     setCategory(e.target.value);
+    setInput({
+      ...input,
+      title: `[원샷서비스] ${e.target.value.replaceAll(
+        '먹기',
+        '',
+      )}매매`,
+    });
     setStocks([]);
   };
 
