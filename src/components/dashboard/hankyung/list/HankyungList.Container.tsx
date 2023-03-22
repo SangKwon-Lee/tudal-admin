@@ -218,7 +218,7 @@ export default function HankyungListContainer() {
     });
     setStocksInput(newStocks);
   };
-
+  console.log(stocks);
   //* Dnd종목 정보 입력
   const handleDndStockInput = (e: any, stockcode: string) => {
     let newStocks = [...dndStocks[0].flat(), ...dndStocks[1].flat()];

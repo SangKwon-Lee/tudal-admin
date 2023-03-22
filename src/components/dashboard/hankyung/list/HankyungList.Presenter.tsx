@@ -340,7 +340,7 @@ export default function HankyungListPresenter(props: Props) {
             Array.isArray(stocks) &&
             stocks.length > 0 &&
             stocks.map((data: HankyungStocks) => (
-              <Box flex={1} key={data?.id}>
+              <Box flex={1} key={data?.id} sx={{ mb: 2 }}>
                 <Box sx={{ mb: 1 }}>
                   <Box
                     display={'flex'}
@@ -359,7 +359,40 @@ export default function HankyungListPresenter(props: Props) {
                   onChange={(e) => handleStocksInput(e, data.code)}
                   placeholder="투자 아이디어"
                   variant="outlined"
+                  label="투자 아이디어"
                 />
+                <Box sx={{ gap: 2 }}>
+                  <Typography>
+                    {category === '시초먹기'
+                      ? '시초먹기의 시가는 9시 기준이며 고가 및 저가는 9~10시 사이 기준입니다'
+                      : category === '장중먹기'
+                      ? '장중먹기의 시가는 10시 기준이며 고가 및 저가는 10 ~ 15시 30분 기준입니다'
+                      : '내일먹기는 종가 기준입니다.'}
+                  </Typography>
+                  <Box display={'flex'} sx={{ gap: 2 }}>
+                    <Box>
+                      <Typography variant="h6">시가</Typography>
+                      <TextField disabled value={data?.openPrice} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6">저가</Typography>
+                      <TextField disabled value={data?.lowPrice} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6">고가</Typography>
+                      <TextField disabled value={data?.highPrice} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6">
+                        고가 대비 수익률
+                      </Typography>
+                      <TextField
+                        disabled
+                        value={data?.highRatio + '%'}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
               </Box>
             ))}
           {mode === 'edit' ? (
@@ -488,199 +521,246 @@ export default function HankyungListPresenter(props: Props) {
                 />
               </Box>
             </Box>
-            <Box flex={1} style={{ display: 'flex' }} mt={3}>
-              <DragDropContext onDragEnd={onDragEnd}>
-                {dndStocks.map((el, ind) => (
-                  <Droppable key={ind} droppableId={`${String(ind)}`}>
-                    {(provided, snapshot) => (
-                      <Box
-                        flex={1}
-                        ref={provided.innerRef}
-                        style={getListStyle(snapshot.isDraggingOver)}
-                        {...provided.droppableProps}
-                        sx={{
-                          mt: 0.5,
-                          border: `1px solid ${theme.palette.grey[400]}`,
-                          padding: 1,
-                          borderRadius: '16px',
-                        }}
-                      >
-                        {/* <Typography variant="h6" sx={{ mb: 1 }}>
+
+            <Box flex={1} mt={3}>
+              <Typography variant="h6" fontWeight={700}>
+                장중먹기의 시가는 10시 기준이며 고가 및 저가는 10 ~
+                15시 30분 기준입니다
+              </Typography>
+              <Box display={'flex'} flex={1}>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  {dndStocks.map((el, ind) => (
+                    <Droppable
+                      key={ind}
+                      droppableId={`${String(ind)}`}
+                    >
+                      {(provided, snapshot) => (
+                        <Box
+                          flex={1}
+                          ref={provided.innerRef}
+                          style={getListStyle(
+                            snapshot.isDraggingOver,
+                          )}
+                          {...provided.droppableProps}
+                          sx={{
+                            mt: 0.5,
+                            border: `1px solid ${theme.palette.grey[400]}`,
+                            padding: 1,
+                            borderRadius: '16px',
+                          }}
+                        >
+                          {/* <Typography variant="h6" sx={{ mb: 1 }}>
                           {provided.droppableProps[
                             'data-rbd-droppable-id'
                           ] === '0'
                             ? '1~5위'
                             : '6~10위'}
                         </Typography> */}
-                        {el.map((item, index) => (
-                          <Draggable
-                            key={item.dragId}
-                            draggableId={item.dragId}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <Box
-                                sx={{
-                                  border: `1px solid ${theme.palette.grey[200]}`,
-                                  borderRadius: 1,
-                                }}
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style,
-                                )}
-                              >
+                          {el.map((item, index) => (
+                            <Draggable
+                              key={item.dragId}
+                              draggableId={item.dragId}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
                                 <Box
-                                  display={'flex'}
-                                  justifyContent="space-between"
-                                  alignItems={'center'}
                                   sx={{
-                                    mt: 1,
+                                    border: `1px solid ${theme.palette.grey[200]}`,
+                                    borderRadius: 1,
                                   }}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={getItemStyle(
+                                    snapshot.isDragging,
+                                    provided.draggableProps.style,
+                                  )}
                                 >
-                                  <Typography variant="h6">
-                                    {ind === 0
-                                      ? index + 1
-                                      : index + 6}
-                                    . [{item.stockName}] (
-                                    {item.stockCode})
-                                  </Typography>
-
                                   <Box
                                     display={'flex'}
-                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    alignItems={'center'}
+                                    sx={{
+                                      mt: 1,
+                                    }}
                                   >
-                                    <FormGroup row>
-                                      <FormControlLabel
-                                        control={<Checkbox />}
-                                        label="블러"
-                                        name="isBlur"
-                                        checked={item.isBlur}
-                                        onClick={(e) =>
-                                          handleDndStockInput(
-                                            e,
-                                            item.stockCode,
-                                          )
-                                        }
-                                      />
-                                      <FormControlLabel
-                                        control={<Checkbox />}
-                                        name="isReco"
-                                        label="추천"
-                                        checked={item.isReco}
-                                        onClick={(e) =>
-                                          handleDndStockInput(
-                                            e,
-                                            item.stockCode,
-                                          )
-                                        }
-                                      />
-                                    </FormGroup>
-                                    <Button
-                                      color="secondary"
-                                      variant="outlined"
-                                      sx={{ height: '30px' }}
-                                      onClick={() => {
-                                        handleRemoveDndStocks(
-                                          item.stockCode,
-                                        );
-                                      }}
+                                    <Typography variant="h6">
+                                      {ind === 0
+                                        ? index + 1
+                                        : index + 6}
+                                      . [{item.stockName}] (
+                                      {item.stockCode})
+                                    </Typography>
+
+                                    <Box
+                                      display={'flex'}
+                                      alignItems="center"
                                     >
-                                      삭제
-                                    </Button>
+                                      <FormGroup row>
+                                        <FormControlLabel
+                                          control={<Checkbox />}
+                                          label="블러"
+                                          name="isBlur"
+                                          checked={item.isBlur}
+                                          onClick={(e) =>
+                                            handleDndStockInput(
+                                              e,
+                                              item.stockCode,
+                                            )
+                                          }
+                                        />
+                                        <FormControlLabel
+                                          control={<Checkbox />}
+                                          name="isReco"
+                                          label="추천"
+                                          checked={item.isReco}
+                                          onClick={(e) =>
+                                            handleDndStockInput(
+                                              e,
+                                              item.stockCode,
+                                            )
+                                          }
+                                        />
+                                      </FormGroup>
+                                      <Button
+                                        color="secondary"
+                                        variant="outlined"
+                                        sx={{ height: '30px' }}
+                                        onClick={() => {
+                                          handleRemoveDndStocks(
+                                            item.stockCode,
+                                          );
+                                        }}
+                                      >
+                                        삭제
+                                      </Button>
+                                    </Box>
+                                  </Box>
+                                  <TextField
+                                    sx={{ flex: 1, mb: 1 }}
+                                    fullWidth
+                                    name="idea"
+                                    defaultValue={item.idea}
+                                    // value={item.idea}
+                                    onChange={(e) =>
+                                      handleDndStockInput(
+                                        e,
+                                        item.stockCode,
+                                      )
+                                    }
+                                    placeholder="투자 아이디어"
+                                    variant="outlined"
+                                  />
+                                  <Box
+                                    flex={1}
+                                    sx={{ display: 'flex' }}
+                                  >
+                                    <CustomInput
+                                      onWheel={(e) =>
+                                        //@ts-ignore
+                                        e.target.blur()
+                                      }
+                                      // defaultValue={item.targetPrice}
+                                      sx={{ flex: 1, mb: 1, mr: 1 }}
+                                      type="number"
+                                      label="목표가(7%)"
+                                      placeholder="목표가"
+                                      value={item.targetPrice}
+                                      name="targetPrice"
+                                      onChange={(e) =>
+                                        handleDndStockInput(
+                                          e,
+                                          item.stockCode,
+                                        )
+                                      }
+                                      variant="outlined"
+                                    />
+                                    <CustomInput
+                                      onWheel={(e) =>
+                                        //@ts-ignore
+                                        e.target.blur()
+                                      }
+                                      // defaultValue={item.stoplossPrice}
+                                      sx={{ flex: 1, mb: 1, mr: 1 }}
+                                      type="number"
+                                      label="손절가(4%)"
+                                      value={item.stoplossPrice}
+                                      name="stoplossPrice"
+                                      onChange={(e) =>
+                                        handleDndStockInput(
+                                          e,
+                                          item.stockCode,
+                                        )
+                                      }
+                                      placeholder="손절가"
+                                      variant="outlined"
+                                    />
+                                    <CustomInput
+                                      onWheel={(e) =>
+                                        //@ts-ignore
+                                        e.target.blur()
+                                      }
+                                      sx={{ flex: 1, mb: 1 }}
+                                      type="number"
+                                      label="추천가(현재가)"
+                                      value={item.recoPrice}
+                                      name="recoPrice"
+                                      onChange={(e) =>
+                                        handleDndStockInput(
+                                          e,
+                                          item.stockCode,
+                                        )
+                                      }
+                                      placeholder="추천가"
+                                      variant="outlined"
+                                    />
+                                  </Box>
+                                  <Box
+                                    display={'flex'}
+                                    sx={{ gap: 1 }}
+                                  >
+                                    <Box>
+                                      <Typography>시가</Typography>
+                                      <TextField
+                                        disabled
+                                        value={item?.openPrice}
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Typography>저가</Typography>
+                                      <TextField
+                                        disabled
+                                        value={item?.lowPrice}
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Typography>고가</Typography>
+                                      <TextField
+                                        disabled
+                                        value={item?.highPrice}
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Typography>
+                                        고가 대비 수익
+                                      </Typography>
+                                      <TextField
+                                        disabled
+                                        value={item?.highRatio + '%'}
+                                      />
+                                    </Box>
                                   </Box>
                                 </Box>
-                                <TextField
-                                  sx={{ flex: 1, mb: 1 }}
-                                  fullWidth
-                                  name="idea"
-                                  defaultValue={item.idea}
-                                  // value={item.idea}
-                                  onChange={(e) =>
-                                    handleDndStockInput(
-                                      e,
-                                      item.stockCode,
-                                    )
-                                  }
-                                  placeholder="투자 아이디어"
-                                  variant="outlined"
-                                />
-                                <Box
-                                  flex={1}
-                                  sx={{ display: 'flex' }}
-                                >
-                                  <CustomInput
-                                    onWheel={(e) =>
-                                      //@ts-ignore
-                                      e.target.blur()
-                                    }
-                                    // defaultValue={item.targetPrice}
-                                    sx={{ flex: 1, mb: 1, mr: 1 }}
-                                    type="number"
-                                    label="목표가(7%)"
-                                    placeholder="목표가"
-                                    value={item.targetPrice}
-                                    name="targetPrice"
-                                    onChange={(e) =>
-                                      handleDndStockInput(
-                                        e,
-                                        item.stockCode,
-                                      )
-                                    }
-                                    variant="outlined"
-                                  />
-                                  <CustomInput
-                                    onWheel={(e) =>
-                                      //@ts-ignore
-                                      e.target.blur()
-                                    }
-                                    // defaultValue={item.stoplossPrice}
-                                    sx={{ flex: 1, mb: 1, mr: 1 }}
-                                    type="number"
-                                    label="손절가(4%)"
-                                    value={item.stoplossPrice}
-                                    name="stoplossPrice"
-                                    onChange={(e) =>
-                                      handleDndStockInput(
-                                        e,
-                                        item.stockCode,
-                                      )
-                                    }
-                                    placeholder="손절가"
-                                    variant="outlined"
-                                  />
-                                  <CustomInput
-                                    onWheel={(e) =>
-                                      //@ts-ignore
-                                      e.target.blur()
-                                    }
-                                    sx={{ flex: 1, mb: 1 }}
-                                    type="number"
-                                    label="추천가(현재가)"
-                                    value={item.recoPrice}
-                                    name="recoPrice"
-                                    onChange={(e) =>
-                                      handleDndStockInput(
-                                        e,
-                                        item.stockCode,
-                                      )
-                                    }
-                                    placeholder="추천가"
-                                    variant="outlined"
-                                  />
-                                </Box>
-                              </Box>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </Box>
-                    )}
-                  </Droppable>
-                ))}
-              </DragDropContext>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Box>
+                      )}
+                    </Droppable>
+                  ))}
+                </DragDropContext>
+              </Box>
             </Box>
           </Box>
         </>
