@@ -154,7 +154,8 @@ export default function NewKeywordDrawer(props: Props) {
             });
           }),
         );
-        if (result.length > 0) {
+        console.log(result);
+        if (result.length >= 0) {
           toast.success('정상처리 됐습니다.');
           window.location.reload();
         }
