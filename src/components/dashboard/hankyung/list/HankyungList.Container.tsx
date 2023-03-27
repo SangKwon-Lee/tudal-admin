@@ -272,8 +272,11 @@ export default function HankyungListContainer() {
           newStocks = [...stocksInput];
         }
         const result = await Promise.all(
-          newStocks.map(async (data) => {
-            return await APIHankyung.createStocks(data);
+          newStocks.map(async (data, index) => {
+            return await APIHankyung.createStocks({
+              ...data,
+              index: index + 1,
+            });
           }),
         );
         console.log(newStocks);
@@ -292,7 +295,7 @@ export default function HankyungListContainer() {
         });
         if (status === 200) {
           toast.success('등록 됐습니다.');
-          // router(0);
+          router(0);
         }
       } else {
         console.log(todayData);
@@ -535,7 +538,6 @@ export default function HankyungListContainer() {
     newStocks = newStocks.filter((data) => data.stockCode !== e);
     setDndStocks([newStocks.slice(0, 5), newStocks.slice(5, 10)]);
   };
-
   //* 종목 추가 선택
   const handleAddMoreStock = (
     event,
@@ -609,6 +611,7 @@ export default function HankyungListContainer() {
           return;
         }
         setStocks([...stocks, item.option]);
+
         setStocksInput([
           ...stocksInput,
           {
