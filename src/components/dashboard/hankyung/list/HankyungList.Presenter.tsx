@@ -340,7 +340,7 @@ export default function HankyungListPresenter(props: Props) {
             Array.isArray(stocks) &&
             stocks.length > 0 &&
             stocks
-              .sort((a, b) => b.index - a.index)
+              .sort((a, b) => a.index - b.index)
               .map((data: HankyungStocks) => (
                 <Box flex={1} key={data?.id} sx={{ mb: 2 }}>
                   <Box sx={{ mb: 1 }}>
@@ -532,7 +532,7 @@ export default function HankyungListPresenter(props: Props) {
               <Box display={'flex'} flex={1}>
                 <DragDropContext onDragEnd={onDragEnd}>
                   {dndStocks
-                    .sort((a, b) => b.index - a.index)
+                    .sort((a, b) => a.index - b.index)
                     .map((el, ind) => (
                       <Droppable
                         key={ind}
