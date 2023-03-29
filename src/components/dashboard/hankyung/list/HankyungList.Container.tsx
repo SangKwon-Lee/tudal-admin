@@ -153,13 +153,20 @@ export default function HankyungListContainer() {
   const [category, setCategory] = useState('시초먹기');
   const handleCategory = (e: any) => {
     setCategory(e.target.value);
-    setInput({
-      ...input,
-      title: `[원샷서비스] ${e.target.value.replaceAll(
-        '먹기',
-        '',
-      )}매매`,
-    });
+    if (e.target.value === '내일먹기') {
+      setInput({
+        ...input,
+        title: `[원샷서비스] 종가매매`,
+      });
+    } else {
+      setInput({
+        ...input,
+        title: `[원샷서비스] ${e.target.value.replaceAll(
+          '먹기',
+          '',
+        )}매매`,
+      });
+    }
     setStocks([]);
   };
 
